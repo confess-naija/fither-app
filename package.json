@@ -1,0 +1,8 @@
+{
+  "name": "fither-app",
+  "version": "1.0.0",
+  "description": "FitHer - Women's Fitness PWA",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
