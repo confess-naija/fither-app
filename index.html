@@ -12,7 +12,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-<title>FitHerNova — Glow Challenge</title>
+<title>FitHerNova — Coach Build</title>
 <style>
 :root {
   --pink: #ff2d6b;
@@ -323,6 +323,17 @@ select option{background:var(--black3);}
 .profile-stat{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:12px;text-align:center;}
 .profile-stat .big{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--pink-light);}
 .profile-stat .small{font-size:11px;color:var(--grey);margin-top:2px;}
+
+.coach-quick{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;scrollbar-width:none;}
+.coach-quick::-webkit-scrollbar{display:none;}
+.coach-answer{background:linear-gradient(135deg,#1a0810,#101010);border:1px solid var(--pink-dark);border-radius:var(--radius);padding:14px;margin-top:10px;white-space:pre-wrap;font-size:13px;line-height:1.55;color:var(--white);}
+.coach-input-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;}
+@media(max-width:520px){.coach-input-row{grid-template-columns:1fr;}}
+.goal-card{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:12px;cursor:pointer;transition:.2s;}
+.goal-card.active,.goal-card:hover{border-color:var(--pink);background:#1a0810;}
+.goal-card .gtitle{font-family:var(--font-head);font-size:13px;font-weight:800;color:var(--white);}
+.goal-card .gsub{font-size:11px;color:var(--grey);margin-top:3px;line-height:1.35;}
+
 /* Make many tabs usable on phones */
 .bottom-nav{overflow-x:auto;scrollbar-width:none;}
 .bottom-nav::-webkit-scrollbar{display:none;}
@@ -650,6 +661,39 @@ select option{background:var(--black3);}
       <div id="meal-plan-list"></div>
     </div>
 
+
+    <!-- AI COACH -->
+    <div class="page" id="page-coach">
+      <div class="sec-label">FitHerNova Coach</div>
+      <div class="nova-card hot">
+        <div class="nova-title">Your simple fitness coach ✨</div>
+        <div class="nova-sub">Ask about meals, workouts, motivation, water, calories, or the 7-day challenge. This works without extra API cost.</div>
+      </div>
+      <div class="sec-label">Quick asks</div>
+      <div class="coach-quick">
+        <button class="chip" onclick="coachAsk('what should i eat today')">What should I eat today?</button>
+        <button class="chip" onclick="coachAsk('give me belly workout')">Belly workout</button>
+        <button class="chip" onclick="coachAsk('motivate me')">Motivate me</button>
+        <button class="chip" onclick="coachAsk('nigerian meal ideas')">Nigerian meals</button>
+        <button class="chip" onclick="coachAsk('water reminder')">Water tips</button>
+      </div>
+      <div class="nova-card">
+        <div class="nova-title">Ask Coach Nova</div>
+        <div class="coach-input-row">
+          <input type="text" id="coach-question" placeholder="Example: How can I reduce belly fat?" onkeydown="if(event.key==='Enter')coachAsk()"/>
+          <button class="btn btn-pink" style="height:44px;padding:0 18px;white-space:nowrap;" onclick="coachAsk()">Ask</button>
+        </div>
+        <div class="coach-answer" id="coach-answer">Hi Queen 👑 I am Coach Nova. Ask me for a meal idea, workout, motivation, water plan, or calorie guidance.</div>
+      </div>
+      <div class="sec-label">Choose your main goal</div>
+      <div class="nova-grid" id="goal-grid">
+        <div class="goal-card" onclick="setMainGoal('Lose belly fat')"><div class="gtitle">🔥 Lose belly fat</div><div class="gsub">Meal awareness + core consistency.</div></div>
+        <div class="goal-card" onclick="setMainGoal('Postpartum restore')"><div class="gtitle">💚 Postpartum restore</div><div class="gsub">Gentle movement and confidence.</div></div>
+        <div class="goal-card" onclick="setMainGoal('Build consistency')"><div class="gtitle">📅 Build consistency</div><div class="gsub">Streaks, reminders, small wins.</div></div>
+        <div class="goal-card" onclick="setMainGoal('Glow and tone')"><div class="gtitle">✨ Glow and tone</div><div class="gsub">Workout + nutrition lifestyle.</div></div>
+      </div>
+    </div>
+
     <!-- PROFILE -->
     <div class="page" id="page-profile">
       <div class="sec-label">Profile & goals</div>
@@ -711,6 +755,11 @@ select option{background:var(--black3);}
     <button class="nav-item" onclick="goTo('mealplan')" id="nav-mealplan">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3h16v18H4z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
       <span class="nav-label">Meals</span>
+    </button>
+
+    <button class="nav-item" onclick="goTo('coach')" id="nav-coach">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a7 7 0 0 0-7 7v3a7 7 0 0 0 14 0V9a7 7 0 0 0-7-7z"/><path d="M9 10h.01M15 10h.01M9 15c1.6 1 4.4 1 6 0"/><path d="M4 20c2-2 14-2 16 0"/></svg>
+      <span class="nav-label">Coach</span>
     </button>
     <button class="nav-item" onclick="goTo('profile')" id="nav-profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
@@ -782,7 +831,7 @@ let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
 let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=null, progressInterval=null;
 let streak=1, workoutsDone=0;
-let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner'};
+let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency'};
 let challengeDays=[];
 let challengeProgress={};
 let activeChallengeId=null;
@@ -929,7 +978,7 @@ function applyState(data){
 
 function renderAll(){
   renderWorkoutList();renderWorkoutPicker();renderTrackList();renderFoodLog();renderWorkoutHistory();
-  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();renderMealPlan();populateProfileForm();
+  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();renderMealPlan();populateProfileForm();renderCoachGoal();
 }
 function saveLocalOnly(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState())); }
@@ -1019,6 +1068,7 @@ function goTo(page){
   if(page==='progress') renderProgress();
   if(page==='challenge') renderChallenge();
   if(page==='mealplan') renderMealPlan();
+  if(page==='coach') renderCoachGoal();
   if(page==='profile') {populateProfileForm(); renderProfileSummary();}
   if(page==='milestones') renderMilestones();
 }
@@ -1492,6 +1542,52 @@ async function sendPasswordReset(){
   if(!email || !supabaseClient)return;
   const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
   if(msg) msg.textContent=error?error.message:'Password reset email sent.';
+}
+
+
+// ===================== AI COACH =====================
+function setMainGoal(goal){
+  profileSettings.mainGoal=goal;
+  renderCoachGoal();
+  saveData();
+  const ans=document.getElementById('coach-answer');
+  if(ans) ans.textContent=`Goal saved: ${goal}.\n\nCoach Nova will guide your meals, workouts and motivation around this goal.`;
+}
+function renderCoachGoal(){
+  const cards=document.querySelectorAll('#goal-grid .goal-card');
+  cards.forEach(c=>{
+    const title=c.querySelector('.gtitle')?.textContent||'';
+    c.classList.toggle('active', title.toLowerCase().includes((profileSettings.mainGoal||'').toLowerCase().split(' ')[0]));
+  });
+}
+function coachAsk(q){
+  const input=document.getElementById('coach-question');
+  const raw=(q || input?.value || '').trim();
+  if(input && !q) input.value='';
+  const question=raw.toLowerCase();
+  const name=(profileSettings.fullName || document.getElementById('user-name')?.textContent || 'Queen').split(' ')[0];
+  const meals=logged.reduce((s,l)=>s+(Number(l.cal)||0),0);
+  const rem=Math.max((Number(userGoal)||1800)-meals,0);
+  const currentWeight=weights.length?Number(weights[weights.length-1]):null;
+  let answer='';
+  if(!question){ answer='Ask me something like: what should I eat today, give me a workout, motivate me, or how many calories are left?'; }
+  else if(question.includes('eat')||question.includes('meal')||question.includes('food')||question.includes('nigerian')){
+    answer=`${name}, based on your ${userGoal} kcal goal, you have about ${rem} kcal remaining today.\n\nSimple FitHerNova plate idea:\n• Protein: grilled fish/chicken, egg, moi moi, or beans\n• Carb: small rice, small yam, oats, or swallow portion control\n• Vegetables: soup, salad, spinach, okra, cabbage\n• Drink: water first, avoid sugary drinks today\n\nNigerian option: moi moi + salad, grilled fish + small jollof, or pepper soup with controlled portion.`;
+  }else if(question.includes('workout')||question.includes('belly')||question.includes('exercise')){
+    answer=`${name}, do this 10-minute belly burn today:\n\n1. Standing march — 2 min\n2. Knee-to-elbow crunch — 3 sets of 12\n3. Leg raises — 3 sets of 10\n4. Plank — 3 rounds of 20 seconds\n5. Deep breathing — 1 min\n\nStart small. Finish strong. Then log it in Timer.`;
+  }else if(question.includes('water')||question.includes('drink')){
+    answer=`Hydration plan for today:\n\n• 1 glass when you wake up\n• 1 glass before each meal\n• 1 glass after workout\n• 1 glass before evening\n\nYour tracker is at ${waterCups}/8 glasses. Aim for 8 today 💧`;
+  }else if(question.includes('calorie')||question.includes('left')||question.includes('remaining')){
+    answer=`Today you logged ${meals} kcal. Your goal is ${userGoal} kcal. You have about ${rem} kcal remaining.\n\nTip: use the remaining calories on protein + vegetables first, then small carbs if needed.`;
+  }else if(question.includes('motivat')||question.includes('tired')||question.includes('lazy')){
+    answer=`${name}, you do not need to be perfect today. You only need to show up.\n\nOne workout. One better meal. One glass of water. One small win. That is how FitHerNova women glow. 🔥`;
+  }else if(question.includes('weight')||question.includes('bmi')){
+    answer=currentWeight?`Your latest weight is ${currentWeight} kg. Keep logging weekly, not every hour. Progress is a trend, not one number. Focus on consistency, meals, water and workouts.`:'Log your first weight in the Progress tab and I will help you track your journey.';
+  }else{
+    answer=`${name}, here is a simple plan for today:\n\n• Move: 10 minutes workout\n• Eat: protein with your next meal\n• Drink: 2 more glasses of water\n• Mindset: do not quit because today is not perfect\n\nYour current goal: ${profileSettings.mainGoal||'Build consistency'}.`;
+  }
+  const el=document.getElementById('coach-answer');
+  if(el) el.textContent=answer;
 }
 
 // ===================== REMINDERS =====================
