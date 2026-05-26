@@ -334,6 +334,18 @@ select option{background:var(--black3);}
 .goal-card .gtitle{font-family:var(--font-head);font-size:13px;font-weight:800;color:var(--white);}
 .goal-card .gsub{font-size:11px;color:var(--grey);margin-top:3px;line-height:1.35;}
 
+
+
+/* PROFILE PHOTO */
+.profile-photo-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.profile-avatar-wrap{width:78px;height:78px;border-radius:50%;background:#1e1e1e;border:2px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 8px 26px rgba(255,45,107,.18);flex-shrink:0;}
+.profile-avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none;}
+.profile-avatar-placeholder{font-size:30px;color:var(--grey);}
+.profile-photo-actions{flex:1;min-width:190px;}
+.profile-photo-actions .btn{width:100%;}
+.photo-status{font-size:12px;color:var(--grey);margin-top:8px;line-height:1.4;}
+.header-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--pink-dark);display:none;}
+
 /* Make many tabs usable on phones */
 .bottom-nav{overflow-x:auto;scrollbar-width:none;}
 .bottom-nav::-webkit-scrollbar{display:none;}
@@ -393,6 +405,7 @@ select option{background:var(--black3);}
       <div class="logo-sub">Your Body · Your Journey</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
+      <img id="header-avatar" class="header-avatar" alt="Profile photo"/>
       <div class="user-pill" id="user-pill">Guest</div>
       <div class="header-streak">🔥 <span id="header-streak">1</span> day streak</div>
     </div>
@@ -581,6 +594,7 @@ select option{background:var(--black3);}
       <div class="card" style="margin-bottom:10px;background:#0a1a10;border-color:#1a3a20;">
         <div style="font-size:12px;color:#06d6a0;">💡 <strong style="color:var(--white);">How to add your Pro Media Records songs:</strong> Replace the track list below with your real MP3 file links hosted on Cloudinary or Google Drive. Each track needs a direct MP3 URL.</div>
       </div>
+      <button class="btn btn-ghost" style="width:100%;margin-bottom:10px;" onclick="loadSupabaseTracks()">🔄 Refresh music</button>
       <div class="track-list" id="track-list"></div>
     </div>
 
@@ -697,6 +711,20 @@ select option{background:var(--black3);}
     <!-- PROFILE -->
     <div class="page" id="page-profile">
       <div class="sec-label">Profile & goals</div>
+      <div class="nova-card">
+        <div class="nova-title">Profile photo</div>
+        <div class="profile-photo-card">
+          <div class="profile-avatar-wrap">
+            <img id="profile-avatar-preview" alt="Profile photo"/>
+            <div id="profile-avatar-placeholder" class="profile-avatar-placeholder">👤</div>
+          </div>
+          <div class="profile-photo-actions">
+            <input type="file" id="profile-photo-input" accept="image/*" style="display:none" onchange="uploadProfilePhoto(event)"/>
+            <button class="btn btn-ghost" type="button" onclick="document.getElementById('profile-photo-input').click()">📷 Upload photo</button>
+            <div class="photo-status" id="photo-upload-status">Choose a photo from your device.</div>
+          </div>
+        </div>
+      </div>
       <div class="nova-card">
         <div class="profile-row">
           <div><label class="text-grey">Name</label><input type="text" id="profile-name" placeholder="Your name"/></div>
@@ -831,7 +859,7 @@ let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
 let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=null, progressInterval=null;
 let streak=1, workoutsDone=0;
-let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency'};
+let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency',avatarUrl:''};
 let challengeDays=[];
 let challengeProgress={};
 let activeChallengeId=null;
@@ -884,10 +912,15 @@ async function submitAuth(){
   finally{btn.textContent=old; btn.disabled=false;}
 }
 async function logoutUser(){
-  if(supabaseClient) await supabaseClient.auth.signOut();
+  // Instant UI response first — no waiting/hanging on slow network
   currentUser=null;
-  document.getElementById('user-pill').innerHTML='Guest';
-  document.getElementById('auth-screen').style.display='flex';
+  const pill=document.getElementById('user-pill');
+  if(pill) pill.innerHTML='Guest';
+  const auth=document.getElementById('auth-screen');
+  if(auth) auth.style.display='flex';
+  localStorage.removeItem('fithernova_guest_ok');
+  try{ if(supabaseClient) await supabaseClient.auth.signOut(); }
+  catch(err){ console.warn('Logout warning:', err?.message || err); }
 }
 function updateAuthUI(){
   const pill=document.getElementById('user-pill');
@@ -902,7 +935,7 @@ function updateAuthUI(){
 async function loadUserProfile(){
   if(!supabaseClient || !currentUser) return;
   try{
-    const {data,error}=await supabaseClient.from('profiles').select('full_name,calorie_goal,target_weight,height_cm,workout_level,email').eq('id',currentUser.id).maybeSingle();
+    const {data,error}=await supabaseClient.from('profiles').select('full_name,calorie_goal,target_weight,height_cm,workout_level,avatar_url,email').eq('id',currentUser.id).maybeSingle();
     if(error) throw error;
     if(data){
       if(data.full_name) document.getElementById('user-name').textContent=data.full_name.split(' ')[0] || 'Queen';
@@ -911,6 +944,8 @@ async function loadUserProfile(){
       profileSettings.targetWeight=Number(data.target_weight)||profileSettings.targetWeight;
       profileSettings.heightCm=Number(data.height_cm)||profileSettings.heightCm;
       profileSettings.workoutLevel=data.workout_level||profileSettings.workoutLevel;
+      profileSettings.avatarUrl=data.avatar_url||profileSettings.avatarUrl;
+      if(profileSettings.avatarUrl) showProfilePhoto(profileSettings.avatarUrl);
       populateProfileForm();
       saveLocalOnly();
       updateHome();
@@ -1036,20 +1071,25 @@ async function loadRemoteData(){
   }catch(e){console.warn('FitHerNova Supabase load failed', e.message || e);}
 }
 async function loadSupabaseTracks(){
-  if(!supabaseClient)return;
+  const list=document.getElementById('track-list');
+  if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Loading songs from Supabase...</div>';
+  if(!supabaseClient){renderTrackList();return;}
   try{
     const {data,error}=await supabaseClient
       .from('music_tracks')
-      .select('title,artist,duration,emoji,src')
+      .select('title,artist,duration,emoji,src,created_at')
       .eq('active',true)
       .order('created_at',{ascending:true});
     if(error) throw error;
     if(Array.isArray(data) && data.length){
       tracks=data.map(t=>({title:t.title,artist:t.artist||'Pro Media Records',dur:t.duration||'0:00',emoji:t.emoji||'🎵',src:t.src||''}));
       currentTrack=0;
-      renderTrackList();
     }
-  }catch(e){console.warn('FitHerNova Supabase tracks load failed', e.message || e);}
+    renderTrackList();
+  }catch(e){
+    console.warn('FitHerNova Supabase tracks load failed', e.message || e);
+    if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Could not load songs. Check Supabase music_tracks table.</div>';
+  }
 }
 function resetFitHerData(){
   if(!confirm('Clear all FitHerNova saved data on this device?'))return;
@@ -1310,7 +1350,10 @@ function renderWorkoutHistory(){
 
 // ===================== MUSIC =====================
 function renderTrackList(){
-  document.getElementById('track-list').innerHTML=tracks.map((t,i)=>`
+  const el=document.getElementById('track-list');
+  if(!el)return;
+  if(!tracks.length){el.innerHTML='<div class="text-grey" style="padding:10px 0;">No songs yet. Add songs in Supabase music_tracks.</div>';return;}
+  el.innerHTML=tracks.map((t,i)=>`
     <div class="track-item${i===currentTrack&&isPlaying?' playing':''}" onclick="playTrack(${i})" id="track-${i}">
       <div class="playing-anim"><div class="bar-anim"></div><div class="bar-anim"></div><div class="bar-anim"></div></div>
       <div class="track-num">${i+1}</div>
@@ -1320,6 +1363,7 @@ function renderTrackList(){
     </div>`).join('');
 }
 function playTrack(i){
+  if(!tracks.length || !tracks[i]) return;
   currentTrack=i;
   const t=tracks[i];
   document.getElementById('np-title').textContent=t.title;
@@ -1529,12 +1573,51 @@ async function saveProfileSettings(){
   document.getElementById('user-name').textContent=(profileSettings.fullName.split(' ')[0]||'Queen');
   if(currentUser && supabaseClient){
     try{
-      const {error}=await supabaseClient.from('profiles').upsert({id:currentUser.id,email:currentUser.email,full_name:profileSettings.fullName,calorie_goal:userGoal,target_weight:profileSettings.targetWeight,height_cm:profileSettings.heightCm,workout_level:profileSettings.workoutLevel},{onConflict:'id'});
+      const {error}=await supabaseClient.from('profiles').upsert({id:currentUser.id,email:currentUser.email,full_name:profileSettings.fullName,calorie_goal:userGoal,target_weight:profileSettings.targetWeight,height_cm:profileSettings.heightCm,workout_level:profileSettings.workoutLevel,avatar_url:profileSettings.avatarUrl||null},{onConflict:'id'});
       if(error)throw error;
       if(msg)msg.textContent='Profile saved to cloud.';
     }catch(e){if(msg)msg.textContent=e.message||'Cloud save failed.';}
   }else if(msg) msg.textContent='Profile saved on this device.';
   renderProfileSummary(); updateHome(); saveData();
+}
+function showProfilePhoto(url){
+  if(!url) return;
+  profileSettings.avatarUrl=url;
+  const img=document.getElementById('profile-avatar-preview');
+  const ph=document.getElementById('profile-avatar-placeholder');
+  if(img){img.src=url;img.style.display='block';}
+  if(ph) ph.style.display='none';
+  const header=document.getElementById('header-avatar');
+  if(header){header.src=url;header.style.display='block';}
+}
+async function uploadProfilePhoto(event){
+  const file=event.target.files && event.target.files[0];
+  if(!file) return;
+  const status=document.getElementById('photo-upload-status');
+  if(!currentUser){ if(status) status.textContent='Please login before uploading a photo.'; return; }
+  if(!supabaseClient){ if(status) status.textContent='Supabase is not available.'; return; }
+  if(!file.type.startsWith('image/')){ if(status) status.textContent='Please choose an image file.'; return; }
+  if(file.size > 5 * 1024 * 1024){ if(status) status.textContent='Image is too large. Please choose under 5MB.'; return; }
+  try{
+    if(status) status.textContent='Uploading photo...';
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+    const filePath=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
+    const {error:uploadError}=await supabaseClient.storage
+      .from('profile-photos')
+      .upload(filePath,file,{cacheControl:'3600',upsert:true});
+    if(uploadError) throw uploadError;
+    const {data}=supabaseClient.storage.from('profile-photos').getPublicUrl(filePath);
+    const avatarUrl=data.publicUrl;
+    const {error:profileError}=await supabaseClient.from('profiles')
+      .upsert({id:currentUser.id,email:currentUser.email,avatar_url:avatarUrl},{onConflict:'id'});
+    if(profileError) throw profileError;
+    showProfilePhoto(avatarUrl);
+    saveData();
+    if(status) status.textContent='Photo uploaded successfully.';
+  }catch(e){
+    console.error('Profile photo upload failed',e);
+    if(status) status.textContent=e.message || 'Photo upload failed. Check Supabase storage policy.';
+  }
 }
 async function sendPasswordReset(){
   const msg=document.getElementById('profile-message');
