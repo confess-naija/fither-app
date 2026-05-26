@@ -12,7 +12,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-<title>FitHerNova — Your Body, Your Journey</title>
+<title>FitHerNova — Glow Challenge</title>
 <style>
 :root {
   --pink: #ff2d6b;
@@ -298,6 +298,36 @@ select option{background:var(--black3);}
 .ib-text{flex:1;font-size:12px;color:var(--grey);}
 .ib-text strong{display:block;font-size:13px;color:var(--white);margin-bottom:2px;}
 .ib-btn{background:var(--pink);border:none;color:#fff;border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+
+
+/* ======== NOVA PRODUCT PAGES ======== */
+.nova-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+@media(max-width:560px){.nova-grid{grid-template-columns:1fr;}}
+.nova-card{background:linear-gradient(135deg,#171717,#101010);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
+.nova-card.hot{border-color:var(--pink-dark);background:linear-gradient(135deg,#250713,#111);} 
+.nova-title{font-family:var(--font-head);font-size:16px;font-weight:800;color:var(--white);margin-bottom:4px;}
+.nova-sub{font-size:12px;color:var(--grey);line-height:1.45;}
+.progress-track{height:8px;background:var(--black4);border-radius:999px;overflow:hidden;margin:10px 0;}
+.progress-track>div{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:999px;transition:width .35s ease;}
+.day-card{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
+.day-card.done{border-color:rgba(6,214,160,.55);background:linear-gradient(135deg,#071912,#111);} 
+.day-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.day-num{width:34px;height:34px;border-radius:50%;background:#2a0a18;border:1px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;color:var(--pink-light);font-family:var(--font-head);font-weight:800;flex-shrink:0;}
+.day-title{font-family:var(--font-head);font-size:14px;font-weight:800;}
+.day-lines{font-size:12px;color:var(--grey);line-height:1.55;margin-top:6px;}
+.day-lines strong{color:var(--white);}
+.done-pill{font-size:10px;border-radius:999px;padding:4px 9px;background:#0a2a1a;color:var(--green);font-weight:800;white-space:nowrap;}
+.plan-chip{font-size:10px;border-radius:999px;padding:4px 9px;background:#2a0a18;color:var(--pink-light);display:inline-flex;margin:0 5px 6px 0;font-weight:700;}
+.profile-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+@media(max-width:520px){.profile-row{grid-template-columns:1fr;}}
+.profile-stat{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:12px;text-align:center;}
+.profile-stat .big{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--pink-light);}
+.profile-stat .small{font-size:11px;color:var(--grey);margin-top:2px;}
+/* Make many tabs usable on phones */
+.bottom-nav{overflow-x:auto;scrollbar-width:none;}
+.bottom-nav::-webkit-scrollbar{display:none;}
+.nav-item{min-width:68px;}
+@media(max-width:430px){.nav-item{min-width:64px}.bottom-nav{justify-content:flex-start}.nav-label{font-size:8.5px}}
 
 /* UTILS */
 .flex-row{display:flex;align-items:center;gap:8px;}
@@ -597,6 +627,54 @@ select option{background:var(--black3);}
       <button class="btn btn-ghost" style="width:100%;" onclick="showNotif('HIIT Core Blaster','07:00')">🔔 Preview notification</button>
     </div>
 
+
+    <!-- CHALLENGE -->
+    <div class="page" id="page-challenge">
+      <div class="sec-label">7-Day Glow Challenge</div>
+      <div class="nova-card hot">
+        <div class="nova-title">FitHerNova Glow Challenge 🔥</div>
+        <div class="nova-sub">Complete one simple daily action: workout, meal tip, and motivation. Your progress saves to Supabase when logged in.</div>
+        <div class="progress-track"><div id="challenge-progress-fill" style="width:0%"></div></div>
+        <div class="flex-between"><span class="text-grey" id="challenge-progress-text">0 of 7 days completed</span><span class="done-pill" id="challenge-badge" style="display:none;">Badge earned 🏆</span></div>
+      </div>
+      <div id="challenge-days-list"></div>
+    </div>
+
+    <!-- MEAL PLAN -->
+    <div class="page" id="page-mealplan">
+      <div class="sec-label">Nigerian wellness meal guide</div>
+      <div class="nova-card hot">
+        <div class="nova-title">Eat smart, not punishment 🍲</div>
+        <div class="nova-sub">This is guidance only, not food delivery. Users still cook or buy their own meals.</div>
+      </div>
+      <div id="meal-plan-list"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" id="page-profile">
+      <div class="sec-label">Profile & goals</div>
+      <div class="nova-card">
+        <div class="profile-row">
+          <div><label class="text-grey">Name</label><input type="text" id="profile-name" placeholder="Your name"/></div>
+          <div><label class="text-grey">Daily calorie goal</label><input type="number" id="profile-goal" placeholder="1800"/></div>
+          <div><label class="text-grey">Target weight (kg)</label><input type="number" id="profile-target" placeholder="70" step="0.1"/></div>
+          <div><label class="text-grey">Height (cm)</label><input type="number" id="profile-height" placeholder="165" step="0.1"/></div>
+        </div>
+        <button class="btn btn-pink" onclick="saveProfileSettings()">Save profile</button>
+        <div class="auth-message" id="profile-message"></div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-stat"><div class="big" id="profile-bmi">--</div><div class="small">BMI</div></div>
+        <div class="profile-stat"><div class="big" id="profile-goal-left">--</div><div class="small">kg to goal</div></div>
+      </div>
+      <div class="nova-card">
+        <div class="nova-title">Account</div>
+        <div class="nova-sub" id="profile-account-text">Guest mode</div>
+        <button class="btn btn-ghost mt12" onclick="sendPasswordReset()" style="width:100%;">Send password reset email</button>
+      </div>
+    </div>
+
+
   </div><!-- end content -->
 
   <!-- BOTTOM NAV -->
@@ -624,6 +702,19 @@ select option{background:var(--black3);}
     <button class="nav-item" onclick="goTo('progress')" id="nav-progress">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       <span class="nav-label">Progress</span>
+    </button>
+
+    <button class="nav-item" onclick="goTo('challenge')" id="nav-challenge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.7 1.1 6.6L12 17l-5.8 3.2 1.1-6.6L2.5 8.9 9.1 8 12 2z"/></svg>
+      <span class="nav-label">Challenge</span>
+    </button>
+    <button class="nav-item" onclick="goTo('mealplan')" id="nav-mealplan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3h16v18H4z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+      <span class="nav-label">Meals</span>
+    </button>
+    <button class="nav-item" onclick="goTo('profile')" id="nav-profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
+      <span class="nav-label">Profile</span>
     </button>
     <button class="nav-item" onclick="goTo('reminders')" id="nav-reminders">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -691,6 +782,10 @@ let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
 let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=null, progressInterval=null;
 let streak=1, workoutsDone=0;
+let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner'};
+let challengeDays=[];
+let challengeProgress={};
+let activeChallengeId=null;
 let currentUser=null, authMode='login', authReady=false;
 
 
@@ -758,11 +853,16 @@ function updateAuthUI(){
 async function loadUserProfile(){
   if(!supabaseClient || !currentUser) return;
   try{
-    const {data,error}=await supabaseClient.from('profiles').select('full_name,calorie_goal,target_weight,email').eq('id',currentUser.id).maybeSingle();
+    const {data,error}=await supabaseClient.from('profiles').select('full_name,calorie_goal,target_weight,height_cm,workout_level,email').eq('id',currentUser.id).maybeSingle();
     if(error) throw error;
     if(data){
       if(data.full_name) document.getElementById('user-name').textContent=data.full_name.split(' ')[0] || 'Queen';
       if(data.calorie_goal) userGoal=Number(data.calorie_goal)||userGoal;
+      profileSettings.fullName=data.full_name||profileSettings.fullName;
+      profileSettings.targetWeight=Number(data.target_weight)||profileSettings.targetWeight;
+      profileSettings.heightCm=Number(data.height_cm)||profileSettings.heightCm;
+      profileSettings.workoutLevel=data.workout_level||profileSettings.workoutLevel;
+      populateProfileForm();
       saveLocalOnly();
       updateHome();
     }
@@ -772,6 +872,7 @@ async function afterAuthReady(){
   updateAuthUI();
   await loadUserProfile();
   await loadRemoteData();
+  await loadChallengeData();
   saveData();
 }
 async function initAuth(){
@@ -809,7 +910,7 @@ function getDeviceId(){
 const deviceId = getDeviceId();
 
 function currentState(){
-  return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,updatedAt:new Date().toISOString()};
+  return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,profileSettings,challengeProgress,updatedAt:new Date().toISOString()};
 }
 function applyState(data){
   if(!data || typeof data !== 'object')return;
@@ -822,10 +923,13 @@ function applyState(data){
   streak=Number.isFinite(Number(data.streak))?Number(data.streak):1;
   workoutsDone=Number.isFinite(Number(data.workoutsDone))?Number(data.workoutsDone):0;
   userGoal=Number.isFinite(Number(data.userGoal))?Number(data.userGoal):1800;
+  profileSettings=(data.profileSettings && typeof data.profileSettings==='object')?{...profileSettings,...data.profileSettings}:profileSettings;
+  challengeProgress=(data.challengeProgress && typeof data.challengeProgress==='object')?data.challengeProgress:{};
 }
+
 function renderAll(){
   renderWorkoutList();renderWorkoutPicker();renderTrackList();renderFoodLog();renderWorkoutHistory();
-  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();
+  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();renderMealPlan();populateProfileForm();
 }
 function saveLocalOnly(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState())); }
@@ -850,6 +954,7 @@ async function saveRemoteData(){
   if(!supabaseClient)return;
   const ownerId = currentUser ? 'user_'+currentUser.id : deviceId;
   const payload={device_id:ownerId,log_type:'app_state',data:currentState()};
+  if(currentUser) payload.user_id=currentUser.id;
   try{
     if(remoteStateRowId){
       const {error}=await supabaseClient.from('fitness_logs').update({data:payload.data}).eq('id',remoteStateRowId);
@@ -912,6 +1017,9 @@ function goTo(page){
   if(nb) nb.classList.add('active');
   if(page==='home') updateHome();
   if(page==='progress') renderProgress();
+  if(page==='challenge') renderChallenge();
+  if(page==='mealplan') renderMealPlan();
+  if(page==='profile') {populateProfileForm(); renderProfileSummary();}
   if(page==='milestones') renderMilestones();
 }
 
@@ -1237,7 +1345,8 @@ function renderProgress(){
     const cur=weights[weights.length-1];
     const first=weights[0];
     const lost=parseFloat((first-cur).toFixed(1));
-    const toGoal=parseFloat((cur-70).toFixed(1));
+    const target=Number(profileSettings.targetWeight)||70;
+    const toGoal=parseFloat((cur-target).toFixed(1));
     document.getElementById('p-current').textContent=cur;
     document.getElementById('p-lost').textContent=lost>0?'-'+lost:lost===0?'0':'+'+Math.abs(lost);
     document.getElementById('p-left').textContent=toGoal>0?toGoal:0;
@@ -1274,6 +1383,115 @@ function renderMilestones(){
     <div style="flex:1;"><div class="mi-name" style="opacity:${m.earned?1:0.6};">${m.name}</div><div class="mi-sub">${m.sub}</div></div>
     <div class="mi-badge${m.earned?' earned':' locked'}">${m.earned?'✓ Earned':'Locked'}</div>
   </div>`).join('');
+}
+
+
+
+// ===================== CHALLENGE + MEAL PLAN + PROFILE =====================
+const fallbackChallengeDays=[
+  {day_number:1,title:'Day 1: Start Strong',workout:'10-min Belly Burn',meal_tip:'Drink 8 glasses of water and avoid sugary drinks today.',motivation:'Your journey starts with one decision.'},
+  {day_number:2,title:'Day 2: Core Wake-Up',workout:'Stretch & Tone',meal_tip:'Add protein to every meal today.',motivation:'Small steps create big results.'},
+  {day_number:3,title:'Day 3: Sweat & Smile',workout:'HIIT Core Blaster',meal_tip:'Choose grilled instead of fried where possible.',motivation:'You are stronger than your excuses.'},
+  {day_number:4,title:'Day 4: Active Recovery',workout:'Postpartum Restore or light walk',meal_tip:'Eat slowly and stop when satisfied.',motivation:'Rest is part of progress.'},
+  {day_number:5,title:'Day 5: Belly Burn Boost',workout:'10-min Belly Burn + plank hold',meal_tip:'Reduce late-night snacking today.',motivation:'Discipline is self-love.'},
+  {day_number:6,title:'Day 6: Confidence Day',workout:'Stretch & Tone + dance workout',meal_tip:'Add vegetables to two meals today.',motivation:'You are becoming her.'},
+  {day_number:7,title:'Day 7: Glow Finish',workout:'Your favorite FitHerNova workout',meal_tip:'Review your meals and celebrate progress.',motivation:'You showed up. That is power.'}
+];
+async function loadChallengeData(){
+  challengeDays=[...fallbackChallengeDays];
+  if(!supabaseClient){renderChallenge();return;}
+  try{
+    const {data:ch}=await supabaseClient.from('challenges').select('id,title').eq('active',true).limit(1).maybeSingle();
+    if(ch?.id){
+      activeChallengeId=ch.id;
+      const {data:days,error:daysErr}=await supabaseClient.from('challenge_days').select('day_number,title,workout,meal_tip,motivation').eq('challenge_id',ch.id).order('day_number',{ascending:true});
+      if(!daysErr && Array.isArray(days) && days.length) challengeDays=days;
+      if(currentUser){
+        const {data:prog,error:progErr}=await supabaseClient.from('user_challenge_progress').select('day_number,completed').eq('user_id',currentUser.id).eq('challenge_id',ch.id);
+        if(!progErr && Array.isArray(prog)){prog.forEach(r=>{if(r.completed)challengeProgress[r.day_number]=true;});}
+      }
+    }
+  }catch(e){console.warn('Challenge load failed', e.message||e);}
+  renderChallenge();
+}
+function renderChallenge(){
+  const list=document.getElementById('challenge-days-list');
+  if(!list)return;
+  const days=(challengeDays&&challengeDays.length)?challengeDays:fallbackChallengeDays;
+  const done=days.filter(d=>challengeProgress[d.day_number]).length;
+  const pct=Math.round(done/days.length*100);
+  const fill=document.getElementById('challenge-progress-fill'); if(fill)fill.style.width=pct+'%';
+  const txt=document.getElementById('challenge-progress-text'); if(txt)txt.textContent=done+' of '+days.length+' days completed';
+  const badge=document.getElementById('challenge-badge'); if(badge)badge.style.display=done===days.length?'inline-flex':'none';
+  list.innerHTML=days.map(d=>{
+    const ok=!!challengeProgress[d.day_number];
+    return `<div class="day-card${ok?' done':''}">
+      <div class="day-top"><div style="display:flex;gap:10px;align-items:flex-start;"><div class="day-num">${d.day_number}</div><div><div class="day-title">${d.title}</div><div class="day-lines"><strong>Workout:</strong> ${d.workout}<br><strong>Meal tip:</strong> ${d.meal_tip}<br><strong>Motivation:</strong> ${d.motivation}</div></div></div>${ok?'<span class="done-pill">Done ✓</span>':''}</div>
+      <button class="btn ${ok?'btn-ghost':'btn-pink'}" style="width:100%;" onclick="toggleChallengeDay(${d.day_number})">${ok?'Undo check-in':'Complete day '+d.day_number}</button>
+    </div>`;
+  }).join('');
+}
+async function toggleChallengeDay(day){
+  challengeProgress[day]=!challengeProgress[day];
+  renderChallenge(); saveData();
+  if(supabaseClient && currentUser && activeChallengeId){
+    try{
+      const row={user_id:currentUser.id,challenge_id:activeChallengeId,day_number:day,completed:!!challengeProgress[day],completed_at:challengeProgress[day]?new Date().toISOString():null};
+      await supabaseClient.from('user_challenge_progress').upsert(row,{onConflict:'user_id,challenge_id,day_number'});
+    }catch(e){console.warn('Challenge save failed', e.message||e);}
+  }
+}
+const mealPlans=[
+  {title:'Belly-friendly Nigerian day',chips:['Breakfast: oats + boiled egg','Lunch: grilled fish + small rice','Dinner: vegetable soup + lean protein'],note:'Keep portions controlled. Choose grilled/boiled more often than fried.'},
+  {title:'Busy woman quick plan',chips:['Greek yogurt or pap light','Moi moi + salad','Chicken pepper soup'],note:'Easy meals for workdays when you do not have time.'},
+  {title:'Postpartum gentle plan',chips:['Protein with every meal','Hydration first','Light soups + vegetables'],note:'Gentle guidance. Users should follow medical advice after delivery.'},
+  {title:'Church group challenge meals',chips:['No sugary drinks','Fruit instead of sweets','Walk 10 minutes after meals'],note:'Simple group rules that make the challenge easy to follow.'}
+];
+function renderMealPlan(){
+  const el=document.getElementById('meal-plan-list'); if(!el)return;
+  el.innerHTML=mealPlans.map(p=>`<div class="nova-card"><div class="nova-title">${p.title}</div><div style="margin:8px 0;">${p.chips.map(c=>`<span class="plan-chip">${c}</span>`).join('')}</div><div class="nova-sub">${p.note}</div></div>`).join('');
+}
+function populateProfileForm(){
+  const name=document.getElementById('profile-name'); if(!name)return;
+  name.value=profileSettings.fullName || document.getElementById('user-name')?.textContent || '';
+  document.getElementById('profile-goal').value=userGoal||1800;
+  document.getElementById('profile-target').value=profileSettings.targetWeight||'';
+  document.getElementById('profile-height').value=profileSettings.heightCm||'';
+  renderProfileSummary();
+}
+function renderProfileSummary(){
+  const cur=weights.length?Number(weights[weights.length-1]):null;
+  const height=Number(profileSettings.heightCm);
+  const target=Number(profileSettings.targetWeight)||70;
+  const bmiEl=document.getElementById('profile-bmi');
+  if(bmiEl) bmiEl.textContent=(cur&&height)?(cur/((height/100)**2)).toFixed(1):'--';
+  const leftEl=document.getElementById('profile-goal-left');
+  if(leftEl) leftEl.textContent=cur?Math.max(0,(cur-target)).toFixed(1):'--';
+  const acct=document.getElementById('profile-account-text');
+  if(acct) acct.textContent=currentUser?('Logged in as '+currentUser.email):'Guest mode: data saves on this device.';
+}
+async function saveProfileSettings(){
+  const msg=document.getElementById('profile-message');
+  profileSettings.fullName=document.getElementById('profile-name').value.trim()||'Queen';
+  userGoal=Number(document.getElementById('profile-goal').value)||1800;
+  profileSettings.targetWeight=Number(document.getElementById('profile-target').value)||profileSettings.targetWeight||70;
+  profileSettings.heightCm=Number(document.getElementById('profile-height').value)||null;
+  document.getElementById('user-name').textContent=(profileSettings.fullName.split(' ')[0]||'Queen');
+  if(currentUser && supabaseClient){
+    try{
+      const {error}=await supabaseClient.from('profiles').upsert({id:currentUser.id,email:currentUser.email,full_name:profileSettings.fullName,calorie_goal:userGoal,target_weight:profileSettings.targetWeight,height_cm:profileSettings.heightCm,workout_level:profileSettings.workoutLevel},{onConflict:'id'});
+      if(error)throw error;
+      if(msg)msg.textContent='Profile saved to cloud.';
+    }catch(e){if(msg)msg.textContent=e.message||'Cloud save failed.';}
+  }else if(msg) msg.textContent='Profile saved on this device.';
+  renderProfileSummary(); updateHome(); saveData();
+}
+async function sendPasswordReset(){
+  const msg=document.getElementById('profile-message');
+  const email=currentUser?.email || prompt('Enter your email for password reset');
+  if(!email || !supabaseClient)return;
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
+  if(msg) msg.textContent=error?error.message:'Password reset email sent.';
 }
 
 // ===================== REMINDERS =====================
@@ -1372,6 +1590,7 @@ loadData();
 renderAll();
 initAuth();
 loadSupabaseTracks();
+loadChallengeData();
 </script>
 </body>
 </html>
