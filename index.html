@@ -95,6 +95,17 @@ select option{background:var(--black3);}
 .auth-small{font-size:11px;color:var(--grey);text-align:center;margin-top:12px;line-height:1.45;}
 .user-pill{background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:6px 10px;font-size:11px;color:var(--grey);display:flex;align-items:center;gap:6px;white-space:nowrap;}
 .user-pill button{background:transparent;border:0;color:var(--pink-light);font-weight:700;cursor:pointer;font-size:11px;}
+
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.profile-card{background:linear-gradient(135deg,#1a0810,#171717);border:1px solid #3d1525;border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+.profile-card h3{font-family:var(--font-head);font-size:16px;margin-bottom:4px;}
+.profile-card p{font-size:12px;color:var(--grey);line-height:1.45;}
+.field-label{font-size:11px;color:var(--grey);margin:10px 0 6px;text-transform:uppercase;letter-spacing:1px;font-weight:700;}
+.profile-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mood-chip{display:flex;align-items:center;justify-content:space-between;background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;font-size:13px;color:var(--white);}
+.sync-pill{font-size:10px;border:1px solid var(--black4);background:var(--black3);padding:4px 8px;border-radius:999px;color:var(--grey);display:inline-flex;gap:5px;align-items:center;}
+@media(max-width:430px){.profile-row,.profile-grid{grid-template-columns:1fr}.auth-card{padding:18px}.auth-logo{font-size:30px}}
+
 @media(min-width:700px){.stats-row{grid-template-columns:repeat(4,1fr)}.food-item,.workout-card,.card,.detail-card,.ring-section{border-radius:20px}.logo{font-size:30px}.page{padding-left:28px;padding-right:28px}.app-header{padding-left:28px;padding-right:28px}}
 @media(max-width:430px){.nav-label{font-size:9px}.nav-item svg{width:20px;height:20px}.header-streak{font-size:11px;padding:6px 9px}.logo{font-size:22px}.app-header{align-items:flex-start}.user-pill{display:none}}
 
@@ -352,7 +363,7 @@ select option{background:var(--black3);}
       <div class="logo-sub">Your Body · Your Journey</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
-      <div class="user-pill" id="user-pill">Guest</div>
+      <div class="user-pill" id="user-pill" onclick="goTo('profile')" title="Open profile">Guest</div>
       <div class="header-streak">🔥 <span id="header-streak">1</span> day streak</div>
     </div>
   </div>
@@ -364,6 +375,16 @@ select option{background:var(--black3);}
     <div class="page active" id="page-home">
       <div class="greeting">Good morning, <span id="user-name">Queen</span> 👑</div>
       <div class="sub-greeting" id="home-date">Let's crush today!</div>
+
+      <div class="profile-card" id="daily-quote-card">
+        <div class="flex-between">
+          <div>
+            <h3 id="daily-quote-title">Today’s push ✨</h3>
+            <p id="daily-quote-text">Small steps still count. Move your body, drink water, and show up for yourself.</p>
+          </div>
+          <span class="sync-pill" id="sync-status">☁️ Ready</span>
+        </div>
+      </div>
 
       <div id="install-banner" class="install-banner" style="display:none;">
         <div style="font-size:28px;">📲</div>
@@ -565,6 +586,59 @@ select option{background:var(--black3);}
       <div class="card" id="milestones-list"></div>
     </div>
 
+
+    <!-- PROFILE / SETTINGS -->
+    <div class="page" id="page-profile">
+      <div class="sec-label">Profile & settings</div>
+      <div class="profile-card">
+        <h3>FitHerNova account</h3>
+        <p>Save your progress across devices, update your goals, and manage your wellness journey.</p>
+        <div class="mt12 sync-pill" id="profile-sync-status">☁️ Cloud sync ready</div>
+      </div>
+
+      <div class="card">
+        <div class="field-label">Your name</div>
+        <input type="text" id="profile-name" placeholder="Queen"/>
+        <div class="profile-row">
+          <div>
+            <div class="field-label">Daily calorie goal</div>
+            <input type="number" id="profile-goal" min="900" max="5000" step="50" placeholder="1800"/>
+          </div>
+          <div>
+            <div class="field-label">Target weight (kg)</div>
+            <input type="number" id="profile-target" min="30" max="300" step="0.1" placeholder="70"/>
+          </div>
+        </div>
+        <div class="profile-row">
+          <div>
+            <div class="field-label">Height (cm)</div>
+            <input type="number" id="profile-height" min="120" max="230" step="1" placeholder="165"/>
+          </div>
+          <div>
+            <div class="field-label">Workout level</div>
+            <select id="profile-level">
+              <option>Beginner</option><option>Gentle</option><option>Intermediate</option><option>Advanced</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-pink mt12" onclick="saveProfileSettings()">Save profile</button>
+      </div>
+
+      <div class="sec-label">Smart summary</div>
+      <div class="profile-grid">
+        <div class="stat-tile"><div class="sv" id="profile-bmi">--</div><div class="sl">BMI</div></div>
+        <div class="stat-tile"><div class="sv" id="profile-progress">--</div><div class="sl">Goal progress</div></div>
+      </div>
+
+      <div class="sec-label">Account tools</div>
+      <div class="card">
+        <div class="mood-chip"><span>Cloud status</span><strong id="cloud-account-label">Guest mode</strong></div>
+        <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;" onclick="sendPasswordReset()">Send password reset email</button>
+        <button class="btn btn-ghost" style="width:100%;margin-bottom:8px;" onclick="showAuthScreenAgain()">Login / switch account</button>
+        <button class="btn btn-danger" style="width:100%;" onclick="resetFitHerData()">Reset saved data on this device</button>
+      </div>
+    </div>
+
     <!-- REMINDERS -->
     <div class="page" id="page-reminders">
       <div class="sec-label">Set workout reminder</div>
@@ -692,6 +766,7 @@ let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=null, progressInterval=null;
 let streak=1, workoutsDone=0;
 let currentUser=null, authMode='login', authReady=false;
+let userSettings={fullName:'Queen',targetWeight:'',heightCm:'',level:'Beginner'};
 
 
 // ===================== AUTH =====================
@@ -747,13 +822,62 @@ async function logoutUser(){
 }
 function updateAuthUI(){
   const pill=document.getElementById('user-pill');
-  if(!pill) return;
+  const cloud=document.getElementById('cloud-account-label');
   if(currentUser){
     const email=currentUser.email || 'Account';
-    pill.innerHTML=`${email.split('@')[0]} <button onclick="logoutUser()">Logout</button>`;
+    if(pill) pill.innerHTML=`${email.split('@')[0]} <button onclick="event.stopPropagation();logoutUser()">Logout</button>`;
+    if(cloud) cloud.textContent='Signed in';
   }else{
-    pill.innerHTML='Guest';
+    if(pill) pill.innerHTML='Guest';
+    if(cloud) cloud.textContent='Guest mode';
   }
+}
+function showAuthScreenAgain(){
+  const el=document.getElementById('auth-screen');
+  if(el) el.style.display='flex';
+}
+function renderProfile(){
+  const nameEl=document.getElementById('profile-name');
+  if(!nameEl) return;
+  nameEl.value=userSettings.fullName||document.getElementById('user-name')?.textContent||'Queen';
+  document.getElementById('profile-goal').value=userGoal||1800;
+  document.getElementById('profile-target').value=userSettings.targetWeight||'';
+  document.getElementById('profile-height').value=userSettings.heightCm||'';
+  document.getElementById('profile-level').value=userSettings.level||'Beginner';
+  const currentWeight=weights.length?Number(weights[weights.length-1].w):null;
+  const height=Number(userSettings.heightCm||0)/100;
+  const bmi=currentWeight&&height? (currentWeight/(height*height)).toFixed(1):'--';
+  const bmiEl=document.getElementById('profile-bmi'); if(bmiEl) bmiEl.textContent=bmi;
+  const target=Number(userSettings.targetWeight||0);
+  const progEl=document.getElementById('profile-progress');
+  if(progEl) progEl.textContent=(currentWeight&&target)?Math.max(currentWeight-target,0).toFixed(1)+'kg left':'--';
+  const sync=document.getElementById('profile-sync-status');
+  if(sync) sync.textContent=currentUser?'☁️ Signed in & syncing':'📱 Guest/local saving';
+  updateAuthUI();
+}
+async function saveProfileSettings(){
+  const name=(document.getElementById('profile-name')?.value||'Queen').trim()||'Queen';
+  const goal=Number(document.getElementById('profile-goal')?.value||1800);
+  const target=document.getElementById('profile-target')?.value||'';
+  const height=document.getElementById('profile-height')?.value||'';
+  const level=document.getElementById('profile-level')?.value||'Beginner';
+  userGoal=Number.isFinite(goal)?goal:1800;
+  userSettings={fullName:name,targetWeight:target,heightCm:height,level};
+  document.getElementById('user-name').textContent=name.split(' ')[0]||'Queen';
+  if(currentUser && supabaseClient){
+    try{
+      await supabaseClient.from('profiles').upsert({id:currentUser.id,email:currentUser.email,full_name:name,calorie_goal:userGoal,target_weight:target||null});
+    }catch(e){console.warn('Profile save failed', e.message||e);}
+  }
+  saveData();renderProfile();updateHome();
+  alert('Profile saved.');
+}
+async function sendPasswordReset(){
+  if(!supabaseClient){alert('Supabase is not connected.');return;}
+  const email=(currentUser?.email || document.getElementById('auth-email')?.value || prompt('Enter your email for password reset') || '').trim();
+  if(!email)return;
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
+  alert(error?error.message:'Password reset email sent.');
 }
 async function loadUserProfile(){
   if(!supabaseClient || !currentUser) return;
@@ -761,8 +885,9 @@ async function loadUserProfile(){
     const {data,error}=await supabaseClient.from('profiles').select('full_name,calorie_goal,target_weight,email').eq('id',currentUser.id).maybeSingle();
     if(error) throw error;
     if(data){
-      if(data.full_name) document.getElementById('user-name').textContent=data.full_name.split(' ')[0] || 'Queen';
+      if(data.full_name){ userSettings.fullName=data.full_name; document.getElementById('user-name').textContent=data.full_name.split(' ')[0] || 'Queen'; }
       if(data.calorie_goal) userGoal=Number(data.calorie_goal)||userGoal;
+      if(data.target_weight) userSettings.targetWeight=data.target_weight;
       saveLocalOnly();
       updateHome();
     }
@@ -809,7 +934,7 @@ function getDeviceId(){
 const deviceId = getDeviceId();
 
 function currentState(){
-  return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,updatedAt:new Date().toISOString()};
+  return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,userSettings,updatedAt:new Date().toISOString()};
 }
 function applyState(data){
   if(!data || typeof data !== 'object')return;
@@ -822,10 +947,12 @@ function applyState(data){
   streak=Number.isFinite(Number(data.streak))?Number(data.streak):1;
   workoutsDone=Number.isFinite(Number(data.workoutsDone))?Number(data.workoutsDone):0;
   userGoal=Number.isFinite(Number(data.userGoal))?Number(data.userGoal):1800;
+  if(data.userSettings && typeof data.userSettings==='object') userSettings={...userSettings,...data.userSettings};
 }
+
 function renderAll(){
   renderWorkoutList();renderWorkoutPicker();renderTrackList();renderFoodLog();renderWorkoutHistory();
-  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();
+  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderProfile();
 }
 function saveLocalOnly(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState())); }
@@ -847,6 +974,7 @@ function scheduleRemoteSave(){
   syncTimer=setTimeout(saveRemoteData,800);
 }
 async function saveRemoteData(){
+  const ss=document.getElementById('sync-status'); if(ss) ss.textContent=currentUser?'☁️ Syncing...':'📱 Local';
   if(!supabaseClient)return;
   const ownerId = currentUser ? 'user_'+currentUser.id : deviceId;
   const payload={device_id:ownerId,log_type:'app_state',data:currentState()};
@@ -859,7 +987,8 @@ async function saveRemoteData(){
       if(error) throw error;
       remoteStateRowId=data?.id || null;
     }
-  }catch(e){console.warn('FitHerNova Supabase save failed', e.message || e);}
+    const ss2=document.getElementById('sync-status'); if(ss2) ss2.textContent=currentUser?'☁️ Synced':'📱 Saved';
+  }catch(e){console.warn('FitHerNova Supabase save failed', e.message || e); const ss3=document.getElementById('sync-status'); if(ss3) ss3.textContent='⚠️ Local saved';}
 }
 async function loadRemoteData(){
   if(!supabaseClient)return;
@@ -912,6 +1041,7 @@ function goTo(page){
   if(nb) nb.classList.add('active');
   if(page==='home') updateHome();
   if(page==='progress') renderProgress();
+  if(page==='profile') renderProfile();
   if(page==='milestones') renderMilestones();
 }
 
@@ -942,6 +1072,18 @@ function updateHome(){
   const d=new Date();
   document.getElementById('home-date').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
   renderCups();
+  renderDailyQuote();
+}
+function renderDailyQuote(){
+  const quotes=[
+    ['Today’s push ✨','Small steps still count. Move your body, drink water, and show up for yourself.'],
+    ['Queen energy 👑','You do not need perfection. You need consistency.'],
+    ['Glow goal 🔥','Your body listens to what you repeatedly do. Choose one good action now.'],
+    ['Faith + fitness 🙏','Strength grows when you keep showing up, even on slow days.']
+  ];
+  const i=Math.floor(Date.now()/86400000)%quotes.length;
+  const title=document.getElementById('daily-quote-title'); const text=document.getElementById('daily-quote-text');
+  if(title) title.textContent=quotes[i][0]; if(text) text.textContent=quotes[i][1];
 }
 
 // ===================== WATER =====================
