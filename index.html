@@ -393,7 +393,7 @@ select option{background:var(--black3);}
       <button class="btn btn-ghost" onclick="continueAsGuest()">Continue as guest</button>
       <div class="auth-message" id="auth-message"></div>
     </div>
-    <div class="auth-small">Guest mode still works on this phone. Login is for cloud saving with Supabase.</div>
+    <div class="auth-small">✨ Welcome to <strong style="color:#ff2d6b;">FitHerNova</strong> — your glow-up fitness space for workouts, motivation, healthy meals, gospel vibes & daily confidence. Become stronger, healthier and happier one day at a time 💖🔥</div>
   </div>
 </div>
 
@@ -857,7 +857,9 @@ let logged=[], weights=[], waterCups=0, workoutHistory=[], reminders=[], totalBu
 let selFood=null, portion=1, activeFilter='all', selFreq=null;
 let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
 let selWorkout=null;
-let currentTrack=0, isPlaying=false, audioEl=null, progressInterval=null;
+let currentTrack=0, isPlaying=false, audioEl=new Audio(), progressInterval=null;
+audioEl.preload='metadata';
+audioEl.crossOrigin='anonymous';
 let streak=1, workoutsDone=0;
 let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency',avatarUrl:''};
 let challengeDays=[];
@@ -1362,32 +1364,70 @@ function renderTrackList(){
       <div class="track-dur">${t.src?t.dur:"Add MP3"}</div>
     </div>`).join('');
 }
-function playTrack(i){
+function setPlayIcon(playing){
+  const icon=document.getElementById('play-icon');
+  if(!icon)return;
+  icon.innerHTML = playing
+    ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+    : '<polygon points="5 3 19 12 5 21 5 3"/>';
+}
+function setMusicStatus(message){
+  const hint=document.querySelector('#page-music .card div');
+  if(hint && message) hint.innerHTML = message;
+}
+async function playTrack(i){
   if(!tracks.length || !tracks[i]) return;
   currentTrack=i;
   const t=tracks[i];
-  document.getElementById('np-title').textContent=t.title;
-  document.getElementById('np-artist').textContent=t.artist;
-  document.getElementById('np-art').textContent=t.emoji;
-  document.getElementById('np-total').textContent=t.dur;
-  if(t.src){
-    if(audioEl){audioEl.pause();}
-    audioEl=new Audio(t.src);
-    audioEl.play().catch(()=>{});
+
+  document.getElementById('np-title').textContent=t.title || 'Untitled';
+  document.getElementById('np-artist').textContent=t.artist || 'FitHerNova Music';
+  document.getElementById('np-art').textContent=t.emoji || '🎵';
+  document.getElementById('np-total').textContent=t.dur || '0:00';
+  document.getElementById('np-current').textContent='0:00';
+  document.getElementById('np-progress').style.width='0%';
+  clearInterval(progressInterval);
+
+  if(!t.src){
+    showNotif('Song link needed','Add a real MP3 URL for '+(t.title || 'this song'));
+    renderTrackList();
+    return;
+  }
+
+  try{
+    audioEl.pause();
+    audioEl.currentTime=0;
+    audioEl.src=t.src;
+    audioEl.load();
     audioEl.ontimeupdate=updateProgress;
     audioEl.onended=nextTrack;
+    audioEl.onerror=function(){
+      isPlaying=false;
+      setPlayIcon(false);
+      document.getElementById('np-art').classList.remove('spinning');
+      setMusicStatus('⚠️ <strong style="color:var(--white);">This song could not load.</strong> Check that the Supabase file is public and the MP3 URL opens in a browser.');
+      renderTrackList();
+    };
+
+    await audioEl.play();
+    isPlaying=true;
+    setPlayIcon(true);
+    document.getElementById('np-art').classList.add('spinning');
+    setMusicStatus('🎵 <strong style="color:var(--white);">Now playing:</strong> '+(t.title || 'Track')+' by '+(t.artist || 'FitHerNova'));
+    renderTrackList();
+  }catch(err){
+    console.error('Playback failed:', err);
+    isPlaying=false;
+    setPlayIcon(false);
+    document.getElementById('np-art').classList.remove('spinning');
+    renderTrackList();
+    alert('Music playback failed. Tap the song once more, or check that the MP3 link is public.');
   }
-  isPlaying=true;
-  document.getElementById('np-art').classList.add('spinning');
-  document.getElementById('play-icon').innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
-  renderTrackList();
-  // simulate progress if no real src
-  if(!t.src){showNotif('Song link needed','Add a real MP3 URL for '+t.title);startFakeProgress(t.dur);}
 }
 function startFakeProgress(durStr){
   clearInterval(progressInterval);
-  const parts=durStr.split(':');
-  const totalSec=parseInt(parts[0])*60+parseInt(parts[1]);
+  const parts=(durStr || '3:30').split(':');
+  const totalSec=(parseInt(parts[0])||3)*60+(parseInt(parts[1])||30);
   let cur=0;
   progressInterval=setInterval(()=>{
     if(!isPlaying){return;}
@@ -1398,32 +1438,46 @@ function startFakeProgress(durStr){
   },1000);
 }
 function updateProgress(){
-  if(!audioEl)return;
+  if(!audioEl || !Number.isFinite(audioEl.duration) || audioEl.duration<=0)return;
   const pct=audioEl.currentTime/audioEl.duration*100;
   document.getElementById('np-progress').style.width=pct+'%';
   document.getElementById('np-current').textContent=fmt(Math.floor(audioEl.currentTime));
+  document.getElementById('np-total').textContent=fmt(Math.floor(audioEl.duration));
 }
-function togglePlay(){
-  if(!isPlaying){
-    isPlaying=true;
-    document.getElementById('np-art').classList.add('spinning');
-    document.getElementById('play-icon').innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
-    if(audioEl)audioEl.play();
-  } else {
-    isPlaying=false;
-    document.getElementById('np-art').classList.remove('spinning');
-    document.getElementById('play-icon').innerHTML='<polygon points="5 3 19 12 5 21 5 3"/>';
-    if(audioEl)audioEl.pause();
+async function togglePlay(){
+  if(!tracks.length){
+    alert('No music loaded yet. Tap Refresh music.');
+    return;
   }
-  renderTrackList();
+  if(!audioEl.src){
+    await playTrack(currentTrack || 0);
+    return;
+  }
+  try{
+    if(audioEl.paused){
+      await audioEl.play();
+      isPlaying=true;
+      setPlayIcon(true);
+      document.getElementById('np-art').classList.add('spinning');
+    }else{
+      audioEl.pause();
+      isPlaying=false;
+      setPlayIcon(false);
+      document.getElementById('np-art').classList.remove('spinning');
+    }
+    renderTrackList();
+  }catch(err){
+    console.error('Toggle playback failed:', err);
+    alert('Music playback failed. Tap the song directly from the playlist.');
+  }
 }
-function nextTrack(){currentTrack=(currentTrack+1)%tracks.length;playTrack(currentTrack);}
-function prevTrack(){currentTrack=(currentTrack-1+tracks.length)%tracks.length;playTrack(currentTrack);}
+function nextTrack(){if(!tracks.length)return;currentTrack=(currentTrack+1)%tracks.length;playTrack(currentTrack);}
+function prevTrack(){if(!tracks.length)return;currentTrack=(currentTrack-1+tracks.length)%tracks.length;playTrack(currentTrack);}
 function seekTrack(e){
   const bar=e.currentTarget;
   const pct=e.offsetX/bar.offsetWidth;
   document.getElementById('np-progress').style.width=(pct*100)+'%';
-  if(audioEl)audioEl.currentTime=audioEl.duration*pct;
+  if(audioEl && Number.isFinite(audioEl.duration)) audioEl.currentTime=audioEl.duration*pct;
 }
 
 // ===================== PROGRESS =====================
