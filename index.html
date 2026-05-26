@@ -511,6 +511,7 @@ select option{background:var(--black3);}
         <div class="chart-area" id="weight-chart"><div class="text-grey" style="margin:auto;font-size:12px;">Log at least 2 weights to see chart</div></div>
         <div style="display:flex;gap:5px;margin-top:4px;" id="chart-labels"></div>
       </div>
+      <button class="btn btn-danger" style="width:100%;margin-bottom:12px;" onclick="resetFitHerData()">Reset saved data</button>
       <div class="sec-label">Milestones</div>
       <div class="card" id="milestones-list"></div>
     </div>
@@ -582,9 +583,15 @@ select option{background:var(--black3);}
   </nav>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ===================== SUPABASE =====================
+const SUPABASE_URL = "https://norgzcztduoxkshtthkm.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcmd6Y3p0ZHVveGtzaHR0aGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTM0NTcsImV4cCI6MjA5NTM2OTQ1N30.XNN3QLs5NWVUQU9MhbDdA2E0fqpQUGjAsvNljkVsjPg";
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
 // ===================== DATA =====================
-const GOAL = 1800;
+let userGoal = 1800;
 const foods = [
   {name:"Jollof rice",cal:350,p:8,c:65,f:7,por:250,u:"g",cat:"nigerian",icon:"🍚"},
   {name:"Egusi soup",cal:420,p:18,c:12,f:34,por:200,u:"g",cat:"nigerian",icon:"🥣"},
@@ -617,7 +624,7 @@ const workoutData = [
 ];
 
 // Placeholder tracks — replace src with real MP3 URLs from Cloudinary
-const tracks = [
+let tracks = [
   {title:"Morning Praise",artist:"Pro Media Records",dur:"3:42",emoji:"🙏",src:""},
   {title:"Worship & Burn",artist:"Pro Media Records",dur:"4:15",emoji:"🔥",src:""},
   {title:"Glory Workout",artist:"Pro Media Records",dur:"3:58",emoji:"✨",src:""},
@@ -636,6 +643,116 @@ let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=null, progressInterval=null;
 let streak=1, workoutsDone=0;
 
+// ===================== LOCAL + SUPABASE STORAGE =====================
+const STORAGE_KEY = 'fither_app_data_v1';
+const DEVICE_KEY = 'fither_device_id_v1';
+let remoteStateRowId = null;
+let syncTimer = null;
+
+function getDeviceId(){
+  let id = localStorage.getItem(DEVICE_KEY);
+  if(!id){
+    id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'fit_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+    localStorage.setItem(DEVICE_KEY, id);
+  }
+  return id;
+}
+const deviceId = getDeviceId();
+
+function currentState(){
+  return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,updatedAt:new Date().toISOString()};
+}
+function applyState(data){
+  if(!data || typeof data !== 'object')return;
+  logged=Array.isArray(data.logged)?data.logged:[];
+  weights=Array.isArray(data.weights)?data.weights:[];
+  waterCups=Number.isFinite(Number(data.waterCups))?Number(data.waterCups):0;
+  workoutHistory=Array.isArray(data.workoutHistory)?data.workoutHistory:[];
+  reminders=Array.isArray(data.reminders)?data.reminders:[];
+  totalBurned=Number.isFinite(Number(data.totalBurned))?Number(data.totalBurned):0;
+  streak=Number.isFinite(Number(data.streak))?Number(data.streak):1;
+  workoutsDone=Number.isFinite(Number(data.workoutsDone))?Number(data.workoutsDone):0;
+  userGoal=Number.isFinite(Number(data.userGoal))?Number(data.userGoal):1800;
+}
+function renderAll(){
+  renderWorkoutList();renderWorkoutPicker();renderTrackList();renderFoodLog();renderWorkoutHistory();
+  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();
+}
+function saveLocalOnly(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState())); }
+  catch(e){console.warn('FitHer local save failed', e);}
+}
+function saveData(){
+  saveLocalOnly();
+  scheduleRemoteSave();
+}
+function loadData(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw) applyState(JSON.parse(raw));
+  }catch(e){console.warn('FitHer local load failed', e);}
+}
+function scheduleRemoteSave(){
+  if(!supabaseClient)return;
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(saveRemoteData,800);
+}
+async function saveRemoteData(){
+  if(!supabaseClient)return;
+  const payload={device_id:deviceId,log_type:'app_state',data:currentState()};
+  try{
+    if(remoteStateRowId){
+      const {error}=await supabaseClient.from('fitness_logs').update({data:payload.data}).eq('id',remoteStateRowId);
+      if(error) throw error;
+    }else{
+      const {data,error}=await supabaseClient.from('fitness_logs').insert(payload).select('id').single();
+      if(error) throw error;
+      remoteStateRowId=data?.id || null;
+    }
+  }catch(e){console.warn('FitHer Supabase save failed', e.message || e);}
+}
+async function loadRemoteData(){
+  if(!supabaseClient)return;
+  try{
+    const {data,error}=await supabaseClient
+      .from('fitness_logs')
+      .select('id,data,created_at')
+      .eq('device_id',deviceId)
+      .eq('log_type','app_state')
+      .order('created_at',{ascending:false})
+      .limit(1)
+      .maybeSingle();
+    if(error) throw error;
+    if(data?.data){
+      remoteStateRowId=data.id;
+      applyState(data.data);
+      saveLocalOnly();
+      renderAll();
+    }
+  }catch(e){console.warn('FitHer Supabase load failed', e.message || e);}
+}
+async function loadSupabaseTracks(){
+  if(!supabaseClient)return;
+  try{
+    const {data,error}=await supabaseClient
+      .from('music_tracks')
+      .select('title,artist,duration,emoji,src')
+      .eq('active',true)
+      .order('created_at',{ascending:true});
+    if(error) throw error;
+    if(Array.isArray(data) && data.length){
+      tracks=data.map(t=>({title:t.title,artist:t.artist||'Pro Media Records',dur:t.duration||'0:00',emoji:t.emoji||'🎵',src:t.src||''}));
+      currentTrack=0;
+      renderTrackList();
+    }
+  }catch(e){console.warn('FitHer Supabase tracks load failed', e.message || e);}
+}
+function resetFitHerData(){
+  if(!confirm('Clear all FitHer saved data on this device?'))return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
 // ===================== NAV =====================
 function goTo(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -651,12 +768,12 @@ function goTo(page){
 // ===================== HOME =====================
 function updateHome(){
   const tot=logged.reduce((s,l)=>s+l.cal,0);
-  const rem=Math.max(GOAL-tot,0);
-  const pct=Math.min(tot/GOAL,1);
+  const rem=Math.max(userGoal-tot,0);
+  const pct=Math.min(tot/userGoal,1);
   const circ=289;
   document.getElementById('cal-ring').style.strokeDashoffset=Math.round(circ-pct*circ);
   document.getElementById('ring-cal').textContent=tot;
-  document.getElementById('ri-goal').textContent=GOAL+' kcal';
+  document.getElementById('ri-goal').textContent=userGoal+' kcal';
   document.getElementById('ri-rem').textContent=rem;
   document.getElementById('ri-prog').style.width=(pct*100)+'%';
   const prot=logged.reduce((s,l)=>s+(l.p||0),0);
@@ -684,8 +801,8 @@ function renderCups(){
   document.getElementById('water-count').textContent=waterCups;
   document.getElementById('st-water').textContent=waterCups+'/8';
 }
-function addWater(){if(waterCups<8){waterCups++;renderCups();}}
-function resetWater(){waterCups=0;renderCups();}
+function addWater(){if(waterCups<8){waterCups++;renderCups();saveData();updateHome();}}
+function resetWater(){waterCups=0;renderCups();saveData();updateHome();}
 
 // ===================== FOOD =====================
 function setFilter(f,el){
@@ -738,9 +855,9 @@ function logFood(){
   logged.push({name:selFood.name,icon:selFood.icon,cal:Math.round(selFood.cal*portion),p:Math.round(selFood.p*portion),c:Math.round(selFood.c*portion),f:Math.round(selFood.f*portion)});
   selFood=null;portion=1;
   document.getElementById('food-detail-wrap').innerHTML='';
-  renderFoodLog();updateHome();
+  renderFoodLog();updateHome();saveData();
 }
-function removeFood(i){logged.splice(i,1);renderFoodLog();updateHome();}
+function removeFood(i){logged.splice(i,1);renderFoodLog();updateHome();saveData();}
 function renderFoodLog(){
   const el=document.getElementById('food-log-list');
   const tw=document.getElementById('food-total-wrap');
@@ -864,7 +981,7 @@ function stopTimer(){
   document.getElementById('ts-min').textContent='0';
   document.getElementById('ts-cal').textContent='0';
   document.getElementById('timer-ring').style.strokeDashoffset='553';
-  updateHome();renderMilestones();
+  updateHome();renderMilestones();saveData();
 }
 function renderWorkoutHistory(){
   const el=document.getElementById('workout-history');
@@ -884,7 +1001,7 @@ function renderTrackList(){
       <div class="track-num">${i+1}</div>
       <div style="font-size:20px;width:28px;text-align:center;flex-shrink:0;">${t.emoji}</div>
       <div class="track-info"><div class="track-name">${t.title}</div><div class="track-artist">${t.artist}</div></div>
-      <div class="track-dur">${t.dur}</div>
+      <div class="track-dur">${t.src?t.dur:"Add MP3"}</div>
     </div>`).join('');
 }
 function playTrack(i){
@@ -906,7 +1023,7 @@ function playTrack(i){
   document.getElementById('play-icon').innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
   renderTrackList();
   // simulate progress if no real src
-  if(!t.src){startFakeProgress(t.dur);}
+  if(!t.src){showNotif('Song link needed','Add a real MP3 URL for '+t.title);startFakeProgress(t.dur);}
 }
 function startFakeProgress(durStr){
   clearInterval(progressInterval);
@@ -956,7 +1073,7 @@ function logWeight(){
   if(!v||v<30||v>300)return;
   weights.push(v);if(weights.length>10)weights.shift();
   document.getElementById('weight-input').value='';
-  renderProgress();renderMilestones();
+  renderProgress();renderMilestones();saveData();
 }
 function renderProgress(){
   if(weights.length){
@@ -1009,12 +1126,13 @@ function setFreq(f,el){
   el.classList.add('active');
 }
 function addReminder(){
+  requestNotifyPermission();
   if(!selFreq){alert('Please choose how often first');return;}
   const time=document.getElementById('r-time').value;
   const workout=document.getElementById('r-workout').value;
   const freqLabels={daily:'Daily',weekdays:'Weekdays',alt:'Every other day',weekend:'Weekends'};
-  reminders.push({time,workout,freq:freqLabels[selFreq],on:true,id:Date.now()});
-  renderReminders();
+  reminders.push({time,workout,freq:freqLabels[selFreq],on:true,id:Date.now(),lastShown:""});
+  renderReminders();saveData();
   setTimeout(()=>showNotif(workout,time),3000);
 }
 function renderReminders(){
@@ -1026,8 +1144,8 @@ function renderReminders(){
       <div><div style="font-size:13px;font-weight:500;color:var(--white);">${r.workout}</div><div style="font-size:11px;color:var(--grey);">${r.time} · ${r.freq}</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="reminders[${i}].on=this.checked"/><span class="toggle-slider"></span></label>
-      <button class="del-btn" onclick="reminders.splice(${i},1);renderReminders();" aria-label="Delete">×</button>
+      <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="reminders[${i}].on=this.checked;saveData();"/><span class="toggle-slider"></span></label>
+      <button class="del-btn" onclick="reminders.splice(${i},1);renderReminders();saveData();" aria-label="Delete">×</button>
     </div>
   </div>`).join('');
 }
@@ -1042,6 +1160,39 @@ function dismissNotif(){
   document.getElementById('notif-toast').classList.remove('show');
   goTo('timer');
 }
+
+
+function requestNotifyPermission(){
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission().catch(()=>{});
+  }
+}
+function reminderMatches(r, now){
+  const day=now.getDay();
+  if(r.freq==='Weekdays' && (day===0||day===6)) return false;
+  if(r.freq==='Weekends' && !(day===0||day===6)) return false;
+  if(r.freq==='Every other day'){
+    const days=Math.floor(now.getTime()/86400000);
+    if(days%2!==0) return false;
+  }
+  return true;
+}
+function checkReminders(){
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,'0');
+  const mm=String(now.getMinutes()).padStart(2,'0');
+  const today=now.toISOString().slice(0,10);
+  reminders.forEach(r=>{
+    if(!r.on || r.time!==hh+':'+mm || r.lastShown===today+' '+r.time || !reminderMatches(r,now))return;
+    r.lastShown=today+' '+r.time;
+    showNotif(r.workout,r.time);
+    if('Notification' in window && Notification.permission==='granted'){
+      new Notification('FitHer reminder', {body:'Time for '+r.workout+' — you’ve got this, Queen!', icon:'icon-192.png'});
+    }
+    saveData();
+  });
+}
+setInterval(checkReminders,60000);
 
 // ===================== INSTALL PWA =====================
 let deferredPrompt=null;
@@ -1060,13 +1211,10 @@ if('serviceWorker' in navigator){
 }
 
 // ===================== INIT =====================
-renderWorkoutList();
-renderWorkoutPicker();
-renderTrackList();
-renderMilestones();
-renderCups();
-updateHome();
-doSearch();
+loadData();
+renderAll();
+loadRemoteData();
+loadSupabaseTracks();
 </script>
 </body>
 </html>
