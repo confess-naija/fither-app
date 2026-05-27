@@ -356,6 +356,9 @@ select option{background:var(--black3);}
 .music-artist{font-size:13px;color:rgba(255,255,255,.68);margin-bottom:10px;}
 .music-meta-line{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
 .music-pill{font-size:10px;color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);border-radius:999px;padding:5px 8px;}
+.dj-toggle{font-size:10px;color:#fff;border:1px solid rgba(255,45,107,.45);background:rgba(255,45,107,.18);border-radius:999px;padding:5px 9px;font-weight:900;cursor:pointer;}
+.dj-toggle.on{background:linear-gradient(135deg,var(--pink),var(--pink-light));box-shadow:0 0 18px rgba(255,45,107,.28);}
+
 .premium-progress{height:7px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;cursor:pointer;margin-bottom:7px;}
 .premium-progress .progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:999px;box-shadow:0 0 18px rgba(255,45,107,.55);}
 .premium-time{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.55);margin-bottom:14px;}
@@ -466,7 +469,7 @@ select option{background:var(--black3);}
 
     <!-- HOME -->
     <div class="page active" id="page-home">
-      <div class="greeting">Good morning, <span id="user-name">Queen</span> 👑</div>
+      <div class="greeting"><span id="time-greeting">Hello</span>, <span id="user-name">Queen</span> 👑</div>
       <div class="sub-greeting" id="home-date">Let's crush today!</div>
 
       <div id="install-banner" class="install-banner" style="display:none;">
@@ -634,6 +637,7 @@ select option{background:var(--black3);}
               <span class="music-pill">🔥 Workout energy</span>
               <span class="music-pill">🎧 Pro Media Records</span>
               <span class="music-pill">✨ Faith & fitness</span>
+              <button class="dj-toggle on" id="dj-toggle" onclick="toggleDJMode(event)">🎚️ DJ Mode ON</button>
             </div>
             <div class="premium-progress" onclick="seekTrack(event)">
               <div class="progress-fill" id="np-progress" style="width:0%;"></div>
@@ -950,6 +954,7 @@ let selFood=null, portion=1, activeFilter='all', selFreq=null;
 let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
 let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=new Audio(), progressInterval=null;
+let djMode=true, isCrossfading=false, lastActiveDate=getTodayKey();
 audioEl.preload='metadata';
 audioEl.crossOrigin='anonymous';
 let streak=1, workoutsDone=0;
@@ -1087,14 +1092,39 @@ function getDeviceId(){
 }
 const deviceId = getDeviceId();
 
+function getTodayKey(){
+  return new Date().toISOString().slice(0,10);
+}
+function updateTimeGreeting(){
+  const hour=new Date().getHours();
+  let greeting='Good morning';
+  if(hour>=12 && hour<17) greeting='Good afternoon';
+  else if(hour>=17) greeting='Good evening';
+  const el=document.getElementById('time-greeting');
+  if(el) el.textContent=greeting;
+}
+function normalizeDailyData(){
+  const today=getTodayKey();
+  if(lastActiveDate!==today){
+    logged=[];
+    waterCups=0;
+    lastActiveDate=today;
+    saveLocalOnly();
+  }
+}
+
 function currentState(){
-  return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,profileSettings,challengeProgress,updatedAt:new Date().toISOString()};
+  return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,profileSettings,challengeProgress,lastActiveDate:getTodayKey(),updatedAt:new Date().toISOString()};
 }
 function applyState(data){
   if(!data || typeof data !== 'object')return;
-  logged=Array.isArray(data.logged)?data.logged:[];
+  const today=getTodayKey();
+  lastActiveDate=data.lastActiveDate || today;
+  const isToday=lastActiveDate===today;
+  logged=(isToday && Array.isArray(data.logged))?data.logged:[];
   weights=Array.isArray(data.weights)?data.weights:[];
-  waterCups=Number.isFinite(Number(data.waterCups))?Number(data.waterCups):0;
+  waterCups=(isToday && Number.isFinite(Number(data.waterCups)))?Number(data.waterCups):0;
+  if(!isToday) lastActiveDate=today;
   workoutHistory=Array.isArray(data.workoutHistory)?data.workoutHistory:[];
   reminders=Array.isArray(data.reminders)?data.reminders:[];
   totalBurned=Number.isFinite(Number(data.totalBurned))?Number(data.totalBurned):0;
@@ -1309,7 +1339,7 @@ function updPortion(v){
 }
 function logFood(){
   if(!selFood)return;
-  logged.push({name:selFood.name,icon:selFood.icon,cal:Math.round(selFood.cal*portion),p:Math.round(selFood.p*portion),c:Math.round(selFood.c*portion),f:Math.round(selFood.f*portion)});
+  logged.push({name:selFood.name,icon:selFood.icon,cal:Math.round(selFood.cal*portion),p:Math.round(selFood.p*portion),c:Math.round(selFood.c*portion),f:Math.round(selFood.f*portion),date:getTodayKey()});
   selFood=null;portion=1;
   document.getElementById('food-detail-wrap').innerHTML='';
   renderFoodLog();updateHome();saveData();
@@ -1451,6 +1481,47 @@ function renderWorkoutHistory(){
 }
 
 // ===================== MUSIC =====================
+function toggleDJMode(event){
+  if(event) event.stopPropagation();
+  djMode=!djMode;
+  const btn=document.getElementById('dj-toggle');
+  if(btn){
+    btn.classList.toggle('on',djMode);
+    btn.textContent=djMode?'🎚️ DJ Mode ON':'🎚️ DJ Mode OFF';
+  }
+  setMusicStatus(djMode?'DJ Mode is on — songs will fade into the next vibe.':'DJ Mode is off — songs will play normally.');
+}
+function fadeVolume(target,duration=900){
+  return new Promise(resolve=>{
+    const start=audioEl.volume;
+    const diff=target-start;
+    const steps=18;
+    let n=0;
+    const timer=setInterval(()=>{
+      n++;
+      audioEl.volume=Math.max(0,Math.min(1,start+(diff*(n/steps))));
+      if(n>=steps){clearInterval(timer);audioEl.volume=target;resolve();}
+    },Math.max(20,duration/steps));
+  });
+}
+async function djFadeToTrack(index){
+  if(isCrossfading || !tracks.length)return;
+  isCrossfading=true;
+  try{
+    setMusicStatus('DJ Mode: mixing into the next song...');
+    await fadeVolume(0,900);
+    await playTrack(index,true);
+    audioEl.volume=0;
+    await fadeVolume(1,1200);
+  }finally{isCrossfading=false;}
+}
+function playNextDJ(){
+  if(!tracks.length)return;
+  const next=(currentTrack+1)%tracks.length;
+  if(djMode) djFadeToTrack(next);
+  else playTrack(next);
+}
+
 function updateMiniPlayer(){
   const mini=document.getElementById('mini-player');
   if(!mini)return;
@@ -1527,9 +1598,13 @@ function updateProgress(){
     const pct=(audioEl.currentTime/audioEl.duration)*100;
     if(bar) bar.style.width=pct+'%';
     if(miniBar) miniBar.style.width=pct+'%';
+    const remaining=audioEl.duration-audioEl.currentTime;
+    if(djMode && isPlaying && tracks.length>1 && remaining>0 && remaining<=4.5 && !isCrossfading){
+      playNextDJ();
+    }
   }
 }
-async function playTrack(i){
+async function playTrack(i,skipResetVolume=false){
   if(!tracks.length || !tracks[i]) return;
   currentTrack=i;
   const t=tracks[i];
@@ -1557,7 +1632,7 @@ async function playTrack(i){
     audioEl.load();
     audioEl.ontimeupdate=updateProgress;
     audioEl.onloadedmetadata=updateProgress;
-    audioEl.onended=()=>{setMusicStatus('Next song loading...'); nextTrack();};
+    audioEl.onended=()=>{setMusicStatus('Next song loading...'); playNextDJ();};
     updateMediaSession(t);
     updateMiniPlayer();
     audioEl.onerror=function(){
@@ -1569,6 +1644,7 @@ async function playTrack(i){
       updateMiniPlayer();
     };
 
+    if(!skipResetVolume) audioEl.volume=1;
     await audioEl.play();
     isPlaying=true;
     setPlayIcon(true);
@@ -1618,8 +1694,8 @@ async function togglePlay(){
     setMusicStatus('Music playback failed. Tap the song directly from the playlist.');
   }
 }
-function nextTrack(){if(!tracks.length)return;currentTrack=(currentTrack+1)%tracks.length;playTrack(currentTrack);}
-function prevTrack(){if(!tracks.length)return;currentTrack=(currentTrack-1+tracks.length)%tracks.length;playTrack(currentTrack);}
+function nextTrack(){if(!tracks.length)return;const next=(currentTrack+1)%tracks.length; if(djMode) djFadeToTrack(next); else playTrack(next);}
+function prevTrack(){if(!tracks.length)return;const prev=(currentTrack-1+tracks.length)%tracks.length; if(djMode) djFadeToTrack(prev); else playTrack(prev);}
 function seekTrack(e){
   const bar=e.currentTarget;
   const rect=bar.getBoundingClientRect();
@@ -1968,6 +2044,10 @@ if('serviceWorker' in navigator){
 
 // ===================== INIT =====================
 loadData();
+normalizeDailyData();
+updateTimeGreeting();
+setInterval(updateTimeGreeting,60000);
+setInterval(()=>{normalizeDailyData();renderAll();},60000);
 renderAll();
 initAuth();
 loadSupabaseTracks();
