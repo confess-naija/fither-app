@@ -1176,6 +1176,26 @@ let currentTrack=0, isPlaying=false, audioEl=new Audio(), progressInterval=null;
 let djMode=true;
 audioEl.preload='metadata';
 audioEl.crossOrigin='anonymous';
+audioEl.addEventListener('ended',()=>{
+  if(tracks.length){
+    setTimeout(()=>{
+      currentTrack=(currentTrack+1)%tracks.length;
+      playTrack(currentTrack);
+    }, djMode ? 900 : 250);
+  }
+});
+
+const fallbackTracks = [
+  {title:'LIFT ME UP', artist:'ZIK Blue', dur:'3:39', emoji:'🚀', src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3'},
+  {title:'They Cannot (Remix)', artist:'Holy Fire', dur:'3:45', emoji:'🔥', src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3'},
+  {title:'GLORY & FIRE', artist:'Ziyana Eya', dur:'4:00', emoji:'✨', src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20&%20FIRE.mp3'},
+  {title:'Lord, Remember Me', artist:'Holy Fire', dur:'3:30', emoji:'🔥', src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord,%20Rememer%20me.mp3'},
+  {title:'TESTED (Audio)', artist:'Zimora El', dur:'3:40', emoji:'🎤', src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20-%20TESTED%20(Audio).mp3'},
+  {title:'Lessons', artist:'Ziyana Eya', dur:'3:58', emoji:'💫', src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana-Eya-Lessons.mp3'},
+  {title:'Glory', artist:'Sharp', dur:'3:30', emoji:'✨', src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Sharp-%20GlORY.mp3'},
+  {title:'Reloaded', artist:'Zimora El', dur:'3:48', emoji:'⚡', src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20Reloaded.mp3'}
+];
+
 let streak=1, workoutsDone=0;
 let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency',avatarUrl:''};
 let challengeDays=[];
@@ -1392,30 +1412,60 @@ async function loadSupabaseTracks(){
   const list=document.getElementById('track-list');
   const status=document.getElementById('music-status');
   if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Loading FitHerNova Radio...</div>';
-  if(status) status.textContent='Connecting to Supabase music library...';
-  if(!supabaseClient){renderTrackList();return;}
+  if(status) status.textContent='Connecting to music library...';
+
+  const useFallbackTracks = (reason='') => {
+    tracks = fallbackTracks.slice();
+    currentTrack = Math.min(Math.max(currentTrack || 0, 0), tracks.length-1);
+    renderTrackList();
+    updateMiniPlayer();
+    if(status) status.textContent = reason ? `Using saved playlist. ${reason}` : `${tracks.length} songs ready.`;
+  };
+
+  if(!supabaseClient){
+    useFallbackTracks('Supabase is not connected on this device.');
+    return;
+  }
+
   try{
-    const {data,error}=await supabaseClient
+    let result = await supabaseClient
       .from('music_tracks')
       .select('title,artist,duration,emoji,src,created_at,sort_order')
       .eq('active',true)
       .order('sort_order',{ascending:true})
       .order('created_at',{ascending:true});
-    if(error) throw error;
-    if(Array.isArray(data) && data.length){
-      tracks=data.map(t=>({title:t.title,artist:t.artist||'Pro Media Records',dur:t.duration||'0:00',emoji:t.emoji||'🎵',src:t.src||''}));
-      currentTrack=Math.min(currentTrack, tracks.length-1);
-      if(status) status.textContent=`${tracks.length} song${tracks.length>1?'s':''} ready. Tap a track to play.`;
-    }else{
-      tracks=[];
-      if(status) status.textContent='No songs yet. Add songs in Supabase music_tracks.';
+
+    // If sort_order does not exist or any select/order issue happens, retry the simple query.
+    if(result.error){
+      console.warn('Music query with sort_order failed, retrying simple query:', result.error.message || result.error);
+      result = await supabaseClient
+        .from('music_tracks')
+        .select('title,artist,duration,emoji,src,created_at')
+        .eq('active',true)
+        .order('created_at',{ascending:true});
     }
-    renderTrackList();
-    updateMiniPlayer();
+
+    if(result.error) throw result.error;
+    const data = result.data || [];
+
+    if(Array.isArray(data) && data.length){
+      tracks=data
+        .filter(t=>t && t.src)
+        .map(t=>({title:t.title,artist:t.artist||'Pro Media Records',dur:t.duration||'0:00',emoji:t.emoji||'🎵',src:t.src||''}));
+      if(!tracks.length){
+        useFallbackTracks('Supabase returned songs without MP3 links.');
+        return;
+      }
+      currentTrack=Math.min(Math.max(currentTrack || 0, 0), tracks.length-1);
+      if(status) status.textContent=`${tracks.length} song${tracks.length>1?'s':''} ready. Tap a track to play.`;
+      renderTrackList();
+      updateMiniPlayer();
+    }else{
+      useFallbackTracks('No songs found in Supabase yet.');
+    }
   }catch(e){
-    console.warn('FitHerNova Supabase tracks load failed', e.message || e);
-    if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Could not load songs. Check Supabase music_tracks table.</div>';
-    if(status) status.textContent='Music could not load. Check Supabase connection.';
+    console.warn('FitHerNova music load failed:', e.message || e);
+    useFallbackTracks('Supabase connection failed, but FitHerNova saved playlist is ready.');
   }
 }
 function resetFitHerData(){
@@ -1730,9 +1780,8 @@ function updateMediaSession(t){
 function normalizeAudioUrl(url){
   if(!url) return '';
   let clean = String(url).trim();
-  if(clean.includes('/storage/v1/object/public/') && !clean.includes('?')){
-    clean = clean.replace(/ /g,'%20').replace(/&/g,'%26');
-  }
+  // Keep already-encoded Supabase URLs intact. Only encode raw spaces.
+  clean = clean.replace(/ /g,'%20');
   return clean;
 }
 function toggleDJMode(event){
@@ -1837,7 +1886,17 @@ async function playTrack(i){
     audioEl.load();
     audioEl.ontimeupdate=updateProgress;
     audioEl.onloadedmetadata=updateProgress;
-    audioEl.onended=handleTrackEnded;
+    audioEl.onended=()=>{
+      isPlaying=false;
+      setPlayIcon(false);
+      setMusicStatus('Auto-playing next song...');
+      setTimeout(()=>{
+        if(tracks.length){
+          currentTrack=(currentTrack+1)%tracks.length;
+          playTrack(currentTrack);
+        }
+      }, djMode ? 900 : 250);
+    };
     updateMediaSession(t);
     miniPlayerActivated=true;
     miniPlayerDismissed=false;
@@ -1909,34 +1968,7 @@ async function togglePlay(){
     setMusicStatus('Music playback failed. Tap the song directly from the playlist.');
   }
 }
-let autoNextBusy=false;
-
-async function handleTrackEnded(){
-  if(autoNextBusy) return;
-  autoNextBusy=true;
-  try{
-    setMusicStatus('Auto-playing next song...');
-    if(djMode) await new Promise(resolve=>setTimeout(resolve,700));
-    await playNextTrack(true);
-  }catch(err){
-    console.error('Auto-next failed:', err);
-    setMusicStatus('Auto-next had an issue. Tap next to continue.');
-  }finally{
-    setTimeout(()=>{ autoNextBusy=false; }, 500);
-  }
-}
-
-async function playNextTrack(fromAuto=false){
-  if(!tracks.length) return;
-  const nextIndex=(currentTrack+1)%tracks.length;
-  currentTrack=nextIndex;
-  await playTrack(nextIndex);
-  if(fromAuto){
-    setMusicStatus('Now auto-playing: '+(tracks[nextIndex]?.title || 'next song'));
-  }
-}
-
-function nextTrack(){if(!tracks.length)return;playNextTrack(false);}
+function nextTrack(){if(!tracks.length)return;currentTrack=(currentTrack+1)%tracks.length;playTrack(currentTrack);}
 function prevTrack(){if(!tracks.length)return;currentTrack=(currentTrack-1+tracks.length)%tracks.length;playTrack(currentTrack);}
 function seekTrack(e){
   const bar=e.currentTarget;
