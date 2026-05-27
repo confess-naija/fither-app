@@ -602,7 +602,7 @@ select option{background:var(--black3);}
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <img id="header-avatar" class="header-avatar" alt="Profile photo"/>
-      <div class="user-pill" id="user-pill">Guest</div>
+      <div class="user-pill" id="user-pill">Login required</div>
       <div class="header-streak">🔥 <span id="header-streak">1</span> day streak</div>
     </div>
   </div>
@@ -1019,7 +1019,7 @@ select option{background:var(--black3);}
       </div>
       <div class="nova-card">
         <div class="nova-title">Account</div>
-        <div class="nova-sub" id="profile-account-text">Guest mode</div>
+        <div class="nova-sub" id="profile-account-text">Login required</div>
         <button class="btn btn-ghost mt12" onclick="sendPasswordReset()" style="width:100%;">Send password reset email</button>
       </div>
     </div>
@@ -1196,13 +1196,10 @@ function setAuthMode(mode){
   showAuthMessage('');
 }
 function showAuthMessage(msg){const el=document.getElementById('auth-message'); if(el) el.textContent=msg||'';}
-function continueAsGuest(){
-  localStorage.setItem('fithernova_guest_ok','yes');
-  document.getElementById('auth-screen').style.display='none';
-}
 function showAuthIfNeeded(){
-  if(currentUser || localStorage.getItem('fithernova_guest_ok')==='yes') return;
-  const el=document.getElementById('auth-screen'); if(el) el.style.display='flex';
+  if(currentUser) return;
+  const el=document.getElementById('auth-screen');
+  if(el) el.style.display='flex';
 }
 async function submitAuth(){
   if(!supabaseClient){showAuthMessage('Supabase is not available. Check internet connection.');return;}
@@ -1223,7 +1220,6 @@ async function submitAuth(){
       if(res.error) throw res.error;
     }
     currentUser=res.data.user || null;
-    localStorage.removeItem('fithernova_guest_ok');
     document.getElementById('auth-screen').style.display='none';
     await afterAuthReady();
   }catch(e){showAuthMessage(e.message || 'Login failed.');}
@@ -1233,10 +1229,9 @@ async function logoutUser(){
   // Instant UI response first — no waiting/hanging on slow network
   currentUser=null;
   const pill=document.getElementById('user-pill');
-  if(pill) pill.innerHTML='Guest';
+  if(pill) pill.innerHTML='Login required';
   const auth=document.getElementById('auth-screen');
   if(auth) auth.style.display='flex';
-  localStorage.removeItem('fithernova_guest_ok');
   try{ if(supabaseClient) await supabaseClient.auth.signOut(); }
   catch(err){ console.warn('Logout warning:', err?.message || err); }
 }
@@ -1247,7 +1242,7 @@ function updateAuthUI(){
     const email=currentUser.email || 'Account';
     pill.innerHTML=`${email.split('@')[0]} <button onclick="logoutUser()">Logout</button>`;
   }else{
-    pill.innerHTML='Guest';
+    pill.innerHTML='Login required';
   }
 }
 async function loadUserProfile(){
@@ -1285,14 +1280,18 @@ async function initAuth(){
   authReady=true;
   updateAuthUI();
   if(currentUser){
-    localStorage.removeItem('fithernova_guest_ok');
     document.getElementById('auth-screen').style.display='none';
     await afterAuthReady();
   }else showAuthIfNeeded();
   supabaseClient.auth.onAuthStateChange(async(_event,session)=>{
     currentUser=session?.user || null;
     updateAuthUI();
-    if(currentUser){document.getElementById('auth-screen').style.display='none'; await afterAuthReady();}
+    if(currentUser){
+      document.getElementById('auth-screen').style.display='none';
+      await afterAuthReady();
+    }else{
+      showAuthIfNeeded();
+    }
   });
 }
 
