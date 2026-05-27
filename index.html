@@ -391,6 +391,53 @@ select option{background:var(--black3);}
 .mini-player.minimized .mini-art{width:50px;height:50px;margin:auto;}
 
 
+
+/* ======== INSTALL POPUP + CLEAN COACH/MEALS ======== */
+.install-pop{position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:18px;}
+.install-pop.show{display:flex;}
+.install-card{width:min(460px,100%);border-radius:28px;padding:20px;background:radial-gradient(circle at 20% 0%,rgba(255,45,107,.28),transparent 34%),linear-gradient(145deg,#191919,#0c0c0c);border:1px solid rgba(255,45,107,.25);box-shadow:0 28px 80px rgba(0,0,0,.75),0 0 35px rgba(255,45,107,.12);}
+.install-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.install-icon{width:58px;height:58px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,var(--pink),var(--gold));box-shadow:0 12px 35px rgba(255,45,107,.3);}
+.install-close{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:white;cursor:pointer;}
+.install-title{font-family:var(--font-head);font-size:24px;font-weight:900;letter-spacing:-.6px;margin-bottom:4px;}
+.install-text{font-size:13px;color:rgba(255,255,255,.68);line-height:1.55;margin-bottom:14px;}
+.install-steps{display:grid;gap:8px;margin:12px 0;}
+.install-step{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px;}
+.install-step b{color:#fff;font-size:13px;}
+.install-step span{font-size:12px;color:rgba(255,255,255,.62);line-height:1.45;}
+.install-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+@media(max-width:430px){.install-actions{grid-template-columns:1fr}.install-title{font-size:21px}}
+.install-soft-btn{height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:white;font-weight:800;cursor:pointer;}
+
+.coach-hero-clean{position:relative;overflow:hidden;border-radius:26px;padding:18px;background:radial-gradient(circle at 15% 0%,rgba(255,45,107,.34),transparent 35%),radial-gradient(circle at 100% 10%,rgba(255,209,102,.18),transparent 30%),linear-gradient(145deg,#1b0710,#101010);border:1px solid rgba(255,45,107,.26);box-shadow:0 18px 50px rgba(0,0,0,.45);margin-bottom:12px;}
+.coach-avatar{width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 12px 30px rgba(255,45,107,.28);}
+.coach-hero-row{display:flex;gap:13px;align-items:center;}
+.coach-title-clean{font-family:var(--font-head);font-size:20px;font-weight:900;letter-spacing:-.4px;}
+.coach-sub-clean{font-size:12px;color:rgba(255,255,255,.66);line-height:1.45;margin-top:3px;}
+.coach-panel{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:14px;margin-bottom:12px;}
+.coach-prompts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;}
+@media(max-width:520px){.coach-prompts{grid-template-columns:1fr}}
+.coach-prompt{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);border-radius:16px;padding:12px;text-align:left;color:white;cursor:pointer;}
+.coach-prompt b{display:block;font-size:13px;font-family:var(--font-head);margin-bottom:3px;}
+.coach-prompt span{font-size:11px;color:rgba(255,255,255,.55);}
+.coach-input-clean{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:8px;}
+@media(max-width:520px){.coach-input-clean{grid-template-columns:1fr}}
+.coach-input-clean input{height:48px;border-radius:16px;background:#121212;}
+.coach-send{height:48px;border:0;border-radius:16px;padding:0 18px;background:linear-gradient(135deg,var(--pink),var(--pink-light));color:white;font-weight:900;cursor:pointer;}
+.coach-answer{border-radius:20px;border:1px solid rgba(255,45,107,.24);background:linear-gradient(145deg,#16070d,#0f0f0f);font-size:13px;line-height:1.62;}
+
+.meal-hero-clean{border-radius:26px;padding:18px;background:radial-gradient(circle at 20% 0%,rgba(6,214,160,.18),transparent 34%),radial-gradient(circle at 100% 0%,rgba(255,209,102,.18),transparent 30%),linear-gradient(145deg,#111b16,#101010);border:1px solid rgba(6,214,160,.18);box-shadow:0 18px 50px rgba(0,0,0,.38);margin-bottom:12px;}
+.meal-title-clean{font-family:var(--font-head);font-size:21px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;}
+.meal-sub-clean{font-size:12px;color:rgba(255,255,255,.62);line-height:1.5;}
+.meal-grid-clean{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+@media(max-width:620px){.meal-grid-clean{grid-template-columns:1fr}}
+.meal-card-clean{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:15px;box-shadow:0 10px 30px rgba(0,0,0,.22);}
+.meal-card-top{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
+.meal-icon-clean{width:42px;height:42px;border-radius:15px;background:rgba(255,45,107,.14);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.meal-name-clean{font-family:var(--font-head);font-size:15px;font-weight:900;}
+.meal-note-clean{font-size:12px;color:rgba(255,255,255,.58);line-height:1.5;margin-top:8px;}
+.meal-chip-clean{display:block;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.075);padding:9px 10px;margin-bottom:7px;font-size:12px;color:rgba(255,255,255,.78);}
+
 /* PROFILE PHOTO */
 .profile-photo-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 .profile-avatar-wrap{width:78px;height:78px;border-radius:50%;background:#1e1e1e;border:2px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 8px 26px rgba(255,45,107,.18);flex-shrink:0;}
@@ -452,6 +499,26 @@ select option{background:var(--black3);}
   </div>
 </div>
 
+<!-- INSTALL APP POPUP -->
+<div class="install-pop" id="install-pop">
+  <div class="install-card">
+    <div class="install-top">
+      <div class="install-icon">📲</div>
+      <button class="install-close" onclick="closeInstallGuide()">×</button>
+    </div>
+    <div class="install-title">Install FitHerNova</div>
+    <div class="install-text">Turn FitHerNova into a real app on your phone. Open it from your home screen for workouts, Coach Nova, meals, reminders, and gospel radio.</div>
+    <div class="install-steps">
+      <div class="install-step"><div>🍎</div><div><b>iPhone Safari</b><br><span>Tap Share → Add to Home Screen → Add.</span></div></div>
+      <div class="install-step"><div>🤖</div><div><b>Android Chrome</b><br><span>Tap the 3 dots → Add to Home Screen → Add.</span></div></div>
+    </div>
+    <div class="install-actions">
+      <button class="btn btn-pink" onclick="triggerInstallPrompt()">Install if available</button>
+      <button class="install-soft-btn" onclick="closeInstallGuide()">Maybe later</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <!-- HEADER -->
   <div class="app-header">
@@ -476,8 +543,8 @@ select option{background:var(--black3);}
 
       <div id="install-banner" class="install-banner" style="display:none;">
         <div style="font-size:28px;">📲</div>
-        <div class="ib-text"><strong>Install FitHerNova on your phone</strong>Tap Share → Add to Home Screen</div>
-        <button class="ib-btn" onclick="document.getElementById('install-banner').style.display='none'">Got it</button>
+        <div class="ib-text"><strong>Install FitHerNova App</strong>Save it to your phone for quick workouts, meals, Coach Nova and gospel radio.</div>
+        <button class="ib-btn" onclick="showInstallGuide()">Install</button>
       </div>
 
       <div class="ring-section">
@@ -739,39 +806,48 @@ select option{background:var(--black3);}
 
     <!-- MEAL PLAN -->
     <div class="page" id="page-mealplan">
-      <div class="sec-label">Nigerian wellness meal guide</div>
-      <div class="nova-card hot">
-        <div class="nova-title">Eat smart, not punishment 🍲</div>
-        <div class="nova-sub">This is guidance only, not food delivery. Users still cook or buy their own meals.</div>
+      <div class="sec-label">Meal guide</div>
+      <div class="meal-hero-clean">
+        <div class="meal-title-clean">Smart meals for your glow 🍲</div>
+        <div class="meal-sub-clean">Simple meal ideas inspired by Nigerian foods and everyday wellness. This is guidance only — users still cook or buy their own meals.</div>
       </div>
-      <div id="meal-plan-list"></div>
+      <div id="meal-plan-list" class="meal-grid-clean"></div>
     </div>
 
 
     <!-- AI COACH -->
     <div class="page" id="page-coach">
-      <div class="sec-label">FitHerNova Coach</div>
-      <div class="nova-card hot">
-        <div class="nova-title">Your simple fitness coach ✨</div>
-        <div class="nova-sub">Ask about meals, workouts, motivation, water, calories, or the 7-day challenge. This works without extra API cost.</div>
-      </div>
-      <div class="sec-label">Quick asks</div>
-      <div class="coach-quick">
-        <button class="chip" onclick="coachAsk('what should i eat today')">What should I eat today?</button>
-        <button class="chip" onclick="coachAsk('give me belly workout')">Belly workout</button>
-        <button class="chip" onclick="coachAsk('motivate me')">Motivate me</button>
-        <button class="chip" onclick="coachAsk('nigerian meal ideas')">Nigerian meals</button>
-        <button class="chip" onclick="coachAsk('water reminder')">Water tips</button>
-      </div>
-      <div class="nova-card">
-        <div class="nova-title">Ask Coach Nova</div>
-        <div class="coach-input-row">
-          <input type="text" id="coach-question" placeholder="Example: How can I reduce belly fat?" onkeydown="if(event.key==='Enter')coachAsk()"/>
-          <button class="btn btn-pink" style="height:44px;padding:0 18px;white-space:nowrap;" onclick="coachAsk()">Ask</button>
+      <div class="sec-label">Coach Nova</div>
+      <div class="coach-hero-clean">
+        <div class="coach-hero-row">
+          <div class="coach-avatar">✨</div>
+          <div>
+            <div class="coach-title-clean">Your calm fitness guide</div>
+            <div class="coach-sub-clean">Ask for a quick meal idea, belly workout, water plan, calorie guidance or motivation. Clean, simple, no pressure.</div>
+          </div>
         </div>
-        <div class="coach-answer" id="coach-answer">Hi Queen 👑 I am Coach Nova. Ask me for a meal idea, workout, motivation, water plan, or calorie guidance.</div>
       </div>
-      <div class="sec-label">Choose your main goal</div>
+
+      <div class="coach-panel">
+        <div class="sec-label" style="margin-bottom:0;">Quick help</div>
+        <div class="coach-prompts">
+          <button class="coach-prompt" onclick="coachAsk('what should i eat today')"><b>🍲 Meal idea</b><span>Simple plate for today</span></button>
+          <button class="coach-prompt" onclick="coachAsk('give me belly workout')"><b>🔥 Belly workout</b><span>Quick routine to start</span></button>
+          <button class="coach-prompt" onclick="coachAsk('motivate me')"><b>💖 Motivation</b><span>Soft push for consistency</span></button>
+          <button class="coach-prompt" onclick="coachAsk('water reminder')"><b>💧 Water plan</b><span>Hydration goal check</span></button>
+        </div>
+      </div>
+
+      <div class="coach-panel">
+        <div class="nova-title">Ask Coach Nova</div>
+        <div class="coach-input-clean">
+          <input type="text" id="coach-question" placeholder="Ask Coach Nova anything..." onkeydown="if(event.key==='Enter')coachAsk()"/>
+          <button class="coach-send" onclick="coachAsk()">Ask</button>
+        </div>
+        <div class="coach-answer" id="coach-answer">Hi Queen 👑 I’m Coach Nova. Tell me what you need today — meals, workouts, water, calories, motivation, or your glow-up plan.</div>
+      </div>
+
+      <div class="sec-label">Main goal</div>
       <div class="nova-grid" id="goal-grid">
         <div class="goal-card" onclick="setMainGoal('Lose belly fat')"><div class="gtitle">🔥 Lose belly fat</div><div class="gsub">Meal awareness + core consistency.</div></div>
         <div class="goal-card" onclick="setMainGoal('Postpartum restore')"><div class="gtitle">💚 Postpartum restore</div><div class="gsub">Gentle movement and confidence.</div></div>
@@ -1763,14 +1839,14 @@ async function toggleChallengeDay(day){
   }
 }
 const mealPlans=[
-  {title:'Belly-friendly Nigerian day',chips:['Breakfast: oats + boiled egg','Lunch: grilled fish + small rice','Dinner: vegetable soup + lean protein'],note:'Keep portions controlled. Choose grilled/boiled more often than fried.'},
-  {title:'Busy woman quick plan',chips:['Greek yogurt or pap light','Moi moi + salad','Chicken pepper soup'],note:'Easy meals for workdays when you do not have time.'},
-  {title:'Postpartum gentle plan',chips:['Protein with every meal','Hydration first','Light soups + vegetables'],note:'Gentle guidance. Users should follow medical advice after delivery.'},
-  {title:'Church group challenge meals',chips:['No sugary drinks','Fruit instead of sweets','Walk 10 minutes after meals'],note:'Simple group rules that make the challenge easy to follow.'}
+  {icon:'🥣',title:'Belly-friendly Nigerian day',chips:['Breakfast: oats + boiled egg','Lunch: grilled fish + small rice','Dinner: vegetable soup + lean protein'],note:'Keep portions controlled. Choose grilled/boiled more often than fried.'},
+  {icon:'⏱️',title:'Busy woman quick plan',chips:['Greek yogurt or light pap','Moi moi + salad','Chicken pepper soup'],note:'Easy meals for workdays when you do not have time.'},
+  {icon:'💚',title:'Gentle restore plan',chips:['Protein with every meal','Hydration first','Light soups + vegetables'],note:'Gentle guidance. Users should follow medical advice after delivery.'},
+  {icon:'👯',title:'Group challenge meals',chips:['No sugary drinks','Fruit instead of sweets','Walk 10 minutes after meals'],note:'Simple group rules that make the challenge easy to follow.'}
 ];
 function renderMealPlan(){
   const el=document.getElementById('meal-plan-list'); if(!el)return;
-  el.innerHTML=mealPlans.map(p=>`<div class="nova-card"><div class="nova-title">${p.title}</div><div style="margin:8px 0;">${p.chips.map(c=>`<span class="plan-chip">${c}</span>`).join('')}</div><div class="nova-sub">${p.note}</div></div>`).join('');
+  el.innerHTML=mealPlans.map(p=>`<div class="meal-card-clean"><div class="meal-card-top"><div class="meal-icon-clean">${p.icon}</div><div class="meal-name-clean">${p.title}</div></div><div>${p.chips.map(c=>`<span class="meal-chip-clean">${c}</span>`).join('')}</div><div class="meal-note-clean">${p.note}</div></div>`).join('');
 }
 function populateProfileForm(){
   const name=document.getElementById('profile-name'); if(!name)return;
@@ -1977,13 +2053,32 @@ setInterval(checkReminders,60000);
 
 // ===================== INSTALL PWA =====================
 let deferredPrompt=null;
+function showInstallGuide(){
+  const pop=document.getElementById('install-pop');
+  if(pop) pop.classList.add('show');
+}
+function closeInstallGuide(){
+  const pop=document.getElementById('install-pop');
+  if(pop) pop.classList.remove('show');
+}
+async function triggerInstallPrompt(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt=null;
+    closeInstallGuide();
+    const banner=document.getElementById('install-banner');
+    if(banner) banner.style.display='none';
+  }else{
+    const msg=document.querySelector('.install-text');
+    if(msg) msg.textContent='Use your browser menu: iPhone Safari → Share → Add to Home Screen. Android Chrome → 3 dots → Add to Home Screen.';
+  }
+}
 window.addEventListener('beforeinstallprompt',(e)=>{
-  e.preventDefault();deferredPrompt=e;
-  document.getElementById('install-banner').style.display='flex';
-});
-document.querySelector('.ib-btn')?.addEventListener('click',async()=>{
-  if(deferredPrompt){deferredPrompt.prompt();const r=await deferredPrompt.userChoice;deferredPrompt=null;}
-  document.getElementById('install-banner').style.display='none';
+  e.preventDefault();
+  deferredPrompt=e;
+  const banner=document.getElementById('install-banner');
+  if(banner) banner.style.display='flex';
 });
 
 // ===================== SERVICE WORKER =====================
