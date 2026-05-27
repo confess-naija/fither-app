@@ -1837,10 +1837,7 @@ async function playTrack(i){
     audioEl.load();
     audioEl.ontimeupdate=updateProgress;
     audioEl.onloadedmetadata=updateProgress;
-    audioEl.onended=()=>{
-      setMusicStatus('Auto-playing next song...');
-      setTimeout(()=>nextTrack(),350);
-    };
+    audioEl.onended=handleTrackEnded;
     updateMediaSession(t);
     miniPlayerActivated=true;
     miniPlayerDismissed=false;
@@ -1912,7 +1909,34 @@ async function togglePlay(){
     setMusicStatus('Music playback failed. Tap the song directly from the playlist.');
   }
 }
-function nextTrack(){if(!tracks.length)return;currentTrack=(currentTrack+1)%tracks.length;playTrack(currentTrack);}
+let autoNextBusy=false;
+
+async function handleTrackEnded(){
+  if(autoNextBusy) return;
+  autoNextBusy=true;
+  try{
+    setMusicStatus('Auto-playing next song...');
+    if(djMode) await new Promise(resolve=>setTimeout(resolve,700));
+    await playNextTrack(true);
+  }catch(err){
+    console.error('Auto-next failed:', err);
+    setMusicStatus('Auto-next had an issue. Tap next to continue.');
+  }finally{
+    setTimeout(()=>{ autoNextBusy=false; }, 500);
+  }
+}
+
+async function playNextTrack(fromAuto=false){
+  if(!tracks.length) return;
+  const nextIndex=(currentTrack+1)%tracks.length;
+  currentTrack=nextIndex;
+  await playTrack(nextIndex);
+  if(fromAuto){
+    setMusicStatus('Now auto-playing: '+(tracks[nextIndex]?.title || 'next song'));
+  }
+}
+
+function nextTrack(){if(!tracks.length)return;playNextTrack(false);}
 function prevTrack(){if(!tracks.length)return;currentTrack=(currentTrack-1+tracks.length)%tracks.length;playTrack(currentTrack);}
 function seekTrack(e){
   const bar=e.currentTarget;
