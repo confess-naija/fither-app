@@ -1155,17 +1155,19 @@ const workoutData = [
   {name:"Advanced Belly Shred",icon:"💥",level:"Advanced",badge:"badge-hard",dur:"30 min",calPM:13,ex:[{n:"Burpees",r:"4×15"},{n:"V-ups",r:"4×12"},{n:"Plank with hip dips",r:"4×20"},{n:"Scissor kicks",r:"4×20"},{n:"Russian twists",r:"4×20"},{n:"Sprint intervals",r:"5×30 sec"}]},
 ];
 
-// Placeholder tracks — replace src with real MP3 URLs from Cloudinary
-let tracks = [
-  {title:"Morning Praise",artist:"Pro Media Records",dur:"3:42",emoji:"🙏",src:""},
-  {title:"Worship & Burn",artist:"Pro Media Records",dur:"4:15",emoji:"🔥",src:""},
-  {title:"Glory Workout",artist:"Pro Media Records",dur:"3:58",emoji:"✨",src:""},
-  {title:"Strength of the Lord",artist:"Pro Media Records",dur:"5:02",emoji:"💪",src:""},
-  {title:"Joyful Run",artist:"Pro Media Records",dur:"3:30",emoji:"🏃",src:""},
-  {title:"Grace & Grind",artist:"Pro Media Records",dur:"4:44",emoji:"⚡",src:""},
-  {title:"Faith Over Fear",artist:"Pro Media Records",dur:"3:55",emoji:"🌟",src:""},
-  {title:"His Strength",artist:"Pro Media Records",dur:"4:20",emoji:"🕊️",src:""},
+// FitHerNova Radio — built-in safe playlist. Supabase can update this, but the app will never go empty.
+const BUILT_IN_TRACKS = [
+  {title:"LIFT ME UP",artist:"ZIK Blue",dur:"3:39",emoji:"🚀",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3"},
+  {title:"They Cannot (Remix)",artist:"Holy Fire",dur:"3:45",emoji:"🔥",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3"},
+  {title:"GLORY & FIRE",artist:"Ziyana Eya",dur:"4:00",emoji:"✨",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20&%20FIRE.mp3"},
+  {title:"Lord, Remember Me",artist:"Holy Fire",dur:"3:30",emoji:"🙏",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord,%20Rememer%20me.mp3"},
+  {title:"TESTED (Audio)",artist:"Zimora El",dur:"3:30",emoji:"💎",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20-%20TESTED%20(Audio).mp3"},
+  {title:"Lessons",artist:"Ziyana Eya",dur:"3:30",emoji:"🌿",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana-Eya-Lessons.mp3"},
+  {title:"Glory",artist:"Sharp",dur:"3:30",emoji:"🌟",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Sharp-%20GlORY.mp3"},
+  {title:"Reloaded",artist:"Zimora El",dur:"3:48",emoji:"⚡",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20Reloaded.mp3"}
 ];
+
+let tracks = BUILT_IN_TRACKS.map(t => ({...t}));
 
 // ===================== STATE =====================
 let logged=[], weights=[], waterCups=0, workoutHistory=[], reminders=[], totalBurned=0;
@@ -1175,7 +1177,7 @@ let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=new Audio(), progressInterval=null;
 let djMode=true;
 audioEl.preload='metadata';
-audioEl.crossOrigin='anonymous';
+// crossOrigin removed for smoother public Supabase audio playback;
 let streak=1, workoutsDone=0;
 let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency',avatarUrl:''};
 let challengeDays=[];
@@ -1392,8 +1394,24 @@ async function loadSupabaseTracks(){
   const list=document.getElementById('track-list');
   const status=document.getElementById('music-status');
   if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Loading FitHerNova Radio...</div>';
-  if(status) status.textContent='Loading your music...';
-  if(!supabaseClient){renderTrackList();return;}
+  if(status) status.textContent='Preparing FitHerNova Radio...';
+
+  // Always keep the built-in playlist available so music never disappears.
+  const useBuiltIn = () => {
+    if(!Array.isArray(tracks) || !tracks.some(t => t && t.src)){
+      tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+    }
+    currentTrack = Math.min(Math.max(currentTrack || 0, 0), Math.max(tracks.length - 1, 0));
+    renderTrackList();
+    updateMiniPlayer();
+    if(status) status.textContent='Choose a song and let the energy flow.';
+  };
+
+  if(!supabaseClient){
+    useBuiltIn();
+    return;
+  }
+
   try{
     const {data,error}=await supabaseClient
       .from('music_tracks')
@@ -1401,23 +1419,38 @@ async function loadSupabaseTracks(){
       .eq('active',true)
       .order('sort_order',{ascending:true})
       .order('created_at',{ascending:true});
+
     if(error) throw error;
-    if(Array.isArray(data) && data.length){
-      tracks=data.map(t=>({title:t.title,artist:t.artist||'Pro Media Records',dur:t.duration||'0:00',emoji:t.emoji||'🎵',src:t.src||''}));
-      currentTrack=Math.min(currentTrack, tracks.length-1);
+
+    const remoteTracks = Array.isArray(data)
+      ? data
+          .filter(t => t && t.src && String(t.src).trim())
+          .map(t=>({
+            title:t.title || 'Untitled',
+            artist:t.artist || 'Pro Media Records',
+            dur:t.duration || '0:00',
+            emoji:t.emoji || '🎵',
+            src:String(t.src).trim()
+          }))
+      : [];
+
+    if(remoteTracks.length){
+      tracks = remoteTracks;
+      currentTrack = Math.min(currentTrack, tracks.length-1);
+      renderTrackList();
+      updateMiniPlayer();
       if(status) status.textContent=`${tracks.length} song${tracks.length>1?'s':''} ready. Tap a track to play.`;
     }else{
-      tracks=[];
-      if(status) status.textContent='Your playlist is getting ready...';
+      tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+      useBuiltIn();
     }
-    renderTrackList();
-    updateMiniPlayer();
   }catch(e){
-    console.warn('FitHerNova Supabase tracks load failed', e.message || e);
-    if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Tap Refresh to update your playlist.</div>';
-    if(status) status.textContent='Tap a song to start the vibe.';
+    console.warn('FitHerNova Radio used built-in playlist:', e.message || e);
+    tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+    useBuiltIn();
   }
 }
+
 function resetFitHerData(){
   if(!confirm('Clear all FitHerNova saved data on this device?'))return;
   localStorage.removeItem(STORAGE_KEY);
@@ -1811,59 +1844,72 @@ async function playTrack(i, autoAdvance=false){
   const art = document.getElementById('np-art');
   const emoji = document.getElementById('np-emoji');
 
-  document.getElementById('np-title').textContent = t.title || 'Untitled';
-  document.getElementById('np-artist').textContent = t.artist || 'FitHerNova Music';
+  const titleEl=document.getElementById('np-title');
+  const artistEl=document.getElementById('np-artist');
+  const totalEl=document.getElementById('np-total');
+  const currentEl=document.getElementById('np-current');
+  const progressEl=document.getElementById('np-progress');
+
+  if(titleEl) titleEl.textContent = t.title || 'Untitled';
+  if(artistEl) artistEl.textContent = t.artist || 'FitHerNova Music';
   if(emoji) emoji.textContent = t.emoji || '🎵';
-  document.getElementById('np-total').textContent = t.dur || '0:00';
-  document.getElementById('np-current').textContent = '0:00';
-  document.getElementById('np-progress').style.width = '0%';
+  if(totalEl) totalEl.textContent = t.dur || '0:00';
+  if(currentEl) currentEl.textContent = '0:00';
+  if(progressEl) progressEl.style.width = '0%';
   clearInterval(progressInterval);
 
   const cleanSrc = normalizeAudioUrl(t.src);
   if(!cleanSrc){
-    setMusicStatus('This track needs a valid MP3 link.');
     renderTrackList();
+    updateMiniPlayer();
     return false;
   }
 
   try{
     audioEl.pause();
-    audioEl.removeAttribute('src');
-    audioEl.load();
+    audioEl.onended = null;
+    audioEl.onerror = null;
+    audioEl.ontimeupdate = null;
+    audioEl.onloadedmetadata = null;
 
     audioEl.src = cleanSrc;
     audioEl.preload = 'auto';
     audioEl.volume = 1;
+
     audioEl.ontimeupdate = updateProgress;
     audioEl.onloadedmetadata = updateProgress;
-    audioEl.onerror = function(){
-      console.error('Audio load error:', cleanSrc, audioEl.error);
-      isPlaying = false;
-      setPlayIcon(false);
-      if(art) art.classList.remove('spinning');
-      setMusicStatus('Getting the next vibe ready...');
-      renderTrackList();
-      updateMiniPlayer();
-      if(autoAdvance){
-        setTimeout(()=>autoNextTrack(1), 300);
-      }
-    };
+    audioEl.oncanplay = updateProgress;
     audioEl.onended = function(){
       autoNextTrack(1);
     };
+    audioEl.onerror = function(){
+      console.warn('FitHerNova skipped a track.');
+      isPlaying = false;
+      setPlayIcon(false);
+      if(art) art.classList.remove('spinning');
+      renderTrackList();
+      updateMiniPlayer();
+      if(autoAdvance){
+        setTimeout(()=>autoNextTrack(1), 250);
+      }else{
+        setMusicStatus('Choose another track and keep the vibe going.');
+      }
+    };
 
-    audioEl.load();
     updateMediaSession(t);
     miniPlayerActivated = true;
     miniPlayerDismissed = false;
     updateMiniPlayer();
 
-    await audioEl.play();
+    const playPromise = audioEl.play();
+    if(playPromise && typeof playPromise.then === 'function'){
+      await playPromise;
+    }
 
     isPlaying = true;
     setPlayIcon(true);
     if(art) art.classList.add('spinning');
-    setMusicStatus((autoAdvance ? 'Auto-playing next: ' : (djMode ? 'DJ Mode playing: ' : 'Now playing: ')) + (t.title || 'Track') + ' by ' + (t.artist || 'FitHerNova'));
+    setMusicStatus((autoAdvance ? 'Now playing: ' : (djMode ? 'DJ Mode playing: ' : 'Now playing: ')) + (t.title || 'Track') + ' by ' + (t.artist || 'FitHerNova'));
     renderTrackList();
     updateMiniPlayer();
     progressInterval = setInterval(updateProgress, 500);
@@ -1871,16 +1917,18 @@ async function playTrack(i, autoAdvance=false){
     return true;
 
   }catch(err){
-    console.error('Playback failed:', err, cleanSrc);
+    console.warn('FitHerNova playback paused by browser or track source.');
     isPlaying = false;
     audioEl.volume = 1;
     setPlayIcon(false);
     if(art) art.classList.remove('spinning');
     renderTrackList();
     updateMiniPlayer();
-    setMusicStatus(autoAdvance ? 'Getting the next song ready...' : 'Tap the song again to continue.');
+
     if(autoAdvance){
-      setTimeout(()=>autoNextTrack(1), 350);
+      setTimeout(()=>autoNextTrack(1), 300);
+    }else{
+      setMusicStatus('Tap play or choose another track to keep the vibe going.');
     }
     return false;
   }
@@ -1893,7 +1941,8 @@ async function autoNextTrack(step=1){
 
   while(attempts < tracks.length){
     next = (next + step + tracks.length) % tracks.length;
-    if(tracks[next] && tracks[next].src){
+    const candidate = tracks[next];
+    if(candidate && candidate.src){
       currentTrack = next;
       const ok = await playTrack(currentTrack, true);
       if(ok) return;
@@ -1901,16 +1950,17 @@ async function autoNextTrack(step=1){
     attempts++;
   }
 
+  // Keep the UI clean for users — no technical error message.
   isPlaying = false;
   setPlayIcon(false);
-  setMusicStatus('Could not auto-play the next song. Tap a song to continue.');
+  setMusicStatus('Choose a song and let the energy flow.');
   renderTrackList();
   updateMiniPlayer();
 }
 
 async function togglePlay(){
   if(!tracks.length){
-    alert('No music loaded yet. Tap Refresh.');
+    setMusicStatus('Choose a song and let the energy flow.');
     return;
   }
   if(!audioEl.src){
@@ -1940,7 +1990,7 @@ async function togglePlay(){
     updateMiniPlayer();
   }catch(err){
     console.error('Toggle playback failed:', err);
-    setMusicStatus('Tap a song from the playlist to continue.');
+    setMusicStatus('Choose a song and let the energy flow.');
   }
 }
 async function nextTrack(){ if(!tracks.length)return; currentTrack=(currentTrack+1)%tracks.length; await playTrack(currentTrack,false); }
