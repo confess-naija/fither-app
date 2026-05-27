@@ -441,6 +441,40 @@ select option{background:var(--black3);}
 .meal-note-clean{font-size:12px;color:rgba(255,255,255,.58);line-height:1.5;margin-top:8px;}
 .meal-chip-clean{display:block;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.075);padding:9px 10px;margin-bottom:7px;font-size:12px;color:rgba(255,255,255,.78);}
 
+
+
+/* ======== FITHERNOVA PRO ======== */
+.pro-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;background:linear-gradient(135deg,var(--pink),var(--gold));color:#fff;font-size:10px;font-weight:900;letter-spacing:.4px;box-shadow:0 8px 24px rgba(255,45,107,.25);}
+.pro-badge.free{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--grey);box-shadow:none;}
+.pro-hero{position:relative;overflow:hidden;border-radius:28px;padding:20px;margin-bottom:14px;background:radial-gradient(circle at 20% 0%,rgba(255,45,107,.42),transparent 36%),radial-gradient(circle at 95% 10%,rgba(255,209,102,.28),transparent 34%),linear-gradient(145deg,#250713,#0b0b0b 62%,#16050b);border:1px solid rgba(255,45,107,.32);box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 35px rgba(255,45,107,.14);}
+.pro-kicker{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:var(--gold);font-weight:900;margin-bottom:8px;}
+.pro-title{font-family:var(--font-head);font-size:28px;line-height:1.02;font-weight:900;letter-spacing:-.8px;margin-bottom:8px;}
+.pro-sub{font-size:13px;color:rgba(255,255,255,.68);line-height:1.55;margin-bottom:14px;}
+.pro-features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0;}
+@media(max-width:560px){.pro-features{grid-template-columns:1fr}.pro-title{font-size:24px}}
+.pro-feature{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px;font-size:12px;color:rgba(255,255,255,.78);}
+.pro-feature b{display:block;color:#fff;font-family:var(--font-head);font-size:13px;margin-bottom:2px;}
+.pro-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;}
+@media(max-width:620px){.pro-plans{grid-template-columns:1fr}}
+.pro-plan{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:15px;position:relative;overflow:hidden;}
+.pro-plan.best{border-color:rgba(255,45,107,.55);box-shadow:0 0 30px rgba(255,45,107,.13);}
+.pro-plan-tag{position:absolute;right:12px;top:12px;border-radius:999px;padding:4px 8px;background:rgba(255,209,102,.13);border:1px solid rgba(255,209,102,.28);color:var(--gold);font-size:10px;font-weight:900;}
+.pro-plan-name{font-family:var(--font-head);font-size:16px;font-weight:900;margin-bottom:4px;}
+.pro-price{font-family:var(--font-head);font-size:28px;font-weight:900;margin:8px 0;color:#fff;}
+.pro-price span{font-family:var(--font-body);font-size:12px;color:var(--grey);font-weight:500;}
+.pro-small{font-size:11px;color:var(--grey);line-height:1.45;margin-bottom:12px;}
+.pro-lock{position:relative;overflow:hidden;}
+.pro-lock.locked:after{content:'PRO';position:absolute;top:10px;right:10px;background:linear-gradient(135deg,var(--pink),var(--gold));font-size:9px;font-weight:900;padding:4px 7px;border-radius:999px;color:#fff;}
+.pro-inline-card{border-radius:22px;padding:15px;background:linear-gradient(135deg,#1a0710,#101010);border:1px solid rgba(255,45,107,.24);margin-bottom:12px;}
+.pro-inline-title{font-family:var(--font-head);font-size:16px;font-weight:900;margin-bottom:4px;}
+.pro-inline-sub{font-size:12px;color:rgba(255,255,255,.62);line-height:1.45;margin-bottom:10px;}
+.pro-modal{position:fixed;inset:0;z-index:2700;background:rgba(0,0,0,.72);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:18px;}
+.pro-modal.show{display:flex;}
+.pro-modal-card{width:min(520px,100%);max-height:88vh;overflow:auto;border-radius:28px;padding:18px;background:radial-gradient(circle at 20% 0%,rgba(255,45,107,.35),transparent 38%),linear-gradient(145deg,#1a1a1a,#080808);border:1px solid rgba(255,45,107,.28);box-shadow:0 28px 90px rgba(0,0,0,.75);}
+.pro-modal-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.pro-close{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:white;cursor:pointer;}
+.pro-status{font-size:12px;color:var(--gold);min-height:18px;margin-top:8px;}
+
 /* PROFILE PHOTO */
 .profile-photo-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 .profile-avatar-wrap{width:78px;height:78px;border-radius:50%;background:#1e1e1e;border:2px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 8px 26px rgba(255,45,107,.18);flex-shrink:0;}
@@ -521,6 +555,44 @@ select option{background:var(--black3);}
   </div>
 </div>
 
+
+
+<!-- FITHERNOVA PRO MODAL -->
+<div class="pro-modal" id="pro-modal">
+  <div class="pro-modal-card">
+    <div class="pro-modal-top">
+      <div>
+        <div class="pro-kicker">FitHerNova PRO ✨</div>
+        <div class="pro-title">Unlock the full glow-up experience.</div>
+        <div class="pro-sub">Get premium music, DJ Mode, advanced Coach Nova plans, premium workouts, custom meal plans, themes, and deeper progress insights.</div>
+      </div>
+      <button class="pro-close" onclick="closeProModal()">×</button>
+    </div>
+    <div class="pro-features">
+      <div class="pro-feature"><b>🎵 Full Radio</b>Premium playlist + DJ Mode.</div>
+      <div class="pro-feature"><b>✨ Coach Nova PRO</b>Smarter fitness + meal guidance.</div>
+      <div class="pro-feature"><b>🔥 Premium Programs</b>Belly, tone, and challenge packs.</div>
+      <div class="pro-feature"><b>📊 Pro Tracking</b>Better progress insights.</div>
+    </div>
+    <div class="pro-plans">
+      <div class="pro-plan">
+        <div class="pro-plan-name">Monthly PRO</div>
+        <div class="pro-price">₦3,500 <span>/ month</span></div>
+        <div class="pro-small">Start small. Cancel anytime.</div>
+        <button class="btn btn-pink" onclick="startProCheckout('monthly')">Upgrade Monthly</button>
+      </div>
+      <div class="pro-plan best">
+        <div class="pro-plan-tag">Best value</div>
+        <div class="pro-plan-name">Yearly PRO</div>
+        <div class="pro-price">₦30,000 <span>/ year</span></div>
+        <div class="pro-small">Save more with yearly access.</div>
+        <button class="btn btn-pink" onclick="startProCheckout('yearly')">Upgrade Yearly</button>
+      </div>
+    </div>
+    <div class="pro-status" id="pro-status"></div>
+  </div>
+</div>
+
 <div class="app">
   <!-- HEADER -->
   <div class="app-header">
@@ -542,6 +614,17 @@ select option{background:var(--black3);}
     <div class="page active" id="page-home">
       <div class="greeting"><span id="time-greeting">Hello</span>, <span id="user-name">Queen</span> 👑</div>
       <div class="sub-greeting" id="home-date">Let's crush today!</div>
+
+      <div class="pro-inline-card" id="pro-home-card">
+        <div class="flex-between" style="gap:10px;align-items:flex-start;">
+          <div>
+            <div class="pro-inline-title">FitHerNova PRO ✨</div>
+            <div class="pro-inline-sub">Unlock DJ Mode, premium workouts, Coach Nova PRO, meal plans, themes and advanced tracking.</div>
+          </div>
+          <span class="pro-badge free" id="pro-pill-home">FREE</span>
+        </div>
+        <button class="btn btn-pink" onclick="openProModal()">Upgrade to PRO</button>
+      </div>
 
       <div id="install-banner" class="install-banner" style="display:none;">
         <div style="font-size:28px;">📲</div>
@@ -861,6 +944,42 @@ select option{background:var(--black3);}
       </div>
     </div>
 
+
+
+    <!-- PRO -->
+    <div class="page" id="page-pro">
+      <div class="pro-hero">
+        <div class="pro-kicker">Premium Access</div>
+        <div class="pro-title">FitHerNova PRO ✨</div>
+        <div class="pro-sub">A cleaner, stronger fitness lifestyle experience for women — premium music, Coach Nova PRO, advanced workouts, meal plans and progress insights.</div>
+        <div class="pro-features">
+          <div class="pro-feature"><b>🎧 Premium Radio</b>Full music access, DJ Mode and exclusive songs.</div>
+          <div class="pro-feature"><b>👑 Coach Nova PRO</b>Personalized guidance for your body goal.</div>
+          <div class="pro-feature"><b>🔥 Premium Workouts</b>Belly fat, tone, glow and challenge programs.</div>
+          <div class="pro-feature"><b>🍲 Meal Plans</b>Smarter Nigerian/African meal ideas.</div>
+          <div class="pro-feature"><b>📊 Progress Insights</b>Advanced trends and fitness score.</div>
+          <div class="pro-feature"><b>🎨 Themes</b>Premium feminine app looks.</div>
+        </div>
+        <span class="pro-badge" id="pro-status-badge">FREE PLAN</span>
+      </div>
+      <div class="pro-plans">
+        <div class="pro-plan">
+          <div class="pro-plan-name">Monthly PRO</div>
+          <div class="pro-price">₦3,500 <span>/ month</span></div>
+          <div class="pro-small">Perfect for trying premium features.</div>
+          <button class="btn btn-pink" onclick="startProCheckout('monthly')">Upgrade Monthly</button>
+        </div>
+        <div class="pro-plan best">
+          <div class="pro-plan-tag">Best value</div>
+          <div class="pro-plan-name">Yearly PRO</div>
+          <div class="pro-price">₦30,000 <span>/ year</span></div>
+          <div class="pro-small">Save more and keep the full glow-up going.</div>
+          <button class="btn btn-pink" onclick="startProCheckout('yearly')">Upgrade Yearly</button>
+        </div>
+      </div>
+      <div class="pro-status" id="pro-page-status"></div>
+    </div>
+
     <!-- PROFILE -->
     <div class="page" id="page-profile">
       <div class="sec-label">Profile & goals</div>
@@ -891,6 +1010,12 @@ select option{background:var(--black3);}
       <div class="profile-row">
         <div class="profile-stat"><div class="big" id="profile-bmi">--</div><div class="small">BMI</div></div>
         <div class="profile-stat"><div class="big" id="profile-goal-left">--</div><div class="small">kg to goal</div></div>
+      </div>
+
+      <div class="pro-inline-card">
+        <div class="pro-inline-title">FitHerNova PRO ✨</div>
+        <div class="pro-inline-sub" id="profile-pro-text">You are currently on the Free plan. Upgrade to unlock premium workouts, Coach Nova PRO, full radio and advanced tracking.</div>
+        <button class="btn btn-pink" id="profile-pro-btn" onclick="openProModal()">Upgrade to PRO</button>
       </div>
       <div class="nova-card">
         <div class="nova-title">Account</div>
@@ -969,6 +1094,11 @@ select option{background:var(--black3);}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a7 7 0 0 0-7 7v3a7 7 0 0 0 14 0V9a7 7 0 0 0-7-7z"/><path d="M9 10h.01M15 10h.01M9 15c1.6 1 4.4 1 6 0"/><path d="M4 20c2-2 14-2 16 0"/></svg>
       <span class="nav-label">Coach</span>
     </button>
+
+    <button class="nav-item" onclick="goTo('pro')" id="nav-pro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l3 7 7 .5-5.3 4.6 1.7 6.9L12 17l-6.4 4 1.7-6.9L2 9.5 9 9l3-7z"/></svg>
+      <span class="nav-label">PRO</span>
+    </button>
     <button class="nav-item" onclick="goTo('profile')" id="nav-profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
       <span class="nav-label">Profile</span>
@@ -981,11 +1111,16 @@ select option{background:var(--black3);}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
 <script>
 // ===================== SUPABASE =====================
 const SUPABASE_URL = "https://norgzcztduoxkshtthkm.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcmd6Y3p0ZHVveGtzaHR0aGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTM0NTcsImV4cCI6MjA5NTM2OTQ1N30.XNN3QLs5NWVUQU9MhbDdA2E0fqpQUGjAsvNljkVsjPg";
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const PAYSTACK_PUBLIC_KEY = "pk_live_4fa937b5b1e085b776aa9f21ee2e0b4af5a8cca5";
+const PRO_PRICES = {monthly: 350000, yearly: 3000000}; // Paystack amount is in kobo
+let isProUser = false;
+let proPlan = "free";
 
 // ===================== DATA =====================
 let userGoal = 1800;
@@ -1138,6 +1273,7 @@ async function loadUserProfile(){
 async function afterAuthReady(){
   updateAuthUI();
   await loadUserProfile();
+  await loadProStatus();
   await loadRemoteData();
   await loadChallengeData();
   saveData();
@@ -1302,6 +1438,7 @@ function goTo(page){
   if(page==='mealplan') renderMealPlan();
   if(page==='coach') renderCoachGoal();
   if(page==='profile') {populateProfileForm(); renderProfileSummary();}
+  if(page==='pro') updateProUI();
   if(page==='milestones') renderMilestones();
 }
 
@@ -1919,7 +2056,8 @@ function renderProfileSummary(){
   const leftEl=document.getElementById('profile-goal-left');
   if(leftEl) leftEl.textContent=cur?Math.max(0,(cur-target)).toFixed(1):'--';
   const acct=document.getElementById('profile-account-text');
-  if(acct) acct.textContent=currentUser?('Logged in as '+currentUser.email):'Guest mode: data saves on this device.';
+  if(acct) acct.textContent=currentUser?('Logged in as '+currentUser.email+(isProUser?' · PRO':' · Free plan')):'Please login to save and upgrade.';
+  updateProUI();
 }
 async function saveProfileSettings(){
   const msg=document.getElementById('profile-message');
@@ -2135,6 +2273,7 @@ window.addEventListener('beforeinstallprompt',(e)=>{
   if(banner) banner.style.display='flex';
 });
 
+\n\n// ===================== FITHERNOVA PRO / PAYSTACK =====================\nfunction getLocalPro(){\n  try{\n    const raw=localStorage.getItem('fithernova_pro_access');\n    if(!raw) return null;\n    const data=JSON.parse(raw);\n    if(data?.active){return data;}\n  }catch(e){}\n  return null;\n}\nfunction setLocalPro(plan, ref){\n  const data={active:true,plan,ref:ref||('local_'+Date.now()),email:currentUser?.email||'',activatedAt:new Date().toISOString()};\n  localStorage.setItem('fithernova_pro_access', JSON.stringify(data));\n  isProUser=true; proPlan=plan; updateProUI();\n}\nasync function saveProToSupabase(plan, ref){\n  if(!supabaseClient || !currentUser) return;\n  try{\n    await supabaseClient.from('profiles').upsert({\n      id:currentUser.id,\n      email:currentUser.email,\n      is_pro:true,\n      pro_plan:plan,\n      pro_reference:ref,\n      pro_started_at:new Date().toISOString()\n    },{onConflict:'id'});\n  }catch(e){\n    console.warn('PRO cloud save skipped. Run PRO SQL if needed:', e.message||e);\n  }\n}\nasync function loadProStatus(){\n  const local=getLocalPro();\n  if(local){isProUser=true; proPlan=local.plan||'pro';}\n  if(supabaseClient && currentUser){\n    try{\n      const {data}=await supabaseClient.from('profiles').select('is_pro,pro_plan').eq('id',currentUser.id).maybeSingle();\n      if(data?.is_pro){isProUser=true; proPlan=data.pro_plan||proPlan||'pro';}\n    }catch(e){console.warn('PRO status load skipped:', e.message||e);}\n  }\n  updateProUI();\n}\nfunction updateProUI(){\n  const labels=[document.getElementById('pro-status-badge'),document.getElementById('pro-pill-home')];\n  labels.forEach(el=>{\n    if(!el) return;\n    el.textContent=isProUser?('PRO · '+String(proPlan||'active').toUpperCase()):'FREE';\n    el.classList.toggle('free', !isProUser);\n  });\n  const home=document.getElementById('pro-home-card');\n  if(home && isProUser) home.style.display='none';\n  const ptxt=document.getElementById('profile-pro-text');\n  if(ptxt) ptxt.textContent=isProUser?'Your FitHerNova PRO access is active. Enjoy premium features ✨':'You are currently on the Free plan. Upgrade to unlock premium workouts, Coach Nova PRO, full radio and advanced tracking.';\n  const pbtn=document.getElementById('profile-pro-btn');\n  if(pbtn) pbtn.style.display=isProUser?'none':'flex';\n  const ps=document.getElementById('pro-page-status');\n  if(ps) ps.textContent=isProUser?'✅ PRO is active on this device/account.':'Choose a plan to unlock PRO.';\n  const pill=document.getElementById('user-pill');\n  if(pill && currentUser){\n    const email=currentUser.email || 'Account';\n    pill.innerHTML=`${email.split('@')[0]} ${isProUser?'<span class="pro-badge">PRO</span>':''} <button onclick="logoutUser()">Logout</button>`;\n  }\n}\nfunction openProModal(){\n  if(!currentUser){\n    const auth=document.getElementById('auth-screen');\n    if(auth) auth.style.display='flex';\n    return;\n  }\n  const modal=document.getElementById('pro-modal');\n  if(modal) modal.classList.add('show');\n  updateProUI();\n}\nfunction closeProModal(){\n  const modal=document.getElementById('pro-modal');\n  if(modal) modal.classList.remove('show');\n}\nfunction setProMessage(msg){\n  ['pro-status','pro-page-status'].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent=msg;});\n}\nfunction startProCheckout(plan){\n  if(!currentUser){openProModal();return;}\n  if(!window.PaystackPop){setProMessage('Payment library is still loading. Try again in a few seconds.');return;}\n  const amount=PRO_PRICES[plan] || PRO_PRICES.monthly;\n  const handler=PaystackPop.setup({\n    key: PAYSTACK_PUBLIC_KEY,\n    email: currentUser.email,\n    amount: amount,\n    currency: 'NGN',\n    ref: 'FHN_'+plan.toUpperCase()+'_'+Date.now(),\n    metadata:{custom_fields:[{display_name:'FitHerNova Plan', variable_name:'plan', value:plan}]},\n    callback: async function(response){\n      setLocalPro(plan, response.reference);\n      await saveProToSupabase(plan, response.reference);\n      closeProModal();\n      alert('Welcome to FitHerNova PRO ✨');\n    },\n    onClose: function(){setProMessage('Payment was closed. You can try again anytime.');}\n  });\n  handler.openIframe();\n}\n
 // ===================== SERVICE WORKER =====================
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js').catch(()=>{});
@@ -2154,6 +2293,7 @@ function updateTimeGreeting(){
 loadData();
 renderAll();
 initAuth();
+loadProStatus();
 loadSupabaseTracks();
 loadChallengeData();
 
