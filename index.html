@@ -1,2467 +1,500 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<meta name="theme-color" content="#ff2d6b"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="FitHerNova"/>
-<meta name="description" content="FitHerNova women's fitness app — belly fat workouts, calorie tracking & gospel music."/>
-<link rel="manifest" href="manifest.json"/>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-<title>FitHerNova — Coach Build</title>
-<style>
-:root {
-  --pink: #ff2d6b;
-  --pink-light: #ff6b9d;
-  --pink-dark: #c4004d;
-  --pink-glow: rgba(255,45,107,0.25);
-  --gold: #ffd166;
-  --black: #0d0d0d;
-  --black2: #161616;
-  --black3: #1e1e1e;
-  --black4: #2a2a2a;
-  --white: #ffffff;
-  --grey: #8a8a8a;
-  --grey2: #555;
-  --green: #06d6a0;
-  --font-head: 'Syne', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;min-height:100%;overflow:hidden;background:var(--black);}
-body{font-family:var(--font-body);color:var(--white);overscroll-behavior:none;width:100vw;}
-button,input,select{font:inherit;}
-
-/* SCROLLABLE CONTENT */
-.app{display:flex;flex-direction:column;height:100vh;height:100dvh;width:100vw;max-width:100vw;margin:0 auto;position:relative;background:var(--black);}
-.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 calc(160px + var(--safe-bottom));scrollbar-width:none;scroll-padding-bottom:160px;-webkit-overflow-scrolling:touch;}
-.content::-webkit-scrollbar{display:none;}
-.page{display:none;padding:20px max(18px,env(safe-area-inset-left)) 110px max(18px,env(safe-area-inset-right));animation:fadeUp 0.3s ease;max-width:920px;width:100%;margin:0 auto;}
-.page.active{display:block;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-
-/* HEADER */
-.app-header{padding:18px max(18px,env(safe-area-inset-right)) 0 max(18px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;max-width:920px;width:100%;margin:0 auto;}
-.logo{font-family:var(--font-head);font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px;}
-.logo-sub{font-size:10px;color:var(--grey);letter-spacing:1px;text-transform:uppercase;margin-top:-2px;}
-.header-streak{background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px;}
-
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:rgba(22,22,22,.96);backdrop-filter:blur(12px);border-top:1px solid var(--black4);display:flex;padding-bottom:var(--safe-bottom);z-index:100;box-shadow:0 -10px 30px rgba(0,0,0,.45);}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0 8px;cursor:pointer;border:none;background:none;color:var(--grey);gap:3px;transition:color 0.2s;position:relative;}
-.nav-item.active{color:var(--pink);}
-.nav-item.active::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:linear-gradient(90deg,var(--pink),var(--pink-light));border-radius:0 0 4px 4px;}
-.nav-item svg{width:22px;height:22px;stroke-width:1.8;}
-.nav-label{font-size:10px;font-weight:500;letter-spacing:0.3px;}
-
-/* CARDS */
-.card{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
-.card-pink{background:linear-gradient(135deg,var(--pink-dark),var(--pink));border:none;}
-.sec-label{font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
-
-/* BUTTONS */
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;font-family:var(--font-body);font-weight:500;transition:all 0.2s;border-radius:var(--radius-sm);}
-.btn-pink{background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;height:46px;font-size:14px;width:100%;box-shadow:0 4px 20px var(--pink-glow);}
-.btn-pink:hover{transform:translateY(-1px);box-shadow:0 6px 28px var(--pink-glow);}
-.btn-pink:active{transform:translateY(0);}
-.btn-ghost{background:var(--black3);border:1px solid var(--black4);color:var(--white);height:40px;font-size:13px;padding:0 16px;}
-.btn-ghost:hover{border-color:var(--grey2);}
-.btn-danger{background:#2a0a0f;border:1px solid #5c1a25;color:#ff6b6b;height:40px;font-size:13px;padding:0 16px;}
-
-/* INPUTS */
-input[type=text],input[type=email],input[type=password],input[type=number],input[type=time],select{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);color:var(--white);font-family:var(--font-body);font-size:14px;padding:0 12px;height:44px;width:100%;outline:none;transition:border-color 0.2s;}
-input:focus,select:focus{border-color:var(--pink);}
-input::placeholder{color:var(--grey2);}
-select option{background:var(--black3);}
-
-
-/* AUTH */
-.auth-screen{position:fixed;inset:0;z-index:2000;background:radial-gradient(circle at top left,rgba(255,45,107,.18),transparent 32%),radial-gradient(circle at bottom right,rgba(255,209,102,.10),transparent 34%),var(--black);display:flex;align-items:center;justify-content:center;padding:22px;}
-.auth-card{width:min(440px,100%);background:rgba(22,22,22,.96);border:1px solid var(--black4);border-radius:24px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.55);}
-.auth-logo{font-family:var(--font-head);font-size:34px;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px;}
-.auth-sub{font-size:13px;color:var(--grey);margin:4px 0 18px;line-height:1.45;}
-.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;background:var(--black3);border:1px solid var(--black4);border-radius:14px;padding:5px;}
-.auth-tab{border:0;background:transparent;color:var(--grey);height:38px;border-radius:10px;font-weight:700;cursor:pointer;}
-.auth-tab.active{background:linear-gradient(135deg,var(--pink),var(--pink-light));color:white;}
-.auth-form{display:flex;flex-direction:column;gap:10px;}
-.auth-message{min-height:18px;font-size:12px;color:var(--gold);line-height:1.35;margin-top:4px;}
-.auth-small{font-size:11px;color:var(--grey);text-align:center;margin-top:12px;line-height:1.45;}
-.user-pill{background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:6px 10px;font-size:11px;color:var(--grey);display:flex;align-items:center;gap:6px;white-space:nowrap;}
-.user-pill button{background:transparent;border:0;color:var(--pink-light);font-weight:700;cursor:pointer;font-size:11px;}
-@media(min-width:700px){.stats-row{grid-template-columns:repeat(4,1fr)}.food-item,.workout-card,.card,.detail-card,.ring-section{border-radius:20px}.logo{font-size:30px}.page{padding-left:28px;padding-right:28px}.app-header{padding-left:28px;padding-right:28px}}
-@media(max-width:430px){.nav-label{font-size:9px}.nav-item svg{width:20px;height:20px}.header-streak{font-size:11px;padding:6px 9px}.logo{font-size:22px}.app-header{align-items:flex-start}.user-pill{display:none}}
-
-/* ======== HOME ======== */
-.greeting{font-family:var(--font-head);font-size:22px;font-weight:700;margin-bottom:2px;}
-.greeting span{background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.sub-greeting{font-size:13px;color:var(--grey);margin-bottom:18px;}
-
-.ring-section{display:flex;align-items:center;gap:16px;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
-.ring-wrap{position:relative;flex-shrink:0;}
-.ring-wrap svg{transform:rotate(-90deg);}
-.ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
-.ring-cal{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--white);}
-.ring-sub{font-size:10px;color:var(--grey);margin-top:1px;}
-.ring-info{flex:1;}
-.ring-info-row{display:flex;justify-content:space-between;margin-bottom:8px;}
-.rir-label{font-size:11px;color:var(--grey);}
-.rir-val{font-size:11px;font-weight:600;color:var(--white);}
-.mini-prog{height:4px;background:var(--black4);border-radius:99px;overflow:hidden;margin-top:3px;}
-.mini-fill{height:100%;border-radius:99px;transition:width 0.6s ease;}
-
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
-.stat-tile{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;}
-.stat-tile .sv{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--white);}
-.stat-tile .sl{font-size:9px;color:var(--grey);margin-top:2px;letter-spacing:0.3px;}
-
-.quick-start{background:linear-gradient(135deg,#1a0a10,#2a0d18);border:1px solid #3d1525;border-radius:var(--radius);padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
-.qs-text .qt{font-family:var(--font-head);font-size:14px;font-weight:700;}
-.qs-text .qs{font-size:12px;color:var(--grey);margin-top:2px;}
-.qs-btn{background:linear-gradient(135deg,var(--pink),var(--pink-light));border:none;color:#fff;border-radius:var(--radius-sm);padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
-
-.meal-log-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--black4);}
-.meal-log-item:last-child{border-bottom:none;}
-.mli-left{display:flex;align-items:center;gap:8px;font-size:13px;}
-.mli-cal{font-size:13px;font-weight:600;color:var(--pink-light);}
-
-/* ======== FOOD ======== */
-.filter-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;scrollbar-width:none;}
-.filter-scroll::-webkit-scrollbar{display:none;}
-.chip{flex-shrink:0;padding:6px 14px;border-radius:99px;border:1px solid var(--black4);background:var(--black3);color:var(--grey);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;}
-.chip.active{background:var(--pink);border-color:var(--pink);color:#fff;}
-.food-item{display:flex;align-items:center;justify-content:space-between;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:6px;cursor:pointer;transition:border-color 0.2s;}
-.food-item:hover,.food-item:active{border-color:var(--grey2);}
-.food-item.selected{border-color:var(--pink);background:#1a0810;}
-.food-emoji{font-size:22px;width:36px;text-align:center;}
-.food-name{font-size:13px;font-weight:500;color:var(--white);}
-.food-meta{font-size:11px;color:var(--grey);margin-top:1px;}
-.food-cal{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--pink-light);}
-.detail-card{background:#1a0810;border:1px solid var(--pink-dark);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
-.portion-control{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-bottom:12px;}
-.portion-label{font-size:12px;color:var(--grey);}
-.portion-stepper{height:44px;background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 10px;min-width:190px;}
-.portion-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--pink);background:#2a0a18;color:var(--pink-light);font-size:20px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.portion-btn:active{transform:scale(.94);}
-.portion-value{font-size:13px;font-weight:700;color:var(--white);min-width:78px;text-align:center;}
-@media(max-width:390px){.portion-control{grid-template-columns:1fr;}.portion-stepper{width:100%;min-width:0;}}
-.macro-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0;}
-.mc{background:var(--black3);border-radius:var(--radius-sm);padding:8px;text-align:center;}
-.mc .mv{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--white);}
-.mc .ml{font-size:10px;color:var(--grey);margin-top:2px;}
-.log-list-item{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--black4);font-size:13px;}
-.log-list-item:last-child{border-bottom:none;}
-.del-btn{background:none;border:none;color:var(--grey2);cursor:pointer;font-size:16px;padding:0 4px;}
-
-/* ======== WORKOUT ======== */
-.workout-card{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s;}
-.workout-card:hover{border-color:var(--grey2);}
-.workout-card.open{border-color:var(--pink);}
-.wc-top{display:flex;align-items:center;justify-content:space-between;}
-.wc-icon{font-size:24px;width:42px;height:42px;background:var(--black3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.wc-title{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--white);}
-.wc-meta{font-size:11px;color:var(--grey);margin-top:2px;}
-.badge{font-size:10px;padding:3px 8px;border-radius:99px;font-weight:600;letter-spacing:0.3px;}
-.badge-easy{background:#0a2a1a;color:var(--green);}
-.badge-med{background:#2a1a00;color:var(--gold);}
-.badge-hard{background:#2a0a0f;color:#ff6b6b;}
-.badge-gentle{background:#0a1a2a;color:#6bb5ff;}
-.ex-list{margin-top:12px;display:none;}
-.ex-list.open{display:block;}
-.ex-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--black4);}
-.ex-num{width:20px;height:20px;border-radius:50%;background:var(--black4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--grey);flex-shrink:0;}
-.ex-name{font-size:13px;color:var(--white);flex:1;}
-.ex-reps{font-size:11px;color:var(--pink-light);font-weight:500;}
-
-/* ======== TIMER ======== */
-.timer-page{text-align:center;}
-.timer-workout-name{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--pink);background:#1a0810;border:1px solid var(--pink-dark);border-radius:99px;display:inline-block;padding:6px 18px;margin-bottom:20px;}
-.timer-ring-wrap{position:relative;width:200px;height:200px;margin:0 auto 20px;}
-.timer-ring-wrap svg{transform:rotate(-90deg);}
-.timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
-.timer-digits{font-family:var(--font-head);font-size:44px;font-weight:800;letter-spacing:2px;color:var(--white);}
-.timer-state{font-size:11px;color:var(--grey);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
-.timer-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
-.ts{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px;text-align:center;}
-.ts .tv{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--white);}
-.ts .tl{font-size:10px;color:var(--grey);margin-top:2px;}
-.timer-btns{display:flex;gap:8px;justify-content:center;margin-bottom:16px;}
-.tbtn{height:48px;padding:0 24px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:var(--font-body);display:flex;align-items:center;gap:6px;}
-.tbtn-go{background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;box-shadow:0 4px 20px var(--pink-glow);}
-.tbtn-pause{background:var(--black3);border:1px solid var(--black4);color:var(--white);}
-.tbtn-stop{background:#2a0a0f;border:1px solid #5c1a25;color:#ff6b6b;}
-
-.pick-label{font-size:12px;color:var(--grey);margin-bottom:8px;text-align:left;}
-.pick-item{display:flex;align-items:center;gap:10px;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:6px;cursor:pointer;transition:all 0.2s;}
-.pick-item:hover{border-color:var(--grey2);}
-.pick-item.selected{border-color:var(--pink);background:#1a0810;}
-.pick-icon{font-size:20px;}
-.pick-name{font-size:13px;font-weight:500;color:var(--white);flex:1;}
-.pick-rate{font-size:11px;color:var(--pink-light);}
-
-.result-banner{background:linear-gradient(135deg,#1a0a10,#0a1a10);border:1px solid var(--pink-dark);border-radius:var(--radius);padding:16px;margin-bottom:14px;display:none;text-align:center;}
-.rb-title{font-family:var(--font-head);font-size:18px;font-weight:800;margin-bottom:10px;}
-.rb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
-.rb-stat{background:var(--black3);border-radius:var(--radius-sm);padding:10px;}
-.rb-val{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--pink-light);}
-.rb-lbl{font-size:10px;color:var(--grey);margin-top:2px;}
-.rb-msg{font-size:13px;color:var(--green);}
-
-/* ======== MUSIC ======== */
-.now-playing{background:linear-gradient(135deg,#1a0810,#0d0d0d);border:1px solid var(--pink-dark);border-radius:var(--radius);padding:18px;margin-bottom:14px;text-align:center;}
-.np-art{width:100px;height:100px;background:linear-gradient(135deg,var(--pink-dark),var(--black3));border-radius:var(--radius);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 8px 32px var(--pink-glow);transition:transform 0.3s;}
-.np-art.spinning{animation:spin 4s linear infinite;}
-@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-.np-title{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--white);margin-bottom:2px;}
-.np-artist{font-size:12px;color:var(--grey);margin-bottom:14px;}
-.progress-bar{height:4px;background:var(--black4);border-radius:99px;overflow:hidden;margin-bottom:6px;cursor:pointer;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--pink-light));border-radius:99px;transition:width 0.5s linear;}
-.time-row{display:flex;justify-content:space-between;font-size:10px;color:var(--grey);margin-bottom:14px;}
-.player-btns{display:flex;align-items:center;justify-content:center;gap:20px;}
-.pbtn{background:none;border:none;cursor:pointer;color:var(--grey);transition:color 0.2s;display:flex;align-items:center;justify-content:center;}
-.pbtn:hover{color:var(--white);}
-.pbtn-main{width:52px;height:52px;background:linear-gradient(135deg,var(--pink),var(--pink-light));border-radius:50%;color:#fff;box-shadow:0 4px 20px var(--pink-glow);}
-.pbtn-main:hover{transform:scale(1.05);}
-.pbtn svg{width:20px;height:20px;}
-.pbtn-main svg{width:22px;height:22px;}
-
-.track-list{display:flex;flex-direction:column;gap:6px;}
-.track-item{display:flex;align-items:center;gap:12px;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer;transition:all 0.2s;}
-.track-item:hover{border-color:var(--grey2);}
-.track-item.playing{border-color:var(--pink);background:#1a0810;}
-.track-num{font-size:12px;color:var(--grey);width:18px;text-align:center;}
-.track-info{flex:1;}
-.track-name{font-size:13px;font-weight:500;color:var(--white);}
-.track-artist{font-size:11px;color:var(--grey);margin-top:1px;}
-.track-dur{font-size:11px;color:var(--grey2);}
-.playing-anim{display:none;align-items:flex-end;gap:2px;height:16px;}
-.track-item.playing .playing-anim{display:flex;}
-.track-item.playing .track-num{display:none;}
-.bar-anim{width:3px;background:var(--pink);border-radius:2px;animation:barBounce 0.8s ease infinite;}
-.bar-anim:nth-child(2){animation-delay:0.15s;}
-.bar-anim:nth-child(3){animation-delay:0.3s;}
-@keyframes barBounce{0%,100%{height:4px;}50%{height:14px;}}
-
-/* ======== PROGRESS ======== */
-.prog-header{display:flex;gap:10px;margin-bottom:12px;}
-.prog-stat-big{flex:1;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;text-align:center;}
-.psb-val{font-family:var(--font-head);font-size:24px;font-weight:800;}
-.psb-val.pink{color:var(--pink);}
-.psb-val.green{color:var(--green);}
-.psb-val.gold{color:var(--gold);}
-.psb-label{font-size:11px;color:var(--grey);margin-top:3px;}
-.chart-area{display:flex;align-items:flex-end;gap:5px;height:90px;padding:0 4px;}
-.chart-bar{flex:1;border-radius:4px 4px 0 0;min-height:6px;transition:height 0.5s ease;cursor:pointer;position:relative;}
-.chart-bar-label{font-size:9px;color:var(--grey);text-align:center;margin-top:4px;}
-.chart-wrap{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
-.milestone-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--black4);}
-.milestone-item:last-child{border-bottom:none;}
-.mi-icon{font-size:22px;width:36px;text-align:center;}
-.mi-name{font-size:13px;font-weight:500;color:var(--white);flex:1;}
-.mi-sub{font-size:11px;color:var(--grey);margin-top:1px;}
-.mi-badge{font-size:10px;padding:3px 10px;border-radius:99px;font-weight:600;}
-.mi-badge.earned{background:#0a2a1a;color:var(--green);}
-.mi-badge.locked{background:var(--black4);color:var(--grey2);}
-
-/* REMINDER */
-.reminder-freq{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
-.freq-card{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px;cursor:pointer;text-align:center;transition:all 0.2s;}
-.freq-card.active{border-color:var(--pink);background:#1a0810;}
-.freq-card .fi{font-size:18px;margin-bottom:4px;}
-.freq-card .fl{font-size:12px;font-weight:500;color:var(--white);}
-.freq-card .fs{font-size:10px;color:var(--grey);margin-top:2px;}
-.reminder-item{display:flex;align-items:center;justify-content:space-between;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:6px;}
-.toggle{position:relative;width:38px;height:22px;cursor:pointer;flex-shrink:0;}
-.toggle input{opacity:0;width:0;height:0;}
-.toggle-slider{position:absolute;inset:0;background:var(--black4);border-radius:99px;transition:0.3s;}
-.toggle-slider:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:var(--grey);border-radius:50%;transition:0.3s;}
-.toggle input:checked+.toggle-slider{background:var(--pink);}
-.toggle input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff;}
-
-/* NOTIF TOAST */
-.notif-toast{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-100%);max-width:480px;width:100%;background:linear-gradient(135deg,#1a0810,#2a0d18);border-bottom:2px solid var(--pink);padding:14px 18px;z-index:999;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);display:flex;align-items:center;gap:12px;}
-.notif-toast.show{transform:translateX(-50%) translateY(0);}
-.nt-icon{font-size:24px;}
-.nt-text{flex:1;}
-.nt-title{font-size:14px;font-weight:600;color:var(--white);}
-.nt-sub{font-size:11px;color:var(--grey);margin-top:2px;}
-.nt-btn{background:var(--pink);border:none;color:#fff;border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
-
-/* INSTALL PROMPT */
-.install-banner{background:linear-gradient(135deg,#0a0a1a,#1a0810);border:1px solid #333;border-radius:var(--radius);padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;}
-.ib-text{flex:1;font-size:12px;color:var(--grey);}
-.ib-text strong{display:block;font-size:13px;color:var(--white);margin-bottom:2px;}
-.ib-btn{background:var(--pink);border:none;color:#fff;border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
-
-
-/* ======== NOVA PRODUCT PAGES ======== */
-.nova-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
-@media(max-width:560px){.nova-grid{grid-template-columns:1fr;}}
-.nova-card{background:linear-gradient(135deg,#171717,#101010);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
-.nova-card.hot{border-color:var(--pink-dark);background:linear-gradient(135deg,#250713,#111);} 
-.nova-title{font-family:var(--font-head);font-size:16px;font-weight:800;color:var(--white);margin-bottom:4px;}
-.nova-sub{font-size:12px;color:var(--grey);line-height:1.45;}
-.progress-track{height:8px;background:var(--black4);border-radius:999px;overflow:hidden;margin:10px 0;}
-.progress-track>div{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:999px;transition:width .35s ease;}
-.day-card{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
-.day-card.done{border-color:rgba(6,214,160,.55);background:linear-gradient(135deg,#071912,#111);} 
-.day-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;}
-.day-num{width:34px;height:34px;border-radius:50%;background:#2a0a18;border:1px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;color:var(--pink-light);font-family:var(--font-head);font-weight:800;flex-shrink:0;}
-.day-title{font-family:var(--font-head);font-size:14px;font-weight:800;}
-.day-lines{font-size:12px;color:var(--grey);line-height:1.55;margin-top:6px;}
-.day-lines strong{color:var(--white);}
-.done-pill{font-size:10px;border-radius:999px;padding:4px 9px;background:#0a2a1a;color:var(--green);font-weight:800;white-space:nowrap;}
-.plan-chip{font-size:10px;border-radius:999px;padding:4px 9px;background:#2a0a18;color:var(--pink-light);display:inline-flex;margin:0 5px 6px 0;font-weight:700;}
-.profile-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-@media(max-width:520px){.profile-row{grid-template-columns:1fr;}}
-.profile-stat{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:12px;text-align:center;}
-.profile-stat .big{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--pink-light);}
-.profile-stat .small{font-size:11px;color:var(--grey);margin-top:2px;}
-
-.coach-quick{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;scrollbar-width:none;}
-.coach-quick::-webkit-scrollbar{display:none;}
-.coach-answer{background:linear-gradient(135deg,#1a0810,#101010);border:1px solid var(--pink-dark);border-radius:var(--radius);padding:14px;margin-top:10px;white-space:pre-wrap;font-size:13px;line-height:1.55;color:var(--white);}
-.coach-input-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;}
-@media(max-width:520px){.coach-input-row{grid-template-columns:1fr;}}
-.goal-card{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:12px;cursor:pointer;transition:.2s;}
-.goal-card.active,.goal-card:hover{border-color:var(--pink);background:#1a0810;}
-.goal-card .gtitle{font-family:var(--font-head);font-size:13px;font-weight:800;color:var(--white);}
-.goal-card .gsub{font-size:11px;color:var(--grey);margin-top:3px;line-height:1.35;}
-
-
-
-
-
-/* ======== PREMIUM MUSIC PLAYER ======== */
-.music-hero{position:relative;overflow:hidden;border-radius:24px;padding:20px;margin-bottom:14px;background:radial-gradient(circle at 20% 10%,rgba(255,45,107,.42),transparent 32%),radial-gradient(circle at 85% 15%,rgba(255,209,102,.26),transparent 28%),linear-gradient(145deg,#230715,#080808 58%,#14040b);border:1px solid rgba(255,45,107,.28);box-shadow:0 22px 70px rgba(0,0,0,.55),0 0 35px rgba(255,45,107,.12);}
-.music-hero:before{content:'';position:absolute;inset:-2px;background:linear-gradient(120deg,transparent,rgba(255,255,255,.06),transparent);transform:translateX(-100%);animation:shineNova 6s infinite;pointer-events:none;}
-@keyframes shineNova{0%,65%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
-.music-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;position:relative;z-index:1;}
-.music-badge{font-size:10px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:#fff;background:rgba(255,45,107,.24);border:1px solid rgba(255,45,107,.4);border-radius:999px;padding:6px 10px;}
-.music-live{font-size:10px;color:var(--gold);background:rgba(255,209,102,.10);border:1px solid rgba(255,209,102,.22);border-radius:999px;padding:6px 10px;white-space:nowrap;}
-.dj-toggle{border:1px solid rgba(255,209,102,.32);background:rgba(255,209,102,.12);color:var(--gold);border-radius:999px;padding:6px 10px;font-size:10px;font-weight:900;letter-spacing:.4px;cursor:pointer;white-space:nowrap;}
-.dj-toggle.on{background:linear-gradient(135deg,rgba(255,45,107,.32),rgba(255,209,102,.18));border-color:rgba(255,45,107,.45);color:#fff;box-shadow:0 0 18px rgba(255,45,107,.18);}
-
-.music-stage{display:grid;grid-template-columns:128px 1fr;gap:16px;align-items:center;position:relative;z-index:1;}
-@media(max-width:520px){.music-stage{grid-template-columns:1fr;text-align:center}.vinyl-wrap{margin:0 auto}.premium-controls{justify-content:center}.music-meta-line{justify-content:center}}
-.vinyl-wrap{position:relative;width:128px;height:128px;display:flex;align-items:center;justify-content:center;}
-.vinyl-disc{width:118px;height:118px;border-radius:50%;background:repeating-radial-gradient(circle at center,#111 0,#111 7px,#1c1c1c 8px,#1c1c1c 11px),linear-gradient(135deg,#000,#222);box-shadow:inset 0 0 0 8px rgba(255,255,255,.025),0 18px 35px rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;transition:transform .3s ease;}
-.vinyl-disc.spinning{animation:spin 4.5s linear infinite;}
-.vinyl-label{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 0 8px rgba(0,0,0,.35);}
-.music-info{min-width:0;}
-.music-title{font-family:var(--font-head);font-size:22px;font-weight:900;line-height:1.05;letter-spacing:-.6px;color:#fff;margin-bottom:5px;}
-.music-artist{font-size:13px;color:rgba(255,255,255,.68);margin-bottom:10px;}
-.music-meta-line{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
-.music-pill{font-size:10px;color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);border-radius:999px;padding:5px 8px;}
-.premium-progress{height:7px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;cursor:pointer;margin-bottom:7px;}
-.premium-progress .progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:999px;box-shadow:0 0 18px rgba(255,45,107,.55);}
-.premium-time{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.55);margin-bottom:14px;}
-.premium-controls{display:flex;align-items:center;gap:13px;}
-.premium-controls .pbtn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;}
-.premium-controls .pbtn-main{width:58px;height:58px;background:linear-gradient(135deg,var(--pink),var(--pink-light));border:none;box-shadow:0 10px 34px rgba(255,45,107,.38);}
-.music-status{margin-top:12px;font-size:12px;color:rgba(255,255,255,.62);line-height:1.4;position:relative;z-index:1;}
-.playlist-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;}
-.refresh-music-btn{height:34px;border:none;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:11px;font-weight:800;padding:0 12px;cursor:pointer;}
-.track-item{border-radius:16px;background:linear-gradient(135deg,#171717,#101010);}
-.track-item.playing{border-color:rgba(255,45,107,.75);box-shadow:0 0 24px rgba(255,45,107,.14);}
-
-
-
-/* ======== FLOATING MINI PLAYER ======== */
-.mini-player{position:fixed;left:12px;right:12px;bottom:calc(74px + var(--safe-bottom));max-width:900px;margin:0 auto;z-index:150;background:linear-gradient(135deg,rgba(35,7,21,.96),rgba(12,12,12,.96));border:1px solid rgba(255,45,107,.35);border-radius:22px;box-shadow:0 18px 55px rgba(0,0,0,.6),0 0 24px rgba(255,45,107,.16);backdrop-filter:blur(16px);display:none;overflow:hidden;transform:translateY(10px);opacity:0;transition:.25s ease;}
-.mini-player.show{display:block;transform:translateY(0);opacity:1;}
-.mini-progress{height:3px;background:rgba(255,255,255,.08);}
-.mini-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--gold));box-shadow:0 0 14px rgba(255,45,107,.5);}
-.mini-player-inner{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;}
-.mini-art{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 10px 25px rgba(255,45,107,.25);}
-.mini-art.spinning{animation:spin 4.5s linear infinite;}
-.mini-title{font-family:var(--font-head);font-size:13px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
-.mini-sub{font-size:10px;color:rgba(255,255,255,.58);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.mini-actions{display:flex;align-items:center;gap:8px;}
-.mini-btn{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.mini-btn.main{background:linear-gradient(135deg,var(--pink),var(--pink-light));border:none;box-shadow:0 8px 22px rgba(255,45,107,.35);}
-.mini-btn svg{width:16px;height:16px;}
-@media(max-width:430px){.mini-player{left:8px;right:8px;bottom:calc(70px + var(--safe-bottom));border-radius:18px}.mini-player-inner{padding:9px 10px}.mini-title{font-size:12px}.mini-sub{font-size:9px}.mini-actions{gap:6px}.mini-btn{width:31px;height:31px}.mini-art{width:38px;height:38px}}
-.mini-player.minimized{left:auto;right:12px;width:68px;border-radius:24px;overflow:hidden;}
-.mini-player.minimized .mini-progress,.mini-player.minimized .mini-title,.mini-player.minimized .mini-sub,.mini-player.minimized .mini-actions button:not(.main){display:none;}
-.mini-player.minimized .mini-player-inner{grid-template-columns:1fr;padding:8px;gap:0;}
-.mini-player.minimized .mini-art{width:50px;height:50px;margin:auto;}
-
-
-
-/* ======== INSTALL POPUP + CLEAN COACH/MEALS ======== */
-.install-pop{position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:18px;}
-.install-pop.show{display:flex;}
-.install-card{width:min(460px,100%);border-radius:28px;padding:20px;background:radial-gradient(circle at 20% 0%,rgba(255,45,107,.28),transparent 34%),linear-gradient(145deg,#191919,#0c0c0c);border:1px solid rgba(255,45,107,.25);box-shadow:0 28px 80px rgba(0,0,0,.75),0 0 35px rgba(255,45,107,.12);}
-.install-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;}
-.install-icon{width:58px;height:58px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,var(--pink),var(--gold));box-shadow:0 12px 35px rgba(255,45,107,.3);}
-.install-close{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:white;cursor:pointer;}
-.install-title{font-family:var(--font-head);font-size:24px;font-weight:900;letter-spacing:-.6px;margin-bottom:4px;}
-.install-text{font-size:13px;color:rgba(255,255,255,.68);line-height:1.55;margin-bottom:14px;}
-.install-steps{display:grid;gap:8px;margin:12px 0;}
-.install-step{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px;}
-.install-step b{color:#fff;font-size:13px;}
-.install-step span{font-size:12px;color:rgba(255,255,255,.62);line-height:1.45;}
-.install-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
-@media(max-width:430px){.install-actions{grid-template-columns:1fr}.install-title{font-size:21px}}
-.install-soft-btn{height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:white;font-weight:800;cursor:pointer;}
-
-.coach-hero-clean{position:relative;overflow:hidden;border-radius:26px;padding:18px;background:radial-gradient(circle at 15% 0%,rgba(255,45,107,.34),transparent 35%),radial-gradient(circle at 100% 10%,rgba(255,209,102,.18),transparent 30%),linear-gradient(145deg,#1b0710,#101010);border:1px solid rgba(255,45,107,.26);box-shadow:0 18px 50px rgba(0,0,0,.45);margin-bottom:12px;}
-.coach-avatar{width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 12px 30px rgba(255,45,107,.28);}
-.coach-hero-row{display:flex;gap:13px;align-items:center;}
-.coach-title-clean{font-family:var(--font-head);font-size:20px;font-weight:900;letter-spacing:-.4px;}
-.coach-sub-clean{font-size:12px;color:rgba(255,255,255,.66);line-height:1.45;margin-top:3px;}
-.coach-panel{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:14px;margin-bottom:12px;}
-.coach-prompts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;}
-@media(max-width:520px){.coach-prompts{grid-template-columns:1fr}}
-.coach-prompt{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);border-radius:16px;padding:12px;text-align:left;color:white;cursor:pointer;}
-.coach-prompt b{display:block;font-size:13px;font-family:var(--font-head);margin-bottom:3px;}
-.coach-prompt span{font-size:11px;color:rgba(255,255,255,.55);}
-.coach-input-clean{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:8px;}
-@media(max-width:520px){.coach-input-clean{grid-template-columns:1fr}}
-.coach-input-clean input{height:48px;border-radius:16px;background:#121212;}
-.coach-send{height:48px;border:0;border-radius:16px;padding:0 18px;background:linear-gradient(135deg,var(--pink),var(--pink-light));color:white;font-weight:900;cursor:pointer;}
-.coach-answer{border-radius:20px;border:1px solid rgba(255,45,107,.24);background:linear-gradient(145deg,#16070d,#0f0f0f);font-size:13px;line-height:1.62;}
-
-.meal-hero-clean{border-radius:26px;padding:18px;background:radial-gradient(circle at 20% 0%,rgba(6,214,160,.18),transparent 34%),radial-gradient(circle at 100% 0%,rgba(255,209,102,.18),transparent 30%),linear-gradient(145deg,#111b16,#101010);border:1px solid rgba(6,214,160,.18);box-shadow:0 18px 50px rgba(0,0,0,.38);margin-bottom:12px;}
-.meal-title-clean{font-family:var(--font-head);font-size:21px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;}
-.meal-sub-clean{font-size:12px;color:rgba(255,255,255,.62);line-height:1.5;}
-.meal-grid-clean{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
-@media(max-width:620px){.meal-grid-clean{grid-template-columns:1fr}}
-.meal-card-clean{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:15px;box-shadow:0 10px 30px rgba(0,0,0,.22);}
-.meal-card-top{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
-.meal-icon-clean{width:42px;height:42px;border-radius:15px;background:rgba(255,45,107,.14);display:flex;align-items:center;justify-content:center;font-size:22px;}
-.meal-name-clean{font-family:var(--font-head);font-size:15px;font-weight:900;}
-.meal-note-clean{font-size:12px;color:rgba(255,255,255,.58);line-height:1.5;margin-top:8px;}
-.meal-chip-clean{display:block;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.075);padding:9px 10px;margin-bottom:7px;font-size:12px;color:rgba(255,255,255,.78);}
-
-
-
-/* ======== FITHERNOVA PRO ======== */
-.pro-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;background:linear-gradient(135deg,var(--pink),var(--gold));color:#fff;font-size:10px;font-weight:900;letter-spacing:.4px;box-shadow:0 8px 24px rgba(255,45,107,.25);}
-.pro-badge.free{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--grey);box-shadow:none;}
-.pro-hero{position:relative;overflow:hidden;border-radius:28px;padding:20px;margin-bottom:14px;background:radial-gradient(circle at 20% 0%,rgba(255,45,107,.42),transparent 36%),radial-gradient(circle at 95% 10%,rgba(255,209,102,.28),transparent 34%),linear-gradient(145deg,#250713,#0b0b0b 62%,#16050b);border:1px solid rgba(255,45,107,.32);box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 35px rgba(255,45,107,.14);}
-.pro-kicker{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:var(--gold);font-weight:900;margin-bottom:8px;}
-.pro-title{font-family:var(--font-head);font-size:28px;line-height:1.02;font-weight:900;letter-spacing:-.8px;margin-bottom:8px;}
-.pro-sub{font-size:13px;color:rgba(255,255,255,.68);line-height:1.55;margin-bottom:14px;}
-.pro-features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0;}
-@media(max-width:560px){.pro-features{grid-template-columns:1fr}.pro-title{font-size:24px}}
-.pro-feature{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px;font-size:12px;color:rgba(255,255,255,.78);}
-.pro-feature b{display:block;color:#fff;font-family:var(--font-head);font-size:13px;margin-bottom:2px;}
-.pro-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;}
-@media(max-width:620px){.pro-plans{grid-template-columns:1fr}}
-.pro-plan{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:15px;position:relative;overflow:hidden;}
-.pro-plan.best{border-color:rgba(255,45,107,.55);box-shadow:0 0 30px rgba(255,45,107,.13);}
-.pro-plan-tag{position:absolute;right:12px;top:12px;border-radius:999px;padding:4px 8px;background:rgba(255,209,102,.13);border:1px solid rgba(255,209,102,.28);color:var(--gold);font-size:10px;font-weight:900;}
-.pro-plan-name{font-family:var(--font-head);font-size:16px;font-weight:900;margin-bottom:4px;}
-.pro-price{font-family:var(--font-head);font-size:28px;font-weight:900;margin:8px 0;color:#fff;}
-.pro-price span{font-family:var(--font-body);font-size:12px;color:var(--grey);font-weight:500;}
-.pro-small{font-size:11px;color:var(--grey);line-height:1.45;margin-bottom:12px;}
-.pro-lock{position:relative;overflow:hidden;}
-.pro-lock.locked:after{content:'PRO';position:absolute;top:10px;right:10px;background:linear-gradient(135deg,var(--pink),var(--gold));font-size:9px;font-weight:900;padding:4px 7px;border-radius:999px;color:#fff;}
-.pro-inline-card{border-radius:22px;padding:15px;background:linear-gradient(135deg,#1a0710,#101010);border:1px solid rgba(255,45,107,.24);margin-bottom:12px;}
-.pro-inline-title{font-family:var(--font-head);font-size:16px;font-weight:900;margin-bottom:4px;}
-.pro-inline-sub{font-size:12px;color:rgba(255,255,255,.62);line-height:1.45;margin-bottom:10px;}
-.pro-modal{position:fixed;inset:0;z-index:2700;background:rgba(0,0,0,.72);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:18px;}
-.pro-modal.show{display:flex;}
-.pro-modal-card{width:min(520px,100%);max-height:88vh;overflow:auto;border-radius:28px;padding:18px;background:radial-gradient(circle at 20% 0%,rgba(255,45,107,.35),transparent 38%),linear-gradient(145deg,#1a1a1a,#080808);border:1px solid rgba(255,45,107,.28);box-shadow:0 28px 90px rgba(0,0,0,.75);}
-.pro-modal-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
-.pro-close{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:white;cursor:pointer;}
-.pro-status{font-size:12px;color:var(--gold);min-height:18px;margin-top:8px;}
-
-/* PROFILE PHOTO */
-.profile-photo-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-.profile-avatar-wrap{width:78px;height:78px;border-radius:50%;background:#1e1e1e;border:2px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 8px 26px rgba(255,45,107,.18);flex-shrink:0;}
-.profile-avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none;}
-.profile-avatar-placeholder{font-size:30px;color:var(--grey);}
-.profile-photo-actions{flex:1;min-width:190px;}
-.profile-photo-actions .btn{width:100%;}
-.photo-status{font-size:12px;color:var(--grey);margin-top:8px;line-height:1.4;}
-.header-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--pink-dark);display:none;}
-
-/* Make many tabs usable on phones */
-.bottom-nav{overflow-x:auto;scrollbar-width:none;}
-.bottom-nav::-webkit-scrollbar{display:none;}
-.nav-item{min-width:68px;}
-@media(max-width:430px){.nav-item{min-width:64px}.bottom-nav{justify-content:flex-start}.nav-label{font-size:8.5px}}
-
-/* UTILS */
-.flex-row{display:flex;align-items:center;gap:8px;}
-.flex-between{display:flex;align-items:center;justify-content:space-between;}
-.mt8{margin-top:8px;}
-.mt12{margin-top:12px;}
-.mb12{margin-bottom:12px;}
-.text-grey{color:var(--grey);font-size:13px;}
-.text-pink{color:var(--pink-light);}
-.text-green{color:var(--green);}
-.divider{height:1px;background:var(--black4);margin:10px 0;}
-</style>
-</head>
-<body>
-
-<!-- NOTIFICATION TOAST -->
-<div class="notif-toast" id="notif-toast">
-  <div class="nt-icon">🔔</div>
-  <div class="nt-text">
-    <div class="nt-title" id="nt-title">Time to work out!</div>
-    <div class="nt-sub" id="nt-sub">Your reminder is here — let's go!</div>
-  </div>
-  <button class="nt-btn" onclick="dismissNotif()">Start Now</button>
-</div>
-
-<!-- AUTH SCREEN -->
-<div class="auth-screen" id="auth-screen" style="display:none;">
-  <div class="auth-card">
-    <div class="auth-logo">FitHerNova</div>
-    <div class="auth-sub">Sign in to save meals, workouts, weight progress, reminders and gospel fitness music across devices.</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="auth-tab-login" onclick="setAuthMode('login')">Login</button>
-      <button class="auth-tab" id="auth-tab-signup" onclick="setAuthMode('signup')">Sign up</button>
-    </div>
-    <div class="auth-form">
-      <input type="text" id="auth-name" placeholder="Full name" style="display:none;"/>
-      <input type="email" id="auth-email" placeholder="Email address" autocomplete="email"/>
-      <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password"/>
-      <button class="btn btn-pink" id="auth-submit" onclick="submitAuth()">Login</button>
-      <div class="auth-message" id="auth-message"></div>
-    </div>
-    <div class="auth-small">✨ Welcome to <strong style="color:#ff2d6b;">FitHerNova</strong> — your glow-up fitness space for workouts, motivation, healthy meals, gospel vibes & daily confidence. Become stronger, healthier and happier one day at a time 💖🔥</div>
-  </div>
-</div>
-
-<!-- INSTALL APP POPUP -->
-<div class="install-pop" id="install-pop">
-  <div class="install-card">
-    <div class="install-top">
-      <div class="install-icon">📲</div>
-      <button class="install-close" onclick="closeInstallGuide()">×</button>
-    </div>
-    <div class="install-title">Install FitHerNova</div>
-    <div class="install-text">Turn FitHerNova into a real app on your phone. Save it to your home screen for workouts, Coach Nova, meals, reminders, and gospel radio.</div>
-    <div class="install-steps">
-      <div class="install-step"><div>🍎</div><div><b>iPhone Safari</b><br><span>Tap Share → Add to Home Screen → Add.</span></div></div>
-      <div class="install-step"><div>🤖</div><div><b>Android Chrome</b><br><span>Tap the 3 dots → Add to Home Screen → Add.</span></div></div>
-    </div>
-    <div class="install-actions">
-      <button class="btn btn-pink" onclick="triggerInstallPrompt()">Show install steps</button>
-      <button class="install-soft-btn" onclick="closeInstallGuide()">Maybe later</button>
-    </div>
-  </div>
-</div>
-
-
-
-<!-- FITHERNOVA PRO MODAL -->
-<div class="pro-modal" id="pro-modal">
-  <div class="pro-modal-card">
-    <div class="pro-modal-top">
-      <div>
-        <div class="pro-kicker">FitHerNova PRO ✨</div>
-        <div class="pro-title">Unlock the full glow-up experience.</div>
-        <div class="pro-sub">Get premium music, DJ Mode, advanced Coach Nova plans, premium workouts, custom meal plans, themes, and deeper progress insights.</div>
-      </div>
-      <button class="pro-close" onclick="closeProModal()">×</button>
-    </div>
-    <div class="pro-features">
-      <div class="pro-feature"><b>🎵 Full Radio</b>Premium playlist + DJ Mode.</div>
-      <div class="pro-feature"><b>✨ Coach Nova PRO</b>Smarter fitness + meal guidance.</div>
-      <div class="pro-feature"><b>🔥 Premium Programs</b>Belly, tone, and challenge packs.</div>
-      <div class="pro-feature"><b>📊 Pro Tracking</b>Better progress insights.</div>
-    </div>
-    <div class="pro-plans">
-      <div class="pro-plan">
-        <div class="pro-plan-name">Monthly PRO</div>
-        <div class="pro-price">₦3,500 <span>/ month</span></div>
-        <div class="pro-small">Start small. Cancel anytime.</div>
-        <button class="btn btn-pink" onclick="startProCheckout('monthly')">Upgrade Monthly</button>
-      </div>
-      <div class="pro-plan best">
-        <div class="pro-plan-tag">Best value</div>
-        <div class="pro-plan-name">Yearly PRO</div>
-        <div class="pro-price">₦30,000 <span>/ year</span></div>
-        <div class="pro-small">Save more with yearly access.</div>
-        <button class="btn btn-pink" onclick="startProCheckout('yearly')">Upgrade Yearly</button>
-      </div>
-    </div>
-    <div class="pro-status" id="pro-status"></div>
-  </div>
-</div>
-
-<div class="app">
-  <!-- HEADER -->
-  <div class="app-header">
-    <div>
-      <div class="logo">FitHerNova</div>
-      <div class="logo-sub">Your Body · Your Journey</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <img id="header-avatar" class="header-avatar" alt="Profile photo"/>
-      <div class="user-pill" id="user-pill">Login required</div>
-      <div class="header-streak">🔥 <span id="header-streak">1</span> day streak</div>
-    </div>
-  </div>
-
-  <!-- PAGES -->
-  <div class="content">
-
-    <!-- HOME -->
-    <div class="page active" id="page-home">
-      <div class="greeting"><span id="time-greeting">Hello</span>, <span id="user-name">Queen</span> 👑</div>
-      <div class="sub-greeting" id="home-date">Let's crush today!</div>
-
-      <div class="pro-inline-card" id="pro-home-card">
-        <div class="flex-between" style="gap:10px;align-items:flex-start;">
-          <div>
-            <div class="pro-inline-title">FitHerNova PRO ✨</div>
-            <div class="pro-inline-sub">Unlock DJ Mode, premium workouts, Coach Nova PRO, meal plans, themes and advanced tracking.</div>
-          </div>
-          <span class="pro-badge free" id="pro-pill-home">FREE</span>
-        </div>
-        <button class="btn btn-pink" onclick="openProModal()">Upgrade to PRO</button>
-      </div>
-
-      <div id="install-banner" class="install-banner" style="display:none;">
-        <div style="font-size:28px;">📲</div>
-        <div class="ib-text"><strong>Install FitHerNova App</strong>Save it to your phone for quick workouts, meals, Coach Nova and gospel radio.</div>
-        <button class="ib-btn" onclick="showInstallGuide()">Install</button>
-      </div>
-
-      <div class="ring-section">
-        <div class="ring-wrap">
-          <svg width="110" height="110" viewBox="0 0 110 110">
-            <circle cx="55" cy="55" r="46" fill="none" stroke="#1e1e1e" stroke-width="10"/>
-            <circle id="cal-ring" cx="55" cy="55" r="46" fill="none" stroke="url(#ringGrad)" stroke-width="10"
-              stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"
-              style="transition:stroke-dashoffset 0.8s ease;"/>
-            <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#ff2d6b"/><stop offset="100%" stop-color="#ffd166"/>
-            </linearGradient></defs>
-          </svg>
-          <div class="ring-center">
-            <div class="ring-cal" id="ring-cal">0</div>
-            <div class="ring-sub">kcal</div>
-          </div>
-        </div>
-        <div class="ring-info">
-          <div class="flex-between mb-4"><span class="rir-label">Goal</span><span class="rir-val" id="ri-goal">1800 kcal</span></div>
-          <div class="flex-between"><span class="rir-label">Remaining</span><span class="rir-val text-pink" id="ri-rem">1800</span></div>
-          <div class="mini-prog mt8"><div class="mini-fill" id="ri-prog" style="width:0%;background:linear-gradient(90deg,#ff2d6b,#ffd166);"></div></div>
-          <div class="divider"></div>
-          <div class="flex-between"><span class="rir-label">Protein</span><span class="rir-val" id="ri-prot">0g</span></div>
-          <div class="mini-prog mt8"><div class="mini-fill" id="prog-prot" style="width:0%;background:#06d6a0;"></div></div>
-          <div class="flex-between mt8"><span class="rir-label">Burned</span><span class="rir-val text-green" id="ri-burn">0 kcal</span></div>
-        </div>
-      </div>
-
-      <div class="stats-row">
-        <div class="stat-tile"><div class="sv" id="st-meals">0</div><div class="sl">Meals</div></div>
-        <div class="stat-tile"><div class="sv" id="st-water">0/8</div><div class="sl">Water 💧</div></div>
-        <div class="stat-tile"><div class="sv" id="st-workouts">0</div><div class="sl">Workouts</div></div>
-        <div class="stat-tile"><div class="sv" id="st-streak">1🔥</div><div class="sl">Streak</div></div>
-      </div>
-
-      <div class="quick-start">
-        <div class="qs-text">
-          <div class="qt">Ready to burn? 🔥</div>
-          <div class="qs">Start a workout now</div>
-        </div>
-        <button class="qs-btn" onclick="goTo('timer')">Start Timer</button>
-      </div>
-
-      <div class="sec-label">Today's meals</div>
-      <div class="card" id="home-meal-log">
-        <div class="text-grey">No meals logged yet — go to Food tab</div>
-      </div>
-
-      <div class="sec-label" style="margin-top:4px;">Water tracker</div>
-      <div class="card">
-        <div style="font-family:var(--font-head);font-size:32px;font-weight:800;color:#6bb5ff;text-align:center;" id="water-count">0</div>
-        <div style="font-size:11px;color:var(--grey);text-align:center;margin-bottom:12px;">glasses of 8</div>
-        <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:12px;" id="cup-grid"></div>
-        <div class="flex-row">
-          <button class="btn btn-ghost" style="flex:1;" onclick="addWater()">+ Glass</button>
-          <button class="btn btn-danger" onclick="resetWater()">Reset</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- FOOD -->
-    <div class="page" id="page-food">
-      <div class="sec-label">Find food & calories</div>
-      <input type="text" id="food-search" placeholder="Search e.g. jollof rice, chicken..." oninput="doSearch()" style="margin-bottom:10px;"/>
-      <div class="filter-scroll" id="filter-scroll">
-        <div class="chip active" onclick="setFilter('all',this)">All foods</div>
-        <div class="chip" onclick="setFilter('nigerian',this)">Nigerian 🇳🇬</div>
-        <div class="chip" onclick="setFilter('african',this)">African</div>
-        <div class="chip" onclick="setFilter('western',this)">Western</div>
-        <div class="chip" onclick="setFilter('healthy',this)">Healthy</div>
-      </div>
-      <div id="food-results"></div>
-      <div id="food-detail-wrap"></div>
-      <div class="sec-label mt12">Logged today</div>
-      <div class="card" id="food-log-list"><div class="text-grey">Nothing logged yet</div></div>
-      <div id="food-total-wrap" style="display:none;" class="flex-between" style="padding-top:8px;">
-        <span style="font-size:13px;font-weight:600;color:var(--white);">Total</span>
-        <span style="font-size:13px;font-weight:700;color:var(--pink-light);" id="food-total-cal">0 kcal</span>
-      </div>
-    </div>
-
-    <!-- WORKOUT TIMER -->
-    <div class="page" id="page-timer">
-      <div class="timer-page">
-        <div id="result-banner" class="result-banner">
-          <div class="rb-title">🏆 Workout Complete!</div>
-          <div class="rb-grid">
-            <div class="rb-stat"><div class="rb-val" id="rb-time">0:00</div><div class="rb-lbl">Duration</div></div>
-            <div class="rb-stat"><div class="rb-val" id="rb-cal">0</div><div class="rb-lbl">kcal burned</div></div>
-            <div class="rb-stat"><div class="rb-val" id="rb-pace">--</div><div class="rb-lbl">Intensity</div></div>
-          </div>
-          <div class="rb-msg" id="rb-msg"></div>
-        </div>
-
-        <div class="timer-workout-name" id="timer-wname">Select a workout below</div>
-
-        <div class="timer-ring-wrap">
-          <svg width="200" height="200" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="88" fill="none" stroke="#1e1e1e" stroke-width="12"/>
-            <circle id="timer-ring" cx="100" cy="100" r="88" fill="none" stroke="url(#timerGrad)" stroke-width="12"
-              stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553"
-              style="transition:stroke-dashoffset 1s linear;"/>
-            <defs><linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff2d6b"/><stop offset="100%" stop-color="#ffd166"/>
-            </linearGradient></defs>
-          </svg>
-          <div class="timer-center">
-            <div class="timer-digits" id="timer-display">00:00</div>
-            <div class="timer-state" id="timer-state">READY</div>
-          </div>
-        </div>
-
-        <div class="timer-stats">
-          <div class="ts"><div class="tv" id="ts-min">0</div><div class="tl">Minutes</div></div>
-          <div class="ts"><div class="tv" id="ts-cal">0</div><div class="tl">kcal burned</div></div>
-          <div class="ts"><div class="tv" id="ts-pace">--</div><div class="tl">Intensity</div></div>
-        </div>
-
-        <div class="timer-btns">
-          <button class="tbtn tbtn-go" id="btn-start" onclick="startTimer()">▶ Start</button>
-          <button class="tbtn tbtn-pause" id="btn-pause" onclick="pauseTimer()" style="display:none;">⏸ Pause</button>
-          <button class="tbtn tbtn-stop" id="btn-stop" onclick="stopTimer()" style="display:none;">⏹ Stop</button>
-        </div>
-      </div>
-
-      <div class="pick-label">Choose your workout</div>
-      <div id="workout-picker"></div>
-
-      <div class="sec-label mt12">Workout history</div>
-      <div class="card" id="workout-history"><div class="text-grey">No workouts logged yet</div></div>
-    </div>
-
-    <!-- WORKOUTS -->
-    <div class="page" id="page-workouts">
-      <div class="sec-label">Belly fat workouts for women</div>
-      <div id="workout-list"></div>
-    </div>
-
-    <!-- MUSIC -->
-    <div class="page" id="page-music">
-      <div class="sec-label">FitHerNova Radio 🎵</div>
-
-      <div class="music-hero">
-        <div class="music-topline">
-          <div class="music-badge">FitHerNova Radio</div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-            <button class="dj-toggle on" id="dj-toggle" onclick="event.stopPropagation()">Auto Play</button>
-            <div class="music-live">Gospel workout vibes</div>
-          </div>
-        </div>
-        <div class="music-stage">
-          <div class="vinyl-wrap">
-            <div class="vinyl-disc" id="np-art">
-              <div class="vinyl-label" id="np-emoji">🎵</div>
-            </div>
-          </div>
-          <div class="music-info">
-            <div class="music-title" id="np-title">Select a track</div>
-            <div class="music-artist" id="np-artist">Pro Media Records & more</div>
-            <div class="music-meta-line">
-              <span class="music-pill">🔥 Workout energy</span>
-              <span class="music-pill">🎧 Pro Media Records</span>
-              <span class="music-pill">✨ Faith & fitness</span>
-            </div>
-            <div class="premium-progress" onclick="seekTrack(event)">
-              <div class="progress-fill" id="np-progress" style="width:0%;"></div>
-            </div>
-            <div class="premium-time">
-              <span id="np-current">0:00</span>
-              <span id="np-total">0:00</span>
-            </div>
-            <div class="premium-controls">
-              <button class="pbtn" onclick="prevTrack()" aria-label="Previous">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
-              </button>
-              <button class="pbtn pbtn-main" id="play-btn" onclick="togglePlay()" aria-label="Play/Pause">
-                <svg viewBox="0 0 24 24" fill="currentColor" id="play-icon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-              </button>
-              <button class="pbtn" onclick="nextTrack()" aria-label="Next">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="music-status" id="music-status">Choose a song and let the energy flow.</div>
-      </div>
-
-      <div class="playlist-head">
-        <div class="sec-label" style="margin-bottom:0;">Playlist</div>
-        <button class="refresh-music-btn" onclick="loadSupabaseTracks()">↻ Reload</button>
-      </div>
-      <div class="track-list" id="track-list"></div>
-    </div>
-
-    <!-- PROGRESS -->
-    <div class="page" id="page-progress">
-      <div class="sec-label">Weight progress</div>
-      <div class="prog-header">
-        <div class="prog-stat-big"><div class="psb-val pink" id="p-current">--</div><div class="psb-label">Current (kg)</div></div>
-        <div class="prog-stat-big"><div class="psb-val green" id="p-lost">--</div><div class="psb-label">Lost (kg)</div></div>
-        <div class="prog-stat-big"><div class="psb-val gold" id="p-left">--</div><div class="psb-label">To goal</div></div>
-      </div>
-      <div class="flex-row mb12">
-        <input type="number" id="weight-input" placeholder="Enter weight in kg" step="0.1" min="30" max="300"/>
-        <button class="btn btn-ghost" onclick="logWeight()" style="white-space:nowrap;flex-shrink:0;">Log it</button>
-      </div>
-      <div class="chart-wrap">
-        <div class="sec-label" style="margin-bottom:10px;">Weight chart</div>
-        <div class="chart-area" id="weight-chart"><div class="text-grey" style="margin:auto;font-size:12px;">Log at least 2 weights to see chart</div></div>
-        <div style="display:flex;gap:5px;margin-top:4px;" id="chart-labels"></div>
-      </div>
-      <button class="btn btn-danger" style="width:100%;margin-bottom:12px;" onclick="resetFitHerData()">Reset saved data</button>
-      <div class="sec-label">Milestones</div>
-      <div class="card" id="milestones-list"></div>
-    </div>
-
-    <!-- REMINDERS -->
-    <div class="page" id="page-reminders">
-      <div class="sec-label">Set workout reminder</div>
-      <div class="reminder-freq" id="freq-grid">
-        <div class="freq-card" onclick="setFreq('daily',this)"><div class="fi">📅</div><div class="fl">Daily</div><div class="fs">Every day</div></div>
-        <div class="freq-card" onclick="setFreq('weekdays',this)"><div class="fi">💼</div><div class="fl">Weekdays</div><div class="fs">Mon – Fri</div></div>
-        <div class="freq-card" onclick="setFreq('alt',this)"><div class="fi">🔄</div><div class="fl">Every other day</div><div class="fs">With rest days</div></div>
-        <div class="freq-card" onclick="setFreq('weekend',this)"><div class="fi">🌅</div><div class="fl">Weekends</div><div class="fs">Sat & Sun</div></div>
-      </div>
-      <div class="card" style="margin-bottom:10px;">
-        <div class="flex-between mb12">
-          <label style="font-size:13px;color:var(--grey);">Remind me at</label>
-          <input type="time" id="r-time" value="07:00" style="width:auto;"/>
-        </div>
-        <div style="margin-bottom:12px;">
-          <select id="r-workout">
-            <option value="10-min Belly Burn">10-min Belly Burn</option>
-            <option value="HIIT Core Blaster">HIIT Core Blaster</option>
-            <option value="Stretch & Tone">Stretch & Tone</option>
-            <option value="Postpartum Restore">Postpartum Restore</option>
-            <option value="Advanced Belly Shred">Advanced Belly Shred</option>
-          </select>
-        </div>
-        <button class="btn btn-pink" onclick="addReminder()">🔔 Set Reminder</button>
-      </div>
-      <div class="sec-label">Your reminders</div>
-      <div id="reminder-list"><div class="text-grey">No reminders set yet</div></div>
-
-      <div class="sec-label mt12">Test notification</div>
-      <button class="btn btn-ghost" style="width:100%;" onclick="showNotif('HIIT Core Blaster','07:00')">🔔 Preview notification</button>
-    </div>
-
-
-    <!-- CHALLENGE -->
-    <div class="page" id="page-challenge">
-      <div class="sec-label">7-Day Glow Challenge</div>
-      <div class="nova-card hot">
-        <div class="nova-title">FitHerNova Glow Challenge 🔥</div>
-        <div class="nova-sub">Complete one simple daily action: workout, meal tip, and motivation. Your progress saves to Supabase when logged in.</div>
-        <div class="progress-track"><div id="challenge-progress-fill" style="width:0%"></div></div>
-        <div class="flex-between"><span class="text-grey" id="challenge-progress-text">0 of 7 days completed</span><span class="done-pill" id="challenge-badge" style="display:none;">Badge earned 🏆</span></div>
-      </div>
-      <div id="challenge-days-list"></div>
-    </div>
-
-    <!-- MEAL PLAN -->
-    <div class="page" id="page-mealplan">
-      <div class="sec-label">Meal guide</div>
-      <div class="meal-hero-clean">
-        <div class="meal-title-clean">Smart meals for your glow 🍲</div>
-        <div class="meal-sub-clean">Simple meal ideas inspired by Nigerian foods and everyday wellness. This is guidance only — users still cook or buy their own meals.</div>
-      </div>
-      <div id="meal-plan-list" class="meal-grid-clean"></div>
-    </div>
-
-
-    <!-- AI COACH -->
-    <div class="page" id="page-coach">
-      <div class="sec-label">Coach Nova</div>
-      <div class="coach-hero-clean">
-        <div class="coach-hero-row">
-          <div class="coach-avatar">✨</div>
-          <div>
-            <div class="coach-title-clean">Your calm fitness guide</div>
-            <div class="coach-sub-clean">Ask for a quick meal idea, belly workout, water plan, calorie guidance or motivation. Clean, simple, no pressure.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="coach-panel">
-        <div class="sec-label" style="margin-bottom:0;">Quick help</div>
-        <div class="coach-prompts">
-          <button class="coach-prompt" onclick="coachAsk('what should i eat today')"><b>🍲 Meal idea</b><span>Simple plate for today</span></button>
-          <button class="coach-prompt" onclick="coachAsk('give me belly workout')"><b>🔥 Belly workout</b><span>Quick routine to start</span></button>
-          <button class="coach-prompt" onclick="coachAsk('motivate me')"><b>💖 Motivation</b><span>Soft push for consistency</span></button>
-          <button class="coach-prompt" onclick="coachAsk('water reminder')"><b>💧 Water plan</b><span>Hydration goal check</span></button>
-        </div>
-      </div>
-
-      <div class="coach-panel">
-        <div class="nova-title">Ask Coach Nova</div>
-        <div class="coach-input-clean">
-          <input type="text" id="coach-question" placeholder="Ask Coach Nova anything..." onkeydown="if(event.key==='Enter')coachAsk()"/>
-          <button class="coach-send" onclick="coachAsk()">Ask</button>
-        </div>
-        <div class="coach-answer" id="coach-answer">Hi Queen 👑 I’m Coach Nova. Tell me what you need today — meals, workouts, water, calories, motivation, or your glow-up plan.</div>
-      </div>
-
-      <div class="sec-label">Main goal</div>
-      <div class="nova-grid" id="goal-grid">
-        <div class="goal-card" onclick="setMainGoal('Lose belly fat')"><div class="gtitle">🔥 Lose belly fat</div><div class="gsub">Meal awareness + core consistency.</div></div>
-        <div class="goal-card" onclick="setMainGoal('Postpartum restore')"><div class="gtitle">💚 Postpartum restore</div><div class="gsub">Gentle movement and confidence.</div></div>
-        <div class="goal-card" onclick="setMainGoal('Build consistency')"><div class="gtitle">📅 Build consistency</div><div class="gsub">Streaks, reminders, small wins.</div></div>
-        <div class="goal-card" onclick="setMainGoal('Glow and tone')"><div class="gtitle">✨ Glow and tone</div><div class="gsub">Workout + nutrition lifestyle.</div></div>
-      </div>
-    </div>
-
-
-
-    <!-- PRO -->
-    <div class="page" id="page-pro">
-      <div class="pro-hero">
-        <div class="pro-kicker">Premium Access</div>
-        <div class="pro-title">FitHerNova PRO ✨</div>
-        <div class="pro-sub">A cleaner, stronger fitness lifestyle experience for women — premium music, Coach Nova PRO, advanced workouts, meal plans and progress insights.</div>
-        <div class="pro-features">
-          <div class="pro-feature"><b>🎧 Premium Radio</b>Full music access, DJ Mode and exclusive songs.</div>
-          <div class="pro-feature"><b>👑 Coach Nova PRO</b>Personalized guidance for your body goal.</div>
-          <div class="pro-feature"><b>🔥 Premium Workouts</b>Belly fat, tone, glow and challenge programs.</div>
-          <div class="pro-feature"><b>🍲 Meal Plans</b>Smarter Nigerian/African meal ideas.</div>
-          <div class="pro-feature"><b>📊 Progress Insights</b>Advanced trends and fitness score.</div>
-          <div class="pro-feature"><b>🎨 Themes</b>Premium feminine app looks.</div>
-        </div>
-        <span class="pro-badge" id="pro-status-badge">FREE PLAN</span>
-      </div>
-      <div class="pro-plans">
-        <div class="pro-plan">
-          <div class="pro-plan-name">Monthly PRO</div>
-          <div class="pro-price">₦3,500 <span>/ month</span></div>
-          <div class="pro-small">Perfect for trying premium features.</div>
-          <button class="btn btn-pink" onclick="startProCheckout('monthly')">Upgrade Monthly</button>
-        </div>
-        <div class="pro-plan best">
-          <div class="pro-plan-tag">Best value</div>
-          <div class="pro-plan-name">Yearly PRO</div>
-          <div class="pro-price">₦30,000 <span>/ year</span></div>
-          <div class="pro-small">Save more and keep the full glow-up going.</div>
-          <button class="btn btn-pink" onclick="startProCheckout('yearly')">Upgrade Yearly</button>
-        </div>
-      </div>
-      <div class="pro-status" id="pro-page-status"></div>
-    </div>
-
-    <!-- PROFILE -->
-    <div class="page" id="page-profile">
-      <div class="sec-label">Profile & goals</div>
-      <div class="nova-card">
-        <div class="nova-title">Profile photo</div>
-        <div class="profile-photo-card">
-          <div class="profile-avatar-wrap">
-            <img id="profile-avatar-preview" alt="Profile photo"/>
-            <div id="profile-avatar-placeholder" class="profile-avatar-placeholder">👤</div>
-          </div>
-          <div class="profile-photo-actions">
-            <input type="file" id="profile-photo-input" accept="image/*" style="display:none" onchange="uploadProfilePhoto(event)"/>
-            <button class="btn btn-ghost" type="button" onclick="document.getElementById('profile-photo-input').click()">📷 Upload photo</button>
-            <div class="photo-status" id="photo-upload-status">Choose a photo from your device.</div>
-          </div>
-        </div>
-      </div>
-      <div class="nova-card">
-        <div class="profile-row">
-          <div><label class="text-grey">Name</label><input type="text" id="profile-name" placeholder="Your name"/></div>
-          <div><label class="text-grey">Daily calorie goal</label><input type="number" id="profile-goal" placeholder="1800"/></div>
-          <div><label class="text-grey">Target weight (kg)</label><input type="number" id="profile-target" placeholder="70" step="0.1"/></div>
-          <div><label class="text-grey">Height (cm)</label><input type="number" id="profile-height" placeholder="165" step="0.1"/></div>
-        </div>
-        <button class="btn btn-pink" onclick="saveProfileSettings()">Save profile</button>
-        <div class="auth-message" id="profile-message"></div>
-      </div>
-      <div class="profile-row">
-        <div class="profile-stat"><div class="big" id="profile-bmi">--</div><div class="small">BMI</div></div>
-        <div class="profile-stat"><div class="big" id="profile-goal-left">--</div><div class="small">kg to goal</div></div>
-      </div>
-
-      <div class="pro-inline-card">
-        <div class="pro-inline-title">FitHerNova PRO ✨</div>
-        <div class="pro-inline-sub" id="profile-pro-text">You are currently on the Free plan. Upgrade to unlock premium workouts, Coach Nova PRO, full radio and advanced tracking.</div>
-        <button class="btn btn-pink" id="profile-pro-btn" onclick="openProModal()">Upgrade to PRO</button>
-      </div>
-      <div class="nova-card">
-        <div class="nova-title">Account</div>
-        <div class="nova-sub" id="profile-account-text">Login required</div>
-        <button class="btn btn-ghost mt12" onclick="sendPasswordReset()" style="width:100%;">Send password reset email</button>
-      </div>
-    </div>
-
-
-  </div><!-- end content -->
-
-
-
-  <!-- FLOATING MINI MUSIC PLAYER -->
-  <div class="mini-player" id="mini-player" onclick="goTo('music')">
-    <div class="mini-progress"><div class="mini-progress-fill" id="mini-progress-fill"></div></div>
-    <div class="mini-player-inner">
-      <div class="mini-art" id="mini-art">🎵</div>
-      <div style="min-width:0;">
-        <div class="mini-title" id="mini-title">FitHerNova Radio</div>
-        <div class="mini-sub" id="mini-sub">Tap a song to begin</div>
-      </div>
-      <div class="mini-actions" onclick="event.stopPropagation()">
-        <button class="mini-btn" onclick="prevTrack()" aria-label="Previous">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
-        </button>
-        <button class="mini-btn main" id="mini-play-btn" onclick="togglePlay()" aria-label="Play/Pause">
-          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-        </button>
-        <button class="mini-btn" onclick="nextTrack()" aria-label="Next">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
-        </button>
-        <button class="mini-btn" onclick="minimizeMiniPlayer(event)" aria-label="Minimize">−</button>
-        <button class="mini-btn" onclick="closeMiniPlayer(event)" aria-label="Close">×</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" onclick="goTo('home')" id="nav-home">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span class="nav-label">Home</span>
-    </button>
-    <button class="nav-item" onclick="goTo('food')" id="nav-food">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-      <span class="nav-label">Food</span>
-    </button>
-    <button class="nav-item" onclick="goTo('timer')" id="nav-timer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span class="nav-label">Timer</span>
-    </button>
-    <button class="nav-item" onclick="goTo('workouts')" id="nav-workouts">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v16M18 4v16M2 9h4M18 9h4M2 15h4M18 15h4M6 9h12M6 15h12"/></svg>
-      <span class="nav-label">Workouts</span>
-    </button>
-    <button class="nav-item" onclick="goTo('music')" id="nav-music">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-      <span class="nav-label">Music</span>
-    </button>
-    <button class="nav-item" onclick="goTo('progress')" id="nav-progress">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span class="nav-label">Progress</span>
-    </button>
-
-    <button class="nav-item" onclick="goTo('challenge')" id="nav-challenge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.7 1.1 6.6L12 17l-5.8 3.2 1.1-6.6L2.5 8.9 9.1 8 12 2z"/></svg>
-      <span class="nav-label">Challenge</span>
-    </button>
-    <button class="nav-item" onclick="goTo('mealplan')" id="nav-mealplan">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3h16v18H4z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
-      <span class="nav-label">Meals</span>
-    </button>
-
-    <button class="nav-item" onclick="goTo('coach')" id="nav-coach">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a7 7 0 0 0-7 7v3a7 7 0 0 0 14 0V9a7 7 0 0 0-7-7z"/><path d="M9 10h.01M15 10h.01M9 15c1.6 1 4.4 1 6 0"/><path d="M4 20c2-2 14-2 16 0"/></svg>
-      <span class="nav-label">Coach</span>
-    </button>
-
-    <button class="nav-item" onclick="goTo('pro')" id="nav-pro">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l3 7 7 .5-5.3 4.6 1.7 6.9L12 17l-6.4 4 1.7-6.9L2 9.5 9 9l3-7z"/></svg>
-      <span class="nav-label">PRO</span>
-    </button>
-    <button class="nav-item" onclick="goTo('profile')" id="nav-profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
-      <span class="nav-label">Profile</span>
-    </button>
-    <button class="nav-item" onclick="goTo('reminders')" id="nav-reminders">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span class="nav-label">Reminders</span>
-    </button>
-  </nav>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://js.paystack.co/v2/inline.js"></script>
-<script>
-// ===================== SUPABASE =====================
-const SUPABASE_URL = "https://norgzcztduoxkshtthkm.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcmd6Y3p0ZHVveGtzaHR0aGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTM0NTcsImV4cCI6MjA5NTM2OTQ1N30.XNN3QLs5NWVUQU9MhbDdA2E0fqpQUGjAsvNljkVsjPg";
-const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-const PAYSTACK_PUBLIC_KEY = "pk_live_4fa937b5b1e085b776aa9f21ee2e0b4af5a8cca5";
-const PRO_PRICES = {monthly: 350000, yearly: 3000000}; // Paystack amount is in kobo
-let isProUser = false;
-let proPlan = "free";
-
-// ===================== DATA =====================
-let userGoal = 1800;
-const foods = [
-  {name:"Jollof rice",cal:350,p:8,c:65,f:7,por:250,u:"g",cat:"nigerian",icon:"🍚"},
-  {name:"Egusi soup",cal:420,p:18,c:12,f:34,por:200,u:"g",cat:"nigerian",icon:"🥣"},
-  {name:"Fried plantain",cal:290,p:2,c:55,f:8,por:150,u:"g",cat:"nigerian",icon:"🍌"},
-  {name:"Pounded yam",cal:330,p:3,c:78,f:1,por:300,u:"g",cat:"nigerian",icon:"🥔"},
-  {name:"Suya (beef)",cal:280,p:28,c:4,f:16,por:150,u:"g",cat:"nigerian",icon:"🥩"},
-  {name:"Moi moi",cal:180,p:12,c:22,f:5,por:150,u:"g",cat:"nigerian",icon:"🫘"},
-  {name:"Akara",cal:220,p:10,c:28,f:8,por:120,u:"g",cat:"nigerian",icon:"🟤"},
-  {name:"Ogbono soup",cal:390,p:16,c:8,f:32,por:200,u:"g",cat:"nigerian",icon:"🍲"},
-  {name:"Pap (akamu)",cal:90,p:2,c:20,f:1,por:200,u:"ml",cat:"nigerian",icon:"🥛"},
-  {name:"Fufu",cal:310,p:2,c:74,f:0,por:280,u:"g",cat:"african",icon:"⚪"},
-  {name:"Injera with tibs",cal:460,p:22,c:64,f:14,por:350,u:"g",cat:"african",icon:"🫓"},
-  {name:"Grilled chicken",cal:165,p:31,c:0,f:4,por:150,u:"g",cat:"healthy",icon:"🍗"},
-  {name:"Caesar salad",cal:190,p:8,c:12,f:13,por:200,u:"g",cat:"western",icon:"🥗"},
-  {name:"Avocado toast",cal:310,p:8,c:32,f:18,por:180,u:"g",cat:"western",icon:"🥑"},
-  {name:"Boiled egg",cal:78,p:6,c:1,f:5,por:50,u:"g",cat:"healthy",icon:"🥚"},
-  {name:"Oatmeal",cal:220,p:7,c:42,f:4,por:250,u:"g",cat:"healthy",icon:"🥣"},
-  {name:"Grilled fish",cal:200,p:30,c:0,f:9,por:180,u:"g",cat:"healthy",icon:"🐟"},
-  {name:"Greek yogurt",cal:100,p:17,c:6,f:1,por:170,u:"g",cat:"healthy",icon:"🥛"},
-  {name:"Burger & fries",cal:750,p:28,c:82,f:36,por:400,u:"g",cat:"western",icon:"🍔"},
-  {name:"Pizza slice",cal:285,p:12,c:36,f:10,por:100,u:"g",cat:"western",icon:"🍕"},
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { supabase, isSupabaseConfigured } from '../supabase';
+
+type PacketStatus = 'not_started' | 'in_progress' | 'submitted' | 'reviewed' | 'reopened';
+
+type FormDataState = {
+  basic: Record<string, string>;
+  contact: Record<string, string>;
+  emergency: Record<string, string>;
+  payroll: Record<string, string>;
+  references: Record<string, string>;
+  hca: Record<string, string>;
+  acknowledgments: Record<string, boolean>;
+  eeo: Record<string, string>;
+  availability: Record<string, string | boolean>;
+  signature?: string;
+  signedName?: string;
+  signedAt?: string;
+};
+
+type CaregiverRecord = {
+  id: string;
+  full_name?: string;
+  email?: string;
+  phone?: string;
+  profile_id?: string;
+  onboarding_status?: string;
+};
+
+const emptyForm: FormDataState = {
+  basic: {
+    legalFirstName: '', legalLastName: '', middleName: '', dateOfBirth: '', sex: '', ssn: '',
+    maritalStatus: '', driverLicense: '', dlState: '', licenseType: '', licenseExpiration: '', vehiclePlate: ''
+  },
+  contact: {
+    country: 'United States', street: '', address2: '', apartment: '', city: '', state: 'CA', zip: '',
+    personalEmail: '', businessEmail: '', homePhone: '', workPhone: '', cellPhone: ''
+  },
+  emergency: {
+    contact1Name: '', contact1Phone: '', contact1Relation: '', contact1Email: '', contact1AltPhone: '',
+    contact2Name: '', contact2Phone: '', contact2Relation: '', contact2Email: '', contact2AltPhone: '',
+    physicianName: '', physicianPhone: '', dentistName: '', dentistPhone: ''
+  },
+  payroll: {
+    routingNumber: '', accountNumber: '', accountName: '', bankName: '', bankCityState: '', accountType: '', depositType: '100% Net Pay',
+    federalFilingStatus: '', caFilingStatus: '', additionalWithholding: '', ssnLast4: ''
+  },
+  references: {
+    ref1Name: '', ref1Title: '', ref1Company: '', ref1Phone: '', ref1Email: '', ref1Relationship: '',
+    ref2Name: '', ref2Title: '', ref2Company: '', ref2Phone: '', ref2Email: '', ref2Relationship: '',
+    ref3Name: '', ref3Title: '', ref3Company: '', ref3Phone: '', ref3Email: '', ref3Relationship: ''
+  },
+  hca: {
+    hcaNumber: '', hcaExpiry: '', liveScanDate: '', liveScanLocation: '', certificationNotes: ''
+  },
+  acknowledgments: {
+    offerLetter: false,
+    workersComp: false,
+    injuryNurseLine: false,
+    jobDescription: false,
+    employmentAgreement: false,
+    arbitrationAgreement: false,
+    confidentialityAgreement: false,
+    antiHarassmentPolicy: false,
+    handbookReceipt: false,
+    mandatoryReporter: false,
+    mealPeriodAgreement: false,
+    employeeParticipation: false,
+    referralProgram: false,
+    payrollSchedule: false,
+    truthCertification: false
+  },
+  eeo: { sex: '', raceEthnicity: '', disability: '', veteran: '' },
+  availability: {
+    monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false, sunday: false,
+    startTime: '', endTime: '', preferredHours: '', liveInAvailable: false, transportation: false
+  },
+  signature: '', signedName: '', signedAt: ''
+};
+
+const sectionTitles = [
+  'Welcome', 'Basic Information', 'Contact Information', 'Emergency Contact', 'Payroll & Tax',
+  'References', 'HCA / Live Scan / Uploads', 'Agreements', 'Signature', 'Submit'
 ];
 
-const workoutData = [
-  {name:"10-min Belly Burn",icon:"🔥",level:"Beginner",badge:"badge-easy",dur:"10 min",calPM:8,ex:[{n:"Standing march",r:"2 min"},{n:"Knee-to-elbow crunches",r:"3×12"},{n:"Lying leg raises",r:"3×10"},{n:"Plank hold",r:"3×20 sec"},{n:"Deep breathing",r:"1 min"}]},
-  {name:"HIIT Core Blaster",icon:"⚡",level:"Intermediate",badge:"badge-med",dur:"20 min",calPM:10,ex:[{n:"High knees warm-up",r:"3 min"},{n:"Bicycle crunches",r:"4×15"},{n:"Reverse crunches",r:"4×12"},{n:"Mountain climbers",r:"4×20"},{n:"Side plank each side",r:"3×30 sec"},{n:"Flutter kicks",r:"3×20"}]},
-  {name:"Stretch & Tone",icon:"💪",level:"Beginner",badge:"badge-easy",dur:"25 min",calPM:5,ex:[{n:"Neck & shoulder rolls",r:"2 min"},{n:"Standing side bends",r:"3×15"},{n:"Hip circles",r:"3×20"},{n:"Seated toe touch",r:"3×12"},{n:"Deep breathing & cool down",r:"2 min"}]},
-  {name:"Postpartum Restore",icon:"💚",level:"Gentle",badge:"badge-gentle",dur:"15 min",calPM:4,ex:[{n:"Diaphragmatic breathing",r:"3 min"},{n:"Pelvic floor activation",r:"3×10"},{n:"Heel slides",r:"3×10"},{n:"Dead bug modified",r:"3×8"},{n:"Glute bridge",r:"3×12"}]},
-  {name:"Advanced Belly Shred",icon:"💥",level:"Advanced",badge:"badge-hard",dur:"30 min",calPM:13,ex:[{n:"Burpees",r:"4×15"},{n:"V-ups",r:"4×12"},{n:"Plank with hip dips",r:"4×20"},{n:"Scissor kicks",r:"4×20"},{n:"Russian twists",r:"4×20"},{n:"Sprint intervals",r:"5×30 sec"}]},
-];
+const requiredByStep: Record<number, string[]> = {
+  1: ['basic.legalFirstName', 'basic.legalLastName', 'basic.dateOfBirth', 'basic.ssn'],
+  2: ['contact.street', 'contact.city', 'contact.state', 'contact.zip', 'contact.personalEmail', 'contact.cellPhone'],
+  3: ['emergency.contact1Name', 'emergency.contact1Phone'],
+  4: ['payroll.routingNumber', 'payroll.accountNumber', 'payroll.accountName', 'payroll.bankName', 'payroll.accountType', 'payroll.federalFilingStatus', 'payroll.caFilingStatus'],
+  5: ['references.ref1Name', 'references.ref1Phone', 'references.ref2Name', 'references.ref2Phone'],
+  6: ['hca.hcaNumber', 'hca.hcaExpiry'],
+  8: ['signedName']
+};
 
-// FitHerNova Radio — static playlist. No Supabase fetch, no DJ/crossfade, just reliable playback.
-const BUILT_IN_TRACKS = [
-  {title:"Mix Jam 2026",artist:"FitHerNova Radio",dur:"3:45",emoji:"🔥",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Mix%20Jam%202026.mp3"},
-  {title:"LIFT ME UP",artist:"ZIK Blue",dur:"3:39",emoji:"🚀",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3"},
-  {title:"They Cannot (Remix)",artist:"Holy Fire",dur:"3:45",emoji:"🔥",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3"},
-  {title:"GLORY & FIRE",artist:"Ziyana Eya",dur:"4:00",emoji:"✨",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20&%20FIRE.mp3"},
-  {title:"Lord, Remember Me",artist:"Holy Fire",dur:"3:30",emoji:"🙏",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord,%20Rememer%20me.mp3"},
-  {title:"TESTED (Audio)",artist:"Zimora El",dur:"3:30",emoji:"💎",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20-%20TESTED%20(Audio).mp3"},
-  {title:"Lessons",artist:"Ziyana Eya",dur:"3:30",emoji:"🌿",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana-Eya-Lessons.mp3"},
-  {title:"Glory",artist:"Sharp",dur:"3:30",emoji:"🌟",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Sharp-%20GlORY.mp3"},
-  {title:"Reloaded",artist:"Zimora El",dur:"3:48",emoji:"⚡",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20Reloaded.mp3"}
-];
+const getNested = (obj: FormDataState, path: string): unknown => path.split('.').reduce((acc: any, key) => acc?.[key], obj as any);
 
-let tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+export const OnboardingDocsPage: React.FC<{ caregiverId: string }> = ({ caregiverId }) => {
+  const [step, setStep] = useState(0);
+  const [form, setForm] = useState<FormDataState>(emptyForm);
+  const [caregiver, setCaregiver] = useState<CaregiverRecord | null>(null);
+  const [packetId, setPacketId] = useState<string | null>(null);
+  const [status, setStatus] = useState<PacketStatus>('not_started');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const drawing = useRef(false);
 
-// ===================== STATE =====================
-let logged=[], weights=[], waterCups=0, workoutHistory=[], reminders=[], totalBurned=0;
-let selFood=null, portion=1, activeFilter='all', selFreq=null;
-let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
-let selWorkout=null;
-let currentTrack=0, isPlaying=false, audioEl=new Audio(), progressInterval=null;
-let djMode=false;
-audioEl.preload='metadata';
-// crossOrigin removed for smoother public Supabase audio playback;
-let streak=1, workoutsDone=0;
-let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency',avatarUrl:''};
-let challengeDays=[];
-let challengeProgress={};
-let activeChallengeId=null;
-let currentUser=null, authMode='login', authReady=false;
+  const progress = useMemo(() => Math.round(((step + 1) / sectionTitles.length) * 100), [step]);
 
+  const showMessage = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setMessage({ text, type });
+    window.setTimeout(() => setMessage(null), 4500);
+  };
 
-// ===================== AUTH =====================
-function setAuthMode(mode){
-  authMode=mode;
-  document.getElementById('auth-tab-login')?.classList.toggle('active',mode==='login');
-  document.getElementById('auth-tab-signup')?.classList.toggle('active',mode==='signup');
-  const name=document.getElementById('auth-name');
-  const submit=document.getElementById('auth-submit');
-  if(name) name.style.display=mode==='signup'?'block':'none';
-  if(submit) submit.textContent=mode==='signup'?'Create account':'Login';
-  showAuthMessage('');
-}
-function showAuthMessage(msg){const el=document.getElementById('auth-message'); if(el) el.textContent=msg||'';}
-function showAuthIfNeeded(){
-  if(currentUser) return;
-  const el=document.getElementById('auth-screen');
-  if(el) el.style.display='flex';
-}
-async function submitAuth(){
-  if(!supabaseClient){showAuthMessage('Please try again in a moment. Check internet connection.');return;}
-  const email=document.getElementById('auth-email').value.trim();
-  const password=document.getElementById('auth-password').value;
-  const fullName=document.getElementById('auth-name').value.trim();
-  if(!email || !password){showAuthMessage('Enter email and password.');return;}
-  const btn=document.getElementById('auth-submit');
-  const old=btn.textContent; btn.textContent='Please wait...'; btn.disabled=true;
-  try{
-    let res;
-    if(authMode==='signup'){
-      res=await supabaseClient.auth.signUp({email,password,options:{data:{full_name:fullName||'Queen'}}});
-      if(res.error) throw res.error;
-      if(!res.data.session){showAuthMessage('Account created. Check your email to confirm, then login.');return;}
-    }else{
-      res=await supabaseClient.auth.signInWithPassword({email,password});
-      if(res.error) throw res.error;
-    }
-    currentUser=res.data.user || null;
-    document.getElementById('auth-screen').style.display='none';
-    await afterAuthReady();
-  }catch(e){showAuthMessage(e.message || 'Login failed.');}
-  finally{btn.textContent=old; btn.disabled=false;}
-}
-async function logoutUser(){
-  // Instant UI response first — no waiting/hanging on slow network
-  currentUser=null;
-  const pill=document.getElementById('user-pill');
-  if(pill) pill.innerHTML='Login required';
-  const auth=document.getElementById('auth-screen');
-  if(auth) auth.style.display='flex';
-  try{ if(supabaseClient) await supabaseClient.auth.signOut(); }
-  catch(err){ console.warn('Logout warning:', err?.message || err); }
-}
-function updateAuthUI(){
-  const pill=document.getElementById('user-pill');
-  if(!pill) return;
-  if(currentUser){
-    const email=currentUser.email || 'Account';
-    pill.innerHTML=`${email.split('@')[0]} <button onclick="logoutUser()">Logout</button>`;
-  }else{
-    pill.innerHTML='Login required';
-  }
-}
-async function loadUserProfile(){
-  if(!supabaseClient || !currentUser) return;
-  try{
-    const {data,error}=await supabaseClient.from('profiles').select('full_name,calorie_goal,target_weight,height_cm,workout_level,avatar_url,email').eq('id',currentUser.id).maybeSingle();
-    if(error) throw error;
-    if(data){
-      if(data.full_name) document.getElementById('user-name').textContent=data.full_name.split(' ')[0] || 'Queen';
-      if(data.calorie_goal) userGoal=Number(data.calorie_goal)||userGoal;
-      profileSettings.fullName=data.full_name||profileSettings.fullName;
-      profileSettings.targetWeight=Number(data.target_weight)||profileSettings.targetWeight;
-      profileSettings.heightCm=Number(data.height_cm)||profileSettings.heightCm;
-      profileSettings.workoutLevel=data.workout_level||profileSettings.workoutLevel;
-      profileSettings.avatarUrl=data.avatar_url||profileSettings.avatarUrl;
-      if(profileSettings.avatarUrl) showProfilePhoto(profileSettings.avatarUrl);
-      populateProfileForm();
-      saveLocalOnly();
-      updateHome();
-    }
-  }catch(e){console.warn('Profile load failed', e.message||e);}
-}
-async function afterAuthReady(){
-  updateAuthUI();
-  await loadUserProfile();
-  await loadProStatus();
-  await loadRemoteData();
-  await loadChallengeData();
-  saveData();
-}
-async function initAuth(){
-  if(!supabaseClient){showAuthIfNeeded();return;}
-  const {data}=await supabaseClient.auth.getSession();
-  currentUser=data?.session?.user || null;
-  authReady=true;
-  updateAuthUI();
-  if(currentUser){
-    document.getElementById('auth-screen').style.display='none';
-    await afterAuthReady();
-  }else showAuthIfNeeded();
-  supabaseClient.auth.onAuthStateChange(async(_event,session)=>{
-    currentUser=session?.user || null;
-    updateAuthUI();
-    if(currentUser){
-      document.getElementById('auth-screen').style.display='none';
-      await afterAuthReady();
-    }else{
-      showAuthIfNeeded();
-    }
-  });
-}
+  useEffect(() => {
+    const load = async () => {
+      if (!isSupabaseConfigured || !supabase || !caregiverId) {
+        setLoading(false);
+        return;
+      }
 
-// ===================== LOCAL + SUPABASE STORAGE =====================
-const STORAGE_KEY = 'fither_app_data_v1';
-const DEVICE_KEY = 'fither_device_id_v1';
-let remoteStateRowId = null;
-let syncTimer = null;
+      try {
+        const { data: cg } = await supabase
+          .from('caregivers')
+          .select('id, full_name, email, phone, profile_id, onboarding_status')
+          .eq('id', caregiverId)
+          .maybeSingle();
 
-function getDeviceId(){
-  let id = localStorage.getItem(DEVICE_KEY);
-  if(!id){
-    id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'fit_' + Date.now() + '_' + Math.random().toString(16).slice(2);
-    localStorage.setItem(DEVICE_KEY, id);
-  }
-  return id;
-}
-const deviceId = getDeviceId();
+        if (cg) {
+          setCaregiver(cg as CaregiverRecord);
+          setForm(prev => ({
+            ...prev,
+            basic: {
+              ...prev.basic,
+              legalFirstName: (cg.full_name || '').split(' ')[0] || '',
+              legalLastName: (cg.full_name || '').split(' ').slice(1).join(' ') || ''
+            },
+            contact: {
+              ...prev.contact,
+              personalEmail: cg.email || '',
+              cellPhone: cg.phone || ''
+            },
+            signedName: cg.full_name || ''
+          }));
+        }
 
-function currentState(){
-  return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,profileSettings,challengeProgress,updatedAt:new Date().toISOString()};
-}
-function applyState(data){
-  if(!data || typeof data !== 'object')return;
-  logged=Array.isArray(data.logged)?data.logged:[];
-  weights=Array.isArray(data.weights)?data.weights:[];
-  waterCups=Number.isFinite(Number(data.waterCups))?Number(data.waterCups):0;
-  workoutHistory=Array.isArray(data.workoutHistory)?data.workoutHistory:[];
-  reminders=Array.isArray(data.reminders)?data.reminders:[];
-  totalBurned=Number.isFinite(Number(data.totalBurned))?Number(data.totalBurned):0;
-  streak=Number.isFinite(Number(data.streak))?Number(data.streak):1;
-  workoutsDone=Number.isFinite(Number(data.workoutsDone))?Number(data.workoutsDone):0;
-  userGoal=Number.isFinite(Number(data.userGoal))?Number(data.userGoal):1800;
-  profileSettings=(data.profileSettings && typeof data.profileSettings==='object')?{...profileSettings,...data.profileSettings}:profileSettings;
-  challengeProgress=(data.challengeProgress && typeof data.challengeProgress==='object')?data.challengeProgress:{};
-}
+        const { data: packet } = await supabase
+          .from('caregiver_onboarding_packets')
+          .select('*')
+          .eq('caregiver_id', caregiverId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-function renderAll(){
-  renderWorkoutList();renderWorkoutPicker();renderTrackList();renderFoodLog();renderWorkoutHistory();
-  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();renderMealPlan();populateProfileForm();renderCoachGoal();
-}
-function saveLocalOnly(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState())); }
-  catch(e){console.warn('FitHerNova local save failed', e);}
-}
-function saveData(){
-  saveLocalOnly();
-  scheduleRemoteSave();
-}
-function loadData(){
-  try{
-    const raw=localStorage.getItem(STORAGE_KEY);
-    if(raw) applyState(JSON.parse(raw));
-  }catch(e){console.warn('FitHerNova local load failed', e);}
-}
-function scheduleRemoteSave(){
-  if(!supabaseClient)return;
-  clearTimeout(syncTimer);
-  syncTimer=setTimeout(saveRemoteData,800);
-}
-async function saveRemoteData(){
-  if(!supabaseClient)return;
-  const ownerId = currentUser ? 'user_'+currentUser.id : deviceId;
-  const payload={device_id:ownerId,log_type:'app_state',data:currentState()};
-  if(currentUser) payload.user_id=currentUser.id;
-  try{
-    if(remoteStateRowId){
-      const {error}=await supabaseClient.from('fitness_logs').update({data:payload.data}).eq('id',remoteStateRowId);
-      if(error) throw error;
-    }else{
-      const {data,error}=await supabaseClient.from('fitness_logs').insert(payload).select('id').single();
-      if(error) throw error;
-      remoteStateRowId=data?.id || null;
-    }
-  }catch(e){console.warn('FitHerNova Supabase save failed', e.message || e);}
-}
-async function loadRemoteData(){
-  if(!supabaseClient)return;
-  try{
-    const {data,error}=await supabaseClient
-      .from('fitness_logs')
-      .select('id,data,created_at')
-      .eq('device_id', currentUser ? 'user_'+currentUser.id : deviceId)
-      .eq('log_type','app_state')
-      .order('created_at',{ascending:false})
-      .limit(1)
-      .maybeSingle();
-    if(error) throw error;
-    if(data?.data){
-      remoteStateRowId=data.id;
-      applyState(data.data);
-      saveLocalOnly();
-      renderAll();
-    }
-  }catch(e){console.warn('FitHerNova Supabase load failed', e.message || e);}
-}
-async function loadSupabaseTracks(){
-  // Stable mode: use the hardcoded Supabase-hosted MP3 URLs directly.
-  // This avoids hanging on database fetch and keeps music reliable for users.
-  tracks = BUILT_IN_TRACKS.map(t => ({...t}));
-  currentTrack = Math.min(Math.max(currentTrack || 0, 0), tracks.length - 1);
-  renderTrackList();
-  updateMiniPlayer();
-  setMusicStatus('Tap a song to begin. Songs will play one after another.');
-}
-
-
-function resetFitHerData(){
-  if(!confirm('Clear all FitHerNova saved data on this device?'))return;
-  localStorage.removeItem(STORAGE_KEY);
-  location.reload();
-}
-
-// ===================== NAV =====================
-function goTo(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  const nb=document.getElementById('nav-'+page);
-  if(nb) nb.classList.add('active');
-  if(page==='home') updateHome();
-  if(page==='progress') renderProgress();
-  if(page==='challenge') renderChallenge();
-  if(page==='mealplan') renderMealPlan();
-  if(page==='coach') renderCoachGoal();
-  if(page==='profile') {populateProfileForm(); renderProfileSummary();}
-  if(page==='pro') updateProUI();
-  if(page==='milestones') renderMilestones();
-}
-
-// ===================== HOME =====================
-function updateHome(){
-  const tot=logged.reduce((s,l)=>s+l.cal,0);
-  const rem=Math.max(userGoal-tot,0);
-  const pct=Math.min(tot/userGoal,1);
-  const circ=289;
-  document.getElementById('cal-ring').style.strokeDashoffset=Math.round(circ-pct*circ);
-  document.getElementById('ring-cal').textContent=tot;
-  document.getElementById('ri-goal').textContent=userGoal+' kcal';
-  document.getElementById('ri-rem').textContent=rem;
-  document.getElementById('ri-prog').style.width=(pct*100)+'%';
-  const prot=logged.reduce((s,l)=>s+(l.p||0),0);
-  document.getElementById('ri-prot').textContent=prot+'g';
-  document.getElementById('prog-prot').style.width=Math.min(prot/120*100,100)+'%';
-  document.getElementById('ri-burn').textContent=totalBurned+' kcal';
-  document.getElementById('st-meals').textContent=logged.length;
-  document.getElementById('st-water').textContent=waterCups+'/8';
-  document.getElementById('st-workouts').textContent=workoutsDone;
-  document.getElementById('st-streak').textContent=streak+'🔥';
-  document.getElementById('header-streak').textContent=streak;
-  const ml=document.getElementById('home-meal-log');
-  if(!logged.length){ml.innerHTML='<div class="text-grey">No meals logged yet — go to Food tab</div>';}
-  else{ml.innerHTML=logged.map(l=>`<div class="meal-log-item"><div class="mli-left"><span>${l.icon}</span><span>${l.name}</span></div><span class="mli-cal">${l.cal} kcal</span></div>`).join('');}
-  // date
-  const d=new Date();
-  document.getElementById('home-date').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-  renderCups();
-}
-
-// ===================== WATER =====================
-function renderCups(){
-  const grid=document.getElementById('cup-grid');
-  grid.innerHTML=Array.from({length:8},(_,i)=>`<div onclick="addWater()" style="text-align:center;font-size:22px;cursor:pointer;opacity:${i<waterCups?1:0.2};transition:opacity 0.3s;" title="Glass ${i+1}">💧</div>`).join('');
-  document.getElementById('water-count').textContent=waterCups;
-  document.getElementById('st-water').textContent=waterCups+'/8';
-}
-function addWater(){if(waterCups<8){waterCups++;renderCups();saveData();updateHome();}}
-function resetWater(){waterCups=0;renderCups();saveData();updateHome();}
-
-// ===================== FOOD =====================
-function setFilter(f,el){
-  activeFilter=f;
-  document.querySelectorAll('#filter-scroll .chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  doSearch();
-}
-function doSearch(){
-  const q=document.getElementById('food-search').value.toLowerCase().trim();
-  const res=foods.filter(f=>(activeFilter==='all'||f.cat===activeFilter)&&(!q||f.name.toLowerCase().includes(q)));
-  const el=document.getElementById('food-results');
-  if(!res.length){el.innerHTML='<div class="text-grey" style="padding:8px 0;">No foods found</div>';return;}
-  el.innerHTML=res.slice(0,8).map(f=>`<div class="food-item${selFood&&selFood.name===f.name?' selected':''}" onclick="selectFood('${f.name}')">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div class="food-emoji">${f.icon}</div>
-      <div><div class="food-name">${f.name}</div><div class="food-meta">Per ${f.por}${f.u}</div></div>
-    </div>
-    <div class="food-cal">${f.cal}</div>
-  </div>`).join('');
-}
-function selectFood(name){
-  selFood=foods.find(f=>f.name===name);portion=1;doSearch();
-  const el=document.getElementById('food-detail-wrap');
-  const f=selFood;
-  el.innerHTML=`<div class="detail-card">
-    <div style="font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--white);margin-bottom:10px;">${f.icon} ${f.name}</div>
-    <div class="portion-control">
-      <span class="portion-label">Portions</span>
-      <div class="portion-stepper">
-        <button class="portion-btn" onclick="changePortion(-0.5)" aria-label="Decrease portion">−</button>
-        <span class="portion-value" id="plabel">1x (${f.por}${f.u})</span>
-        <button class="portion-btn" onclick="changePortion(0.5)" aria-label="Increase portion">+</button>
-      </div>
-    </div>
-    <div class="macro-chips">
-      <div class="mc"><div class="mv" id="d-cal">${f.cal}</div><div class="ml">kcal</div></div>
-      <div class="mc"><div class="mv" id="d-p">${f.p}g</div><div class="ml">protein</div></div>
-      <div class="mc"><div class="mv" id="d-c">${f.c}g</div><div class="ml">carbs</div></div>
-    </div>
-    <button class="btn btn-pink" onclick="logFood()">+ Add to log</button>
-  </div>`;
-}
-function changePortion(delta){
-  const next=Math.max(0.5, Math.min(4, portion + delta));
-  updPortion(next);
-}
-function updPortion(v){
-  portion=parseFloat(v);const f=selFood;
-  document.getElementById('plabel').textContent=portion+'x ('+Math.round(f.por*portion)+f.u+')';
-  document.getElementById('d-cal').textContent=Math.round(f.cal*portion);
-  document.getElementById('d-p').textContent=Math.round(f.p*portion)+'g';
-  document.getElementById('d-c').textContent=Math.round(f.c*portion)+'g';
-}
-function logFood(){
-  if(!selFood)return;
-  logged.push({name:selFood.name,icon:selFood.icon,cal:Math.round(selFood.cal*portion),p:Math.round(selFood.p*portion),c:Math.round(selFood.c*portion),f:Math.round(selFood.f*portion)});
-  selFood=null;portion=1;
-  document.getElementById('food-detail-wrap').innerHTML='';
-  renderFoodLog();updateHome();saveData();
-}
-function removeFood(i){logged.splice(i,1);renderFoodLog();updateHome();saveData();}
-function renderFoodLog(){
-  const el=document.getElementById('food-log-list');
-  const tw=document.getElementById('food-total-wrap');
-  if(!logged.length){el.innerHTML='<div class="text-grey">Nothing logged yet</div>';tw.style.display='none';return;}
-  const tot=logged.reduce((s,l)=>s+l.cal,0);
-  el.innerHTML=logged.map((l,i)=>`<div class="log-list-item">
-    <span>${l.icon} ${l.name}</span>
-    <span style="display:flex;align-items:center;gap:8px;">
-      <span style="font-weight:600;color:var(--pink-light);">${l.cal} kcal</span>
-      <button class="del-btn" onclick="removeFood(${i})" aria-label="Remove">×</button>
-    </span>
-  </div>`).join('');
-  tw.style.display='flex';document.getElementById('food-total-cal').textContent=tot+' kcal';
-}
-
-// ===================== WORKOUTS =====================
-function renderWorkoutList(){
-  document.getElementById('workout-list').innerHTML=workoutData.map((w,i)=>`
-    <div class="workout-card" id="wc-${i}" onclick="toggleWorkout(${i})">
-      <div class="wc-top">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div class="wc-icon">${w.icon}</div>
-          <div><div class="wc-title">${w.name}</div><div class="wc-meta">${w.dur} · ~${w.calPM} kcal/min</div></div>
-        </div>
-        <span class="badge ${w.badge}">${w.level}</span>
-      </div>
-      <div class="ex-list" id="exl-${i}">
-        ${w.ex.map((e,ei)=>`<div class="ex-item"><div class="ex-num">${ei+1}</div><div class="ex-name">${e.n}</div><div class="ex-reps">${e.r}</div></div>`).join('')}
-        <button class="btn btn-pink" style="margin-top:10px;" onclick="event.stopPropagation();startWorkoutFromList('${w.name}',${w.calPM})">Start & Track ▶</button>
-      </div>
-    </div>`).join('');
-}
-function toggleWorkout(i){
-  const el=document.getElementById('exl-'+i);
-  const card=document.getElementById('wc-'+i);
-  const isOpen=el.classList.contains('open');
-  document.querySelectorAll('.ex-list').forEach(e=>e.classList.remove('open'));
-  document.querySelectorAll('.workout-card').forEach(c=>c.classList.remove('open'));
-  if(!isOpen){el.classList.add('open');card.classList.add('open');}
-}
-function startWorkoutFromList(name,calPM){
-  selWorkout={name,calPM};
-  document.getElementById('timer-wname').textContent=name;
-  document.getElementById('ts-pace').textContent=intensity(calPM);
-  renderWorkoutPicker();
-  goTo('timer');
-}
-
-// ===================== TIMER =====================
-function renderWorkoutPicker(){
-  document.getElementById('workout-picker').innerHTML=workoutData.map(w=>`
-    <div class="pick-item${selWorkout&&selWorkout.name===w.name?' selected':''}" onclick="pickWorkout('${w.name}',${w.calPM})">
-      <div class="pick-icon">${w.icon}</div>
-      <div class="pick-name">${w.name}</div>
-      <div class="pick-rate">${w.calPM} kcal/min</div>
-    </div>`).join('');
-}
-function pickWorkout(name,calPM){
-  selWorkout={name,calPM};
-  document.getElementById('timer-wname').textContent=name;
-  document.getElementById('ts-pace').textContent=intensity(calPM);
-  renderWorkoutPicker();
-}
-function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
-function intensity(c){if(c<=4)return'Light';if(c<=6)return'Moderate';if(c<=10)return'High';return'Intense';}
-function startTimer(){
-  if(!selWorkout){alert('Please select a workout first!');return;}
-  timerRunning=true;timerPaused=false;
-  document.getElementById('btn-start').style.display='none';
-  document.getElementById('btn-pause').style.display='flex';
-  document.getElementById('btn-stop').style.display='flex';
-  document.getElementById('timer-state').textContent='WORKING OUT';
-  document.getElementById('result-banner').style.display='none';
-  timerInterval=setInterval(tickTimer,1000);
-}
-function tickTimer(){
-  timerSec++;
-  const mins=timerSec/60;
-  const calB=Math.round(mins*selWorkout.calPM);
-  document.getElementById('timer-display').textContent=fmt(timerSec);
-  document.getElementById('ts-min').textContent=Math.floor(timerSec/60);
-  document.getElementById('ts-cal').textContent=calB;
-  const pct=Math.min(timerSec/(60*60),1);
-  document.getElementById('timer-ring').style.strokeDashoffset=Math.round(553-pct*553);
-}
-function pauseTimer(){
-  if(timerRunning&&!timerPaused){
-    clearInterval(timerInterval);timerRunning=false;timerPaused=true;
-    document.getElementById('btn-pause').textContent='▶ Resume';
-    document.getElementById('btn-pause').onclick=resumeTimer;
-    document.getElementById('timer-state').textContent='PAUSED';
-  }
-}
-function resumeTimer(){
-  timerRunning=true;timerPaused=false;
-  document.getElementById('btn-pause').textContent='⏸ Pause';
-  document.getElementById('btn-pause').onclick=pauseTimer;
-  document.getElementById('timer-state').textContent='WORKING OUT';
-  timerInterval=setInterval(tickTimer,1000);
-}
-function stopTimer(){
-  if(!timerSec)return;
-  clearInterval(timerInterval);timerRunning=false;timerPaused=false;
-  const mins=timerSec/60;
-  const calB=Math.round(mins*selWorkout.calPM);
-  totalBurned+=calB;workoutsDone++;streak++;
-  const msgs=['Amazing work! 🏆','You are unstoppable! 💪','That belly is grateful! 🔥','Consistency is your superpower! ⚡','Your future self thanks you! 💚'];
-  document.getElementById('rb-time').textContent=fmt(timerSec);
-  document.getElementById('rb-cal').textContent=calB;
-  document.getElementById('rb-pace').textContent=intensity(selWorkout.calPM);
-  document.getElementById('rb-msg').textContent=msgs[Math.floor(Math.random()*msgs.length)];
-  document.getElementById('result-banner').style.display='block';
-  workoutHistory.unshift({name:selWorkout.name,dur:fmt(timerSec),cal:calB,date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})});
-  renderWorkoutHistory();
-  timerSec=0;
-  document.getElementById('btn-start').style.display='flex';
-  document.getElementById('btn-pause').style.display='none';
-  document.getElementById('btn-stop').style.display='none';
-  document.getElementById('timer-display').textContent='00:00';
-  document.getElementById('timer-state').textContent='DONE!';
-  document.getElementById('ts-min').textContent='0';
-  document.getElementById('ts-cal').textContent='0';
-  document.getElementById('timer-ring').style.strokeDashoffset='553';
-  updateHome();renderMilestones();saveData();
-}
-function renderWorkoutHistory(){
-  const el=document.getElementById('workout-history');
-  if(!workoutHistory.length){el.innerHTML='<div class="text-grey">No workouts logged yet</div>';return;}
-  el.innerHTML=workoutHistory.slice(0,5).map(h=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--black4);">
-      <div><div style="font-size:13px;font-weight:500;color:var(--white);">${h.name}</div><div style="font-size:11px;color:var(--grey);">${h.date}</div></div>
-      <div style="text-align:right;"><div style="font-size:13px;font-weight:600;color:var(--white);">${h.dur}</div><div style="font-size:11px;color:var(--pink-light);">${h.cal} kcal</div></div>
-    </div>`).join('');
-}
-
-// ===================== MUSIC =====================
-function updateMiniPlayer(){
-  const mini=document.getElementById('mini-player');
-  if(!mini)return;
-  const hasTrack=tracks.length && currentTrack>=0 && tracks[currentTrack];
-  if(!hasTrack || !miniPlayerActivated || miniPlayerDismissed){
-    mini.classList.remove('show');
-    return;
-  }
-  const t=tracks[currentTrack];
-  mini.classList.add('show');
-  mini.classList.toggle('minimized', !!miniPlayerMinimized);
-  const mt=document.getElementById('mini-title');
-  const ms=document.getElementById('mini-sub');
-  const ma=document.getElementById('mini-art');
-  if(mt) mt.textContent=t.title || 'FitHerNova Radio';
-  if(ms) ms.textContent=(t.artist || 'Pro Media Records') + (isPlaying ? ' · Playing now' : ' · Paused');
-  if(ma){ma.textContent=t.emoji || '🎵'; ma.classList.toggle('spinning', !!isPlaying);}
-  const btn=document.getElementById('mini-play-btn');
-  if(btn){btn.innerHTML=isPlaying
-    ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'
-    : '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-  }
-}
-function minimizeMiniPlayer(event){
-  if(event) event.stopPropagation();
-  miniPlayerMinimized=!miniPlayerMinimized;
-  updateMiniPlayer();
-}
-function closeMiniPlayer(event){
-  if(event) event.stopPropagation();
-  miniPlayerDismissed=true;
-  const mini=document.getElementById('mini-player');
-  if(mini) mini.classList.remove('show');
-}
-function updateMediaSession(t){
-  if(!('mediaSession' in navigator) || !t)return;
-  try{
-    navigator.mediaSession.metadata=new MediaMetadata({
-      title:t.title || 'FitHerNova Radio',
-      artist:t.artist || 'Pro Media Records',
-      album:'FitHerNova Radio',
-      artwork:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎵</text></svg>',sizes:'100x100',type:'image/svg+xml'}]
-    });
-    navigator.mediaSession.setActionHandler('play',()=>togglePlay());
-    navigator.mediaSession.setActionHandler('pause',()=>togglePlay());
-    navigator.mediaSession.setActionHandler('previoustrack',()=>prevTrack());
-    navigator.mediaSession.setActionHandler('nexttrack',()=>nextTrack());
-  }catch(e){}
-}
-
-function normalizeAudioUrl(url){
-  if(!url) return '';
-  let clean = String(url).trim();
-  // Safely encode raw spaces/special characters without breaking already-encoded Supabase URLs.
-  try{
-    clean = encodeURI(clean);
-  }catch(e){
-    clean = clean.replace(/ /g,'%20');
-  }
-  return clean;
-}
-function toggleDJMode(event){
-  if(event) event.stopPropagation();
-  setMusicStatus('Auto Play is on. Songs will play one after another.');
-}
-function waitNova(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
-async function fadeVolume(target=1, duration=0){
-  audioEl.volume=Math.max(0,Math.min(1,target));
-}
-
-
-function renderTrackList(){
-  const el=document.getElementById('track-list');
-  if(!el)return;
-  if(!tracks.length){el.innerHTML='<div class="text-grey" style="padding:10px 0;">No songs available yet.</div>';updateMiniPlayer();return;}
-  el.innerHTML=tracks.map((t,i)=>`
-    <div class="track-item${i===currentTrack&&isPlaying?' playing':''}" onclick="playTrack(${i})" id="track-${i}">
-      <div class="playing-anim"><div class="bar-anim"></div><div class="bar-anim"></div><div class="bar-anim"></div></div>
-      <div class="track-num">${i+1}</div>
-      <div style="font-size:21px;width:32px;text-align:center;flex-shrink:0;">${t.emoji || '🎵'}</div>
-      <div class="track-info"><div class="track-name">${t.title || 'Untitled'}</div><div class="track-artist">${t.artist || 'FitHerNova Music'}</div></div>
-      <div class="track-dur">${t.src?(t.dur || '0:00'):'No link'}</div>
-    </div>`).join('');
-}
-function setPlayIcon(playing){
-  const icon=document.getElementById('play-icon');
-  if(icon){
-    icon.innerHTML = playing
-      ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
-      : '<polygon points="5 3 19 12 5 21 5 3"/>';
-  }
-  updateMiniPlayer();
-}
-function setMusicStatus(message){
-  const status=document.getElementById('music-status');
-  if(status && message) status.textContent=message;
-}
-function formatAudioTime(sec){
-  if(!Number.isFinite(sec) || sec<0) return '0:00';
-  const m=Math.floor(sec/60); const s=Math.floor(sec%60).toString().padStart(2,'0');
-  return `${m}:${s}`;
-}
-function updateProgress(){
-  const cur=document.getElementById('np-current');
-  const total=document.getElementById('np-total');
-  const bar=document.getElementById('np-progress');
-  const miniBar=document.getElementById('mini-progress-fill');
-  if(cur) cur.textContent=formatAudioTime(audioEl.currentTime || 0);
-  if(total && Number.isFinite(audioEl.duration)) total.textContent=formatAudioTime(audioEl.duration);
-  if(Number.isFinite(audioEl.duration) && audioEl.duration>0){
-    const pct=(audioEl.currentTime/audioEl.duration)*100;
-    if(bar) bar.style.width=pct+'%';
-    if(miniBar) miniBar.style.width=pct+'%';
-  }
-}
-async function playTrack(i, autoAdvance=false){
-  if(!tracks.length || !tracks[i]) return false;
-
-  currentTrack = i;
-  const t = tracks[currentTrack];
-  const art = document.getElementById('np-art');
-  const emoji = document.getElementById('np-emoji');
-  const titleEl=document.getElementById('np-title');
-  const artistEl=document.getElementById('np-artist');
-  const totalEl=document.getElementById('np-total');
-  const currentEl=document.getElementById('np-current');
-  const progressEl=document.getElementById('np-progress');
-
-  if(titleEl) titleEl.textContent = t.title || 'Untitled';
-  if(artistEl) artistEl.textContent = t.artist || 'FitHerNova Radio';
-  if(emoji) emoji.textContent = t.emoji || '🎵';
-  if(totalEl) totalEl.textContent = t.dur || '0:00';
-  if(currentEl) currentEl.textContent = '0:00';
-  if(progressEl) progressEl.style.width = '0%';
-  clearInterval(progressInterval);
-
-  const cleanSrc = normalizeAudioUrl(t.src);
-  if(!cleanSrc) return false;
-
-  try{
-    audioEl.pause();
-    audioEl.currentTime = 0;
-    audioEl.src = cleanSrc;
-    audioEl.preload = 'auto';
-    audioEl.volume = 1;
-
-    audioEl.onended = () => autoNextTrack(1);
-    audioEl.ontimeupdate = updateProgress;
-    audioEl.onloadedmetadata = updateProgress;
-    audioEl.onerror = () => {
-      console.warn('Track skipped:', t.title);
-      autoNextTrack(1);
+        if (packet) {
+          setPacketId(packet.id as string);
+          setStatus((packet.status || 'in_progress') as PacketStatus);
+          if (packet.form_data) {
+            setForm({ ...emptyForm, ...(packet.form_data as FormDataState) });
+          }
+        }
+      } catch (err) {
+        console.error('Onboarding docs load error:', err);
+        showMessage('Could not load onboarding packet. Please contact TishZee HR.', 'error');
+      } finally {
+        setLoading(false);
+      }
     };
+    load();
+  }, [caregiverId]);
 
-    updateMediaSession(t);
-    miniPlayerActivated = true;
-    miniPlayerDismissed = false;
-    renderTrackList();
-    updateMiniPlayer();
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * ratio;
+      canvas.height = rect.height * ratio;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.scale(ratio, ratio);
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#1f4d3a';
+      }
+    };
+    resize();
+  }, [step]);
 
-    await audioEl.play();
-    isPlaying = true;
-    setPlayIcon(true);
-    if(art) art.classList.add('spinning');
-    setMusicStatus('Now playing: ' + (t.title || 'Track'));
-    progressInterval = setInterval(updateProgress, 500);
-    saveData();
-    return true;
-  }catch(err){
-    console.warn('Playback needs user tap or track skipped:', err?.message || err);
-    isPlaying = false;
-    setPlayIcon(false);
-    if(art) art.classList.remove('spinning');
-    renderTrackList();
-    updateMiniPlayer();
-    setMusicStatus('Tap the song or play button to start.');
-    return false;
-  }
-}
+  const update = (section: keyof FormDataState, key: string, value: string | boolean) => {
+    setForm(prev => ({
+      ...prev,
+      [section]: {
+        ...(prev[section] as Record<string, unknown>),
+        [key]: value
+      }
+    } as FormDataState));
+  };
 
-
-async function autoNextTrack(step=1){
-  if(!tracks.length) return;
-  currentTrack = (currentTrack + step + tracks.length) % tracks.length;
-  await playTrack(currentTrack, true);
-}
-
-
-async function togglePlay(){
-  if(!tracks.length){
-    setMusicStatus('Tap a song to begin.');
-    return;
-  }
-  const art=document.getElementById('np-art');
-  try{
-    if(!audioEl.src){
-      await playTrack(currentTrack || 0);
-      return;
-    }
-    if(audioEl.paused){
-      await audioEl.play();
-      isPlaying=true;
-      setPlayIcon(true);
-      if(art) art.classList.add('spinning');
-      setMusicStatus('Playing FitHerNova Radio.');
-    }else{
-      audioEl.pause();
-      isPlaying=false;
-      setPlayIcon(false);
-      if(art) art.classList.remove('spinning');
-      setMusicStatus('Paused.');
-    }
-    renderTrackList();
-    updateMiniPlayer();
-  }catch(err){
-    console.warn('Toggle playback failed:', err?.message || err);
-    setMusicStatus('Tap a song to begin.');
-  }
-}
-
-async function nextTrack(){ await autoNextTrack(1); }
-async function prevTrack(){ await autoNextTrack(-1); }
-function seekTrack(e){
-  const bar=e.currentTarget;
-  const rect=bar.getBoundingClientRect();
-  const pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
-  document.getElementById('np-progress').style.width=(pct*100)+'%';
-  if(audioEl && Number.isFinite(audioEl.duration)) audioEl.currentTime=audioEl.duration*pct;
-}
-
-// ===================== PROGRESS =====================
-function logWeight(){
-  const v=parseFloat(document.getElementById('weight-input').value);
-  if(!v||v<30||v>300)return;
-  weights.push(v);if(weights.length>10)weights.shift();
-  document.getElementById('weight-input').value='';
-  renderProgress();renderMilestones();saveData();
-}
-function renderProgress(){
-  if(weights.length){
-    const cur=weights[weights.length-1];
-    const first=weights[0];
-    const lost=parseFloat((first-cur).toFixed(1));
-    const target=Number(profileSettings.targetWeight)||70;
-    const toGoal=parseFloat((cur-target).toFixed(1));
-    document.getElementById('p-current').textContent=cur;
-    document.getElementById('p-lost').textContent=lost>0?'-'+lost:lost===0?'0':'+'+Math.abs(lost);
-    document.getElementById('p-left').textContent=toGoal>0?toGoal:0;
-  }
-  if(weights.length>=2){
-    const min=Math.min(...weights),max=Math.max(...weights),range=max-min||1;
-    document.getElementById('weight-chart').innerHTML=weights.map((w,i)=>{
-      const h=Math.round(14+(w-min)/range*68);
-      const isLast=i===weights.length-1;
-      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;">
-        <div style="font-size:9px;color:${isLast?'#ff2d6b':'var(--grey)'};">${w}</div>
-        <div style="width:100%;height:${h}px;background:${isLast?'linear-gradient(180deg,#ff2d6b,#ff6b9d)':'var(--black4)'};border-radius:4px 4px 0 0;"></div>
-      </div>`;
-    }).join('');
-    document.getElementById('chart-labels').innerHTML=weights.map((_,i)=>`<span style="flex:1;font-size:9px;color:var(--grey);text-align:center;">D${i+1}</span>`).join('');
-  }
-  renderMilestones();
-}
-function renderMilestones(){
-  const lost=weights.length>1?Math.max(weights[0]-weights[weights.length-1],0):0;
-  const milestones=[
-    {icon:"🌟",name:"First meal logged",sub:"You started!",earned:logged.length>=1},
-    {icon:"💧",name:"Hydration hero",sub:"8 glasses in a day",earned:waterCups>=8},
-    {icon:"🔥",name:"3-day streak",sub:"3 days consistent",earned:streak>=3},
-    {icon:"💪",name:"First workout done",sub:"You crushed it!",earned:workoutsDone>=1},
-    {icon:"⚖️",name:"First kg lost",sub:"1 kg down!",earned:lost>=1},
-    {icon:"🏆",name:"5 kg lost",sub:"Amazing progress!",earned:lost>=5},
-    {icon:"💦",name:"Drank 8 glasses",sub:"Stay hydrated!",earned:waterCups>=8},
-    {icon:"🎵",name:"Played gospel music",sub:"Worship & work out!",earned:isPlaying||workoutsDone>0},
-  ];
-  const el=document.getElementById('milestones-list');
-  if(el) el.innerHTML=milestones.map(m=>`<div class="milestone-item">
-    <div class="mi-icon" style="opacity:${m.earned?1:0.25};">${m.icon}</div>
-    <div style="flex:1;"><div class="mi-name" style="opacity:${m.earned?1:0.6};">${m.name}</div><div class="mi-sub">${m.sub}</div></div>
-    <div class="mi-badge${m.earned?' earned':' locked'}">${m.earned?'✓ Earned':'Locked'}</div>
-  </div>`).join('');
-}
-
-
-
-// ===================== CHALLENGE + MEAL PLAN + PROFILE =====================
-const fallbackChallengeDays=[
-  {day_number:1,title:'Day 1: Start Strong',workout:'10-min Belly Burn',meal_tip:'Drink 8 glasses of water and avoid sugary drinks today.',motivation:'Your journey starts with one decision.'},
-  {day_number:2,title:'Day 2: Core Wake-Up',workout:'Stretch & Tone',meal_tip:'Add protein to every meal today.',motivation:'Small steps create big results.'},
-  {day_number:3,title:'Day 3: Sweat & Smile',workout:'HIIT Core Blaster',meal_tip:'Choose grilled instead of fried where possible.',motivation:'You are stronger than your excuses.'},
-  {day_number:4,title:'Day 4: Active Recovery',workout:'Postpartum Restore or light walk',meal_tip:'Eat slowly and stop when satisfied.',motivation:'Rest is part of progress.'},
-  {day_number:5,title:'Day 5: Belly Burn Boost',workout:'10-min Belly Burn + plank hold',meal_tip:'Reduce late-night snacking today.',motivation:'Discipline is self-love.'},
-  {day_number:6,title:'Day 6: Confidence Day',workout:'Stretch & Tone + dance workout',meal_tip:'Add vegetables to two meals today.',motivation:'You are becoming her.'},
-  {day_number:7,title:'Day 7: Glow Finish',workout:'Your favorite FitHerNova workout',meal_tip:'Review your meals and celebrate progress.',motivation:'You showed up. That is power.'}
-];
-async function loadChallengeData(){
-  challengeDays=[...fallbackChallengeDays];
-  if(!supabaseClient){renderChallenge();return;}
-  try{
-    const {data:ch}=await supabaseClient.from('challenges').select('id,title').eq('active',true).limit(1).maybeSingle();
-    if(ch?.id){
-      activeChallengeId=ch.id;
-      const {data:days,error:daysErr}=await supabaseClient.from('challenge_days').select('day_number,title,workout,meal_tip,motivation').eq('challenge_id',ch.id).order('day_number',{ascending:true});
-      if(!daysErr && Array.isArray(days) && days.length) challengeDays=days;
-      if(currentUser){
-        const {data:prog,error:progErr}=await supabaseClient.from('user_challenge_progress').select('day_number,completed').eq('user_id',currentUser.id).eq('challenge_id',ch.id);
-        if(!progErr && Array.isArray(prog)){prog.forEach(r=>{if(r.completed)challengeProgress[r.day_number]=true;});}
+  const validateStep = () => {
+    const required = requiredByStep[step] || [];
+    for (const field of required) {
+      const value = getNested(form, field);
+      if (!value || String(value).trim() === '') {
+        showMessage('Please complete all required fields before continuing.', 'error');
+        return false;
       }
     }
-  }catch(e){console.warn('Challenge load failed', e.message||e);}
-  renderChallenge();
-}
-function renderChallenge(){
-  const list=document.getElementById('challenge-days-list');
-  if(!list)return;
-  const days=(challengeDays&&challengeDays.length)?challengeDays:fallbackChallengeDays;
-  const done=days.filter(d=>challengeProgress[d.day_number]).length;
-  const pct=Math.round(done/days.length*100);
-  const fill=document.getElementById('challenge-progress-fill'); if(fill)fill.style.width=pct+'%';
-  const txt=document.getElementById('challenge-progress-text'); if(txt)txt.textContent=done+' of '+days.length+' days completed';
-  const badge=document.getElementById('challenge-badge'); if(badge)badge.style.display=done===days.length?'inline-flex':'none';
-  list.innerHTML=days.map(d=>{
-    const ok=!!challengeProgress[d.day_number];
-    return `<div class="day-card${ok?' done':''}">
-      <div class="day-top"><div style="display:flex;gap:10px;align-items:flex-start;"><div class="day-num">${d.day_number}</div><div><div class="day-title">${d.title}</div><div class="day-lines"><strong>Workout:</strong> ${d.workout}<br><strong>Meal tip:</strong> ${d.meal_tip}<br><strong>Motivation:</strong> ${d.motivation}</div></div></div>${ok?'<span class="done-pill">Done ✓</span>':''}</div>
-      <button class="btn ${ok?'btn-ghost':'btn-pink'}" style="width:100%;" onclick="toggleChallengeDay(${d.day_number})">${ok?'Undo check-in':'Complete day '+d.day_number}</button>
-    </div>`;
-  }).join('');
-}
-async function toggleChallengeDay(day){
-  challengeProgress[day]=!challengeProgress[day];
-  renderChallenge(); saveData();
-  if(supabaseClient && currentUser && activeChallengeId){
-    try{
-      const row={user_id:currentUser.id,challenge_id:activeChallengeId,day_number:day,completed:!!challengeProgress[day],completed_at:challengeProgress[day]?new Date().toISOString():null};
-      await supabaseClient.from('user_challenge_progress').upsert(row,{onConflict:'user_id,challenge_id,day_number'});
-    }catch(e){console.warn('Challenge save failed', e.message||e);}
-  }
-}
-const mealPlans=[
-  {icon:'🥣',title:'Belly-friendly Nigerian day',chips:['Breakfast: oats + boiled egg','Lunch: grilled fish + small rice','Dinner: vegetable soup + lean protein'],note:'Keep portions controlled. Choose grilled/boiled more often than fried.'},
-  {icon:'⏱️',title:'Busy woman quick plan',chips:['Greek yogurt or light pap','Moi moi + salad','Chicken pepper soup'],note:'Easy meals for workdays when you do not have time.'},
-  {icon:'💚',title:'Gentle restore plan',chips:['Protein with every meal','Hydration first','Light soups + vegetables'],note:'Gentle guidance. Users should follow medical advice after delivery.'},
-  {icon:'👯',title:'Group challenge meals',chips:['No sugary drinks','Fruit instead of sweets','Walk 10 minutes after meals'],note:'Simple group rules that make the challenge easy to follow.'}
-];
-function renderMealPlan(){
-  const el=document.getElementById('meal-plan-list'); if(!el)return;
-  el.innerHTML=mealPlans.map(p=>`<div class="meal-card-clean"><div class="meal-card-top"><div class="meal-icon-clean">${p.icon}</div><div class="meal-name-clean">${p.title}</div></div><div>${p.chips.map(c=>`<span class="meal-chip-clean">${c}</span>`).join('')}</div><div class="meal-note-clean">${p.note}</div></div>`).join('');
-}
-function populateProfileForm(){
-  const name=document.getElementById('profile-name'); if(!name)return;
-  name.value=profileSettings.fullName || document.getElementById('user-name')?.textContent || '';
-  document.getElementById('profile-goal').value=userGoal||1800;
-  document.getElementById('profile-target').value=profileSettings.targetWeight||'';
-  document.getElementById('profile-height').value=profileSettings.heightCm||'';
-  renderProfileSummary();
-}
-function renderProfileSummary(){
-  const cur=weights.length?Number(weights[weights.length-1]):null;
-  const height=Number(profileSettings.heightCm);
-  const target=Number(profileSettings.targetWeight)||70;
-  const bmiEl=document.getElementById('profile-bmi');
-  if(bmiEl) bmiEl.textContent=(cur&&height)?(cur/((height/100)**2)).toFixed(1):'--';
-  const leftEl=document.getElementById('profile-goal-left');
-  if(leftEl) leftEl.textContent=cur?Math.max(0,(cur-target)).toFixed(1):'--';
-  const acct=document.getElementById('profile-account-text');
-  if(acct) acct.textContent=currentUser?('Logged in as '+currentUser.email+(isProUser?' · PRO':' · Free plan')):'Please login to save and upgrade.';
-  updateProUI();
-}
-async function saveProfileSettings(){
-  const msg=document.getElementById('profile-message');
-  profileSettings.fullName=document.getElementById('profile-name').value.trim()||'Queen';
-  userGoal=Number(document.getElementById('profile-goal').value)||1800;
-  profileSettings.targetWeight=Number(document.getElementById('profile-target').value)||profileSettings.targetWeight||70;
-  profileSettings.heightCm=Number(document.getElementById('profile-height').value)||null;
-  document.getElementById('user-name').textContent=(profileSettings.fullName.split(' ')[0]||'Queen');
-  if(currentUser && supabaseClient){
-    try{
-      const {error}=await supabaseClient.from('profiles').upsert({id:currentUser.id,email:currentUser.email,full_name:profileSettings.fullName,calorie_goal:userGoal,target_weight:profileSettings.targetWeight,height_cm:profileSettings.heightCm,workout_level:profileSettings.workoutLevel,avatar_url:profileSettings.avatarUrl||null},{onConflict:'id'});
-      if(error)throw error;
-      if(msg)msg.textContent='Profile saved to cloud.';
-    }catch(e){if(msg)msg.textContent=e.message||'Cloud save failed.';}
-  }else if(msg) msg.textContent='Profile saved on this device.';
-  renderProfileSummary(); updateHome(); saveData();
-}
-function showProfilePhoto(url){
-  if(!url) return;
-  profileSettings.avatarUrl=url;
-  const img=document.getElementById('profile-avatar-preview');
-  const ph=document.getElementById('profile-avatar-placeholder');
-  if(img){img.src=url;img.style.display='block';}
-  if(ph) ph.style.display='none';
-  const header=document.getElementById('header-avatar');
-  if(header){header.src=url;header.style.display='block';}
-}
-async function uploadProfilePhoto(event){
-  const file=event.target.files && event.target.files[0];
-  if(!file) return;
-  const status=document.getElementById('photo-upload-status');
-  if(!currentUser){ if(status) status.textContent='Please login before uploading a photo.'; return; }
-  if(!supabaseClient){ if(status) status.textContent='Please try again in a moment.'; return; }
-  if(!file.type.startsWith('image/')){ if(status) status.textContent='Please choose an image file.'; return; }
-  if(file.size > 5 * 1024 * 1024){ if(status) status.textContent='Image is too large. Please choose under 5MB.'; return; }
-  try{
-    if(status) status.textContent='Uploading photo...';
-    const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
-    const filePath=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
-    const {error:uploadError}=await supabaseClient.storage
-      .from('profile-photos')
-      .upload(filePath,file,{cacheControl:'3600',upsert:true});
-    if(uploadError) throw uploadError;
-    const {data}=supabaseClient.storage.from('profile-photos').getPublicUrl(filePath);
-    const avatarUrl=data.publicUrl;
-    const {error:profileError}=await supabaseClient.from('profiles')
-      .upsert({id:currentUser.id,email:currentUser.email,avatar_url:avatarUrl},{onConflict:'id'});
-    if(profileError) throw profileError;
-    showProfilePhoto(avatarUrl);
-    saveData();
-    if(status) status.textContent='Photo uploaded successfully.';
-  }catch(e){
-    console.error('Profile photo upload failed',e);
-    if(status) status.textContent=e.message || 'Photo upload needs a smaller JPG or PNG. Please try again.';
-  }
-}
-async function sendPasswordReset(){
-  const msg=document.getElementById('profile-message');
-  const email=currentUser?.email || prompt('Enter your email for password reset');
-  if(!email || !supabaseClient)return;
-  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
-  if(msg) msg.textContent=error?error.message:'Password reset email sent.';
-}
+    if (step === 7) {
+      const allRequiredAck = Object.entries(form.acknowledgments)
+        .filter(([key]) => key !== 'referralProgram')
+        .every(([, value]) => value === true);
+      if (!allRequiredAck) {
+        showMessage('Please acknowledge all required agreements and policies.', 'error');
+        return false;
+      }
+    }
+    if (step === 8 && !form.signature) {
+      showMessage('Please sign in the signature box before continuing.', 'error');
+      return false;
+    }
+    return true;
+  };
 
+  const saveProgress = async (nextStatus: PacketStatus = 'in_progress') => {
+    if (!supabase || !caregiverId) return;
+    setSaving(true);
+    try {
+      const payload = {
+        caregiver_id: caregiverId,
+        status: nextStatus,
+        form_data: form,
+        updated_at: new Date().toISOString(),
+        ...(nextStatus === 'submitted' ? { submitted_at: new Date().toISOString() } : {})
+      };
 
-// ===================== AI COACH =====================
-function setMainGoal(goal){
-  profileSettings.mainGoal=goal;
-  renderCoachGoal();
-  saveData();
-  const ans=document.getElementById('coach-answer');
-  if(ans) ans.textContent=`Goal saved: ${goal}.\n\nCoach Nova will guide your meals, workouts and motivation around this goal.`;
-}
-function renderCoachGoal(){
-  const cards=document.querySelectorAll('#goal-grid .goal-card');
-  cards.forEach(c=>{
-    const title=c.querySelector('.gtitle')?.textContent||'';
-    c.classList.toggle('active', title.toLowerCase().includes((profileSettings.mainGoal||'').toLowerCase().split(' ')[0]));
-  });
-}
-function coachAsk(q){
-  const input=document.getElementById('coach-question');
-  const raw=(q || input?.value || '').trim();
-  if(input && !q) input.value='';
-  const question=raw.toLowerCase();
-  const name=(profileSettings.fullName || document.getElementById('user-name')?.textContent || 'Queen').split(' ')[0];
-  const meals=logged.reduce((s,l)=>s+(Number(l.cal)||0),0);
-  const rem=Math.max((Number(userGoal)||1800)-meals,0);
-  const currentWeight=weights.length?Number(weights[weights.length-1]):null;
-  let answer='';
-  if(!question){ answer='Ask me something like: what should I eat today, give me a workout, motivate me, or how many calories are left?'; }
-  else if(question.includes('eat')||question.includes('meal')||question.includes('food')||question.includes('nigerian')){
-    answer=`${name}, based on your ${userGoal} kcal goal, you have about ${rem} kcal remaining today.\n\nSimple FitHerNova plate idea:\n• Protein: grilled fish/chicken, egg, moi moi, or beans\n• Carb: small rice, small yam, oats, or swallow portion control\n• Vegetables: soup, salad, spinach, okra, cabbage\n• Drink: water first, avoid sugary drinks today\n\nNigerian option: moi moi + salad, grilled fish + small jollof, or pepper soup with controlled portion.`;
-  }else if(question.includes('workout')||question.includes('belly')||question.includes('exercise')){
-    answer=`${name}, do this 10-minute belly burn today:\n\n1. Standing march — 2 min\n2. Knee-to-elbow crunch — 3 sets of 12\n3. Leg raises — 3 sets of 10\n4. Plank — 3 rounds of 20 seconds\n5. Deep breathing — 1 min\n\nStart small. Finish strong. Then log it in Timer.`;
-  }else if(question.includes('water')||question.includes('drink')){
-    answer=`Hydration plan for today:\n\n• 1 glass when you wake up\n• 1 glass before each meal\n• 1 glass after workout\n• 1 glass before evening\n\nYour tracker is at ${waterCups}/8 glasses. Aim for 8 today 💧`;
-  }else if(question.includes('calorie')||question.includes('left')||question.includes('remaining')){
-    answer=`Today you logged ${meals} kcal. Your goal is ${userGoal} kcal. You have about ${rem} kcal remaining.\n\nTip: use the remaining calories on protein + vegetables first, then small carbs if needed.`;
-  }else if(question.includes('motivat')||question.includes('tired')||question.includes('lazy')){
-    answer=`${name}, you do not need to be perfect today. You only need to show up.\n\nOne workout. One better meal. One glass of water. One small win. That is how FitHerNova women glow. 🔥`;
-  }else if(question.includes('weight')||question.includes('bmi')){
-    answer=currentWeight?`Your latest weight is ${currentWeight} kg. Keep logging weekly, not every hour. Progress is a trend, not one number. Focus on consistency, meals, water and workouts.`:'Log your first weight in the Progress tab and I will help you track your journey.';
-  }else{
-    answer=`${name}, here is a simple plan for today:\n\n• Move: 10 minutes workout\n• Eat: protein with your next meal\n• Drink: 2 more glasses of water\n• Mindset: do not quit because today is not perfect\n\nYour current goal: ${profileSettings.mainGoal||'Build consistency'}.`;
+      if (packetId) {
+        const { error } = await supabase.from('caregiver_onboarding_packets').update(payload).eq('id', packetId);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from('caregiver_onboarding_packets').insert([{ ...payload, created_at: new Date().toISOString() }]).select('id').single();
+        if (error) throw error;
+        setPacketId(data.id as string);
+      }
+
+      await supabase.from('caregivers').update({ onboarding_status: nextStatus }).eq('id', caregiverId);
+      setStatus(nextStatus);
+      showMessage(nextStatus === 'submitted' ? 'Onboarding packet submitted successfully.' : 'Progress saved.');
+    } catch (err: any) {
+      console.error('Save progress error:', err);
+      showMessage(err?.message || 'Could not save progress.', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const submitPacket = async () => {
+    if (!form.acknowledgments.truthCertification || !form.signature || !form.signedName) {
+      showMessage('Please complete final certification and signature.', 'error');
+      return;
+    }
+    const signedForm = {
+      ...form,
+      signedAt: form.signedAt || new Date().toISOString(),
+      browserUserAgent: navigator.userAgent
+    } as FormDataState & { browserUserAgent: string };
+    setForm(signedForm as FormDataState);
+    await saveProgress('submitted');
+  };
+
+  const uploadFile = async (file: File, fileType: string) => {
+    if (!supabase || !packetId) {
+      showMessage('Please save progress once before uploading files.', 'info');
+      await saveProgress('in_progress');
+      return;
+    }
+    try {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${caregiverId}/${packetId}/${fileType}_${Date.now()}_${safeName}`;
+      const { error: uploadError } = await supabase.storage
+        .from('onboarding-documents')
+        .upload(path, file, { upsert: false, contentType: file.type || 'application/octet-stream' });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from('onboarding-documents').getPublicUrl(path);
+      await supabase.from('caregiver_onboarding_files').insert([{
+        caregiver_id: caregiverId,
+        packet_id: packetId,
+        file_type: fileType,
+        file_name: file.name,
+        file_url: data.publicUrl,
+        uploaded_at: new Date().toISOString()
+      }]);
+      setUploadedFiles(prev => [...prev, file.name]);
+      showMessage('File uploaded.');
+    } catch (err: any) {
+      console.error('File upload error:', err);
+      showMessage(err?.message || 'File upload failed.', 'error');
+    }
+  };
+
+  const next = async () => {
+    if (!validateStep()) return;
+    await saveProgress('in_progress');
+    setStep(s => Math.min(s + 1, sectionTitles.length - 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const back = () => {
+    setStep(s => Math.max(s - 1, 0));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const input = (section: keyof FormDataState, key: string, label: string, required = false, type = 'text') => (
+    <label className="flex flex-col gap-2">
+      <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#A67C52]">{label}{required ? ' *' : ''}</span>
+      <input
+        type={type}
+        value={String((form[section] as Record<string, unknown>)[key] || '')}
+        onChange={e => update(section, key, e.target.value)}
+        className="w-full rounded-2xl border border-[#F2E8D8] bg-white px-5 py-4 text-sm font-semibold text-[#1f4d3a] outline-none focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/10"
+      />
+    </label>
+  );
+
+  const select = (section: keyof FormDataState, key: string, label: string, options: string[], required = false) => (
+    <label className="flex flex-col gap-2">
+      <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#A67C52]">{label}{required ? ' *' : ''}</span>
+      <select
+        value={String((form[section] as Record<string, unknown>)[key] || '')}
+        onChange={e => update(section, key, e.target.value)}
+        className="w-full rounded-2xl border border-[#F2E8D8] bg-white px-5 py-4 text-sm font-semibold text-[#1f4d3a] outline-none focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/10"
+      >
+        <option value="">Select...</option>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </label>
+  );
+
+  const checkbox = (key: string, label: string) => (
+    <label className="flex items-start gap-4 rounded-2xl border border-[#F2E8D8] bg-white p-5">
+      <input
+        type="checkbox"
+        checked={!!form.acknowledgments[key]}
+        onChange={e => update('acknowledgments', key, e.target.checked)}
+        className="mt-1 h-5 w-5 accent-[#1f4d3a]"
+      />
+      <span className="text-sm font-semibold leading-relaxed text-[#1f4d3a]">{label}</span>
+    </label>
+  );
+
+  const getPoint = (event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current!;
+    const rect = canvas.getBoundingClientRect();
+    const touch = 'touches' in event ? event.touches[0] : null;
+    return {
+      x: (touch ? touch.clientX : (event as React.MouseEvent).clientX) - rect.left,
+      y: (touch ? touch.clientY : (event as React.MouseEvent).clientY) - rect.top
+    };
+  };
+
+  const startSignature = (event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    event.preventDefault();
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return;
+    const point = getPoint(event);
+    drawing.current = true;
+    ctx.beginPath();
+    ctx.moveTo(point.x, point.y);
+  };
+
+  const drawSignature = (event: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (!drawing.current) return;
+    event.preventDefault();
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return;
+    const point = getPoint(event);
+    ctx.lineTo(point.x, point.y);
+    ctx.stroke();
+  };
+
+  const endSignature = () => {
+    if (!drawing.current) return;
+    drawing.current = false;
+    const dataUrl = canvasRef.current?.toDataURL('image/png') || '';
+    setForm(prev => ({ ...prev, signature: dataUrl, signedAt: new Date().toISOString() }));
+  };
+
+  const clearSignature = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setForm(prev => ({ ...prev, signature: '', signedAt: '' }));
+  };
+
+  if (loading) {
+    return <div className="min-h-screen bg-[#FFFDF8] flex items-center justify-center text-[#1f4d3a] font-black uppercase tracking-widest">Loading onboarding packet...</div>;
   }
-  const el=document.getElementById('coach-answer');
-  if(el) el.textContent=answer;
-}
 
-// ===================== REMINDERS =====================
-function setFreq(f,el){
-  selFreq=f;
-  document.querySelectorAll('#freq-grid .freq-card').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-}
-function addReminder(){
-  requestNotifyPermission();
-  if(!selFreq){alert('Please choose how often first');return;}
-  const time=document.getElementById('r-time').value;
-  const workout=document.getElementById('r-workout').value;
-  const freqLabels={daily:'Daily',weekdays:'Weekdays',alt:'Every other day',weekend:'Weekends'};
-  reminders.push({time,workout,freq:freqLabels[selFreq],on:true,id:Date.now(),lastShown:""});
-  renderReminders();saveData();
-  setTimeout(()=>showNotif(workout,time),3000);
-}
-function renderReminders(){
-  const el=document.getElementById('reminder-list');
-  if(!reminders.length){el.innerHTML='<div class="text-grey">No reminders set yet</div>';return;}
-  el.innerHTML=reminders.map((r,i)=>`<div class="reminder-item">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="font-size:20px;">🔔</div>
-      <div><div style="font-size:13px;font-weight:500;color:var(--white);">${r.workout}</div><div style="font-size:11px;color:var(--grey);">${r.time} · ${r.freq}</div></div>
+  if (status === 'submitted' || status === 'reviewed') {
+    return (
+      <div className="min-h-screen bg-[#FFFDF8] p-6 md:p-12 flex items-center justify-center">
+        <div className="max-w-2xl w-full rounded-[3rem] bg-white border border-[#F2E8D8] p-10 text-center shadow-xl">
+          <div className="mx-auto mb-6 h-16 w-16 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl">✓</div>
+          <h1 className="text-3xl font-serif italic font-black text-[#1f4d3a]">Packet Submitted</h1>
+          <p className="mt-4 text-sm leading-relaxed text-[#1f4d3a]/70">Thank you, {caregiver?.full_name || form.signedName}. Your TishZee Homecare onboarding packet has been submitted to HR for review.</p>
+          <p className="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-[#A67C52]">Questions? Call (925) 350-7564</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#FFFDF8] text-[#1f4d3a]">
+      <div className="bg-[#123d2d] text-white px-6 py-10 md:px-12 rounded-b-[3rem] shadow-xl">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[#D4AF37] text-[10px] font-black uppercase tracking-[0.35em]">TishZee Homecare</p>
+              <h1 className="text-3xl md:text-5xl font-serif italic font-black mt-3">Caregiver Onboarding</h1>
+              <p className="mt-3 text-sm text-white/75">Secure electronic packet for {caregiver?.full_name || 'caregiver'}.</p>
+            </div>
+            <div className="hidden md:block text-right">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/50">Progress</p>
+              <p className="text-3xl font-black text-[#D4AF37]">{progress}%</p>
+            </div>
+          </div>
+          <div className="mt-8 h-3 rounded-full bg-white/10 overflow-hidden">
+            <div className="h-full bg-[#D4AF37] transition-all" style={{ width: `${progress}%` }} />
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-5xl mx-auto p-6 md:p-10">
+        {message && <div className={`mb-6 rounded-2xl px-5 py-4 text-sm font-bold ${message.type === 'error' ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`}>{message.text}</div>}
+
+        <div className="mb-6 flex flex-wrap gap-2">
+          {sectionTitles.map((title, idx) => (
+            <button key={title} type="button" onClick={() => setStep(idx)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border ${idx === step ? 'bg-[#1f4d3a] text-[#D4AF37] border-[#1f4d3a]' : 'bg-white text-[#A67C52] border-[#F2E8D8]'}`}>{idx + 1}. {title}</button>
+          ))}
+        </div>
+
+        <section className="rounded-[3rem] border border-[#F2E8D8] bg-white p-6 md:p-10 shadow-[0_12px_40px_-24px_rgba(31,77,58,0.35)]">
+          <div className="mb-8">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#A67C52]">Step {step + 1} of {sectionTitles.length}</p>
+            <h2 className="mt-2 text-2xl md:text-4xl font-serif italic font-black text-[#1f4d3a]">{sectionTitles[step]}</h2>
+          </div>
+
+          {step === 0 && (
+            <div className="space-y-6 text-sm leading-relaxed text-[#1f4d3a]/80">
+              <p>Please complete all sections before your first day of work. Your answers are saved securely as you continue.</p>
+              <div className="rounded-3xl bg-[#FFFDF8] border border-[#F2E8D8] p-6">
+                <p className="font-black text-[#1f4d3a]">You will complete:</p>
+                <ul className="mt-4 grid md:grid-cols-2 gap-2 text-sm">
+                  <li>✓ Basic and contact information</li><li>✓ Emergency contacts</li><li>✓ Payroll and tax information</li><li>✓ References</li><li>✓ HCA registry / Live Scan info</li><li>✓ Agreements and signatures</li>
+                </ul>
+              </div>
+              <p className="text-xs text-[#A67C52] font-semibold">Sensitive information is collected for employment, payroll, tax, and compliance purposes only.</p>
+            </div>
+          )}
+
+          {step === 1 && <div className="grid md:grid-cols-2 gap-5">{input('basic','legalFirstName','Legal First Name',true)}{input('basic','legalLastName','Legal Last Name',true)}{input('basic','middleName','Middle Name')}{input('basic','dateOfBirth','Date of Birth',true,'date')}{select('basic','sex','Sex', ['Male','Female','Nonbinary / Gender Non-Conforming','Prefer not to answer'], true)}{input('basic','ssn','Social Security Number',true,'password')}{input('basic','driverLicense','Driver License Number')}{input('basic','dlState','State DL Issued')}{input('basic','licenseType','Type of License')}{input('basic','licenseExpiration','License Expiration Date',false,'date')}{input('basic','vehiclePlate','Vehicle License Plate')}</div>}
+
+          {step === 2 && <div className="grid md:grid-cols-2 gap-5">{input('contact','country','Country',true)}{input('contact','personalEmail','Personal Email Address',true,'email')}{input('contact','street','Street Address',true)}{input('contact','address2','Address Line 2')}{input('contact','apartment','Apartment Number')}{input('contact','city','City',true)}{input('contact','state','State',true)}{input('contact','zip','Zip Code',true)}{input('contact','cellPhone','Cell Phone',true,'tel')}{input('contact','homePhone','Home Phone',false,'tel')}{input('contact','businessEmail','Business Email',false,'email')}</div>}
+
+          {step === 3 && <div className="grid md:grid-cols-2 gap-5">{input('emergency','contact1Name','Emergency Contact #1 Name',true)}{input('emergency','contact1Phone','Emergency Contact #1 Phone',true,'tel')}{input('emergency','contact1Relation','Relationship')}{input('emergency','contact1Email','Email',false,'email')}{input('emergency','contact2Name','Emergency Contact #2 Name')}{input('emergency','contact2Phone','Emergency Contact #2 Phone',false,'tel')}{input('emergency','physicianName','Primary Care Physician')}{input('emergency','physicianPhone','Physician Phone',false,'tel')}{input('emergency','dentistName','Dentist Name')}{input('emergency','dentistPhone','Dentist Phone',false,'tel')}</div>}
+
+          {step === 4 && <div className="grid md:grid-cols-2 gap-5">{input('payroll','routingNumber','Bank Routing Number',true)}{input('payroll','accountNumber','Bank Account Number',true,'password')}{input('payroll','accountName','Name on Account',true)}{input('payroll','bankName','Bank Name',true)}{input('payroll','bankCityState','Bank City, State')}{select('payroll','accountType','Account Type',['Checking','Savings'],true)}{select('payroll','federalFilingStatus','Federal Filing Status',['Single or Married Filing Separately','Married Filing Jointly','Head of Household','Nonresident Alien','Claiming Exemption'],true)}{select('payroll','caFilingStatus','California Filing Status',['Single','Married - withhold at higher Single rate','Married','Head of Household','Claiming Exemption'],true)}{input('payroll','additionalWithholding','Additional tax to withhold each pay period')}{input('payroll','ssnLast4','SSN Last 4 Digits',false,'password')}</div>}
+
+          {step === 5 && <div className="space-y-8"><div className="grid md:grid-cols-2 gap-5">{input('references','ref1Name','Reference #1 Name',true)}{input('references','ref1Title','Position / Title')}{input('references','ref1Company','Company')}{input('references','ref1Phone','Phone',true,'tel')}{input('references','ref1Email','Email',false,'email')}{input('references','ref1Relationship','Relationship')}</div><div className="grid md:grid-cols-2 gap-5">{input('references','ref2Name','Reference #2 Name',true)}{input('references','ref2Title','Position / Title')}{input('references','ref2Company','Company')}{input('references','ref2Phone','Phone',true,'tel')}{input('references','ref2Email','Email',false,'email')}{input('references','ref2Relationship','Relationship')}</div><div className="grid md:grid-cols-2 gap-5">{input('references','ref3Name','Reference #3 Name')}{input('references','ref3Phone','Reference #3 Phone',false,'tel')}</div></div>}
+
+          {step === 6 && <div className="space-y-6"><div className="grid md:grid-cols-2 gap-5">{input('hca','hcaNumber','HCA Registration Number',true)}{input('hca','hcaExpiry','HCA Expiry Date',true,'date')}{input('hca','liveScanDate','Live Scan Completion Date',false,'date')}{input('hca','liveScanLocation','Live Scan Location')}{input('hca','certificationNotes','Certification Notes')}</div><div className="grid md:grid-cols-3 gap-4"><label className="rounded-2xl border border-dashed border-[#D4AF37] p-5 text-center cursor-pointer"><span className="font-black text-xs uppercase tracking-widest text-[#1f4d3a]">Upload ID</span><input type="file" className="hidden" onChange={e => e.target.files?.[0] && uploadFile(e.target.files[0], 'government_id')} /></label><label className="rounded-2xl border border-dashed border-[#D4AF37] p-5 text-center cursor-pointer"><span className="font-black text-xs uppercase tracking-widest text-[#1f4d3a]">Upload HCA Proof</span><input type="file" className="hidden" onChange={e => e.target.files?.[0] && uploadFile(e.target.files[0], 'hca_registry')} /></label><label className="rounded-2xl border border-dashed border-[#D4AF37] p-5 text-center cursor-pointer"><span className="font-black text-xs uppercase tracking-widest text-[#1f4d3a]">Upload Certificate</span><input type="file" className="hidden" onChange={e => e.target.files?.[0] && uploadFile(e.target.files[0], 'certification')} /></label></div>{uploadedFiles.length > 0 && <p className="text-xs font-bold text-emerald-700">Uploaded: {uploadedFiles.join(', ')}</p>}</div>}
+
+          {step === 7 && <div className="space-y-4">{checkbox('offerLetter','I accept the Conditional Offer of Employment.')}{checkbox('workersComp','I acknowledge the Workers’ Compensation Notice.')}{checkbox('injuryNurseLine','I acknowledge the 24/7 Work Injury Nurse Line procedure.')}{checkbox('jobDescription','I have read and agree to the Home Care Aide / Caregiver Job Description.')}{checkbox('employmentAgreement','I agree to the Personal Attendant Employment Agreement.')}{checkbox('arbitrationAgreement','I agree to the Mutual Agreement to Arbitrate.')}{checkbox('confidentialityAgreement','I agree to the Confidentiality, Non-Disclosure & Non-Solicitation Agreement.')}{checkbox('antiHarassmentPolicy','I acknowledge the Prohibited Harassment, Discrimination, Retaliation & Bullying Policy.')}{checkbox('handbookReceipt','I acknowledge receipt of the Employee Handbook and Safety/Emergency Management information.')}{checkbox('mandatoryReporter','I acknowledge my Mandatory Reporter obligations.')}{checkbox('mealPeriodAgreement','I acknowledge applicable meal period / split shift policies.')}{checkbox('employeeParticipation','I acknowledge the Employee Participation Program.')}{checkbox('payrollSchedule','I acknowledge the payroll schedule.')}</div>}
+
+          {step === 8 && <p className="text-sm text-[#1f4d3a]/75 mb-6">Type your legal name and sign below. This electronic signature will be attached to your onboarding packet.</p>}
+          {step === 8 && (
+            <div className="space-y-5">
+              <label className="flex flex-col gap-2"><span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#A67C52]">Typed Full Legal Name *</span><input value={form.signedName || ''} onChange={e => setForm(prev => ({ ...prev, signedName: e.target.value }))} className="w-full rounded-2xl border border-[#F2E8D8] bg-white px-5 py-4 text-sm font-semibold text-[#1f4d3a] outline-none focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/10" /></label>
+              <div><span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#A67C52]">Draw Signature *</span><canvas ref={canvasRef} onMouseDown={startSignature} onMouseMove={drawSignature} onMouseUp={endSignature} onMouseLeave={endSignature} onTouchStart={startSignature} onTouchMove={drawSignature} onTouchEnd={endSignature} className="mt-2 h-44 w-full rounded-3xl border-2 border-dashed border-[#D4AF37] bg-[#FFFDF8] touch-none" /><button type="button" onClick={clearSignature} className="mt-3 text-xs font-black uppercase tracking-widest text-rose-500">Clear Signature</button></div>
+            </div>
+          )}
+
+          {step === 9 && <div className="space-y-6"><div className="rounded-3xl border border-[#F2E8D8] bg-[#FFFDF8] p-6"><p className="font-black text-[#1f4d3a]">Final Certification</p><p className="mt-3 text-sm leading-relaxed text-[#1f4d3a]/75">I certify that the information provided in this onboarding packet is true, complete, and accurate. I understand that false or incomplete information may result in withdrawal of offer or termination.</p></div>{checkbox('truthCertification','I certify that all information I provided is accurate and I authorize TishZee Homecare to use it for onboarding, payroll, compliance, and employment purposes.')}{form.signature && <img src={form.signature} alt="Signature preview" className="h-24 rounded-2xl border border-[#F2E8D8] bg-white p-3" />}</div>}
+
+          <div className="mt-10 flex flex-col md:flex-row gap-4 justify-between">
+            <button type="button" onClick={back} disabled={step === 0 || saving} className="rounded-2xl border border-[#F2E8D8] bg-white px-8 py-4 text-xs font-black uppercase tracking-widest text-[#1f4d3a] disabled:opacity-40">Back</button>
+            <div className="flex flex-col md:flex-row gap-3">
+              <button type="button" onClick={() => saveProgress('in_progress')} disabled={saving} className="rounded-2xl border border-[#D4AF37]/30 bg-[#FFFDF8] px-8 py-4 text-xs font-black uppercase tracking-widest text-[#A67C52] disabled:opacity-50">{saving ? 'Saving...' : 'Save'}</button>
+              {step < sectionTitles.length - 1 ? <button type="button" onClick={next} disabled={saving} className="rounded-2xl bg-[#1f4d3a] px-10 py-4 text-xs font-black uppercase tracking-widest text-[#D4AF37] shadow-lg disabled:opacity-50">Continue</button> : <button type="button" onClick={submitPacket} disabled={saving} className="rounded-2xl bg-[#1f4d3a] px-10 py-4 text-xs font-black uppercase tracking-widest text-[#D4AF37] shadow-lg disabled:opacity-50">Submit Packet</button>}
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="reminders[${i}].on=this.checked;saveData();"/><span class="toggle-slider"></span></label>
-      <button class="del-btn" onclick="reminders.splice(${i},1);renderReminders();saveData();" aria-label="Delete">×</button>
-    </div>
-  </div>`).join('');
-}
-function showNotif(workout,time){
-  document.getElementById('nt-title').textContent='⏰ Time for your '+workout+'!';
-  document.getElementById('nt-sub').textContent='Reminder set for '+time+' — you\'ve got this, Queen!';
-  const toast=document.getElementById('notif-toast');
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),6000);
-}
-function dismissNotif(){
-  document.getElementById('notif-toast').classList.remove('show');
-  goTo('timer');
-}
-
-
-function requestNotifyPermission(){
-  if('Notification' in window && Notification.permission==='default'){
-    Notification.requestPermission().catch(()=>{});
-  }
-}
-function reminderMatches(r, now){
-  const day=now.getDay();
-  if(r.freq==='Weekdays' && (day===0||day===6)) return false;
-  if(r.freq==='Weekends' && !(day===0||day===6)) return false;
-  if(r.freq==='Every other day'){
-    const days=Math.floor(now.getTime()/86400000);
-    if(days%2!==0) return false;
-  }
-  return true;
-}
-function checkReminders(){
-  const now=new Date();
-  const hh=String(now.getHours()).padStart(2,'0');
-  const mm=String(now.getMinutes()).padStart(2,'0');
-  const today=now.toISOString().slice(0,10);
-  reminders.forEach(r=>{
-    if(!r.on || r.time!==hh+':'+mm || r.lastShown===today+' '+r.time || !reminderMatches(r,now))return;
-    r.lastShown=today+' '+r.time;
-    showNotif(r.workout,r.time);
-    if('Notification' in window && Notification.permission==='granted'){
-      new Notification('FitHerNova reminder', {body:'Time for '+r.workout+' — you’ve got this, Queen!', icon:'icon-192.png'});
-    }
-    saveData();
-  });
-}
-setInterval(checkReminders,60000);
-
-// ===================== INSTALL PWA =====================
-let deferredPrompt=null;
-function showInstallGuide(){
-  const pop=document.getElementById('install-pop');
-  if(pop) pop.classList.add('show');
-}
-function closeInstallGuide(){
-  const pop=document.getElementById('install-pop');
-  if(pop) pop.classList.remove('show');
-}
-async function triggerInstallPrompt(){
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt=null;
-    closeInstallGuide();
-    const banner=document.getElementById('install-banner');
-    if(banner) banner.style.display='none';
-  }else{
-    const msg=document.querySelector('.install-text');
-    if(msg) msg.textContent='Use your browser menu: iPhone Safari → Share → Add to Home Screen. Android Chrome → 3 dots → Add to Home Screen.';
-  }
-}
-window.addEventListener('beforeinstallprompt',(e)=>{
-  e.preventDefault();
-  deferredPrompt=e;
-  const banner=document.getElementById('install-banner');
-  if(banner) banner.style.display='flex';
-});
-
-
-
-// ===================== FITHERNOVA PRO / PAYSTACK =====================
-function getLocalPro(){
-  try{
-    const raw=localStorage.getItem('fithernova_pro_access');
-    if(!raw) return null;
-    const data=JSON.parse(raw);
-    if(data?.active){return data;}
-  }catch(e){}
-  return null;
-}
-function setLocalPro(plan, ref){
-  const data={active:true,plan,ref:ref||('local_'+Date.now()),email:currentUser?.email||'',activatedAt:new Date().toISOString()};
-  localStorage.setItem('fithernova_pro_access', JSON.stringify(data));
-  isProUser=true; proPlan=plan; updateProUI();
-}
-async function saveProToSupabase(plan, ref){
-  if(!supabaseClient || !currentUser) return;
-  try{
-    await supabaseClient.from('profiles').upsert({
-      id:currentUser.id,
-      email:currentUser.email,
-      is_pro:true,
-      pro_plan:plan,
-      pro_reference:ref,
-      pro_started_at:new Date().toISOString()
-    },{onConflict:'id'});
-  }catch(e){
-    console.warn('PRO cloud save skipped. Run PRO SQL if needed:', e.message||e);
-  }
-}
-async function loadProStatus(){
-  const local=getLocalPro();
-  if(local){isProUser=true; proPlan=local.plan||'pro';}
-  if(supabaseClient && currentUser){
-    try{
-      const {data}=await supabaseClient.from('profiles').select('is_pro,pro_plan').eq('id',currentUser.id).maybeSingle();
-      if(data?.is_pro){isProUser=true; proPlan=data.pro_plan||proPlan||'pro';}
-    }catch(e){console.warn('PRO status load skipped:', e.message||e);}
-  }
-  updateProUI();
-}
-function updateProUI(){
-  const labels=[document.getElementById('pro-status-badge'),document.getElementById('pro-pill-home')];
-  labels.forEach(el=>{
-    if(!el) return;
-    el.textContent=isProUser?('PRO · '+String(proPlan||'active').toUpperCase()):'FREE';
-    el.classList.toggle('free', !isProUser);
-  });
-  const home=document.getElementById('pro-home-card');
-  if(home && isProUser) home.style.display='none';
-  const ptxt=document.getElementById('profile-pro-text');
-  if(ptxt) ptxt.textContent=isProUser?'Your FitHerNova PRO access is active. Enjoy premium features ✨':'You are currently on the Free plan. Upgrade to unlock premium workouts, Coach Nova PRO, full radio and advanced tracking.';
-  const pbtn=document.getElementById('profile-pro-btn');
-  if(pbtn) pbtn.style.display=isProUser?'none':'flex';
-  const ps=document.getElementById('pro-page-status');
-  if(ps) ps.textContent=isProUser?'✅ PRO is active on this device/account.':'Choose a plan to unlock PRO.';
-  const pill=document.getElementById('user-pill');
-  if(pill && currentUser){
-    const email=currentUser.email || 'Account';
-    pill.innerHTML=`${email.split('@')[0]} ${isProUser?'<span class="pro-badge">PRO</span>':''} <button onclick="logoutUser()">Logout</button>`;
-  }
-}
-function openProModal(){
-  if(!currentUser){
-    const auth=document.getElementById('auth-screen');
-    if(auth) auth.style.display='flex';
-    return;
-  }
-  const modal=document.getElementById('pro-modal');
-  if(modal) modal.classList.add('show');
-  updateProUI();
-}
-function closeProModal(){
-  const modal=document.getElementById('pro-modal');
-  if(modal) modal.classList.remove('show');
-}
-function setProMessage(msg){
-  ['pro-status','pro-page-status'].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent=msg;});
-}
-function ensurePaystackLoaded(){
-  return new Promise((resolve,reject)=>{
-    if(window.PaystackPop) return resolve(true);
-    let existing=document.querySelector('script[src*="paystack.co"]');
-    if(existing){
-      let waited=0;
-      const timer=setInterval(()=>{
-        waited+=250;
-        if(window.PaystackPop){clearInterval(timer);resolve(true);}
-        if(waited>=5000){clearInterval(timer);reject(new Error('Paystack library did not finish loading'));}
-      },250);
-      return;
-    }
-    const script=document.createElement('script');
-    script.src='https://js.paystack.co/v2/inline.js';
-    script.async=true;
-    script.onload=()=>resolve(true);
-    script.onerror=()=>reject(new Error('Could not load Paystack script'));
-    document.head.appendChild(script);
-  });
-}
-
-async function startProCheckout(plan){
-  try{
-    if(!currentUser){openProModal();return;}
-
-    const selectedPlan = plan === 'yearly' ? 'yearly' : 'monthly';
-    const amount = PRO_PRICES[selectedPlan] || PRO_PRICES.monthly;
-    const reference = 'FHN_'+selectedPlan.toUpperCase()+'_'+Date.now();
-    const email = currentUser.email || document.getElementById('auth-email')?.value || '';
-
-    if(!email || !email.includes('@')){
-      setProMessage('Please login with a valid email before upgrading.');
-      return;
-    }
-
-    setProMessage('Opening secure Paystack checkout...');
-    await ensurePaystackLoaded();
-
-    // Paystack Popup V2. Official docs use: const paystack = new PaystackPop(); paystack.newTransaction({...})
-    if(typeof window.PaystackPop === 'function'){
-      const paystack = new window.PaystackPop();
-      paystack.newTransaction({
-        key: PAYSTACK_PUBLIC_KEY,
-        email: email,
-        amount: amount,
-        currency: 'NGN',
-        reference: reference,
-        metadata:{
-          plan:selectedPlan,
-          app:'FitHerNova',
-          custom_fields:[
-            {display_name:'FitHerNova Plan', variable_name:'plan', value:selectedPlan},
-            {display_name:'User Email', variable_name:'email', value:email}
-          ]
-        },
-        onSuccess: async function(transaction){
-          const ref=(transaction && (transaction.reference || transaction.trxref)) || reference;
-          setProMessage('Payment successful. Unlocking PRO...');
-          setLocalPro(selectedPlan, ref);
-          await saveProToSupabase(selectedPlan, ref);
-          closeProModal();
-          updateProUI();
-          alert('Welcome to FitHerNova PRO ✨');
-        },
-        onCancel: function(){
-          setProMessage('Payment was closed. You can try again anytime.');
-        }
-      });
-      return;
-    }
-
-    // Older V1 fallback if the browser loaded old inline.js from cache.
-    if(window.PaystackPop && typeof window.PaystackPop.setup === 'function'){
-      const handler=window.PaystackPop.setup({
-        key: PAYSTACK_PUBLIC_KEY,
-        email: email,
-        amount: amount,
-        currency: 'NGN',
-        ref: reference,
-        metadata:{custom_fields:[{display_name:'FitHerNova Plan', variable_name:'plan', value:selectedPlan}]},
-        callback: async function(response){
-          const ref=response.reference || reference;
-          setLocalPro(selectedPlan, ref);
-          await saveProToSupabase(selectedPlan, ref);
-          closeProModal();
-          updateProUI();
-          alert('Welcome to FitHerNova PRO ✨');
-        },
-        onClose: function(){setProMessage('Payment was closed. You can try again anytime.');}
-      });
-      handler.openIframe();
-      return;
-    }
-
-    setProMessage('Payment is taking longer than expected. Please refresh and try again.');
-  }catch(err){
-    console.error('Paystack checkout error:', err);
-    setProMessage('Payment error: '+(err.message || 'Could not open payment.'));
-  }
-}
-
-// ===================== SERVICE WORKER =====================
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js').catch(()=>{});
-}
-
-
-function updateTimeGreeting(){
-  const hour = new Date().getHours();
-  let greeting = 'Good morning';
-  if(hour >= 12 && hour < 17) greeting = 'Good afternoon';
-  else if(hour >= 17) greeting = 'Good evening';
-  const el = document.getElementById('time-greeting');
-  if(el) el.textContent = greeting;
-}
-
-// ===================== INIT =====================
-loadData();
-renderAll();
-initAuth();
-loadProStatus();
-loadSupabaseTracks();
-loadChallengeData();
-
-updateTimeGreeting();
-setInterval(updateTimeGreeting,60000);
-setTimeout(()=>{
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-  const seen = localStorage.getItem('fithernova_install_seen_date');
-  const today = new Date().toISOString().slice(0,10);
-  if(!isStandalone && seen !== today){
-    showInstallGuide();
-    localStorage.setItem('fithernova_install_seen_date', today);
-  }
-},1800);
-
-</script>
-</body>
-</html>
+  );
+};
