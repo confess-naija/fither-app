@@ -368,6 +368,24 @@ select option{background:var(--black3);}
 .track-item{border-radius:16px;background:linear-gradient(135deg,#171717,#101010);}
 .track-item.playing{border-color:rgba(255,45,107,.75);box-shadow:0 0 24px rgba(255,45,107,.14);}
 
+
+
+/* ======== FLOATING MINI PLAYER ======== */
+.mini-player{position:fixed;left:12px;right:12px;bottom:calc(74px + var(--safe-bottom));max-width:900px;margin:0 auto;z-index:150;background:linear-gradient(135deg,rgba(35,7,21,.96),rgba(12,12,12,.96));border:1px solid rgba(255,45,107,.35);border-radius:22px;box-shadow:0 18px 55px rgba(0,0,0,.6),0 0 24px rgba(255,45,107,.16);backdrop-filter:blur(16px);display:none;overflow:hidden;transform:translateY(10px);opacity:0;transition:.25s ease;}
+.mini-player.show{display:block;transform:translateY(0);opacity:1;}
+.mini-progress{height:3px;background:rgba(255,255,255,.08);}
+.mini-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--gold));box-shadow:0 0 14px rgba(255,45,107,.5);}
+.mini-player-inner{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;}
+.mini-art{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 10px 25px rgba(255,45,107,.25);}
+.mini-art.spinning{animation:spin 4.5s linear infinite;}
+.mini-title{font-family:var(--font-head);font-size:13px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.mini-sub{font-size:10px;color:rgba(255,255,255,.58);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mini-actions{display:flex;align-items:center;gap:8px;}
+.mini-btn{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.mini-btn.main{background:linear-gradient(135deg,var(--pink),var(--pink-light));border:none;box-shadow:0 8px 22px rgba(255,45,107,.35);}
+.mini-btn svg{width:16px;height:16px;}
+@media(max-width:430px){.mini-player{left:8px;right:8px;bottom:calc(70px + var(--safe-bottom));border-radius:18px}.mini-player-inner{padding:9px 10px}.mini-title{font-size:12px}.mini-sub{font-size:9px}.mini-actions{gap:6px}.mini-btn{width:31px;height:31px}.mini-art{width:38px;height:38px}}
+
 /* PROFILE PHOTO */
 .profile-photo-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 .profile-avatar-wrap{width:78px;height:78px;border-radius:50%;background:#1e1e1e;border:2px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 8px 26px rgba(255,45,107,.18);flex-shrink:0;}
@@ -614,7 +632,7 @@ select option{background:var(--black3);}
             <div class="music-artist" id="np-artist">Pro Media Records & more</div>
             <div class="music-meta-line">
               <span class="music-pill">🔥 Workout energy</span>
-              <span class="music-pill">🎧 Supabase stream</span>
+              <span class="music-pill">🎧 Pro Media Records</span>
               <span class="music-pill">✨ Faith & fitness</span>
             </div>
             <div class="premium-progress" onclick="seekTrack(event)">
@@ -797,6 +815,31 @@ select option{background:var(--black3);}
 
 
   </div><!-- end content -->
+
+
+
+  <!-- FLOATING MINI MUSIC PLAYER -->
+  <div class="mini-player" id="mini-player" onclick="goTo('music')">
+    <div class="mini-progress"><div class="mini-progress-fill" id="mini-progress-fill"></div></div>
+    <div class="mini-player-inner">
+      <div class="mini-art" id="mini-art">🎵</div>
+      <div style="min-width:0;">
+        <div class="mini-title" id="mini-title">FitHerNova Radio</div>
+        <div class="mini-sub" id="mini-sub">Tap a song to begin</div>
+      </div>
+      <div class="mini-actions" onclick="event.stopPropagation()">
+        <button class="mini-btn" onclick="prevTrack()" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+        </button>
+        <button class="mini-btn main" id="mini-play-btn" onclick="togglePlay()" aria-label="Play/Pause">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        </button>
+        <button class="mini-btn" onclick="nextTrack()" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
@@ -1143,6 +1186,7 @@ async function loadSupabaseTracks(){
       if(status) status.textContent='No songs yet. Add songs in Supabase music_tracks.';
     }
     renderTrackList();
+    updateMiniPlayer();
   }catch(e){
     console.warn('FitHerNova Supabase tracks load failed', e.message || e);
     if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Could not load songs. Check Supabase music_tracks table.</div>';
@@ -1407,10 +1451,44 @@ function renderWorkoutHistory(){
 }
 
 // ===================== MUSIC =====================
+function updateMiniPlayer(){
+  const mini=document.getElementById('mini-player');
+  if(!mini)return;
+  const hasTrack=tracks.length && currentTrack>=0 && tracks[currentTrack];
+  if(!hasTrack){mini.classList.remove('show');return;}
+  const t=tracks[currentTrack];
+  mini.classList.add('show');
+  const mt=document.getElementById('mini-title');
+  const ms=document.getElementById('mini-sub');
+  const ma=document.getElementById('mini-art');
+  if(mt) mt.textContent=t.title || 'FitHerNova Radio';
+  if(ms) ms.textContent=(t.artist || 'Pro Media Records') + (isPlaying ? ' · Playing now' : ' · Paused');
+  if(ma){ma.textContent=t.emoji || '🎵'; ma.classList.toggle('spinning', !!isPlaying);}
+  const btn=document.getElementById('mini-play-btn');
+  if(btn){btn.innerHTML=isPlaying
+    ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'
+    : '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+  }
+}
+function updateMediaSession(t){
+  if(!('mediaSession' in navigator) || !t)return;
+  try{
+    navigator.mediaSession.metadata=new MediaMetadata({
+      title:t.title || 'FitHerNova Radio',
+      artist:t.artist || 'Pro Media Records',
+      album:'FitHerNova Radio',
+      artwork:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎵</text></svg>',sizes:'100x100',type:'image/svg+xml'}]
+    });
+    navigator.mediaSession.setActionHandler('play',()=>togglePlay());
+    navigator.mediaSession.setActionHandler('pause',()=>togglePlay());
+    navigator.mediaSession.setActionHandler('previoustrack',()=>prevTrack());
+    navigator.mediaSession.setActionHandler('nexttrack',()=>nextTrack());
+  }catch(e){}
+}
 function renderTrackList(){
   const el=document.getElementById('track-list');
   if(!el)return;
-  if(!tracks.length){el.innerHTML='<div class="text-grey" style="padding:10px 0;">No songs yet. Add songs in Supabase music_tracks.</div>';return;}
+  if(!tracks.length){el.innerHTML='<div class="text-grey" style="padding:10px 0;">No songs available yet.</div>';updateMiniPlayer();return;}
   el.innerHTML=tracks.map((t,i)=>`
     <div class="track-item${i===currentTrack&&isPlaying?' playing':''}" onclick="playTrack(${i})" id="track-${i}">
       <div class="playing-anim"><div class="bar-anim"></div><div class="bar-anim"></div><div class="bar-anim"></div></div>
@@ -1422,10 +1500,12 @@ function renderTrackList(){
 }
 function setPlayIcon(playing){
   const icon=document.getElementById('play-icon');
-  if(!icon)return;
-  icon.innerHTML = playing
-    ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
-    : '<polygon points="5 3 19 12 5 21 5 3"/>';
+  if(icon){
+    icon.innerHTML = playing
+      ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+      : '<polygon points="5 3 19 12 5 21 5 3"/>';
+  }
+  updateMiniPlayer();
 }
 function setMusicStatus(message){
   const status=document.getElementById('music-status');
@@ -1440,9 +1520,14 @@ function updateProgress(){
   const cur=document.getElementById('np-current');
   const total=document.getElementById('np-total');
   const bar=document.getElementById('np-progress');
+  const miniBar=document.getElementById('mini-progress-fill');
   if(cur) cur.textContent=formatAudioTime(audioEl.currentTime || 0);
   if(total && Number.isFinite(audioEl.duration)) total.textContent=formatAudioTime(audioEl.duration);
-  if(bar && Number.isFinite(audioEl.duration) && audioEl.duration>0){bar.style.width=((audioEl.currentTime/audioEl.duration)*100)+'%';}
+  if(Number.isFinite(audioEl.duration) && audioEl.duration>0){
+    const pct=(audioEl.currentTime/audioEl.duration)*100;
+    if(bar) bar.style.width=pct+'%';
+    if(miniBar) miniBar.style.width=pct+'%';
+  }
 }
 async function playTrack(i){
   if(!tracks.length || !tracks[i]) return;
@@ -1472,13 +1557,16 @@ async function playTrack(i){
     audioEl.load();
     audioEl.ontimeupdate=updateProgress;
     audioEl.onloadedmetadata=updateProgress;
-    audioEl.onended=nextTrack;
+    audioEl.onended=()=>{setMusicStatus('Next song loading...'); nextTrack();};
+    updateMediaSession(t);
+    updateMiniPlayer();
     audioEl.onerror=function(){
       isPlaying=false;
       setPlayIcon(false);
       if(art) art.classList.remove('spinning');
       setMusicStatus('This song could not load. Check that the Supabase file is public.');
       renderTrackList();
+      updateMiniPlayer();
     };
 
     await audioEl.play();
@@ -1486,13 +1574,16 @@ async function playTrack(i){
     setPlayIcon(true);
     if(art) art.classList.add('spinning');
     setMusicStatus('Now playing: '+(t.title || 'Track')+' by '+(t.artist || 'FitHerNova'));
+    updateMiniPlayer();
     renderTrackList();
+    updateMiniPlayer();
   }catch(err){
     console.error('Playback failed:', err);
     isPlaying=false;
     setPlayIcon(false);
     if(art) art.classList.remove('spinning');
     renderTrackList();
+    updateMiniPlayer();
     setMusicStatus('Music playback failed. Tap the track again, or confirm the MP3 is public.');
   }
 }
@@ -1521,6 +1612,7 @@ async function togglePlay(){
       setMusicStatus('Paused. Tap play when you are ready.');
     }
     renderTrackList();
+    updateMiniPlayer();
   }catch(err){
     console.error('Toggle playback failed:', err);
     setMusicStatus('Music playback failed. Tap the song directly from the playlist.');
