@@ -1121,6 +1121,8 @@ const PAYSTACK_PUBLIC_KEY = "pk_live_4fa937b5b1e085b776aa9f21ee2e0b4af5a8cca5";
 const PRO_PRICES = {monthly: 350000, yearly: 3000000}; // Paystack amount is in kobo
 let isProUser = false;
 let proPlan = "free";
+let paystackLoadingPromise = null;
+let proCheckoutRunning = false;
 
 // ===================== DATA =====================
 let userGoal = 1800;
@@ -1174,8 +1176,10 @@ let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
 let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=new Audio(), progressInterval=null;
 let djMode=true;
+let autoNextInProgress=false;
 audioEl.preload='metadata';
 audioEl.crossOrigin='anonymous';
+audioEl.addEventListener('ended', handleTrackEnded);
 let streak=1, workoutsDone=0;
 let profileSettings={fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency',avatarUrl:''};
 let challengeDays=[];
@@ -1837,7 +1841,6 @@ async function playTrack(i){
     audioEl.load();
     audioEl.ontimeupdate=updateProgress;
     audioEl.onloadedmetadata=updateProgress;
-    audioEl.onended=()=>{setMusicStatus('DJ Mode: loading next song...'); nextTrack();};
     updateMediaSession(t);
     miniPlayerActivated=true;
     miniPlayerDismissed=false;
@@ -1909,8 +1912,30 @@ async function togglePlay(){
     setMusicStatus('Music playback failed. Tap the song directly from the playlist.');
   }
 }
-function nextTrack(){if(!tracks.length)return;currentTrack=(currentTrack+1)%tracks.length;playTrack(currentTrack);}
-function prevTrack(){if(!tracks.length)return;currentTrack=(currentTrack-1+tracks.length)%tracks.length;playTrack(currentTrack);}
+async function handleTrackEnded(){
+  if(autoNextInProgress || !tracks.length) return;
+  autoNextInProgress = true;
+  try{
+    setMusicStatus(djMode ? 'DJ Mode: mixing into the next song...' : 'Loading next song...');
+    currentTrack = (currentTrack + 1) % tracks.length;
+    await playTrack(currentTrack);
+  }catch(err){
+    console.error('Auto next failed:', err);
+    setMusicStatus('Auto next could not start. Tap next or tap a song.');
+  }finally{
+    setTimeout(()=>{autoNextInProgress=false;},500);
+  }
+}
+async function nextTrack(){
+  if(!tracks.length)return;
+  currentTrack=(currentTrack+1)%tracks.length;
+  await playTrack(currentTrack);
+}
+async function prevTrack(){
+  if(!tracks.length)return;
+  currentTrack=(currentTrack-1+tracks.length)%tracks.length;
+  await playTrack(currentTrack);
+}
 function seekTrack(e){
   const bar=e.currentTarget;
   const rect=bar.getBoundingClientRect();
@@ -2353,26 +2378,87 @@ function closeProModal(){
 function setProMessage(msg){
   ['pro-status','pro-page-status'].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent=msg;});
 }
-function startProCheckout(plan){
-  if(!currentUser){openProModal();return;}
-  if(!window.PaystackPop){setProMessage('Payment library is still loading. Try again in a few seconds.');return;}
-  const amount=PRO_PRICES[plan] || PRO_PRICES.monthly;
-  const handler=PaystackPop.setup({
-    key: PAYSTACK_PUBLIC_KEY,
-    email: currentUser.email,
-    amount: amount,
-    currency: 'NGN',
-    ref: 'FHN_'+plan.toUpperCase()+'_'+Date.now(),
-    metadata:{custom_fields:[{display_name:'FitHerNova Plan', variable_name:'plan', value:plan}]},
-    callback: async function(response){
-      setLocalPro(plan, response.reference);
-      await saveProToSupabase(plan, response.reference);
-      closeProModal();
-      alert('Welcome to FitHerNova PRO ✨');
-    },
-    onClose: function(){setProMessage('Payment was closed. You can try again anytime.');}
+function ensurePaystackLoaded(){
+  if(window.PaystackPop && typeof window.PaystackPop.setup === 'function') return Promise.resolve(true);
+  if(paystackLoadingPromise) return paystackLoadingPromise;
+  paystackLoadingPromise = new Promise((resolve,reject)=>{
+    const existing = document.querySelector('script[src*="js.paystack.co/v1/inline.js"]');
+    if(existing){
+      existing.addEventListener('load',()=>resolve(true),{once:true});
+      existing.addEventListener('error',()=>reject(new Error('Paystack script failed to load')),{once:true});
+      setTimeout(()=>{
+        if(window.PaystackPop && typeof window.PaystackPop.setup === 'function') resolve(true);
+      },800);
+      return;
+    }
+    const script=document.createElement('script');
+    script.src='https://js.paystack.co/v1/inline.js';
+    script.async=true;
+    script.onload=()=>resolve(true);
+    script.onerror=()=>reject(new Error('Paystack script failed to load'));
+    document.head.appendChild(script);
   });
-  handler.openIframe();
+  return paystackLoadingPromise;
+}
+async function startProCheckout(plan){
+  try{
+    if(proCheckoutRunning) return;
+    if(!currentUser){
+      setProMessage('Please login first before upgrading to PRO.');
+      const auth=document.getElementById('auth-screen');
+      if(auth) auth.style.display='flex';
+      return;
+    }
+
+    proCheckoutRunning=true;
+    const selectedPlan = plan === 'yearly' ? 'yearly' : 'monthly';
+    const amount = PRO_PRICES[selectedPlan] || PRO_PRICES.monthly;
+    const reference = 'FHN_'+selectedPlan.toUpperCase()+'_'+Date.now();
+
+    setProMessage('Opening secure Paystack checkout...');
+    await ensurePaystackLoaded();
+
+    if(!window.PaystackPop || typeof window.PaystackPop.setup !== 'function'){
+      setProMessage('Paystack could not load. Check internet/ad blocker and try again.');
+      return;
+    }
+
+    const handler = window.PaystackPop.setup({
+      key: PAYSTACK_PUBLIC_KEY,
+      email: currentUser.email,
+      amount: amount,
+      currency: 'NGN',
+      ref: reference,
+      label: 'FitHerNova PRO',
+      metadata:{
+        plan:selectedPlan,
+        app:'FitHerNova',
+        user_id:currentUser.id || '',
+        custom_fields:[
+          {display_name:'FitHerNova Plan', variable_name:'plan', value:selectedPlan},
+          {display_name:'User Email', variable_name:'email', value:currentUser.email || ''}
+        ]
+      },
+      callback: async function(response){
+        setProMessage('Payment successful. Unlocking PRO...');
+        setLocalPro(selectedPlan, response.reference || reference);
+        await saveProToSupabase(selectedPlan, response.reference || reference);
+        closeProModal();
+        updateProUI();
+        alert('Welcome to FitHerNova PRO ✨');
+      },
+      onClose: function(){
+        setProMessage('Payment was closed. You can try again anytime.');
+      }
+    });
+
+    handler.openIframe();
+  }catch(err){
+    console.error('Paystack checkout error:', err);
+    setProMessage('Could not open payment. Please refresh and try again.');
+  }finally{
+    setTimeout(()=>{proCheckoutRunning=false;},1200);
+  }
 }
 
 // ===================== SERVICE WORKER =====================
