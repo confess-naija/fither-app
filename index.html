@@ -2272,7 +2272,109 @@ window.addEventListener('beforeinstallprompt',(e)=>{
   if(banner) banner.style.display='flex';
 });
 
-\n\n// ===================== FITHERNOVA PRO / PAYSTACK =====================\nfunction getLocalPro(){\n  try{\n    const raw=localStorage.getItem('fithernova_pro_access');\n    if(!raw) return null;\n    const data=JSON.parse(raw);\n    if(data?.active){return data;}\n  }catch(e){}\n  return null;\n}\nfunction setLocalPro(plan, ref){\n  const data={active:true,plan,ref:ref||('local_'+Date.now()),email:currentUser?.email||'',activatedAt:new Date().toISOString()};\n  localStorage.setItem('fithernova_pro_access', JSON.stringify(data));\n  isProUser=true; proPlan=plan; updateProUI();\n}\nasync function saveProToSupabase(plan, ref){\n  if(!supabaseClient || !currentUser) return;\n  try{\n    await supabaseClient.from('profiles').upsert({\n      id:currentUser.id,\n      email:currentUser.email,\n      is_pro:true,\n      pro_plan:plan,\n      pro_reference:ref,\n      pro_started_at:new Date().toISOString()\n    },{onConflict:'id'});\n  }catch(e){\n    console.warn('PRO cloud save skipped. Run PRO SQL if needed:', e.message||e);\n  }\n}\nasync function loadProStatus(){\n  const local=getLocalPro();\n  if(local){isProUser=true; proPlan=local.plan||'pro';}\n  if(supabaseClient && currentUser){\n    try{\n      const {data}=await supabaseClient.from('profiles').select('is_pro,pro_plan').eq('id',currentUser.id).maybeSingle();\n      if(data?.is_pro){isProUser=true; proPlan=data.pro_plan||proPlan||'pro';}\n    }catch(e){console.warn('PRO status load skipped:', e.message||e);}\n  }\n  updateProUI();\n}\nfunction updateProUI(){\n  const labels=[document.getElementById('pro-status-badge'),document.getElementById('pro-pill-home')];\n  labels.forEach(el=>{\n    if(!el) return;\n    el.textContent=isProUser?('PRO · '+String(proPlan||'active').toUpperCase()):'FREE';\n    el.classList.toggle('free', !isProUser);\n  });\n  const home=document.getElementById('pro-home-card');\n  if(home && isProUser) home.style.display='none';\n  const ptxt=document.getElementById('profile-pro-text');\n  if(ptxt) ptxt.textContent=isProUser?'Your FitHerNova PRO access is active. Enjoy premium features ✨':'You are currently on the Free plan. Upgrade to unlock premium workouts, Coach Nova PRO, full radio and advanced tracking.';\n  const pbtn=document.getElementById('profile-pro-btn');\n  if(pbtn) pbtn.style.display=isProUser?'none':'flex';\n  const ps=document.getElementById('pro-page-status');\n  if(ps) ps.textContent=isProUser?'✅ PRO is active on this device/account.':'Choose a plan to unlock PRO.';\n  const pill=document.getElementById('user-pill');\n  if(pill && currentUser){\n    const email=currentUser.email || 'Account';\n    pill.innerHTML=`${email.split('@')[0]} ${isProUser?'<span class="pro-badge">PRO</span>':''} <button onclick="logoutUser()">Logout</button>`;\n  }\n}\nfunction openProModal(){\n  if(!currentUser){\n    const auth=document.getElementById('auth-screen');\n    if(auth) auth.style.display='flex';\n    return;\n  }\n  const modal=document.getElementById('pro-modal');\n  if(modal) modal.classList.add('show');\n  updateProUI();\n}\nfunction closeProModal(){\n  const modal=document.getElementById('pro-modal');\n  if(modal) modal.classList.remove('show');\n}\nfunction setProMessage(msg){\n  ['pro-status','pro-page-status'].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent=msg;});\n}\nfunction startProCheckout(plan){\n  if(!currentUser){openProModal();return;}\n  if(!window.PaystackPop){setProMessage('Payment library is still loading. Try again in a few seconds.');return;}\n  const amount=PRO_PRICES[plan] || PRO_PRICES.monthly;\n  const handler=PaystackPop.setup({\n    key: PAYSTACK_PUBLIC_KEY,\n    email: currentUser.email,\n    amount: amount,\n    currency: 'NGN',\n    ref: 'FHN_'+plan.toUpperCase()+'_'+Date.now(),\n    metadata:{custom_fields:[{display_name:'FitHerNova Plan', variable_name:'plan', value:plan}]},\n    callback: async function(response){\n      setLocalPro(plan, response.reference);\n      await saveProToSupabase(plan, response.reference);\n      closeProModal();\n      alert('Welcome to FitHerNova PRO ✨');\n    },\n    onClose: function(){setProMessage('Payment was closed. You can try again anytime.');}\n  });\n  handler.openIframe();\n}\n
+
+
+// ===================== FITHERNOVA PRO / PAYSTACK =====================
+function getLocalPro(){
+  try{
+    const raw=localStorage.getItem('fithernova_pro_access');
+    if(!raw) return null;
+    const data=JSON.parse(raw);
+    if(data?.active){return data;}
+  }catch(e){}
+  return null;
+}
+function setLocalPro(plan, ref){
+  const data={active:true,plan,ref:ref||('local_'+Date.now()),email:currentUser?.email||'',activatedAt:new Date().toISOString()};
+  localStorage.setItem('fithernova_pro_access', JSON.stringify(data));
+  isProUser=true; proPlan=plan; updateProUI();
+}
+async function saveProToSupabase(plan, ref){
+  if(!supabaseClient || !currentUser) return;
+  try{
+    await supabaseClient.from('profiles').upsert({
+      id:currentUser.id,
+      email:currentUser.email,
+      is_pro:true,
+      pro_plan:plan,
+      pro_reference:ref,
+      pro_started_at:new Date().toISOString()
+    },{onConflict:'id'});
+  }catch(e){
+    console.warn('PRO cloud save skipped. Run PRO SQL if needed:', e.message||e);
+  }
+}
+async function loadProStatus(){
+  const local=getLocalPro();
+  if(local){isProUser=true; proPlan=local.plan||'pro';}
+  if(supabaseClient && currentUser){
+    try{
+      const {data}=await supabaseClient.from('profiles').select('is_pro,pro_plan').eq('id',currentUser.id).maybeSingle();
+      if(data?.is_pro){isProUser=true; proPlan=data.pro_plan||proPlan||'pro';}
+    }catch(e){console.warn('PRO status load skipped:', e.message||e);}
+  }
+  updateProUI();
+}
+function updateProUI(){
+  const labels=[document.getElementById('pro-status-badge'),document.getElementById('pro-pill-home')];
+  labels.forEach(el=>{
+    if(!el) return;
+    el.textContent=isProUser?('PRO · '+String(proPlan||'active').toUpperCase()):'FREE';
+    el.classList.toggle('free', !isProUser);
+  });
+  const home=document.getElementById('pro-home-card');
+  if(home && isProUser) home.style.display='none';
+  const ptxt=document.getElementById('profile-pro-text');
+  if(ptxt) ptxt.textContent=isProUser?'Your FitHerNova PRO access is active. Enjoy premium features ✨':'You are currently on the Free plan. Upgrade to unlock premium workouts, Coach Nova PRO, full radio and advanced tracking.';
+  const pbtn=document.getElementById('profile-pro-btn');
+  if(pbtn) pbtn.style.display=isProUser?'none':'flex';
+  const ps=document.getElementById('pro-page-status');
+  if(ps) ps.textContent=isProUser?'✅ PRO is active on this device/account.':'Choose a plan to unlock PRO.';
+  const pill=document.getElementById('user-pill');
+  if(pill && currentUser){
+    const email=currentUser.email || 'Account';
+    pill.innerHTML=`${email.split('@')[0]} ${isProUser?'<span class="pro-badge">PRO</span>':''} <button onclick="logoutUser()">Logout</button>`;
+  }
+}
+function openProModal(){
+  if(!currentUser){
+    const auth=document.getElementById('auth-screen');
+    if(auth) auth.style.display='flex';
+    return;
+  }
+  const modal=document.getElementById('pro-modal');
+  if(modal) modal.classList.add('show');
+  updateProUI();
+}
+function closeProModal(){
+  const modal=document.getElementById('pro-modal');
+  if(modal) modal.classList.remove('show');
+}
+function setProMessage(msg){
+  ['pro-status','pro-page-status'].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent=msg;});
+}
+function startProCheckout(plan){
+  if(!currentUser){openProModal();return;}
+  if(!window.PaystackPop){setProMessage('Payment library is still loading. Try again in a few seconds.');return;}
+  const amount=PRO_PRICES[plan] || PRO_PRICES.monthly;
+  const handler=PaystackPop.setup({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: currentUser.email,
+    amount: amount,
+    currency: 'NGN',
+    ref: 'FHN_'+plan.toUpperCase()+'_'+Date.now(),
+    metadata:{custom_fields:[{display_name:'FitHerNova Plan', variable_name:'plan', value:plan}]},
+    callback: async function(response){
+      setLocalPro(plan, response.reference);
+      await saveProToSupabase(plan, response.reference);
+      closeProModal();
+      alert('Welcome to FitHerNova PRO ✨');
+    },
+    onClose: function(){setProMessage('Payment was closed. You can try again anytime.');}
+  });
+  handler.openIframe();
+}
+
 // ===================== SERVICE WORKER =====================
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js').catch(()=>{});
