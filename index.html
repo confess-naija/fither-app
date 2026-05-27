@@ -1202,7 +1202,7 @@ function showAuthIfNeeded(){
   if(el) el.style.display='flex';
 }
 async function submitAuth(){
-  if(!supabaseClient){showAuthMessage('Supabase is not available. Check internet connection.');return;}
+  if(!supabaseClient){showAuthMessage('Please try again in a moment. Check internet connection.');return;}
   const email=document.getElementById('auth-email').value.trim();
   const password=document.getElementById('auth-password').value;
   const fullName=document.getElementById('auth-name').value.trim();
@@ -1392,7 +1392,7 @@ async function loadSupabaseTracks(){
   const list=document.getElementById('track-list');
   const status=document.getElementById('music-status');
   if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Loading FitHerNova Radio...</div>';
-  if(status) status.textContent='Connecting to Supabase music library...';
+  if(status) status.textContent='Loading your music...';
   if(!supabaseClient){renderTrackList();return;}
   try{
     const {data,error}=await supabaseClient
@@ -1408,14 +1408,14 @@ async function loadSupabaseTracks(){
       if(status) status.textContent=`${tracks.length} song${tracks.length>1?'s':''} ready. Tap a track to play.`;
     }else{
       tracks=[];
-      if(status) status.textContent='No songs yet. Add songs in Supabase music_tracks.';
+      if(status) status.textContent='Your playlist is getting ready...';
     }
     renderTrackList();
     updateMiniPlayer();
   }catch(e){
     console.warn('FitHerNova Supabase tracks load failed', e.message || e);
-    if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Could not load songs. Check Supabase music_tracks table.</div>';
-    if(status) status.textContent='Music could not load. Check Supabase connection.';
+    if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Tap Refresh to update your playlist.</div>';
+    if(status) status.textContent='Tap a song to start the vibe.';
   }
 }
 function resetFitHerData(){
@@ -1841,7 +1841,7 @@ async function playTrack(i, autoAdvance=false){
       isPlaying = false;
       setPlayIcon(false);
       if(art) art.classList.remove('spinning');
-      setMusicStatus('This song could not load. Skipping to the next available song...');
+      setMusicStatus('Getting the next vibe ready...');
       renderTrackList();
       updateMiniPlayer();
       if(autoAdvance){
@@ -1878,7 +1878,7 @@ async function playTrack(i, autoAdvance=false){
     if(art) art.classList.remove('spinning');
     renderTrackList();
     updateMiniPlayer();
-    setMusicStatus(autoAdvance ? 'Auto-next had an issue. Trying the next song...' : 'Music playback failed. Tap the song again, or confirm the MP3 is public.');
+    setMusicStatus(autoAdvance ? 'Getting the next song ready...' : 'Tap the song again to continue.');
     if(autoAdvance){
       setTimeout(()=>autoNextTrack(1), 350);
     }
@@ -1940,7 +1940,7 @@ async function togglePlay(){
     updateMiniPlayer();
   }catch(err){
     console.error('Toggle playback failed:', err);
-    setMusicStatus('Music playback failed. Tap the song directly from the playlist.');
+    setMusicStatus('Tap a song from the playlist to continue.');
   }
 }
 async function nextTrack(){ if(!tracks.length)return; currentTrack=(currentTrack+1)%tracks.length; await playTrack(currentTrack,false); }
@@ -2123,7 +2123,7 @@ async function uploadProfilePhoto(event){
   if(!file) return;
   const status=document.getElementById('photo-upload-status');
   if(!currentUser){ if(status) status.textContent='Please login before uploading a photo.'; return; }
-  if(!supabaseClient){ if(status) status.textContent='Supabase is not available.'; return; }
+  if(!supabaseClient){ if(status) status.textContent='Please try again in a moment.'; return; }
   if(!file.type.startsWith('image/')){ if(status) status.textContent='Please choose an image file.'; return; }
   if(file.size > 5 * 1024 * 1024){ if(status) status.textContent='Image is too large. Please choose under 5MB.'; return; }
   try{
@@ -2144,7 +2144,7 @@ async function uploadProfilePhoto(event){
     if(status) status.textContent='Photo uploaded successfully.';
   }catch(e){
     console.error('Profile photo upload failed',e);
-    if(status) status.textContent=e.message || 'Photo upload failed. Check Supabase storage policy.';
+    if(status) status.textContent=e.message || 'Photo upload needs a smaller JPG or PNG. Please try again.';
   }
 }
 async function sendPasswordReset(){
@@ -2482,7 +2482,7 @@ async function startProCheckout(plan){
       return;
     }
 
-    setProMessage('Paystack could not load. Please disable ad blocker or try Chrome.');
+    setProMessage('Payment is taking longer than expected. Please refresh and try again.');
   }catch(err){
     console.error('Paystack checkout error:', err);
     setProMessage('Payment error: '+(err.message || 'Could not open payment.'));
