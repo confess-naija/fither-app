@@ -564,12 +564,12 @@ select option{background:var(--black3);}
       <div>
         <div class="pro-kicker">FitHerNova PRO ✨</div>
         <div class="pro-title">Unlock the full glow-up experience.</div>
-        <div class="pro-sub">Get premium music, DJ Mode, advanced Coach Nova plans, premium workouts, custom meal plans, themes, and deeper progress insights.</div>
+        <div class="pro-sub">Get premium music, Auto Play, advanced Coach Nova plans, premium workouts, custom meal plans, themes, and deeper progress insights.</div>
       </div>
       <button class="pro-close" onclick="closeProModal()">×</button>
     </div>
     <div class="pro-features">
-      <div class="pro-feature"><b>🎵 Full Radio</b>Premium playlist + DJ Mode.</div>
+      <div class="pro-feature"><b>🎵 Full Radio</b>Premium playlist + Auto Play.</div>
       <div class="pro-feature"><b>✨ Coach Nova PRO</b>Smarter fitness + meal guidance.</div>
       <div class="pro-feature"><b>🔥 Premium Programs</b>Belly, tone, and challenge packs.</div>
       <div class="pro-feature"><b>📊 Pro Tracking</b>Better progress insights.</div>
@@ -619,7 +619,7 @@ select option{background:var(--black3);}
         <div class="flex-between" style="gap:10px;align-items:flex-start;">
           <div>
             <div class="pro-inline-title">FitHerNova PRO ✨</div>
-            <div class="pro-inline-sub">Unlock DJ Mode, premium workouts, Coach Nova PRO, meal plans, themes and advanced tracking.</div>
+            <div class="pro-inline-sub">Unlock Auto Play, premium workouts, Coach Nova PRO, meal plans, themes and advanced tracking.</div>
           </div>
           <span class="pro-badge free" id="pro-pill-home">FREE</span>
         </div>
@@ -777,7 +777,7 @@ select option{background:var(--black3);}
         <div class="music-topline">
           <div class="music-badge">FitHerNova Radio</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-            <button class="dj-toggle on" id="dj-toggle" onclick="toggleDJMode(event)">DJ Mode ON</button>
+            <button class="dj-toggle on" id="dj-toggle" onclick="toggleDJMode(event)">Auto Play ON</button>
             <div class="music-live">Gospel workout vibes</div>
           </div>
         </div>
@@ -953,7 +953,7 @@ select option{background:var(--black3);}
         <div class="pro-title">FitHerNova PRO ✨</div>
         <div class="pro-sub">A cleaner, stronger fitness lifestyle experience for women — premium music, Coach Nova PRO, advanced workouts, meal plans and progress insights.</div>
         <div class="pro-features">
-          <div class="pro-feature"><b>🎧 Premium Radio</b>Full music access, DJ Mode and exclusive songs.</div>
+          <div class="pro-feature"><b>🎧 Premium Radio</b>Full music access, Auto Play and exclusive songs.</div>
           <div class="pro-feature"><b>👑 Coach Nova PRO</b>Personalized guidance for your body goal.</div>
           <div class="pro-feature"><b>🔥 Premium Workouts</b>Belly fat, tone, glow and challenge programs.</div>
           <div class="pro-feature"><b>🍲 Meal Plans</b>Smarter Nigerian/African meal ideas.</div>
@@ -1710,6 +1710,7 @@ function renderWorkoutHistory(){
 }
 
 // ===================== MUSIC =====================
+// Simple stable player: no DJ/crossfade. It plays one song after another.
 function updateMiniPlayer(){
   const mini=document.getElementById('mini-player');
   if(!mini)return;
@@ -1759,50 +1760,31 @@ function updateMediaSession(t){
     navigator.mediaSession.setActionHandler('nexttrack',()=>nextTrack());
   }catch(e){}
 }
-
 function normalizeAudioUrl(url){
   if(!url) return '';
   let clean = String(url).trim();
-  // Safely encode raw spaces/special characters without breaking already-encoded Supabase URLs.
-  try{
-    clean = encodeURI(clean);
-  }catch(e){
-    clean = clean.replace(/ /g,'%20');
-  }
+  try{ clean = encodeURI(clean); }catch(e){ clean = clean.replace(/ /g,'%20'); }
   return clean;
 }
 function toggleDJMode(event){
   if(event) event.stopPropagation();
-  djMode=!djMode;
-  const btn=document.getElementById('dj-toggle');
-  if(btn){
-    btn.textContent=djMode?'DJ Mode ON':'DJ Mode OFF';
-    btn.classList.toggle('on', djMode);
-  }
-  setMusicStatus(djMode?'DJ Mode is on — smooth fade between songs.':'DJ Mode is off — normal playback.');
+  setMusicStatus('Auto play is on. Songs will play one after another.');
 }
-function waitNova(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
-async function fadeVolume(target=1, duration=450){
-  const start=Number.isFinite(audioEl.volume)?audioEl.volume:1;
-  const steps=12;
-  const diff=target-start;
-  for(let i=1;i<=steps;i++){
-    audioEl.volume=Math.max(0,Math.min(1,start+(diff*i/steps)));
-    await waitNova(duration/steps);
-  }
-}
-
 function renderTrackList(){
   const el=document.getElementById('track-list');
   if(!el)return;
-  if(!tracks.length){el.innerHTML='<div class="text-grey" style="padding:10px 0;">No songs available yet.</div>';updateMiniPlayer();return;}
+  if(!tracks.length){
+    el.innerHTML='<div class="text-grey" style="padding:10px 0;">Songs coming soon.</div>';
+    updateMiniPlayer();
+    return;
+  }
   el.innerHTML=tracks.map((t,i)=>`
     <div class="track-item${i===currentTrack&&isPlaying?' playing':''}" onclick="playTrack(${i})" id="track-${i}">
       <div class="playing-anim"><div class="bar-anim"></div><div class="bar-anim"></div><div class="bar-anim"></div></div>
       <div class="track-num">${i+1}</div>
       <div style="font-size:21px;width:32px;text-align:center;flex-shrink:0;">${t.emoji || '🎵'}</div>
       <div class="track-info"><div class="track-name">${t.title || 'Untitled'}</div><div class="track-artist">${t.artist || 'FitHerNova Music'}</div></div>
-      <div class="track-dur">${t.src?(t.dur || '0:00'):'No link'}</div>
+      <div class="track-dur">${t.src?(t.dur || '0:00'):'Soon'}</div>
     </div>`).join('');
 }
 function setPlayIcon(playing){
@@ -1836,128 +1818,104 @@ function updateProgress(){
     if(miniBar) miniBar.style.width=pct+'%';
   }
 }
-async function playTrack(i, autoAdvance=false){
-  if(!tracks.length || !tracks[i]) return false;
-
-  const t = tracks[i];
-  currentTrack = i;
-  const art = document.getElementById('np-art');
-  const emoji = document.getElementById('np-emoji');
-
+function prepareTrackUI(t){
+  const art=document.getElementById('np-art');
+  const emoji=document.getElementById('np-emoji');
   const titleEl=document.getElementById('np-title');
   const artistEl=document.getElementById('np-artist');
   const totalEl=document.getElementById('np-total');
   const currentEl=document.getElementById('np-current');
   const progressEl=document.getElementById('np-progress');
+  if(titleEl) titleEl.textContent=t.title || 'Untitled';
+  if(artistEl) artistEl.textContent=t.artist || 'FitHerNova Music';
+  if(emoji) emoji.textContent=t.emoji || '🎵';
+  if(totalEl) totalEl.textContent=t.dur || '0:00';
+  if(currentEl) currentEl.textContent='0:00';
+  if(progressEl) progressEl.style.width='0%';
+  if(art) art.classList.toggle('spinning', !!isPlaying);
+}
+async function playTrack(i, autoAdvance=false){
+  if(!tracks.length || !tracks[i]) return false;
+  currentTrack=i;
+  const t=tracks[currentTrack];
+  const cleanSrc=normalizeAudioUrl(t.src);
+  const art=document.getElementById('np-art');
 
-  if(titleEl) titleEl.textContent = t.title || 'Untitled';
-  if(artistEl) artistEl.textContent = t.artist || 'FitHerNova Music';
-  if(emoji) emoji.textContent = t.emoji || '🎵';
-  if(totalEl) totalEl.textContent = t.dur || '0:00';
-  if(currentEl) currentEl.textContent = '0:00';
-  if(progressEl) progressEl.style.width = '0%';
-  clearInterval(progressInterval);
+  prepareTrackUI(t);
+  renderTrackList();
+  updateMediaSession(t);
+  miniPlayerActivated=true;
+  miniPlayerDismissed=false;
+  updateMiniPlayer();
 
-  const cleanSrc = normalizeAudioUrl(t.src);
   if(!cleanSrc){
-    renderTrackList();
-    updateMiniPlayer();
+    isPlaying=false;
+    setPlayIcon(false);
     return false;
   }
 
   try{
+    clearInterval(progressInterval);
     audioEl.pause();
-    audioEl.onended = null;
-    audioEl.onerror = null;
-    audioEl.ontimeupdate = null;
-    audioEl.onloadedmetadata = null;
+    audioEl.onended=null;
+    audioEl.onerror=null;
+    audioEl.ontimeupdate=null;
+    audioEl.onloadedmetadata=null;
+    audioEl.oncanplay=null;
 
-    audioEl.src = cleanSrc;
-    audioEl.preload = 'auto';
-    audioEl.volume = 1;
-
-    audioEl.ontimeupdate = updateProgress;
-    audioEl.onloadedmetadata = updateProgress;
-    audioEl.oncanplay = updateProgress;
-    audioEl.onended = function(){
-      autoNextTrack(1);
-    };
-    audioEl.onerror = function(){
-      console.warn('FitHerNova skipped a track.');
-      isPlaying = false;
+    audioEl.src=cleanSrc;
+    audioEl.preload='auto';
+    audioEl.volume=1;
+    audioEl.ontimeupdate=updateProgress;
+    audioEl.onloadedmetadata=updateProgress;
+    audioEl.oncanplay=updateProgress;
+    audioEl.onended=function(){ playNextTrack(); };
+    audioEl.onerror=function(){
+      isPlaying=false;
       setPlayIcon(false);
       if(art) art.classList.remove('spinning');
       renderTrackList();
       updateMiniPlayer();
-      if(autoAdvance){
-        setTimeout(()=>autoNextTrack(1), 250);
-      }else{
-        setMusicStatus('Choose another track and keep the vibe going.');
-      }
+      if(autoAdvance) setTimeout(playNextTrack, 300);
     };
 
-    updateMediaSession(t);
-    miniPlayerActivated = true;
-    miniPlayerDismissed = false;
-    updateMiniPlayer();
+    await audioEl.play();
 
-    const playPromise = audioEl.play();
-    if(playPromise && typeof playPromise.then === 'function'){
-      await playPromise;
-    }
-
-    isPlaying = true;
+    isPlaying=true;
     setPlayIcon(true);
     if(art) art.classList.add('spinning');
-    setMusicStatus((autoAdvance ? 'Now playing: ' : (djMode ? 'DJ Mode playing: ' : 'Now playing: ')) + (t.title || 'Track') + ' by ' + (t.artist || 'FitHerNova'));
+    setMusicStatus('Now playing: ' + (t.title || 'Track') + ' by ' + (t.artist || 'FitHerNova'));
     renderTrackList();
     updateMiniPlayer();
-    progressInterval = setInterval(updateProgress, 500);
+    progressInterval=setInterval(updateProgress,500);
     saveData();
     return true;
-
   }catch(err){
-    console.warn('FitHerNova playback paused by browser or track source.');
-    isPlaying = false;
-    audioEl.volume = 1;
+    isPlaying=false;
     setPlayIcon(false);
     if(art) art.classList.remove('spinning');
     renderTrackList();
     updateMiniPlayer();
-
-    if(autoAdvance){
-      setTimeout(()=>autoNextTrack(1), 300);
-    }else{
-      setMusicStatus('Tap play or choose another track to keep the vibe going.');
-    }
+    setMusicStatus('Tap a song to play.');
     return false;
   }
 }
-
-async function autoNextTrack(step=1){
+async function playNextTrack(){
   if(!tracks.length) return;
-  let attempts = 0;
-  let next = currentTrack;
-
-  while(attempts < tracks.length){
-    next = (next + step + tracks.length) % tracks.length;
-    const candidate = tracks[next];
-    if(candidate && candidate.src){
-      currentTrack = next;
-      const ok = await playTrack(currentTrack, true);
+  let attempts=0;
+  let next=currentTrack;
+  while(attempts<tracks.length){
+    next=(next+1)%tracks.length;
+    if(tracks[next] && tracks[next].src){
+      const ok=await playTrack(next,true);
       if(ok) return;
     }
     attempts++;
   }
-
-  // Keep the UI clean for users — no technical error message.
-  isPlaying = false;
-  setPlayIcon(false);
-  setMusicStatus('Choose a song and let the energy flow.');
-  renderTrackList();
-  updateMiniPlayer();
 }
-
+async function autoNextTrack(step=1){
+  await playNextTrack();
+}
 async function togglePlay(){
   if(!tracks.length){
     setMusicStatus('Choose a song and let the energy flow.');
@@ -1970,36 +1928,44 @@ async function togglePlay(){
   const art=document.getElementById('np-art');
   try{
     if(audioEl.paused){
-      if(djMode) audioEl.volume=0;
       await audioEl.play();
-      if(djMode) await fadeVolume(1,450);
       isPlaying=true;
       setPlayIcon(true);
       if(art) art.classList.add('spinning');
-      setMusicStatus(djMode?'DJ Mode resumed with a smooth fade.':'Playing FitHerNova Radio.');
+      setMusicStatus('Playing FitHerNova Radio.');
     }else{
-      if(djMode) await fadeVolume(0,350);
       audioEl.pause();
-      audioEl.volume=1;
       isPlaying=false;
       setPlayIcon(false);
       if(art) art.classList.remove('spinning');
-      setMusicStatus('Paused. Tap play when you are ready.');
+      setMusicStatus('Paused.');
     }
     renderTrackList();
     updateMiniPlayer();
   }catch(err){
-    console.error('Toggle playback failed:', err);
-    setMusicStatus('Choose a song and let the energy flow.');
+    setMusicStatus('Tap a song to play.');
   }
 }
-async function nextTrack(){ if(!tracks.length)return; currentTrack=(currentTrack+1)%tracks.length; await playTrack(currentTrack,false); }
-async function prevTrack(){ if(!tracks.length)return; currentTrack=(currentTrack-1+tracks.length)%tracks.length; await playTrack(currentTrack,false); }
+async function nextTrack(){ await playNextTrack(); }
+async function prevTrack(){
+  if(!tracks.length)return;
+  let attempts=0;
+  let prev=currentTrack;
+  while(attempts<tracks.length){
+    prev=(prev-1+tracks.length)%tracks.length;
+    if(tracks[prev] && tracks[prev].src){
+      await playTrack(prev,false);
+      return;
+    }
+    attempts++;
+  }
+}
 function seekTrack(e){
   const bar=e.currentTarget;
   const rect=bar.getBoundingClientRect();
   const pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
-  document.getElementById('np-progress').style.width=(pct*100)+'%';
+  const progress=document.getElementById('np-progress');
+  if(progress) progress.style.width=(pct*100)+'%';
   if(audioEl && Number.isFinite(audioEl.duration)) audioEl.currentTime=audioEl.duration*pct;
 }
 
