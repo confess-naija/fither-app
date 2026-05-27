@@ -345,6 +345,9 @@ select option{background:var(--black3);}
 .music-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;position:relative;z-index:1;}
 .music-badge{font-size:10px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:#fff;background:rgba(255,45,107,.24);border:1px solid rgba(255,45,107,.4);border-radius:999px;padding:6px 10px;}
 .music-live{font-size:10px;color:var(--gold);background:rgba(255,209,102,.10);border:1px solid rgba(255,209,102,.22);border-radius:999px;padding:6px 10px;white-space:nowrap;}
+.dj-toggle{border:1px solid rgba(255,209,102,.32);background:rgba(255,209,102,.12);color:var(--gold);border-radius:999px;padding:6px 10px;font-size:10px;font-weight:900;letter-spacing:.4px;cursor:pointer;white-space:nowrap;}
+.dj-toggle.on{background:linear-gradient(135deg,rgba(255,45,107,.32),rgba(255,209,102,.18));border-color:rgba(255,45,107,.45);color:#fff;box-shadow:0 0 18px rgba(255,45,107,.18);}
+
 .music-stage{display:grid;grid-template-columns:128px 1fr;gap:16px;align-items:center;position:relative;z-index:1;}
 @media(max-width:520px){.music-stage{grid-template-columns:1fr;text-align:center}.vinyl-wrap{margin:0 auto}.premium-controls{justify-content:center}.music-meta-line{justify-content:center}}
 .vinyl-wrap{position:relative;width:128px;height:128px;display:flex;align-items:center;justify-content:center;}
@@ -507,13 +510,13 @@ select option{background:var(--black3);}
       <button class="install-close" onclick="closeInstallGuide()">×</button>
     </div>
     <div class="install-title">Install FitHerNova</div>
-    <div class="install-text">Turn FitHerNova into a real app on your phone. Open it from your home screen for workouts, Coach Nova, meals, reminders, and gospel radio.</div>
+    <div class="install-text">Turn FitHerNova into a real app on your phone. Save it to your home screen for workouts, Coach Nova, meals, reminders, and gospel radio.</div>
     <div class="install-steps">
       <div class="install-step"><div>🍎</div><div><b>iPhone Safari</b><br><span>Tap Share → Add to Home Screen → Add.</span></div></div>
       <div class="install-step"><div>🤖</div><div><b>Android Chrome</b><br><span>Tap the 3 dots → Add to Home Screen → Add.</span></div></div>
     </div>
     <div class="install-actions">
-      <button class="btn btn-pink" onclick="triggerInstallPrompt()">Install if available</button>
+      <button class="btn btn-pink" onclick="triggerInstallPrompt()">Install / show steps</button>
       <button class="install-soft-btn" onclick="closeInstallGuide()">Maybe later</button>
     </div>
   </div>
@@ -691,7 +694,10 @@ select option{background:var(--black3);}
       <div class="music-hero">
         <div class="music-topline">
           <div class="music-badge">FitHerNova Radio</div>
-          <div class="music-live">Gospel workout vibes</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+            <button class="dj-toggle on" id="dj-toggle" onclick="toggleDJMode(event)">DJ Mode ON</button>
+            <div class="music-live">Gospel workout vibes</div>
+          </div>
         </div>
         <div class="music-stage">
           <div class="vinyl-wrap">
@@ -1033,6 +1039,7 @@ let selFood=null, portion=1, activeFilter='all', selFreq=null;
 let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
 let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=new Audio(), progressInterval=null;
+let djMode=true;
 audioEl.preload='metadata';
 audioEl.crossOrigin='anonymous';
 let streak=1, workoutsDone=0;
@@ -1584,6 +1591,36 @@ function updateMediaSession(t){
     navigator.mediaSession.setActionHandler('nexttrack',()=>nextTrack());
   }catch(e){}
 }
+
+function normalizeAudioUrl(url){
+  if(!url) return '';
+  let clean = String(url).trim();
+  if(clean.includes('/storage/v1/object/public/') && !clean.includes('?')){
+    clean = clean.replace(/ /g,'%20').replace(/&/g,'%26');
+  }
+  return clean;
+}
+function toggleDJMode(event){
+  if(event) event.stopPropagation();
+  djMode=!djMode;
+  const btn=document.getElementById('dj-toggle');
+  if(btn){
+    btn.textContent=djMode?'DJ Mode ON':'DJ Mode OFF';
+    btn.classList.toggle('on', djMode);
+  }
+  setMusicStatus(djMode?'DJ Mode is on — smooth fade between songs.':'DJ Mode is off — normal playback.');
+}
+function waitNova(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+async function fadeVolume(target=1, duration=450){
+  const start=Number.isFinite(audioEl.volume)?audioEl.volume:1;
+  const steps=12;
+  const diff=target-start;
+  for(let i=1;i<=steps;i++){
+    audioEl.volume=Math.max(0,Math.min(1,start+(diff*i/steps)));
+    await waitNova(duration/steps);
+  }
+}
+
 function renderTrackList(){
   const el=document.getElementById('track-list');
   if(!el)return;
@@ -1630,10 +1667,12 @@ function updateProgress(){
 }
 async function playTrack(i){
   if(!tracks.length || !tracks[i]) return;
-  currentTrack=i;
+  const previousPlaying = isPlaying && !audioEl.paused && audioEl.src;
   const t=tracks[i];
+  currentTrack=i;
   const art=document.getElementById('np-art');
   const emoji=document.getElementById('np-emoji');
+
   document.getElementById('np-title').textContent=t.title || 'Untitled';
   document.getElementById('np-artist').textContent=t.artist || 'FitHerNova Music';
   if(emoji) emoji.textContent=t.emoji || '🎵';
@@ -1642,7 +1681,8 @@ async function playTrack(i){
   document.getElementById('np-progress').style.width='0%';
   clearInterval(progressInterval);
 
-  if(!t.src){
+  const cleanSrc = normalizeAudioUrl(t.src);
+  if(!cleanSrc){
     showNotif('Song link needed','Add a real MP3 URL for '+(t.title || 'this song'));
     setMusicStatus('This track needs a valid MP3 link.');
     renderTrackList();
@@ -1650,19 +1690,27 @@ async function playTrack(i){
   }
 
   try{
+    if(djMode && previousPlaying){
+      setMusicStatus('DJ Mode: fading into '+(t.title || 'the next song')+'...');
+      await fadeVolume(0,450);
+    }
+
     audioEl.pause();
     audioEl.currentTime=0;
-    audioEl.src=t.src;
+    audioEl.src=cleanSrc;
+    audioEl.volume=djMode?0:1;
     audioEl.load();
     audioEl.ontimeupdate=updateProgress;
     audioEl.onloadedmetadata=updateProgress;
-    audioEl.onended=()=>{setMusicStatus('Next song loading...'); nextTrack();};
+    audioEl.onended=()=>{setMusicStatus('DJ Mode: loading next song...'); nextTrack();};
     updateMediaSession(t);
     miniPlayerActivated=true;
     miniPlayerDismissed=false;
     updateMiniPlayer();
+
     audioEl.onerror=function(){
       isPlaying=false;
+      audioEl.volume=1;
       setPlayIcon(false);
       if(art) art.classList.remove('spinning');
       setMusicStatus('This song could not load. Check that the Supabase file is public.');
@@ -1671,21 +1719,24 @@ async function playTrack(i){
     };
 
     await audioEl.play();
+    if(djMode) await fadeVolume(1,650);
+
     isPlaying=true;
     setPlayIcon(true);
     if(art) art.classList.add('spinning');
-    setMusicStatus('Now playing: '+(t.title || 'Track')+' by '+(t.artist || 'FitHerNova'));
+    setMusicStatus((djMode?'DJ Mode playing: ':'Now playing: ')+(t.title || 'Track')+' by '+(t.artist || 'FitHerNova'));
     updateMiniPlayer();
     renderTrackList();
     updateMiniPlayer();
   }catch(err){
     console.error('Playback failed:', err);
     isPlaying=false;
+    audioEl.volume=1;
     setPlayIcon(false);
     if(art) art.classList.remove('spinning');
     renderTrackList();
     updateMiniPlayer();
-    setMusicStatus('Music playback failed. Tap the track again, or confirm the MP3 is public.');
+    setMusicStatus('Music playback failed. Tap the song again, or confirm the MP3 is public.');
   }
 }
 async function togglePlay(){
@@ -1700,13 +1751,17 @@ async function togglePlay(){
   const art=document.getElementById('np-art');
   try{
     if(audioEl.paused){
+      if(djMode) audioEl.volume=0;
       await audioEl.play();
+      if(djMode) await fadeVolume(1,450);
       isPlaying=true;
       setPlayIcon(true);
       if(art) art.classList.add('spinning');
-      setMusicStatus('Playing FitHerNova Radio.');
+      setMusicStatus(djMode?'DJ Mode resumed with a smooth fade.':'Playing FitHerNova Radio.');
     }else{
+      if(djMode) await fadeVolume(0,350);
       audioEl.pause();
+      audioEl.volume=1;
       isPlaying=false;
       setPlayIcon(false);
       if(art) art.classList.remove('spinning');
@@ -2102,6 +2157,19 @@ renderAll();
 initAuth();
 loadSupabaseTracks();
 loadChallengeData();
+
+updateTimeGreeting();
+setInterval(updateTimeGreeting,60000);
+setTimeout(()=>{
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const seen = localStorage.getItem('fithernova_install_seen_date');
+  const today = new Date().toISOString().slice(0,10);
+  if(!isStandalone && seen !== today){
+    showInstallGuide();
+    localStorage.setItem('fithernova_install_seen_date', today);
+  }
+},1800);
+
 </script>
 </body>
 </html>
