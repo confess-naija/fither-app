@@ -249,40 +249,25 @@ select option{background:var(--black3);}
 @keyframes barBounce{0%,100%{height:4px;}50%{height:14px;}}
 
 /* ======== PROGRESS ======== */
-.progress-hero{position:relative;overflow:hidden;border-radius:28px;padding:18px;margin-bottom:14px;background:radial-gradient(circle at 14% 0%,rgba(255,45,107,.35),transparent 34%),radial-gradient(circle at 90% 15%,rgba(255,209,102,.22),transparent 32%),linear-gradient(145deg,#220713,#101010 62%,#17100a);border:1px solid rgba(255,45,107,.28);box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 30px rgba(255,45,107,.10);}
-.progress-hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
-.progress-hero-title{font-family:var(--font-head);font-size:24px;font-weight:900;letter-spacing:-.7px;line-height:1.05;}
-.progress-hero-sub{font-size:12px;color:rgba(255,255,255,.66);line-height:1.5;margin-top:4px;}
-.progress-score{width:74px;height:74px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:conic-gradient(var(--pink) 0 68%,rgba(255,255,255,.10) 68% 100%);box-shadow:0 12px 32px rgba(255,45,107,.22);position:relative;flex-shrink:0;}
-.progress-score:after{content:'';position:absolute;inset:8px;border-radius:50%;background:#111;}
-.progress-score b,.progress-score span{position:relative;z-index:1;}
-.progress-score b{font-family:var(--font-head);font-size:20px;}
-.progress-score span{font-size:9px;color:var(--grey);margin-top:1px;}
-.prog-header{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
-.prog-stat-big{background:linear-gradient(145deg,#181818,#101010);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:15px;text-align:center;box-shadow:0 10px 28px rgba(0,0,0,.25);}
-.psb-val{font-family:var(--font-head);font-size:26px;font-weight:900;letter-spacing:-.3px;}
-.psb-val.pink{color:var(--pink-light);}
+.prog-header{display:flex;gap:10px;margin-bottom:12px;}
+.prog-stat-big{flex:1;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;text-align:center;}
+.psb-val{font-family:var(--font-head);font-size:24px;font-weight:800;}
+.psb-val.pink{color:var(--pink);}
 .psb-val.green{color:var(--green);}
 .psb-val.gold{color:var(--gold);}
-.psb-label{font-size:11px;color:var(--grey);margin-top:4px;}
-.weight-log-card{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:14px;margin-bottom:12px;}
-.weight-log-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
-@media(max-width:520px){.prog-header{grid-template-columns:1fr}.weight-log-row{grid-template-columns:1fr}}
-.chart-area{display:flex;align-items:flex-end;gap:7px;height:125px;padding:8px 4px 0;}
-.chart-bar{flex:1;border-radius:10px 10px 4px 4px;min-height:8px;transition:height 0.5s ease;cursor:pointer;position:relative;box-shadow:0 -8px 22px rgba(255,45,107,.14);}
+.psb-label{font-size:11px;color:var(--grey);margin-top:3px;}
+.chart-area{display:flex;align-items:flex-end;gap:5px;height:90px;padding:0 4px;}
+.chart-bar{flex:1;border-radius:4px 4px 0 0;min-height:6px;transition:height 0.5s ease;cursor:pointer;position:relative;}
 .chart-bar-label{font-size:9px;color:var(--grey);text-align:center;margin-top:4px;}
-.chart-wrap{background:radial-gradient(circle at 20% 0%,rgba(6,214,160,.12),transparent 36%),linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:15px;margin-bottom:12px;box-shadow:0 14px 38px rgba(0,0,0,.32);}
-.empty-chart{min-height:96px;display:flex;align-items:center;justify-content:center;text-align:center;color:rgba(255,255,255,.62);font-size:12px;background:rgba(255,255,255,.035);border:1px dashed rgba(255,255,255,.12);border-radius:18px;padding:18px;}
-.progress-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px;}
-.milestone-wrap{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.30);}
-.milestone-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07);}
+.chart-wrap{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+.milestone-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--black4);}
 .milestone-item:last-child{border-bottom:none;}
-.mi-icon{font-size:24px;width:42px;height:42px;border-radius:15px;background:rgba(255,255,255,.055);display:flex;align-items:center;justify-content:center;text-align:center;}
-.mi-name{font-size:13px;font-weight:800;color:var(--white);flex:1;}
-.mi-sub{font-size:11px;color:var(--grey);margin-top:2px;}
-.mi-badge{font-size:10px;padding:5px 10px;border-radius:99px;font-weight:800;}
-.mi-badge.earned{background:#063b2b;color:var(--green);}
-.mi-badge.locked{background:rgba(255,255,255,.07);color:var(--grey);}
+.mi-icon{font-size:22px;width:36px;text-align:center;}
+.mi-name{font-size:13px;font-weight:500;color:var(--white);flex:1;}
+.mi-sub{font-size:11px;color:var(--grey);margin-top:1px;}
+.mi-badge{font-size:10px;padding:3px 10px;border-radius:99px;font-weight:600;}
+.mi-badge.earned{background:#0a2a1a;color:var(--green);}
+.mi-badge.locked{background:var(--black4);color:var(--grey2);}
 
 /* REMINDER */
 .reminder-freq{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
@@ -792,7 +777,7 @@ select option{background:var(--black3);}
         <div class="music-topline">
           <div class="music-badge">FitHerNova Radio</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-            <button class="dj-toggle on" id="dj-toggle" onclick="event.stopPropagation()">Auto Play</button>
+            <button class="dj-toggle on" id="dj-toggle" onclick="toggleDJMode(event)">DJ Mode ON</button>
             <div class="music-live">Gospel workout vibes</div>
           </div>
         </div>
@@ -835,56 +820,31 @@ select option{background:var(--black3);}
 
       <div class="playlist-head">
         <div class="sec-label" style="margin-bottom:0;">Playlist</div>
-        <button class="refresh-music-btn" onclick="loadSupabaseTracks()">↻ Reload</button>
+        <button class="refresh-music-btn" onclick="loadSupabaseTracks()">↻ Refresh</button>
       </div>
       <div class="track-list" id="track-list"></div>
     </div>
 
     <!-- PROGRESS -->
     <div class="page" id="page-progress">
-      <div class="progress-hero">
-        <div class="progress-hero-top">
-          <div>
-            <div class="pro-kicker">Progress Studio ✨</div>
-            <div class="progress-hero-title">Your glow-up is building.</div>
-            <div class="progress-hero-sub">Track weight, celebrate wins, and keep your streak feeling alive — not boring.</div>
-          </div>
-          <div class="progress-score"><b id="st-streak-hero">2🔥</b><span>streak</span></div>
-        </div>
-      </div>
-
+      <div class="sec-label">Weight progress</div>
       <div class="prog-header">
-        <div class="prog-stat-big"><div class="psb-val pink" id="p-current">--</div><div class="psb-label">Current weight</div></div>
-        <div class="prog-stat-big"><div class="psb-val green" id="p-lost">--</div><div class="psb-label">Kg lost</div></div>
-        <div class="prog-stat-big"><div class="psb-val gold" id="p-left">--</div><div class="psb-label">Kg to goal</div></div>
+        <div class="prog-stat-big"><div class="psb-val pink" id="p-current">--</div><div class="psb-label">Current (kg)</div></div>
+        <div class="prog-stat-big"><div class="psb-val green" id="p-lost">--</div><div class="psb-label">Lost (kg)</div></div>
+        <div class="prog-stat-big"><div class="psb-val gold" id="p-left">--</div><div class="psb-label">To goal</div></div>
       </div>
-
-      <div class="weight-log-card">
-        <div class="sec-label" style="margin-bottom:10px;">Quick weight check-in</div>
-        <div class="weight-log-row">
-          <input type="number" id="weight-input" placeholder="Enter today’s weight in kg" step="0.1" min="30" max="300"/>
-          <button class="btn btn-pink" onclick="logWeight()" style="white-space:nowrap;padding:0 20px;width:auto;">Save progress</button>
-        </div>
+      <div class="flex-row mb12">
+        <input type="number" id="weight-input" placeholder="Enter weight in kg" step="0.1" min="30" max="300"/>
+        <button class="btn btn-ghost" onclick="logWeight()" style="white-space:nowrap;flex-shrink:0;">Log it</button>
       </div>
-
       <div class="chart-wrap">
-        <div class="flex-between" style="margin-bottom:10px;">
-          <div class="sec-label" style="margin-bottom:0;">Weight journey</div>
-          <span class="pro-badge free">TREND</span>
-        </div>
-        <div class="chart-area" id="weight-chart"><div class="empty-chart">Log at least 2 weights to unlock your visual progress chart 💖</div></div>
+        <div class="sec-label" style="margin-bottom:10px;">Weight chart</div>
+        <div class="chart-area" id="weight-chart"><div class="text-grey" style="margin:auto;font-size:12px;">Log at least 2 weights to see chart</div></div>
         <div style="display:flex;gap:5px;margin-top:4px;" id="chart-labels"></div>
       </div>
-
-      <div class="progress-actions">
-        <button class="btn btn-danger" style="width:100%;" onclick="resetFitHerData()">Reset saved data</button>
-      </div>
-
-      <div class="flex-between" style="margin-bottom:10px;">
-        <div class="sec-label" style="margin-bottom:0;">Milestones</div>
-        <span class="pro-badge free">Rewards</span>
-      </div>
-      <div class="milestone-wrap" id="milestones-list"></div>
+      <button class="btn btn-danger" style="width:100%;margin-bottom:12px;" onclick="resetFitHerData()">Reset saved data</button>
+      <div class="sec-label">Milestones</div>
+      <div class="card" id="milestones-list"></div>
     </div>
 
     <!-- REMINDERS -->
@@ -932,8 +892,6 @@ select option{background:var(--black3);}
       <div id="challenge-days-list"></div>
     </div>
 
-    <!-- MEAL GUIDE REMOVED: Coach Nova now handles meal guidance -->
-
     <!-- AI COACH -->
     <div class="page" id="page-coach">
       <div class="sec-label">Coach Nova</div>
@@ -941,18 +899,18 @@ select option{background:var(--black3);}
         <div class="coach-hero-row">
           <div class="coach-avatar">✨</div>
           <div>
-            <div class="coach-title-clean">Coach Nova Basic <span class="pro-badge free" style="vertical-align:middle;margin-left:6px;">FREE</span></div>
-            <div class="coach-sub-clean">Free basic coaching for meals, workouts, water and motivation. Meal guidance now lives here, so the app feels cleaner and smarter.</div>
+            <div class="coach-title-clean">Your calm fitness guide</div>
+            <div class="coach-sub-clean">Ask for a quick meal idea, belly workout, water plan, calorie guidance or motivation. Clean, simple, no pressure.</div>
           </div>
         </div>
       </div>
 
       <div class="coach-panel">
-        <div class="sec-label" style="margin-bottom:0;">Coach Nova Nutrition + Fitness</div>
+        <div class="sec-label" style="margin-bottom:0;">Quick help</div>
         <div class="coach-prompts">
-          <button class="coach-prompt" onclick="coachAsk('give me a Nigerian weight loss meal for today')"><b>🍲 Nigerian meal idea</b><span>Simple healthy plate</span></button>
-          <button class="coach-prompt" onclick="coachAsk('give me a quick breakfast for a busy woman')"><b>⏱️ Busy breakfast</b><span>Fast and realistic</span></button>
-          <button class="coach-prompt" onclick="coachAsk('what should i eat after workout')"><b>💪 After workout</b><span>Recovery food idea</span></button>
+          <button class="coach-prompt" onclick="coachAsk('what should i eat today')"><b>🍲 What should I eat today?</b><span>Quick meal guidance</span></button>
+          <button class="coach-prompt" onclick="coachAsk('nigerian fat loss meals')"><b>🥗 Nigerian fat-loss meals</b><span>Simple local food ideas</span></button>
+          <button class="coach-prompt" onclick="coachAsk('quick breakfast ideas')"><b>⏱️ Quick breakfast ideas</b><span>Busy woman friendly</span></button>
           <button class="coach-prompt" onclick="coachAsk('give me belly workout')"><b>🔥 Belly workout</b><span>Quick routine to start</span></button>
           <button class="coach-prompt" onclick="coachAsk('motivate me')"><b>💖 Motivation</b><span>Soft push for consistency</span></button>
           <button class="coach-prompt" onclick="coachAsk('water reminder')"><b>💧 Water plan</b><span>Hydration goal check</span></button>
@@ -1183,9 +1141,8 @@ const workoutData = [
   {name:"Advanced Belly Shred",icon:"💥",level:"Advanced",badge:"badge-hard",dur:"30 min",calPM:13,ex:[{n:"Burpees",r:"4×15"},{n:"V-ups",r:"4×12"},{n:"Plank with hip dips",r:"4×20"},{n:"Scissor kicks",r:"4×20"},{n:"Russian twists",r:"4×20"},{n:"Sprint intervals",r:"5×30 sec"}]},
 ];
 
-// FitHerNova Radio — static playlist. No Supabase fetch, no DJ/crossfade, just reliable playback.
+// FitHerNova Radio — built-in safe playlist. Supabase can update this, but the app will never go empty.
 const BUILT_IN_TRACKS = [
-  {title:"Mix Jam 2026",artist:"FitHerNova Radio",dur:"3:45",emoji:"🔥",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Mix%20Jam%202026.mp3"},
   {title:"LIFT ME UP",artist:"ZIK Blue",dur:"3:39",emoji:"🚀",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3"},
   {title:"They Cannot (Remix)",artist:"Holy Fire",dur:"3:45",emoji:"🔥",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3"},
   {title:"GLORY & FIRE",artist:"Ziyana Eya",dur:"4:00",emoji:"✨",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20&%20FIRE.mp3"},
@@ -1204,7 +1161,7 @@ let selFood=null, portion=1, activeFilter='all', selFreq=null;
 let timerSec=0, timerRunning=false, timerPaused=false, timerInterval=null;
 let selWorkout=null;
 let currentTrack=0, isPlaying=false, audioEl=new Audio(), progressInterval=null;
-let djMode=false;
+let djMode=true;
 audioEl.preload='metadata';
 // crossOrigin removed for smoother public Supabase audio playback;
 let streak=1, workoutsDone=0;
@@ -1363,7 +1320,6 @@ function applyState(data){
 function renderAll(){
   renderWorkoutList();renderWorkoutPicker();renderTrackList();renderFoodLog();renderWorkoutHistory();
   renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();populateProfileForm();renderCoachGoal();
-  if(profileSettings.avatarUrl) showProfilePhoto(profileSettings.avatarUrl);
 }
 function saveLocalOnly(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState())); }
@@ -1421,15 +1377,65 @@ async function loadRemoteData(){
   }catch(e){console.warn('FitHerNova Supabase load failed', e.message || e);}
 }
 async function loadSupabaseTracks(){
-  // Stable mode: use the hardcoded Supabase-hosted MP3 URLs directly.
-  // This avoids hanging on database fetch and keeps music reliable for users.
-  tracks = BUILT_IN_TRACKS.map(t => ({...t}));
-  currentTrack = Math.min(Math.max(currentTrack || 0, 0), tracks.length - 1);
-  renderTrackList();
-  updateMiniPlayer();
-  setMusicStatus('Tap a song to begin. Songs will play one after another.');
-}
+  const list=document.getElementById('track-list');
+  const status=document.getElementById('music-status');
+  if(list) list.innerHTML='<div class="text-grey" style="padding:10px 0;">Loading FitHerNova Radio...</div>';
+  if(status) status.textContent='Preparing FitHerNova Radio...';
 
+  // Always keep the built-in playlist available so music never disappears.
+  const useBuiltIn = () => {
+    if(!Array.isArray(tracks) || !tracks.some(t => t && t.src)){
+      tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+    }
+    currentTrack = Math.min(Math.max(currentTrack || 0, 0), Math.max(tracks.length - 1, 0));
+    renderTrackList();
+    updateMiniPlayer();
+    if(status) status.textContent='Choose a song and let the energy flow.';
+  };
+
+  if(!supabaseClient){
+    useBuiltIn();
+    return;
+  }
+
+  try{
+    const {data,error}=await supabaseClient
+      .from('music_tracks')
+      .select('title,artist,duration,emoji,src,created_at,sort_order')
+      .eq('active',true)
+      .order('sort_order',{ascending:true})
+      .order('created_at',{ascending:true});
+
+    if(error) throw error;
+
+    const remoteTracks = Array.isArray(data)
+      ? data
+          .filter(t => t && t.src && String(t.src).trim())
+          .map(t=>({
+            title:t.title || 'Untitled',
+            artist:t.artist || 'Pro Media Records',
+            dur:t.duration || '0:00',
+            emoji:t.emoji || '🎵',
+            src:String(t.src).trim()
+          }))
+      : [];
+
+    if(remoteTracks.length){
+      tracks = remoteTracks;
+      currentTrack = Math.min(currentTrack, tracks.length-1);
+      renderTrackList();
+      updateMiniPlayer();
+      if(status) status.textContent=`${tracks.length} song${tracks.length>1?'s':''} ready. Tap a track to play.`;
+    }else{
+      tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+      useBuiltIn();
+    }
+  }catch(e){
+    console.warn('FitHerNova Radio used built-in playlist:', e.message || e);
+    tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+    useBuiltIn();
+  }
+}
 
 function resetFitHerData(){
   if(!confirm('Clear all FitHerNova saved data on this device?'))return;
@@ -1752,13 +1758,24 @@ function normalizeAudioUrl(url){
 }
 function toggleDJMode(event){
   if(event) event.stopPropagation();
-  setMusicStatus('Auto Play is on. Songs will play one after another.');
+  djMode=!djMode;
+  const btn=document.getElementById('dj-toggle');
+  if(btn){
+    btn.textContent=djMode?'DJ Mode ON':'DJ Mode OFF';
+    btn.classList.toggle('on', djMode);
+  }
+  setMusicStatus(djMode?'DJ Mode is on — smooth fade between songs.':'DJ Mode is off — normal playback.');
 }
 function waitNova(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
-async function fadeVolume(target=1, duration=0){
-  audioEl.volume=Math.max(0,Math.min(1,target));
+async function fadeVolume(target=1, duration=450){
+  const start=Number.isFinite(audioEl.volume)?audioEl.volume:1;
+  const steps=12;
+  const diff=target-start;
+  for(let i=1;i<=steps;i++){
+    audioEl.volume=Math.max(0,Math.min(1,start+(diff*i/steps)));
+    await waitNova(duration/steps);
+  }
 }
-
 
 function renderTrackList(){
   const el=document.getElementById('track-list');
@@ -1807,10 +1824,11 @@ function updateProgress(){
 async function playTrack(i, autoAdvance=false){
   if(!tracks.length || !tracks[i]) return false;
 
+  const t = tracks[i];
   currentTrack = i;
-  const t = tracks[currentTrack];
   const art = document.getElementById('np-art');
   const emoji = document.getElementById('np-emoji');
+
   const titleEl=document.getElementById('np-title');
   const artistEl=document.getElementById('np-artist');
   const totalEl=document.getElementById('np-total');
@@ -1818,7 +1836,7 @@ async function playTrack(i, autoAdvance=false){
   const progressEl=document.getElementById('np-progress');
 
   if(titleEl) titleEl.textContent = t.title || 'Untitled';
-  if(artistEl) artistEl.textContent = t.artist || 'FitHerNova Radio';
+  if(artistEl) artistEl.textContent = t.artist || 'FitHerNova Music';
   if(emoji) emoji.textContent = t.emoji || '🎵';
   if(totalEl) totalEl.textContent = t.dur || '0:00';
   if(currentEl) currentEl.textContent = '0:00';
@@ -1826,91 +1844,142 @@ async function playTrack(i, autoAdvance=false){
   clearInterval(progressInterval);
 
   const cleanSrc = normalizeAudioUrl(t.src);
-  if(!cleanSrc) return false;
+  if(!cleanSrc){
+    renderTrackList();
+    updateMiniPlayer();
+    return false;
+  }
 
   try{
     audioEl.pause();
-    audioEl.currentTime = 0;
+    audioEl.onended = null;
+    audioEl.onerror = null;
+    audioEl.ontimeupdate = null;
+    audioEl.onloadedmetadata = null;
+
     audioEl.src = cleanSrc;
     audioEl.preload = 'auto';
     audioEl.volume = 1;
 
-    audioEl.onended = () => autoNextTrack(1);
     audioEl.ontimeupdate = updateProgress;
     audioEl.onloadedmetadata = updateProgress;
-    audioEl.onerror = () => {
-      console.warn('Track skipped:', t.title);
+    audioEl.oncanplay = updateProgress;
+    audioEl.onended = function(){
       autoNextTrack(1);
+    };
+    audioEl.onerror = function(){
+      console.warn('FitHerNova skipped a track.');
+      isPlaying = false;
+      setPlayIcon(false);
+      if(art) art.classList.remove('spinning');
+      renderTrackList();
+      updateMiniPlayer();
+      if(autoAdvance){
+        setTimeout(()=>autoNextTrack(1), 250);
+      }else{
+        setMusicStatus('Choose another track and keep the vibe going.');
+      }
     };
 
     updateMediaSession(t);
     miniPlayerActivated = true;
     miniPlayerDismissed = false;
-    renderTrackList();
     updateMiniPlayer();
 
-    await audioEl.play();
+    const playPromise = audioEl.play();
+    if(playPromise && typeof playPromise.then === 'function'){
+      await playPromise;
+    }
+
     isPlaying = true;
     setPlayIcon(true);
     if(art) art.classList.add('spinning');
-    setMusicStatus('Now playing: ' + (t.title || 'Track'));
+    setMusicStatus((autoAdvance ? 'Now playing: ' : (djMode ? 'DJ Mode playing: ' : 'Now playing: ')) + (t.title || 'Track') + ' by ' + (t.artist || 'FitHerNova'));
+    renderTrackList();
+    updateMiniPlayer();
     progressInterval = setInterval(updateProgress, 500);
     saveData();
     return true;
+
   }catch(err){
-    console.warn('Playback needs user tap or track skipped:', err?.message || err);
+    console.warn('FitHerNova playback paused by browser or track source.');
     isPlaying = false;
+    audioEl.volume = 1;
     setPlayIcon(false);
     if(art) art.classList.remove('spinning');
     renderTrackList();
     updateMiniPlayer();
-    setMusicStatus('Tap the song or play button to start.');
+
+    if(autoAdvance){
+      setTimeout(()=>autoNextTrack(1), 300);
+    }else{
+      setMusicStatus('Tap play or choose another track to keep the vibe going.');
+    }
     return false;
   }
 }
 
-
 async function autoNextTrack(step=1){
   if(!tracks.length) return;
-  currentTrack = (currentTrack + step + tracks.length) % tracks.length;
-  await playTrack(currentTrack, true);
-}
+  let attempts = 0;
+  let next = currentTrack;
 
+  while(attempts < tracks.length){
+    next = (next + step + tracks.length) % tracks.length;
+    const candidate = tracks[next];
+    if(candidate && candidate.src){
+      currentTrack = next;
+      const ok = await playTrack(currentTrack, true);
+      if(ok) return;
+    }
+    attempts++;
+  }
+
+  // Keep the UI clean for users — no technical error message.
+  isPlaying = false;
+  setPlayIcon(false);
+  setMusicStatus('Choose a song and let the energy flow.');
+  renderTrackList();
+  updateMiniPlayer();
+}
 
 async function togglePlay(){
   if(!tracks.length){
-    setMusicStatus('Tap a song to begin.');
+    setMusicStatus('Choose a song and let the energy flow.');
+    return;
+  }
+  if(!audioEl.src){
+    await playTrack(currentTrack || 0);
     return;
   }
   const art=document.getElementById('np-art');
   try{
-    if(!audioEl.src){
-      await playTrack(currentTrack || 0);
-      return;
-    }
     if(audioEl.paused){
+      if(djMode) audioEl.volume=0;
       await audioEl.play();
+      if(djMode) await fadeVolume(1,450);
       isPlaying=true;
       setPlayIcon(true);
       if(art) art.classList.add('spinning');
-      setMusicStatus('Playing FitHerNova Radio.');
+      setMusicStatus(djMode?'DJ Mode resumed with a smooth fade.':'Playing FitHerNova Radio.');
     }else{
+      if(djMode) await fadeVolume(0,350);
       audioEl.pause();
+      audioEl.volume=1;
       isPlaying=false;
       setPlayIcon(false);
       if(art) art.classList.remove('spinning');
-      setMusicStatus('Paused.');
+      setMusicStatus('Paused. Tap play when you are ready.');
     }
     renderTrackList();
     updateMiniPlayer();
   }catch(err){
-    console.warn('Toggle playback failed:', err?.message || err);
-    setMusicStatus('Tap a song to begin.');
+    console.error('Toggle playback failed:', err);
+    setMusicStatus('Choose a song and let the energy flow.');
   }
 }
-
-async function nextTrack(){ await autoNextTrack(1); }
-async function prevTrack(){ await autoNextTrack(-1); }
+async function nextTrack(){ if(!tracks.length)return; currentTrack=(currentTrack+1)%tracks.length; await playTrack(currentTrack,false); }
+async function prevTrack(){ if(!tracks.length)return; currentTrack=(currentTrack-1+tracks.length)%tracks.length; await playTrack(currentTrack,false); }
 function seekTrack(e){
   const bar=e.currentTarget;
   const rect=bar.getBoundingClientRect();
@@ -2028,8 +2097,106 @@ async function toggleChallengeDay(day){
     }catch(e){console.warn('Challenge save failed', e.message||e);}
   }
 }
-// Static meal guide removed — Coach Nova now handles meal guidance.
 
+function populateProfileForm(){
+  const name=document.getElementById('profile-name'); if(!name)return;
+  name.value=profileSettings.fullName || document.getElementById('user-name')?.textContent || '';
+  document.getElementById('profile-goal').value=userGoal||1800;
+  document.getElementById('profile-target').value=profileSettings.targetWeight||'';
+  document.getElementById('profile-height').value=profileSettings.heightCm||'';
+  renderProfileSummary();
+}
+function renderProfileSummary(){
+  const cur=weights.length?Number(weights[weights.length-1]):null;
+  const height=Number(profileSettings.heightCm);
+  const target=Number(profileSettings.targetWeight)||70;
+  const bmiEl=document.getElementById('profile-bmi');
+  if(bmiEl) bmiEl.textContent=(cur&&height)?(cur/((height/100)**2)).toFixed(1):'--';
+  const leftEl=document.getElementById('profile-goal-left');
+  if(leftEl) leftEl.textContent=cur?Math.max(0,(cur-target)).toFixed(1):'--';
+  const acct=document.getElementById('profile-account-text');
+  if(acct) acct.textContent=currentUser?('Logged in as '+currentUser.email+(isProUser?' · PRO':' · Free plan')):'Please login to save and upgrade.';
+  updateProUI();
+}
+async function saveProfileSettings(){
+  const msg=document.getElementById('profile-message');
+  profileSettings.fullName=document.getElementById('profile-name').value.trim()||'Queen';
+  userGoal=Number(document.getElementById('profile-goal').value)||1800;
+  profileSettings.targetWeight=Number(document.getElementById('profile-target').value)||profileSettings.targetWeight||70;
+  profileSettings.heightCm=Number(document.getElementById('profile-height').value)||null;
+  document.getElementById('user-name').textContent=(profileSettings.fullName.split(' ')[0]||'Queen');
+  if(currentUser && supabaseClient){
+    try{
+      const {error}=await supabaseClient.from('profiles').upsert({id:currentUser.id,email:currentUser.email,full_name:profileSettings.fullName,calorie_goal:userGoal,target_weight:profileSettings.targetWeight,height_cm:profileSettings.heightCm,workout_level:profileSettings.workoutLevel,avatar_url:profileSettings.avatarUrl||null},{onConflict:'id'});
+      if(error)throw error;
+      if(msg)msg.textContent='Profile saved to cloud.';
+    }catch(e){if(msg)msg.textContent=e.message||'Cloud save failed.';}
+  }else if(msg) msg.textContent='Profile saved on this device.';
+  renderProfileSummary(); updateHome(); saveData();
+}
+function showProfilePhoto(url){
+  if(!url) return;
+  profileSettings.avatarUrl=url;
+  const img=document.getElementById('profile-avatar-preview');
+  const ph=document.getElementById('profile-avatar-placeholder');
+  if(img){img.src=url;img.style.display='block';}
+  if(ph) ph.style.display='none';
+  const header=document.getElementById('header-avatar');
+  if(header){header.src=url;header.style.display='block';}
+}
+async function uploadProfilePhoto(event){
+  const file=event.target.files && event.target.files[0];
+  if(!file) return;
+  const status=document.getElementById('photo-upload-status');
+  if(!currentUser){ if(status) status.textContent='Please login before uploading a photo.'; return; }
+  if(!supabaseClient){ if(status) status.textContent='Please try again in a moment.'; return; }
+  if(!file.type.startsWith('image/')){ if(status) status.textContent='Please choose an image file.'; return; }
+  if(file.size > 5 * 1024 * 1024){ if(status) status.textContent='Image is too large. Please choose under 5MB.'; return; }
+  try{
+    if(status) status.textContent='Uploading photo...';
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+    const filePath=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
+    const {error:uploadError}=await supabaseClient.storage
+      .from('profile-photos')
+      .upload(filePath,file,{cacheControl:'3600',upsert:true});
+    if(uploadError) throw uploadError;
+    const {data}=supabaseClient.storage.from('profile-photos').getPublicUrl(filePath);
+    const avatarUrl=data.publicUrl;
+    const {error:profileError}=await supabaseClient.from('profiles')
+      .upsert({id:currentUser.id,email:currentUser.email,avatar_url:avatarUrl},{onConflict:'id'});
+    if(profileError) throw profileError;
+    showProfilePhoto(avatarUrl);
+    saveData();
+    if(status) status.textContent='Photo uploaded successfully.';
+  }catch(e){
+    console.error('Profile photo upload failed',e);
+    if(status) status.textContent=e.message || 'Photo upload needs a smaller JPG or PNG. Please try again.';
+  }
+}
+async function sendPasswordReset(){
+  const msg=document.getElementById('profile-message');
+  const email=currentUser?.email || prompt('Enter your email for password reset');
+  if(!email || !supabaseClient)return;
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
+  if(msg) msg.textContent=error?error.message:'Password reset email sent.';
+}
+
+
+// ===================== AI COACH =====================
+function setMainGoal(goal){
+  profileSettings.mainGoal=goal;
+  renderCoachGoal();
+  saveData();
+  const ans=document.getElementById('coach-answer');
+  if(ans) ans.textContent=`Goal saved: ${goal}.\n\nCoach Nova will guide your meals, workouts and motivation around this goal.`;
+}
+function renderCoachGoal(){
+  const cards=document.querySelectorAll('#goal-grid .goal-card');
+  cards.forEach(c=>{
+    const title=c.querySelector('.gtitle')?.textContent||'';
+    c.classList.toggle('active', title.toLowerCase().includes((profileSettings.mainGoal||'').toLowerCase().split(' ')[0]));
+  });
+}
 function coachAsk(q){
   const input=document.getElementById('coach-question');
   const raw=(q || input?.value || '').trim();
@@ -2347,179 +2514,6 @@ async function startProCheckout(plan){
     setProMessage('Payment error: '+(err.message || 'Could not open payment.'));
   }
 }
-
-
-
-// ===================== FINAL SIMPLE MUSIC ENGINE OVERRIDE =====================
-// Stable mode: no DJ, no crossfade, no Supabase database fetch.
-// Tap any song -> that exact song plays. When it finishes -> next song plays.
-function safeAudioUrl(url){
-  return String(url || '').trim();
-}
-
-function loadSupabaseTracks(){
-  tracks = BUILT_IN_TRACKS.map(t => ({...t}));
-  currentTrack = 0;
-  isPlaying = false;
-  if(audioEl){
-    try{ audioEl.pause(); }catch(e){}
-    audioEl.removeAttribute('src');
-    try{ audioEl.load(); }catch(e){}
-  }
-  updateNowPlayingStatic(0, false);
-  renderTrackList();
-  updateMiniPlayer();
-  setMusicStatus('Tap any song to begin. Songs will play one after another.');
-}
-
-function updateNowPlayingStatic(index=currentTrack, playing=isPlaying){
-  const t = tracks[index] || BUILT_IN_TRACKS[0];
-  const emoji = document.getElementById('np-emoji');
-  const titleEl = document.getElementById('np-title');
-  const artistEl = document.getElementById('np-artist');
-  const totalEl = document.getElementById('np-total');
-  const currentEl = document.getElementById('np-current');
-  const progressEl = document.getElementById('np-progress');
-  const art = document.getElementById('np-art');
-
-  if(emoji) emoji.textContent = t?.emoji || '🎵';
-  if(titleEl) titleEl.textContent = t?.title || 'FitHerNova Radio';
-  if(artistEl) artistEl.textContent = t?.artist || 'FitHerNova Radio';
-  if(totalEl) totalEl.textContent = t?.dur || '0:00';
-  if(currentEl) currentEl.textContent = formatAudioTime(audioEl?.currentTime || 0);
-  if(progressEl && !playing) progressEl.style.width = '0%';
-  if(art){
-    if(playing) art.classList.add('spinning');
-    else art.classList.remove('spinning');
-  }
-  setPlayIcon(playing);
-}
-
-function renderTrackList(){
-  const el = document.getElementById('track-list');
-  if(!el) return;
-  if(!tracks || !tracks.length){
-    tracks = BUILT_IN_TRACKS.map(t => ({...t}));
-  }
-  el.innerHTML = tracks.map((t,i)=>`
-    <div class="track-item${i===currentTrack&&isPlaying?' playing':''}" onclick="playTrack(${i}); event.stopPropagation();" id="track-${i}">
-      <div class="playing-anim"><div class="bar-anim"></div><div class="bar-anim"></div><div class="bar-anim"></div></div>
-      <div class="track-num">${i+1}</div>
-      <div style="font-size:21px;width:32px;text-align:center;flex-shrink:0;">${t.emoji || '🎵'}</div>
-      <div class="track-info"><div class="track-name">${t.title || 'Untitled'}</div><div class="track-artist">${t.artist || 'FitHerNova Radio'}</div></div>
-      <div class="track-dur">${t.dur || '0:00'}</div>
-    </div>`).join('');
-}
-
-async function playTrack(i){
-  if(!tracks || !tracks.length) tracks = BUILT_IN_TRACKS.map(t => ({...t}));
-  i = Number(i);
-  if(!Number.isFinite(i) || i < 0 || i >= tracks.length) i = 0;
-
-  currentTrack = i;
-  const t = tracks[currentTrack];
-  const url = safeAudioUrl(t.src || t.url);
-  if(!url){
-    isPlaying = false;
-    updateNowPlayingStatic(currentTrack, false);
-    renderTrackList();
-    setMusicStatus('Tap another song to play.');
-    return false;
-  }
-
-  clearInterval(progressInterval);
-  try{
-    audioEl.pause();
-    audioEl.src = url;
-    audioEl.currentTime = 0;
-    audioEl.preload = 'auto';
-    audioEl.volume = 1;
-
-    audioEl.onended = function(){ nextTrack(); };
-    audioEl.ontimeupdate = updateProgress;
-    audioEl.onloadedmetadata = updateProgress;
-    audioEl.onerror = function(){
-      console.warn('Audio file could not play:', t.title, url);
-      isPlaying = false;
-      updateNowPlayingStatic(currentTrack, false);
-      renderTrackList();
-      updateMiniPlayer();
-      setMusicStatus('This song could not start. Try another song.');
-    };
-
-    updateNowPlayingStatic(currentTrack, false);
-    renderTrackList();
-    miniPlayerActivated = true;
-    miniPlayerDismissed = false;
-    updateMiniPlayer();
-    updateMediaSession(t);
-
-    await audioEl.play();
-    isPlaying = true;
-    updateNowPlayingStatic(currentTrack, true);
-    renderTrackList();
-    updateMiniPlayer();
-    setMusicStatus('Playing: ' + (t.title || 'FitHerNova Radio'));
-    progressInterval = setInterval(updateProgress, 500);
-    saveData();
-    return true;
-  }catch(err){
-    console.warn('Playback blocked until user tap or file issue:', err?.message || err);
-    isPlaying = false;
-    updateNowPlayingStatic(currentTrack, false);
-    renderTrackList();
-    updateMiniPlayer();
-    setMusicStatus('Tap the play button again to start this song.');
-    return false;
-  }
-}
-
-async function nextTrack(){
-  if(!tracks || !tracks.length) tracks = BUILT_IN_TRACKS.map(t => ({...t}));
-  currentTrack = (currentTrack + 1) % tracks.length;
-  await playTrack(currentTrack);
-}
-
-async function prevTrack(){
-  if(!tracks || !tracks.length) tracks = BUILT_IN_TRACKS.map(t => ({...t}));
-  currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
-  await playTrack(currentTrack);
-}
-
-async function autoNextTrack(step=1){
-  if(step < 0) return prevTrack();
-  return nextTrack();
-}
-
-async function togglePlay(){
-  if(!tracks || !tracks.length) tracks = BUILT_IN_TRACKS.map(t => ({...t}));
-  if(!audioEl.src){
-    await playTrack(currentTrack || 0);
-    return;
-  }
-  const art=document.getElementById('np-art');
-  try{
-    if(audioEl.paused){
-      await audioEl.play();
-      isPlaying=true;
-      updateNowPlayingStatic(currentTrack,true);
-      renderTrackList();
-      updateMiniPlayer();
-      setMusicStatus('Playing: ' + ((tracks[currentTrack]||{}).title || 'FitHerNova Radio'));
-    }else{
-      audioEl.pause();
-      isPlaying=false;
-      updateNowPlayingStatic(currentTrack,false);
-      renderTrackList();
-      updateMiniPlayer();
-      setMusicStatus('Paused.');
-    }
-  }catch(err){
-    console.warn('Toggle playback failed:', err?.message || err);
-    setMusicStatus('Tap a song to begin.');
-  }
-}
-
 
 // ===================== SERVICE WORKER =====================
 if('serviceWorker' in navigator){
