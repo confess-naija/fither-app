@@ -55,10 +55,10 @@ button,input,select{font:inherit;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
 /* HEADER */
-.app-header{padding:18px max(18px,env(safe-area-inset-right)) 0 max(18px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;max-width:920px;width:100%;margin:0 auto;}
-.logo{font-family:var(--font-head);font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px;}
-.logo-sub{font-size:10px;color:var(--grey);letter-spacing:1px;text-transform:uppercase;margin-top:-2px;}
-.header-streak{background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px;}
+.app-header{padding:14px max(14px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;max-width:920px;width:100%;margin:0 auto;overflow:visible;}
+.logo{font-family:var(--font-head);font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;white-space:nowrap;flex-shrink:0;}
+.logo-sub{font-size:9px;color:var(--grey);letter-spacing:1px;text-transform:uppercase;margin-top:-2px;white-space:nowrap;}
+.header-streak{background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:5px 10px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;}
 
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:rgba(22,22,22,.96);backdrop-filter:blur(12px);border-top:1px solid var(--black4);display:flex;padding-bottom:var(--safe-bottom);z-index:100;box-shadow:0 -10px 30px rgba(0,0,0,.45);}
@@ -102,7 +102,8 @@ select option{background:var(--black3);}
 .user-pill{background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:6px 10px;font-size:11px;color:var(--grey);display:flex;align-items:center;gap:6px;white-space:nowrap;}
 .user-pill button{background:transparent;border:0;color:var(--pink-light);font-weight:700;cursor:pointer;font-size:11px;}
 @media(min-width:700px){.stats-row{grid-template-columns:repeat(4,1fr)}.food-item,.workout-card,.card,.detail-card,.ring-section{border-radius:20px}.logo{font-size:30px}.page{padding-left:28px;padding-right:28px}.app-header{padding-left:28px;padding-right:28px}}
-@media(max-width:430px){.nav-label{font-size:9px}.nav-item svg{width:20px;height:20px}.header-streak{font-size:11px;padding:6px 9px}.logo{font-size:22px}.app-header{align-items:flex-start}.user-pill{display:none}}
+@media(max-width:430px){.nav-label{font-size:9px}.nav-item svg{width:20px;height:20px}.header-streak{font-size:10px;padding:5px 8px}.logo{font-size:22px;letter-spacing:0px}.app-header{align-items:center;padding:12px 12px 0 12px}.user-pill{display:none}}
+@media(max-width:360px){.logo{font-size:19px}.header-streak{display:none}}
 
 /* ======== HOME ======== */
 .greeting{font-family:var(--font-head);font-size:22px;font-weight:700;margin-bottom:2px;}
@@ -2179,10 +2180,15 @@ function updateAudioProgress() {
   }
 }
 
-async function playTrack(i, autoAdvance = false) {
-  if (!tracks.length || !tracks[i]) return false;
+// iOS Safari REQUIRES audio.play() to be called synchronously inside a
+// user-gesture handler (touchend / click). Any await before .play() breaks it.
+// Strategy: set src + call play() synchronously, THEN handle the promise.
+function playTrack(i, autoAdvance = false) {
+  if (!tracks.length || !tracks[i]) return Promise.resolve(false);
   const t = tracks[i];
   currentTrack = i;
+
+  // Update UI immediately
   setText('np-title', t.title || 'Untitled');
   setText('np-artist', t.artist || 'FitHerNova Music');
   const emoji = document.getElementById('np-emoji');
@@ -2190,80 +2196,150 @@ async function playTrack(i, autoAdvance = false) {
   setText('np-total', t.dur || '0:00');
   setText('np-current', '0:00');
   setStyle('np-progress', 'width', '0%');
+  setStyle('mini-progress-fill', 'width', '0%');
   clearInterval(progressInterval);
-  if (!t.src?.trim()) { renderTrackList(); updateMiniPlayer(); return false; }
-  try {
-    audioEl.pause();
-    audioEl.onended = null; audioEl.onerror = null; audioEl.ontimeupdate = null;
-    audioEl.src = t.src.trim();
-    audioEl.ontimeupdate = updateAudioProgress;
-    audioEl.onended = () => autoNextTrack(1);
-    audioEl.onerror = () => {
-      isPlaying = false; setPlayIcon(false);
-      document.getElementById('np-art')?.classList.remove('spinning');
-      renderTrackList(); updateMiniPlayer();
-      if (autoAdvance) setTimeout(() => autoNextTrack(1), 250);
-      else setMusicStatus('Try another track.');
-    };
-    if ('mediaSession' in navigator) {
-      try {
-        navigator.mediaSession.metadata = new MediaMetadata({ title: t.title || 'FitHerNova', artist: t.artist || 'Pro Media Records', album: 'FitHerNova Radio' });
-        navigator.mediaSession.setActionHandler('play', () => togglePlay());
-        navigator.mediaSession.setActionHandler('pause', () => togglePlay());
-        navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack());
-        navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack());
-      } catch(e) {}
-    }
-    miniPlayerActivated = true; miniPlayerDismissed = false; updateMiniPlayer();
-    await audioEl.play();
-    isPlaying = true; setPlayIcon(true);
-    document.getElementById('np-art')?.classList.add('spinning');
-    setMusicStatus('Now playing: ' + (t.title || 'Track') + ' by ' + (t.artist || 'FitHerNova'));
-    renderTrackList(); updateMiniPlayer();
-    progressInterval = setInterval(updateAudioProgress, 500);
-    return true;
-  } catch(err) {
-    isPlaying = false; audioEl.volume = 1; setPlayIcon(false);
+
+  if (!t.src?.trim()) { renderTrackList(); updateMiniPlayer(); return Promise.resolve(false); }
+
+  // Stop current playback
+  try { audioEl.pause(); } catch(e) {}
+
+  // Remove old listeners
+  audioEl.onended = null;
+  audioEl.onerror = null;
+  audioEl.ontimeupdate = null;
+  audioEl.onloadedmetadata = null;
+
+  // Set new source — do this BEFORE play() for iOS
+  audioEl.src = t.src.trim();
+  audioEl.load(); // forces iOS to register the new src
+
+  // Attach listeners
+  audioEl.ontimeupdate = updateAudioProgress;
+  audioEl.onloadedmetadata = updateAudioProgress;
+  audioEl.onended = () => autoNextTrack(1);
+  audioEl.onerror = () => {
+    isPlaying = false; setPlayIcon(false);
     document.getElementById('np-art')?.classList.remove('spinning');
     renderTrackList(); updateMiniPlayer();
     if (autoAdvance) setTimeout(() => autoNextTrack(1), 300);
-    else setMusicStatus('Tap play or choose a track.');
-    return false;
+    else setMusicStatus('Try another track — this one had a loading error.');
+  };
+
+  // Media session (lock screen controls on mobile)
+  if ('mediaSession' in navigator) {
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: t.title || 'FitHerNova',
+        artist: t.artist || 'Pro Media Records',
+        album: 'FitHerNova Radio'
+      });
+      navigator.mediaSession.setActionHandler('play', () => togglePlay());
+      navigator.mediaSession.setActionHandler('pause', () => togglePlay());
+      navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack());
+      navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack());
+    } catch(e) {}
   }
+
+  miniPlayerActivated = true;
+  miniPlayerDismissed = false;
+  updateMiniPlayer();
+
+  // Call play() SYNCHRONOUSLY — critical for iOS Safari user-gesture requirement
+  const playPromise = audioEl.play();
+
+  // Handle the promise asynchronously (does not break iOS gesture unlock)
+  return Promise.resolve(playPromise)
+    .then(() => {
+      isPlaying = true;
+      setPlayIcon(true);
+      document.getElementById('np-art')?.classList.add('spinning');
+      setMusicStatus('Now playing: ' + (t.title || 'Track') + ' by ' + (t.artist || 'FitHerNova'));
+      renderTrackList();
+      updateMiniPlayer();
+      progressInterval = setInterval(updateAudioProgress, 500);
+      return true;
+    })
+    .catch(err => {
+      // NotAllowedError = browser blocked autoplay (not a user gesture)
+      // Show a clear tap-to-play prompt instead of silent failure
+      if (err && err.name === 'NotAllowedError') {
+        setMusicStatus('Tap the ▶ play button to start music.');
+        isPlaying = false;
+        setPlayIcon(false);
+        // Pre-load so next tap plays instantly
+        audioEl.load();
+      } else {
+        isPlaying = false;
+        setPlayIcon(false);
+        document.getElementById('np-art')?.classList.remove('spinning');
+        if (autoAdvance) setTimeout(() => autoNextTrack(1), 300);
+        else setMusicStatus('Tap play or choose a different track.');
+      }
+      renderTrackList();
+      updateMiniPlayer();
+      return false;
+    });
 }
 
-async function autoNextTrack(step = 1) {
+function autoNextTrack(step = 1) {
   if (!tracks.length) return;
-  let next = currentTrack;
+  let next = (currentTrack + step + tracks.length) % tracks.length;
   for (let attempts = 0; attempts < tracks.length; attempts++) {
-    next = (next + step + tracks.length) % tracks.length;
     if (tracks[next]?.src) {
       currentTrack = next;
-      if (await playTrack(currentTrack, true)) return;
+      playTrack(currentTrack, true).then(ok => {
+        if (!ok && attempts < tracks.length - 1) autoNextTrack(step);
+      });
+      return;
     }
+    next = (next + step + tracks.length) % tracks.length;
   }
-  isPlaying = false; setPlayIcon(false); setMusicStatus('Choose a song to continue.'); renderTrackList(); updateMiniPlayer();
+  isPlaying = false; setPlayIcon(false);
+  setMusicStatus('Choose a song to continue.');
+  renderTrackList(); updateMiniPlayer();
 }
 
-async function togglePlay() {
+// togglePlay must call audioEl.play() synchronously inside the click handler
+// so iOS Safari allows it. No await before .play().
+function togglePlay() {
   if (!tracks.length) { setMusicStatus('Choose a song first.'); return; }
-  if (!audioEl.src) { await playTrack(currentTrack || 0); return; }
+  if (!audioEl.src || audioEl.src === window.location.href) {
+    // No track loaded yet — load and play the current one
+    playTrack(currentTrack || 0, false);
+    return;
+  }
   const art = document.getElementById('np-art');
-  try {
-    if (audioEl.paused) {
-      await audioEl.play();
-      isPlaying = true; setPlayIcon(true); art?.classList.add('spinning');
-      setMusicStatus('Playing FitHerNova Radio.');
+  if (audioEl.paused) {
+    // Synchronous play() call — iOS Safari user gesture requirement
+    const p = audioEl.play();
+    if (p) {
+      p.then(() => {
+        isPlaying = true; setPlayIcon(true); art?.classList.add('spinning');
+        setMusicStatus('Playing FitHerNova Radio.');
+        renderTrackList(); updateMiniPlayer();
+      }).catch(err => {
+        if (err && err.name === 'NotAllowedError') {
+          setMusicStatus('Tap the ▶ button to start playing.');
+        } else {
+          setMusicStatus('Could not play. Try another track.');
+        }
+      });
     } else {
-      audioEl.pause(); isPlaying = false; setPlayIcon(false); art?.classList.remove('spinning');
-      setMusicStatus('Paused.');
+      // Older browsers return undefined from play()
+      isPlaying = true; setPlayIcon(true); art?.classList.add('spinning');
+      renderTrackList(); updateMiniPlayer();
     }
+  } else {
+    audioEl.pause();
+    isPlaying = false; setPlayIcon(false); art?.classList.remove('spinning');
+    setMusicStatus('Paused.');
     renderTrackList(); updateMiniPlayer();
-  } catch(err) { setMusicStatus('Choose a song and let the energy flow.'); }
+  }
 }
 
-async function nextTrack() { if (!tracks.length) return; currentTrack = (currentTrack + 1) % tracks.length; await playTrack(currentTrack, false); }
-async function prevTrack() { if (!tracks.length) return; currentTrack = (currentTrack - 1 + tracks.length) % tracks.length; await playTrack(currentTrack, false); }
+function nextTrack() { if (!tracks.length) return; currentTrack = (currentTrack + 1) % tracks.length; playTrack(currentTrack, false); }
+function prevTrack() { if (!tracks.length) return; currentTrack = (currentTrack - 1 + tracks.length) % tracks.length; playTrack(currentTrack, false); }
 
 function seekTrack(e) {
   const bar  = e.currentTarget;
