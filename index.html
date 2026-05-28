@@ -674,11 +674,6 @@ select option{background:var(--black3);}
         <button class="qs-btn" onclick="goTo('timer')">Start Timer</button>
       </div>
 
-      <div class="sec-label">Today's meals</div>
-      <div class="card" id="home-meal-log">
-        <div class="text-grey">No meals logged yet — go to Food tab</div>
-      </div>
-
       <div class="sec-label" style="margin-top:4px;">Water tracker</div>
       <div class="card">
         <div style="font-family:var(--font-head);font-size:32px;font-weight:800;color:#6bb5ff;text-align:center;" id="water-count">0</div>
@@ -691,26 +686,8 @@ select option{background:var(--black3);}
       </div>
     </div>
 
-    <!-- FOOD -->
-    <div class="page" id="page-food">
-      <div class="sec-label">Find food & calories</div>
-      <input type="text" id="food-search" placeholder="Search e.g. jollof rice, chicken..." oninput="doSearch()" style="margin-bottom:10px;"/>
-      <div class="filter-scroll" id="filter-scroll">
-        <div class="chip active" onclick="setFilter('all',this)">All foods</div>
-        <div class="chip" onclick="setFilter('nigerian',this)">Nigerian 🇳🇬</div>
-        <div class="chip" onclick="setFilter('african',this)">African</div>
-        <div class="chip" onclick="setFilter('western',this)">Western</div>
-        <div class="chip" onclick="setFilter('healthy',this)">Healthy</div>
-      </div>
-      <div id="food-results"></div>
-      <div id="food-detail-wrap"></div>
-      <div class="sec-label mt12">Logged today</div>
-      <div class="card" id="food-log-list"><div class="text-grey">Nothing logged yet</div></div>
-      <div id="food-total-wrap" style="display:none;" class="flex-between" style="padding-top:8px;">
-        <span style="font-size:13px;font-weight:600;color:var(--white);">Total</span>
-        <span style="font-size:13px;font-weight:700;color:var(--pink-light);" id="food-total-cal">0 kcal</span>
-      </div>
-    </div>
+    <!-- COACH NUTRITION NOTE -->
+    <div class="page" id="page-food" style="display:none;"></div>
 
     <!-- WORKOUT TIMER -->
     <div class="page" id="page-timer">
@@ -1050,10 +1027,6 @@ select option{background:var(--black3);}
     <button class="nav-item active" onclick="goTo('home')" id="nav-home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span class="nav-label">Home</span>
-    </button>
-    <button class="nav-item" onclick="goTo('food')" id="nav-food">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-      <span class="nav-label">Food</span>
     </button>
     <button class="nav-item" onclick="goTo('timer')" id="nav-timer">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1506,9 +1479,12 @@ function setFilter(f,el){
   doSearch();
 }
 function doSearch(){
-  const q=document.getElementById('food-search').value.toLowerCase().trim();
+  const searchEl=document.getElementById('food-search');
+  const resultsEl=document.getElementById('food-results');
+  if(!searchEl || !resultsEl) return;
+  const q=searchEl.value.toLowerCase().trim();
   const res=foods.filter(f=>(activeFilter==='all'||f.cat===activeFilter)&&(!q||f.name.toLowerCase().includes(q)));
-  const el=document.getElementById('food-results');
+  const el=resultsEl;
   if(!res.length){el.innerHTML='<div class="text-grey" style="padding:8px 0;">No foods found</div>';return;}
   el.innerHTML=res.slice(0,8).map(f=>`<div class="food-item${selFood&&selFood.name===f.name?' selected':''}" onclick="selectFood('${f.name}')">
     <div style="display:flex;align-items:center;gap:10px;">
@@ -1562,6 +1538,7 @@ function removeFood(i){logged.splice(i,1);renderFoodLog();updateHome();saveData(
 function renderFoodLog(){
   const el=document.getElementById('food-log-list');
   const tw=document.getElementById('food-total-wrap');
+  if(!el || !tw) return;
   if(!logged.length){el.innerHTML='<div class="text-grey">Nothing logged yet</div>';tw.style.display='none';return;}
   const tot=logged.reduce((s,l)=>s+l.cal,0);
   el.innerHTML=logged.map((l,i)=>`<div class="log-list-item">
