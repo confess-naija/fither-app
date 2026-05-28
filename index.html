@@ -1120,6 +1120,7 @@ const workoutData = [
 
 // FitHerNova Radio — built-in safe playlist. Supabase can update this, but the app will never go empty.
 const BUILT_IN_TRACKS = [
+  {title:"Mixtape Vol 2",artist:"FitHerNova Radio",dur:"3:45",emoji:"🎧",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/mixtape%20vol%202.mp3"},
   {title:"LIFT ME UP",artist:"ZIK Blue",dur:"3:39",emoji:"🚀",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3"},
   {title:"They Cannot (Remix)",artist:"Holy Fire",dur:"3:45",emoji:"🔥",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3"},
   {title:"GLORY & FIRE",artist:"Ziyana Eya",dur:"4:00",emoji:"✨",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20&%20FIRE.mp3"},
@@ -1520,11 +1521,11 @@ async function loadSupabaseTracks(){
       .select('title,artist,duration,emoji,src,created_at,sort_order')
       .eq('active',true)
       .order('sort_order',{ascending:true})
-      .order('created_at',{ascending:true});
+      .order('created_at',{ascending:false});
 
     if(error) throw error;
 
-    const remoteTracks = Array.isArray(data)
+    let remoteTracks = Array.isArray(data)
       ? data
           .filter(t => t && t.src && String(t.src).trim())
           .map(t=>({
@@ -1535,6 +1536,20 @@ async function loadSupabaseTracks(){
             src:String(t.src).trim()
           }))
       : [];
+
+    // Remove duplicate songs if the same title or MP3 was inserted more than once.
+    const seenTrackKeys = new Set();
+    remoteTracks = remoteTracks.filter(t => {
+      const key = (String(t.title).toLowerCase().trim() + '|' + String(t.src).trim());
+      if(seenTrackKeys.has(key)) return false;
+      seenTrackKeys.add(key);
+      return true;
+    });
+
+    // Safety: Mixtape Vol 2 always appears even if Supabase cache/RLS delays the fresh row.
+    if(!remoteTracks.some(t => String(t.title || '').toLowerCase().includes('mixtape vol 2'))){
+      remoteTracks.unshift({...BUILT_IN_TRACKS[0]});
+    }
 
     if(remoteTracks.length){
       tracks = remoteTracks;
