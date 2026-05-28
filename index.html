@@ -932,16 +932,7 @@ select option{background:var(--black3);}
       <div id="challenge-days-list"></div>
     </div>
 
-    <!-- MEAL PLAN -->
-    <div class="page" id="page-mealplan">
-      <div class="sec-label">Meal guide</div>
-      <div class="meal-hero-clean">
-        <div class="meal-title-clean">Smart meals for your glow 🍲</div>
-        <div class="meal-sub-clean">Simple meal ideas inspired by Nigerian foods and everyday wellness. This is guidance only — users still cook or buy their own meals.</div>
-      </div>
-      <div id="meal-plan-list" class="meal-grid-clean"></div>
-    </div>
-
+    <!-- MEAL GUIDE REMOVED: Coach Nova now handles meal guidance -->
 
     <!-- AI COACH -->
     <div class="page" id="page-coach">
@@ -951,15 +942,17 @@ select option{background:var(--black3);}
           <div class="coach-avatar">✨</div>
           <div>
             <div class="coach-title-clean">Coach Nova Basic <span class="pro-badge free" style="vertical-align:middle;margin-left:6px;">FREE</span></div>
-            <div class="coach-sub-clean">Free basic coaching for meals, workouts, water and motivation. Coach Nova PRO can be unlocked later for personalized plans.</div>
+            <div class="coach-sub-clean">Free basic coaching for meals, workouts, water and motivation. Meal guidance now lives here, so the app feels cleaner and smarter.</div>
           </div>
         </div>
       </div>
 
       <div class="coach-panel">
-        <div class="sec-label" style="margin-bottom:0;">Quick help</div>
+        <div class="sec-label" style="margin-bottom:0;">Coach Nova Nutrition + Fitness</div>
         <div class="coach-prompts">
-          <button class="coach-prompt" onclick="coachAsk('what should i eat today')"><b>🍲 Meal idea</b><span>Simple plate for today</span></button>
+          <button class="coach-prompt" onclick="coachAsk('give me a Nigerian weight loss meal for today')"><b>🍲 Nigerian meal idea</b><span>Simple healthy plate</span></button>
+          <button class="coach-prompt" onclick="coachAsk('give me a quick breakfast for a busy woman')"><b>⏱️ Busy breakfast</b><span>Fast and realistic</span></button>
+          <button class="coach-prompt" onclick="coachAsk('what should i eat after workout')"><b>💪 After workout</b><span>Recovery food idea</span></button>
           <button class="coach-prompt" onclick="coachAsk('give me belly workout')"><b>🔥 Belly workout</b><span>Quick routine to start</span></button>
           <button class="coach-prompt" onclick="coachAsk('motivate me')"><b>💖 Motivation</b><span>Soft push for consistency</span></button>
           <button class="coach-prompt" onclick="coachAsk('water reminder')"><b>💧 Water plan</b><span>Hydration goal check</span></button>
@@ -1125,11 +1118,6 @@ select option{background:var(--black3);}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.7 1.1 6.6L12 17l-5.8 3.2 1.1-6.6L2.5 8.9 9.1 8 12 2z"/></svg>
       <span class="nav-label">Challenge</span>
     </button>
-    <button class="nav-item" onclick="goTo('mealplan')" id="nav-mealplan">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3h16v18H4z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
-      <span class="nav-label">Meals</span>
-    </button>
-
     <button class="nav-item" onclick="goTo('coach')" id="nav-coach">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a7 7 0 0 0-7 7v3a7 7 0 0 0 14 0V9a7 7 0 0 0-7-7z"/><path d="M9 10h.01M15 10h.01M9 15c1.6 1 4.4 1 6 0"/><path d="M4 20c2-2 14-2 16 0"/></svg>
       <span class="nav-label">Coach</span>
@@ -1374,7 +1362,7 @@ function applyState(data){
 
 function renderAll(){
   renderWorkoutList();renderWorkoutPicker();renderTrackList();renderFoodLog();renderWorkoutHistory();
-  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();renderMealPlan();populateProfileForm();renderCoachGoal();
+  renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();populateProfileForm();renderCoachGoal();
   if(profileSettings.avatarUrl) showProfilePhoto(profileSettings.avatarUrl);
 }
 function saveLocalOnly(){
@@ -1459,7 +1447,6 @@ function goTo(page){
   if(page==='home') updateHome();
   if(page==='progress') renderProgress();
   if(page==='challenge') renderChallenge();
-  if(page==='mealplan') renderMealPlan();
   if(page==='coach') renderCoachGoal();
   if(page==='profile') {populateProfileForm(); renderProfileSummary();}
   if(page==='pro') updateProUI();
@@ -2041,160 +2028,8 @@ async function toggleChallengeDay(day){
     }catch(e){console.warn('Challenge save failed', e.message||e);}
   }
 }
-const mealPlans=[
-  {icon:'🥣',title:'Belly-friendly Nigerian day',chips:['Breakfast: oats + boiled egg','Lunch: grilled fish + small rice','Dinner: vegetable soup + lean protein'],note:'Keep portions controlled. Choose grilled/boiled more often than fried.'},
-  {icon:'⏱️',title:'Busy woman quick plan',chips:['Greek yogurt or light pap','Moi moi + salad','Chicken pepper soup'],note:'Easy meals for workdays when you do not have time.'},
-  {icon:'💚',title:'Gentle restore plan',chips:['Protein with every meal','Hydration first','Light soups + vegetables'],note:'Gentle guidance. Users should follow medical advice after delivery.'},
-  {icon:'👯',title:'Group challenge meals',chips:['No sugary drinks','Fruit instead of sweets','Walk 10 minutes after meals'],note:'Simple group rules that make the challenge easy to follow.'}
-];
-function renderMealPlan(){
-  const el=document.getElementById('meal-plan-list'); if(!el)return;
-  el.innerHTML=mealPlans.map(p=>`<div class="meal-card-clean"><div class="meal-card-top"><div class="meal-icon-clean">${p.icon}</div><div class="meal-name-clean">${p.title}</div></div><div>${p.chips.map(c=>`<span class="meal-chip-clean">${c}</span>`).join('')}</div><div class="meal-note-clean">${p.note}</div></div>`).join('');
-}
-function populateProfileForm(){
-  const name=document.getElementById('profile-name'); if(!name)return;
-  name.value=profileSettings.fullName || document.getElementById('user-name')?.textContent || '';
-  document.getElementById('profile-goal').value=userGoal||1800;
-  document.getElementById('profile-target').value=profileSettings.targetWeight||'';
-  document.getElementById('profile-height').value=profileSettings.heightCm||'';
-  renderProfileSummary();
-}
-function renderProfileSummary(){
-  const cur=weights.length?Number(weights[weights.length-1]):null;
-  const height=Number(profileSettings.heightCm);
-  const target=Number(profileSettings.targetWeight)||70;
-  const bmiEl=document.getElementById('profile-bmi');
-  if(bmiEl) bmiEl.textContent=(cur&&height)?(cur/((height/100)**2)).toFixed(1):'--';
-  const leftEl=document.getElementById('profile-goal-left');
-  if(leftEl) leftEl.textContent=cur?Math.max(0,(cur-target)).toFixed(1):'--';
-  const acct=document.getElementById('profile-account-text');
-  if(acct) acct.textContent=currentUser?('Logged in as '+currentUser.email+(isProUser?' · PRO':' · Free plan')):'Please login to save and upgrade.';
-  updateProUI();
-}
-async function saveProfileSettings(){
-  const msg=document.getElementById('profile-message');
-  profileSettings.fullName=document.getElementById('profile-name').value.trim()||'Queen';
-  userGoal=Number(document.getElementById('profile-goal').value)||1800;
-  profileSettings.targetWeight=Number(document.getElementById('profile-target').value)||profileSettings.targetWeight||70;
-  profileSettings.heightCm=Number(document.getElementById('profile-height').value)||null;
-  document.getElementById('user-name').textContent=(profileSettings.fullName.split(' ')[0]||'Queen');
-  if(currentUser && supabaseClient){
-    try{
-      const {error}=await supabaseClient.from('profiles').upsert({id:currentUser.id,email:currentUser.email,full_name:profileSettings.fullName,calorie_goal:userGoal,target_weight:profileSettings.targetWeight,height_cm:profileSettings.heightCm,workout_level:profileSettings.workoutLevel,avatar_url:profileSettings.avatarUrl||null},{onConflict:'id'});
-      if(error)throw error;
-      if(msg)msg.textContent='Profile saved to cloud.';
-    }catch(e){if(msg)msg.textContent=e.message||'Cloud save failed.';}
-  }else if(msg) msg.textContent='Profile saved on this device.';
-  renderProfileSummary(); updateHome(); saveData();
-}
-function showProfilePhoto(url){
-  if(!url) return;
-  profileSettings.avatarUrl=url;
-  const img=document.getElementById('profile-avatar-preview');
-  const ph=document.getElementById('profile-avatar-placeholder');
-  if(img){img.src=url;img.style.display='block';}
-  if(ph) ph.style.display='none';
-  const header=document.getElementById('header-avatar');
-  if(header){header.src=url;header.style.display='block';}
-}
-async function uploadProfilePhoto(event){
-  const file = event.target.files && event.target.files[0];
-  if(!file) return;
-  const status = document.getElementById('photo-upload-status');
+// Static meal guide removed — Coach Nova now handles meal guidance.
 
-  if(!currentUser){
-    if(status) status.textContent = 'Please login first, then upload your photo.';
-    return;
-  }
-  if(!file.type || !file.type.startsWith('image/')){
-    if(status) status.textContent = 'Please choose a JPG, PNG, or WebP image.';
-    return;
-  }
-  if(file.size > 4 * 1024 * 1024){
-    if(status) status.textContent = 'Photo is too large. Please use an image under 4MB.';
-    return;
-  }
-
-  const readAsDataUrl = (f) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error || new Error('Could not read image'));
-    reader.readAsDataURL(f);
-  });
-
-  try{
-    if(status) status.textContent = 'Preparing photo...';
-
-    // Show the photo immediately so the app never hangs on “Uploading photo...”
-    const localPreviewUrl = await readAsDataUrl(file);
-    showProfilePhoto(localPreviewUrl);
-    profileSettings.avatarUrl = localPreviewUrl;
-    saveLocalOnly();
-    if(status) status.textContent = 'Photo added on this device. Saving to cloud...';
-
-    if(!supabaseClient){
-      if(status) status.textContent = 'Photo saved on this device.';
-      return;
-    }
-
-    const safeExt = ((file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg');
-    const filePath = `${currentUser.id}/avatar.${safeExt}`;
-
-    const uploadPromise = supabaseClient.storage
-      .from('profile-photos')
-      .upload(filePath, file, { cacheControl:'3600', upsert:true, contentType:file.type });
-
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Cloud upload is taking too long. Photo is saved on this device for now.')), 12000);
-    });
-
-    const { error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
-    if(uploadError) throw uploadError;
-
-    const { data } = supabaseClient.storage.from('profile-photos').getPublicUrl(filePath);
-    const cloudUrl = data && data.publicUrl ? `${data.publicUrl}?v=${Date.now()}` : localPreviewUrl;
-
-    const { error: profileError } = await supabaseClient.from('profiles')
-      .upsert({ id: currentUser.id, email: currentUser.email, avatar_url: cloudUrl }, { onConflict:'id' });
-    if(profileError) throw profileError;
-
-    profileSettings.avatarUrl = cloudUrl;
-    showProfilePhoto(cloudUrl);
-    saveData();
-    if(status) status.textContent = 'Photo saved successfully.';
-  }catch(e){
-    console.error('Profile photo cloud save failed', e);
-    saveLocalOnly();
-    if(status) status.textContent = 'Photo is showing on this device. Cloud save needs Supabase storage policy check.';
-  }finally{
-    if(event.target) event.target.value = '';
-  }
-}
-
-async function sendPasswordReset(){
-  const msg=document.getElementById('profile-message');
-  const email=currentUser?.email || prompt('Enter your email for password reset');
-  if(!email || !supabaseClient)return;
-  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
-  if(msg) msg.textContent=error?error.message:'Password reset email sent.';
-}
-
-
-// ===================== AI COACH =====================
-function setMainGoal(goal){
-  profileSettings.mainGoal=goal;
-  renderCoachGoal();
-  saveData();
-  const ans=document.getElementById('coach-answer');
-  if(ans) ans.textContent=`Goal saved: ${goal}.\n\nCoach Nova will guide your meals, workouts and motivation around this goal.`;
-}
-function renderCoachGoal(){
-  const cards=document.querySelectorAll('#goal-grid .goal-card');
-  cards.forEach(c=>{
-    const title=c.querySelector('.gtitle')?.textContent||'';
-    c.classList.toggle('active', title.toLowerCase().includes((profileSettings.mainGoal||'').toLowerCase().split(' ')[0]));
-  });
-}
 function coachAsk(q){
   const input=document.getElementById('coach-question');
   const raw=(q || input?.value || '').trim();
