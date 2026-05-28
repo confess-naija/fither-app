@@ -1189,6 +1189,9 @@ async function submitAuth(){
 async function logoutUser(){
   // Instant UI response first — no waiting/hanging on slow network
   currentUser=null;
+  resetStateForAccount();
+  loadData();
+  renderAll();
   const pill=document.getElementById('user-pill');
   if(pill) pill.innerHTML='Login required';
   const auth=document.getElementById('auth-screen');
@@ -1228,6 +1231,13 @@ async function loadUserProfile(){
 }
 async function afterAuthReady(){
   updateAuthUI();
+
+  // CRITICAL: reset and reload data for the CURRENT logged-in user only.
+  // This prevents User A profile/data from showing inside User B account.
+  resetStateForAccount();
+  loadData();
+  renderAll();
+
   await loadUserProfile();
   await loadProStatus();
   await loadRemoteData();
@@ -1257,7 +1267,7 @@ async function initAuth(){
 }
 
 // ===================== LOCAL + SUPABASE STORAGE =====================
-const STORAGE_KEY = 'fither_app_data_v1';
+const STORAGE_BASE_KEY = 'fither_app_data_v1';
 const DEVICE_KEY = 'fither_device_id_v1';
 let remoteStateRowId = null;
 let syncTimer = null;
@@ -1271,6 +1281,43 @@ function getDeviceId(){
   return id;
 }
 const deviceId = getDeviceId();
+
+function getStorageKey(){
+  // Each account gets its own local storage key.
+  // Guest/device storage is separate and will not leak into logged-in accounts.
+  return currentUser?.id ? `${STORAGE_BASE_KEY}_${currentUser.id}` : `${STORAGE_BASE_KEY}_guest_${deviceId}`;
+}
+
+function resetStateForAccount(){
+  logged=[];
+  weights=[];
+  waterCups=0;
+  workoutHistory=[];
+  reminders=[];
+  totalBurned=0;
+  streak=1;
+  workoutsDone=0;
+  userGoal=1800;
+  profileSettings={
+    fullName:'',
+    targetWeight:70,
+    heightCm:null,
+    workoutLevel:'beginner',
+    mainGoal:'Build consistency',
+    avatarUrl:''
+  };
+  challengeProgress={};
+  remoteStateRowId=null;
+  isProUser=false;
+  proPlan='free';
+
+  const avatar=document.getElementById('profile-avatar-preview');
+  const placeholder=document.getElementById('profile-avatar-placeholder');
+  const headerAvatar=document.getElementById('header-avatar');
+  if(avatar){avatar.removeAttribute('src');avatar.style.display='none';}
+  if(placeholder) placeholder.style.display='block';
+  if(headerAvatar){headerAvatar.removeAttribute('src');headerAvatar.style.display='none';}
+}
 
 function currentState(){
   return {logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,profileSettings,challengeProgress,updatedAt:new Date().toISOString()};
@@ -1295,7 +1342,7 @@ function renderAll(){
   renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();populateProfileForm();renderCoachGoal();
 }
 function saveLocalOnly(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState())); }
+  try{ localStorage.setItem(getStorageKey(), JSON.stringify(currentState())); }
   catch(e){console.warn('FitHerNova local save failed', e);}
 }
 function saveData(){
@@ -1304,7 +1351,7 @@ function saveData(){
 }
 function loadData(){
   try{
-    const raw=localStorage.getItem(STORAGE_KEY);
+    const raw=localStorage.getItem(getStorageKey());
     if(raw) applyState(JSON.parse(raw));
   }catch(e){console.warn('FitHerNova local load failed', e);}
 }
@@ -1411,8 +1458,8 @@ async function loadSupabaseTracks(){
 }
 
 function resetFitHerData(){
-  if(!confirm('Clear all FitHerNova saved data on this device?'))return;
-  localStorage.removeItem(STORAGE_KEY);
+  if(!confirm('Clear saved FitHerNova data for this account on this device?'))return;
+  localStorage.removeItem(getStorageKey());
   location.reload();
 }
 
@@ -1453,8 +1500,10 @@ function updateHome(){
   document.getElementById('st-streak').textContent=streak+'🔥';
   document.getElementById('header-streak').textContent=streak;
   const ml=document.getElementById('home-meal-log');
-  if(!logged.length){ml.innerHTML='<div class="text-grey">No meals logged yet — go to Food tab</div>';}
-  else{ml.innerHTML=logged.map(l=>`<div class="meal-log-item"><div class="mli-left"><span>${l.icon}</span><span>${l.name}</span></div><span class="mli-cal">${l.cal} kcal</span></div>`).join('');}
+  if(ml){
+    if(!logged.length){ml.innerHTML='<div class="text-grey">No meals logged yet — ask Coach Nova for meal guidance</div>';}
+    else{ml.innerHTML=logged.map(l=>`<div class="meal-log-item"><div class="mli-left"><span>${l.icon}</span><span>${l.name}</span></div><span class="mli-cal">${l.cal} kcal</span></div>`).join('');}
+  }
   // date
   const d=new Date();
   document.getElementById('home-date').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
@@ -2508,6 +2557,7 @@ function updateTimeGreeting(){
 }
 
 // ===================== INIT =====================
+resetStateForAccount();
 loadData();
 renderAll();
 initAuth();
