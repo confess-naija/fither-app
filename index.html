@@ -1070,10 +1070,10 @@ select option{background:var(--black3);}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-console.log('FitHerNova privacy hard reset build loaded: no cross-user dashboard restore.');
+console.log('FitHerNova privacy build v4 loaded: old contaminated data ignored; user-scoped localStorage + Supabase app_state_v4 only.');
 </script>
 <script src="https://js.paystack.co/v2/inline.js">
-console.log('FitHerNova privacy hard reset build loaded: no cross-user dashboard restore.');
+console.log('FitHerNova privacy build v4 loaded: old contaminated data ignored; user-scoped localStorage + Supabase app_state_v4 only.');
 </script>
 <script>
 // ===================== SUPABASE =====================
@@ -1226,7 +1226,7 @@ async function loadUserProfile(){
     const {data,error}=await supabaseClient.from('profiles').select('full_name,calorie_goal,target_weight,height_cm,workout_level,avatar_url,email').eq('id',currentUser.id).maybeSingle();
     if(error) throw error;
     if(data){
-      if(data.full_name) document.getElementById('user-name').textContent=data.full_name.split(' ')[0] || 'Queen';
+      if(data.full_name) document.getElementById('user-name').textContent=data.full_name.split(' ')[0] || 'User';
       if(data.calorie_goal) userGoal=Number(data.calorie_goal)||userGoal;
       profileSettings.fullName=data.full_name||profileSettings.fullName;
       profileSettings.targetWeight=Number(data.target_weight)||profileSettings.targetWeight;
@@ -1243,31 +1243,26 @@ async function loadUserProfile(){
 async function afterAuthReady(){
   if(!currentUser) return;
   const incomingUserId=currentUser.id;
-
-  // HARD PRIVACY RESET:
-  // Every login starts from a totally blank dashboard. We do NOT restore meals,
-  // workouts, water, streaks, progress, reminders, or challenge state from the
-  // old shared browser/cache records. This prevents User A data flashing or
-  // appearing inside User B's account.
   currentUserIdForData=incomingUserId;
   remoteStateRowId=null;
   clearTimeout(syncTimer);
+
+  // Critical privacy fix: start each login from a blank state, then load ONLY that user's scoped data.
   resetAppState();
   resetProfilePhotoUI();
-  clearDashboardUI();
+  renderAll();
   updateAuthUI();
 
-  // Load only identity-level profile/pro info for the logged-in Supabase user.
+  // Load private app state first, then profile/pro/challenge. Old shared storage is ignored.
+  await loadUserScopedLocalData();
+  await loadRemoteData();
   await loadUserProfile();
   await loadProStatus();
+  await loadChallengeData();
 
-  // If auth changed while the async calls were running, do not render stale data.
+  // If user changed while async work was running, do not render stale data.
   if(!currentUser || currentUser.id!==incomingUserId) return;
-
-  // Render a clean, user-specific empty dashboard.
   renderAll();
-
-  // Save this user's blank/private state under ONLY this user id.
   saveData();
 }
 async function initAuth(){
@@ -1309,10 +1304,10 @@ async function initAuth(){
 }
 
 // ===================== LOCAL + SUPABASE STORAGE =====================
-const STORAGE_KEY_PREFIX = 'fither_app_data_v3_user_';
+const STORAGE_KEY_PREFIX = 'fither_app_data_v4_user_';
 const OLD_SHARED_STORAGE_KEY = 'fither_app_data_v1';
 const DEVICE_KEY = 'fither_device_id_v1';
-const APP_STATE_SCHEMA_VERSION = 3;
+const APP_STATE_SCHEMA_VERSION = 4;
 let remoteStateRowId = null;
 let syncTimer = null;
 let currentUserIdForData = null;
@@ -1327,6 +1322,21 @@ function getDeviceId(){
   return id;
 }
 const deviceId = getDeviceId();
+
+
+function purgeOldFitHerNovaCaches(){
+  // One-time browser cleanup: remove legacy/shared cached app states that were contaminated during earlier builds.
+  try{
+    const prefixes=['fither_app_data_v1','fither_app_data_v2_user_','fither_app_data_v3_user_','fithernova_pro_access'];
+    const keys=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k && prefixes.some(p=>k===p || k.startsWith(p))) keys.push(k);
+    }
+    keys.forEach(k=>localStorage.removeItem(k));
+  }catch(e){console.warn('Old cache cleanup skipped', e);}
+}
+purgeOldFitHerNovaCaches();
 
 function blankProfileSettings(){
   return {fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency',avatarUrl:''};
@@ -1363,33 +1373,7 @@ function resetProfilePhotoUI(){
   const status=document.getElementById('photo-upload-status');
   if(status) status.textContent='Choose a photo from your device.';
   const uname=document.getElementById('user-name');
-  if(uname) uname.textContent='Queen';
-}
-function clearDashboardUI(){
-  // Immediate visual cleanup so no previous user's dashboard remains on screen.
-  const safeText = (id, value) => { const el=document.getElementById(id); if(el) el.textContent=value; };
-  const safeHtml = (id, value) => { const el=document.getElementById(id); if(el) el.innerHTML=value; };
-  safeText('ring-cal','0');
-  safeText('ri-goal','1800 kcal');
-  safeText('ri-rem','1800');
-  safeText('ri-prot','0g');
-  safeText('ri-burn','0 kcal');
-  safeText('st-meals','0');
-  safeText('st-water','0/8');
-  safeText('st-workouts','0');
-  safeText('st-streak','1🔥');
-  safeText('header-streak','1');
-  safeText('water-count','0');
-  safeText('p-current','--');
-  safeText('p-lost','--');
-  safeText('p-left','--');
-  safeHtml('home-meal-log','<div class="text-grey">No meals logged yet</div>');
-  safeHtml('workout-history','<div class="text-grey">No workouts logged yet</div>');
-  safeHtml('weight-chart','<div class="text-grey" style="margin:auto;font-size:12px;">Log at least 2 weights to see chart</div>');
-  safeHtml('chart-labels','');
-  const calRing=document.getElementById('cal-ring'); if(calRing) calRing.style.strokeDashoffset='289';
-  const riProg=document.getElementById('ri-prog'); if(riProg) riProg.style.width='0%';
-  const progProt=document.getElementById('prog-prot'); if(progProt) progProt.style.width='0%';
+  if(uname) uname.textContent='User';
 }
 function getDataUserId(){
   return currentUser?.id || currentUserIdForData || null;
@@ -1445,9 +1429,15 @@ function saveData(){
   scheduleRemoteSave();
 }
 async function loadUserScopedLocalData(){
-  // Disabled for privacy hardening. The previous builds had cached/shared state.
-  // We do not auto-restore dashboard activity until a clean database structure
-  // with strict user_id isolation is confirmed.
+  const key=userStorageKey();
+  if(!key) return false;
+  try{
+    const raw=localStorage.getItem(key);
+    if(raw){
+      const ok=applyState(JSON.parse(raw));
+      if(ok){renderAll();return true;}
+    }
+  }catch(e){console.warn('FitHerNova user local load failed', e);}
   return false;
 }
 function loadData(){
@@ -1462,7 +1452,7 @@ function scheduleRemoteSave(){
 async function saveRemoteData(){
   if(!supabaseClient || !currentUser)return;
   const uid=currentUser.id;
-  const payload={device_id:'user_'+uid,log_type:'app_state_v3',data:currentState(),user_id:uid};
+  const payload={device_id:'user_'+uid,log_type:'app_state_v4',data:currentState(),user_id:uid};
   if(!isStateForCurrentUser(payload.data)) return;
   try{
     if(remoteStateRowId){
@@ -1484,7 +1474,7 @@ async function loadRemoteData(){
       .select('id,data,created_at,user_id')
       .eq('user_id', uid)
       .eq('device_id', 'user_'+uid)
-      .eq('log_type','app_state_v3')
+      .eq('log_type','app_state_v4')
       .order('created_at',{ascending:false})
       .limit(1)
       .maybeSingle();
@@ -2138,12 +2128,6 @@ function renderProgress(){
     document.getElementById('p-current').textContent=cur;
     document.getElementById('p-lost').textContent=lost>0?'-'+lost:lost===0?'0':'+'+Math.abs(lost);
     document.getElementById('p-left').textContent=toGoal>0?toGoal:0;
-  }else{
-    document.getElementById('p-current').textContent='--';
-    document.getElementById('p-lost').textContent='--';
-    document.getElementById('p-left').textContent='--';
-    document.getElementById('weight-chart').innerHTML='<div class="text-grey" style="margin:auto;font-size:12px;">Log at least 2 weights to see chart</div>';
-    document.getElementById('chart-labels').innerHTML='';
   }
   if(weights.length>=2){
     const min=Math.min(...weights),max=Math.max(...weights),range=max-min||1;
@@ -2258,7 +2242,7 @@ function renderProfileSummary(){
 }
 async function saveProfileSettings(){
   const msg=document.getElementById('profile-message');
-  profileSettings.fullName=document.getElementById('profile-name').value.trim()||'Queen';
+  profileSettings.fullName=document.getElementById('profile-name').value.trim()||'User';
   userGoal=Number(document.getElementById('profile-goal').value)||1800;
   profileSettings.targetWeight=Number(document.getElementById('profile-target').value)||profileSettings.targetWeight||70;
   profileSettings.heightCm=Number(document.getElementById('profile-height').value)||null;
@@ -2698,7 +2682,7 @@ setTimeout(()=>{
 },1800);
 
 
-console.log('FitHerNova privacy hard reset build loaded: no cross-user dashboard restore.');
+console.log('FitHerNova privacy build v4 loaded: old contaminated data ignored; user-scoped localStorage + Supabase app_state_v4 only.');
 </script>
 </body>
 </html>
