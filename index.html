@@ -1069,8 +1069,12 @@ select option{background:var(--black3);}
   </nav>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://js.paystack.co/v2/inline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+console.log('FitHerNova privacy build v3 loaded: user-scoped localStorage + Supabase app_state_v3 only.');
+</script>
+<script src="https://js.paystack.co/v2/inline.js">
+console.log('FitHerNova privacy build v3 loaded: user-scoped localStorage + Supabase app_state_v3 only.');
+</script>
 <script>
 // ===================== SUPABASE =====================
 const SUPABASE_URL = "https://norgzcztduoxkshtthkm.supabase.co";
@@ -1187,11 +1191,18 @@ async function submitAuth(){
   finally{btn.textContent=old; btn.disabled=false;}
 }
 async function logoutUser(){
-  // Instant UI response first — no waiting/hanging on slow network
+  // Save current user's data, then fully clear in-memory dashboard so the next user never sees it.
+  try{ await saveRemoteData(); }catch(e){}
   currentUser=null;
+  currentUserIdForData=null;
   remoteStateRowId=null;
+  clearTimeout(syncTimer);
   resetAppState();
+  isProUser=false;
+  proPlan='free';
+  resetProfilePhotoUI();
   renderAll();
+  updateProUI();
   const pill=document.getElementById('user-pill');
   if(pill) pill.innerHTML='Login required';
   const auth=document.getElementById('auth-screen');
@@ -1230,16 +1241,27 @@ async function loadUserProfile(){
   }catch(e){console.warn('Profile load failed', e.message||e);}
 }
 async function afterAuthReady(){
-  // CRITICAL: reset first, then load ONLY this logged-in user's data.
-  // This prevents User A's meals/workouts/profile from showing for User B on the same phone/browser.
-  resetAppState();
+  if(!currentUser) return;
+  const incomingUserId=currentUser.id;
+  currentUserIdForData=incomingUserId;
   remoteStateRowId=null;
-  loadData();
+  clearTimeout(syncTimer);
+
+  // Critical privacy fix: start each login from a blank state, then load ONLY that user's scoped data.
+  resetAppState();
+  resetProfilePhotoUI();
+  renderAll();
   updateAuthUI();
+
+  // Load private app state first, then profile/pro/challenge. Old shared storage is ignored.
+  await loadUserScopedLocalData();
+  await loadRemoteData();
   await loadUserProfile();
   await loadProStatus();
-  await loadRemoteData();
   await loadChallengeData();
+
+  // If user changed while async work was running, do not render stale data.
+  if(!currentUser || currentUser.id!==incomingUserId) return;
   renderAll();
   saveData();
 }
@@ -1252,16 +1274,29 @@ async function initAuth(){
   if(currentUser){
     document.getElementById('auth-screen').style.display='none';
     await afterAuthReady();
-  }else showAuthIfNeeded();
+  }else{
+    resetAppState();
+    renderAll();
+    showAuthIfNeeded();
+  }
   supabaseClient.auth.onAuthStateChange(async(_event,session)=>{
-    currentUser=session?.user || null;
+    const nextUser=session?.user || null;
+    const switched=(currentUser?.id || null)!==(nextUser?.id || null);
+    currentUser=nextUser;
     updateAuthUI();
     if(currentUser){
       document.getElementById('auth-screen').style.display='none';
+      if(switched){
+        resetAppState();
+        resetProfilePhotoUI();
+        renderAll();
+      }
       await afterAuthReady();
     }else{
+      currentUserIdForData=null;
       remoteStateRowId=null;
       resetAppState();
+      resetProfilePhotoUI();
       renderAll();
       showAuthIfNeeded();
     }
@@ -1269,11 +1304,14 @@ async function initAuth(){
 }
 
 // ===================== LOCAL + SUPABASE STORAGE =====================
-const STORAGE_KEY = 'fither_app_data_v1';
-const DATA_SCHEMA_VERSION = 2;
+const STORAGE_KEY_PREFIX = 'fither_app_data_v3_user_';
+const OLD_SHARED_STORAGE_KEY = 'fither_app_data_v1';
 const DEVICE_KEY = 'fither_device_id_v1';
+const APP_STATE_SCHEMA_VERSION = 3;
 let remoteStateRowId = null;
 let syncTimer = null;
+let currentUserIdForData = null;
+let miniPlayerActivated=false, miniPlayerDismissed=false, miniPlayerMinimized=false;
 
 function getDeviceId(){
   let id = localStorage.getItem(DEVICE_KEY);
@@ -1285,42 +1323,63 @@ function getDeviceId(){
 }
 const deviceId = getDeviceId();
 
-function defaultProfileSettings(){
+function blankProfileSettings(){
   return {fullName:'',targetWeight:70,heightCm:null,workoutLevel:'beginner',mainGoal:'Build consistency',avatarUrl:''};
 }
 function resetAppState(){
-  logged=[]; weights=[]; waterCups=0; workoutHistory=[]; reminders=[]; totalBurned=0;
-  streak=1; workoutsDone=0; userGoal=1800; challengeProgress={};
-  profileSettings=defaultProfileSettings();
-  remoteStateRowId=null;
-  selFood=null; portion=1; activeFilter='all'; selFreq=null; selWorkout=null;
-  const avatar=document.getElementById('profile-avatar-preview');
-  const avatarPh=document.getElementById('profile-avatar-placeholder');
-  const header=document.getElementById('header-avatar');
-  if(avatar){avatar.removeAttribute('src'); avatar.style.display='none';}
-  if(avatarPh) avatarPh.style.display='block';
-  if(header){header.removeAttribute('src'); header.style.display='none';}
+  logged=[];
+  weights=[];
+  waterCups=0;
+  workoutHistory=[];
+  reminders=[];
+  totalBurned=0;
+  streak=1;
+  workoutsDone=0;
+  userGoal=1800;
+  profileSettings=blankProfileSettings();
+  challengeProgress={};
+  activeChallengeId=null;
+  isProUser=false;
+  proPlan='free';
+  currentTrack=0;
+  isPlaying=false;
+  miniPlayerActivated=false;
+  miniPlayerDismissed=false;
+  miniPlayerMinimized=false;
+  try{audioEl.pause();audioEl.removeAttribute('src');audioEl.load();}catch(e){}
 }
-function getUserStorageKey(){
-  if(currentUser && currentUser.id) return `${STORAGE_KEY}_user_${currentUser.id}`;
-  return `${STORAGE_KEY}_guest_${deviceId}`;
+function resetProfilePhotoUI(){
+  const img=document.getElementById('profile-avatar-preview');
+  const ph=document.getElementById('profile-avatar-placeholder');
+  const header=document.getElementById('header-avatar');
+  if(img){img.removeAttribute('src');img.style.display='none';}
+  if(ph) ph.style.display='block';
+  if(header){header.removeAttribute('src');header.style.display='none';}
+  const status=document.getElementById('photo-upload-status');
+  if(status) status.textContent='Choose a photo from your device.';
+  const uname=document.getElementById('user-name');
+  if(uname) uname.textContent='Queen';
+}
+function getDataUserId(){
+  return currentUser?.id || currentUserIdForData || null;
+}
+function userStorageKey(){
+  const uid=getDataUserId();
+  return uid ? STORAGE_KEY_PREFIX + uid : null;
 }
 function isStateForCurrentUser(data){
-  if(!data || typeof data !== 'object') return false;
-  if(currentUser && currentUser.id) return data.ownerUserId === currentUser.id && data.schemaVersion === DATA_SCHEMA_VERSION;
-  return data.ownerUserId === `guest_${deviceId}` && data.schemaVersion === DATA_SCHEMA_VERSION;
+  const uid=getDataUserId();
+  return !!(uid && data && data.schemaVersion===APP_STATE_SCHEMA_VERSION && data.userId===uid);
 }
-
 function currentState(){
-  return {
-    schemaVersion: DATA_SCHEMA_VERSION,
-    ownerUserId: currentUser && currentUser.id ? currentUser.id : `guest_${deviceId}`,
-    ownerEmail: currentUser && currentUser.email ? currentUser.email : '',
-    logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,profileSettings,challengeProgress,updatedAt:new Date().toISOString()
-  };
+  const uid=getDataUserId();
+  return {schemaVersion:APP_STATE_SCHEMA_VERSION,userId:uid,logged,weights,waterCups,workoutHistory,reminders,totalBurned,streak,workoutsDone,userGoal,profileSettings,challengeProgress,updatedAt:new Date().toISOString()};
 }
 function applyState(data){
-  if(!data || typeof data !== 'object')return;
+  if(!isStateForCurrentUser(data)){
+    console.warn('Ignored stale/shared FitHerNova state. It did not belong to the current user.');
+    return false;
+  }
   logged=Array.isArray(data.logged)?data.logged:[];
   weights=Array.isArray(data.weights)?data.weights:[];
   waterCups=Number.isFinite(Number(data.waterCups))?Number(data.waterCups):0;
@@ -1330,8 +1389,9 @@ function applyState(data){
   streak=Number.isFinite(Number(data.streak))?Number(data.streak):1;
   workoutsDone=Number.isFinite(Number(data.workoutsDone))?Number(data.workoutsDone):0;
   userGoal=Number.isFinite(Number(data.userGoal))?Number(data.userGoal):1800;
-  profileSettings=(data.profileSettings && typeof data.profileSettings==='object')?{...profileSettings,...data.profileSettings}:profileSettings;
+  profileSettings=(data.profileSettings && typeof data.profileSettings==='object')?{...blankProfileSettings(),...data.profileSettings}:blankProfileSettings();
   challengeProgress=(data.challengeProgress && typeof data.challengeProgress==='object')?data.challengeProgress:{};
+  return true;
 }
 
 function renderAll(){
@@ -1339,34 +1399,49 @@ function renderAll(){
   renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();populateProfileForm();renderCoachGoal();
 }
 function saveLocalOnly(){
-  try{ localStorage.setItem(getUserStorageKey(), JSON.stringify(currentState())); }
+  const key=userStorageKey();
+  if(!key) return;
+  try{
+    localStorage.setItem(key, JSON.stringify(currentState()));
+    // Remove old shared key so old cross-user data can no longer leak back in.
+    localStorage.removeItem(OLD_SHARED_STORAGE_KEY);
+  }
   catch(e){console.warn('FitHerNova local save failed', e);}
 }
 function saveData(){
+  if(!getDataUserId()) return;
   saveLocalOnly();
   scheduleRemoteSave();
 }
-function loadData(){
+async function loadUserScopedLocalData(){
+  const key=userStorageKey();
+  if(!key) return false;
   try{
-    const raw=localStorage.getItem(getUserStorageKey());
-    if(!raw) return;
-    const parsed=JSON.parse(raw);
-    if(isStateForCurrentUser(parsed)) applyState(parsed);
-  }catch(e){console.warn('FitHerNova local load failed', e);}
+    const raw=localStorage.getItem(key);
+    if(raw){
+      const ok=applyState(JSON.parse(raw));
+      if(ok){renderAll();return true;}
+    }
+  }catch(e){console.warn('FitHerNova user local load failed', e);}
+  return false;
+}
+function loadData(){
+  // Disabled intentionally. Loading before auth caused cross-user privacy leakage.
+  return false;
 }
 function scheduleRemoteSave(){
-  if(!supabaseClient)return;
+  if(!supabaseClient || !currentUser)return;
   clearTimeout(syncTimer);
   syncTimer=setTimeout(saveRemoteData,800);
 }
 async function saveRemoteData(){
-  if(!supabaseClient)return;
-  const ownerId = currentUser ? 'user_'+currentUser.id : deviceId;
-  const payload={device_id:ownerId,log_type:'app_state',data:currentState()};
-  if(currentUser) payload.user_id=currentUser.id;
+  if(!supabaseClient || !currentUser)return;
+  const uid=currentUser.id;
+  const payload={device_id:'user_'+uid,log_type:'app_state_v3',data:currentState(),user_id:uid};
+  if(!isStateForCurrentUser(payload.data)) return;
   try{
     if(remoteStateRowId){
-      const {error}=await supabaseClient.from('fitness_logs').update({data:payload.data}).eq('id',remoteStateRowId);
+      const {error}=await supabaseClient.from('fitness_logs').update({data:payload.data}).eq('id',remoteStateRowId).eq('user_id',uid);
       if(error) throw error;
     }else{
       const {data,error}=await supabaseClient.from('fitness_logs').insert(payload).select('id').single();
@@ -1376,30 +1451,31 @@ async function saveRemoteData(){
   }catch(e){console.warn('FitHerNova Supabase save failed', e.message || e);}
 }
 async function loadRemoteData(){
-  if(!supabaseClient)return;
+  if(!supabaseClient || !currentUser)return false;
+  const uid=currentUser.id;
   try{
     const {data,error}=await supabaseClient
       .from('fitness_logs')
-      .select('id,data,created_at')
-      .eq('device_id', currentUser ? 'user_'+currentUser.id : deviceId)
-      .eq('log_type','app_state')
+      .select('id,data,created_at,user_id')
+      .eq('user_id', uid)
+      .eq('device_id', 'user_'+uid)
+      .eq('log_type','app_state_v3')
       .order('created_at',{ascending:false})
       .limit(1)
       .maybeSingle();
     if(error) throw error;
-    if(data?.data){
-      // Ignore old/contaminated records from previous builds that did not have user ownership metadata.
-      if(!isStateForCurrentUser(data.data)){
-        remoteStateRowId=null;
-        console.warn('Ignored old shared app_state because it does not belong to this user.');
-        return;
-      }
+    if(data?.data && isStateForCurrentUser(data.data)){
       remoteStateRowId=data.id;
       applyState(data.data);
       saveLocalOnly();
       renderAll();
+      return true;
     }
-  }catch(e){console.warn('FitHerNova Supabase load failed', e.message || e);}
+    // No valid v3 private state found. Do not load any older shared rows. Start clean and save private state.
+    remoteStateRowId=null;
+    saveLocalOnly();
+    return false;
+  }catch(e){console.warn('FitHerNova Supabase load failed', e.message || e);return false;}
 }
 async function loadSupabaseTracks(){
   const list=document.getElementById('track-list');
@@ -1464,8 +1540,7 @@ async function loadSupabaseTracks(){
 
 function resetFitHerData(){
   if(!confirm('Clear all FitHerNova saved data on this device?'))return;
-  localStorage.removeItem(getUserStorageKey());
-  // keep old shared key ignored; this button clears only the current account's app data
+  const key=userStorageKey(); if(key) localStorage.removeItem(key); localStorage.removeItem(OLD_SHARED_STORAGE_KEY);
   location.reload();
 }
 
@@ -1506,8 +1581,10 @@ function updateHome(){
   document.getElementById('st-streak').textContent=streak+'🔥';
   document.getElementById('header-streak').textContent=streak;
   const ml=document.getElementById('home-meal-log');
-  if(!logged.length){ml.innerHTML='<div class="text-grey">No meals logged yet — go to Food tab</div>';}
-  else{ml.innerHTML=logged.map(l=>`<div class="meal-log-item"><div class="mli-left"><span>${l.icon}</span><span>${l.name}</span></div><span class="mli-cal">${l.cal} kcal</span></div>`).join('');}
+  if(ml){
+    if(!logged.length){ml.innerHTML='<div class="text-grey">No meals logged yet</div>';}
+    else{ml.innerHTML=logged.map(l=>`<div class="meal-log-item"><div class="mli-left"><span>${l.icon}</span><span>${l.name}</span></div><span class="mli-cal">${l.cal} kcal</span></div>`).join('');}
+  }
   // date
   const d=new Date();
   document.getElementById('home-date').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
@@ -2365,18 +2442,27 @@ window.addEventListener('beforeinstallprompt',(e)=>{
 
 
 // ===================== FITHERNOVA PRO / PAYSTACK =====================
+function proStorageKey(){
+  const uid=getDataUserId();
+  return uid ? 'fithernova_pro_access_'+uid : null;
+}
 function getLocalPro(){
   try{
-    const raw=localStorage.getItem('fithernova_pro_access');
+    const key=proStorageKey();
+    if(!key) return null;
+    const raw=localStorage.getItem(key);
     if(!raw) return null;
     const data=JSON.parse(raw);
-    if(data?.active){return data;}
+    if(data?.active && data?.userId===getDataUserId()){return data;}
   }catch(e){}
   return null;
 }
 function setLocalPro(plan, ref){
-  const data={active:true,plan,ref:ref||('local_'+Date.now()),email:currentUser?.email||'',activatedAt:new Date().toISOString()};
-  localStorage.setItem('fithernova_pro_access', JSON.stringify(data));
+  const key=proStorageKey();
+  if(!key) return;
+  const data={active:true,userId:getDataUserId(),plan,ref:ref||('local_'+Date.now()),email:currentUser?.email||'',activatedAt:new Date().toISOString()};
+  localStorage.setItem(key, JSON.stringify(data));
+  localStorage.removeItem('fithernova_pro_access');
   isProUser=true; proPlan=plan; updateProUI();
 }
 async function saveProToSupabase(plan, ref){
@@ -2561,9 +2647,9 @@ function updateTimeGreeting(){
 }
 
 // ===================== INIT =====================
-// Start clean until Supabase tells us which user is logged in.
-// Do NOT load the old shared localStorage here.
+// Start blank. Auth decides which private user state can be loaded. Never load shared data before auth.
 resetAppState();
+resetProfilePhotoUI();
 renderAll();
 initAuth();
 loadSupabaseTracks();
@@ -2572,14 +2658,16 @@ updateTimeGreeting();
 setInterval(updateTimeGreeting,60000);
 setTimeout(()=>{
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-  const seen = localStorage.getItem('fithernova_install_seen_date');
+  const seen = localStorage.getItem('fithernova_install_seen_date_'+(getDataUserId()||'guest'));
   const today = new Date().toISOString().slice(0,10);
   if(!isStandalone && seen !== today){
     showInstallGuide();
-    localStorage.setItem('fithernova_install_seen_date', today);
+    localStorage.setItem('fithernova_install_seen_date_'+(getDataUserId()||'guest'), today);
   }
 },1800);
 
+
+console.log('FitHerNova privacy build v3 loaded: user-scoped localStorage + Supabase app_state_v3 only.');
 </script>
 </body>
 </html>
