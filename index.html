@@ -950,8 +950,8 @@ select option{background:var(--black3);}
         <div class="coach-hero-row">
           <div class="coach-avatar">✨</div>
           <div>
-            <div class="coach-title-clean">Your calm fitness guide</div>
-            <div class="coach-sub-clean">Ask for a quick meal idea, belly workout, water plan, calorie guidance or motivation. Clean, simple, no pressure.</div>
+            <div class="coach-title-clean">Coach Nova Basic <span class="pro-badge free" style="vertical-align:middle;margin-left:6px;">FREE</span></div>
+            <div class="coach-sub-clean">Free basic coaching for meals, workouts, water and motivation. Coach Nova PRO can be unlocked later for personalized plans.</div>
           </div>
         </div>
       </div>
@@ -1375,6 +1375,7 @@ function applyState(data){
 function renderAll(){
   renderWorkoutList();renderWorkoutPicker();renderTrackList();renderFoodLog();renderWorkoutHistory();
   renderReminders();renderProgress();renderMilestones();renderCups();updateHome();doSearch();renderChallenge();renderMealPlan();populateProfileForm();renderCoachGoal();
+  if(profileSettings.avatarUrl) showProfilePhoto(profileSettings.avatarUrl);
 }
 function saveLocalOnly(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState())); }
@@ -2097,34 +2098,79 @@ function showProfilePhoto(url){
   if(header){header.src=url;header.style.display='block';}
 }
 async function uploadProfilePhoto(event){
-  const file=event.target.files && event.target.files[0];
+  const file = event.target.files && event.target.files[0];
   if(!file) return;
-  const status=document.getElementById('photo-upload-status');
-  if(!currentUser){ if(status) status.textContent='Please login before uploading a photo.'; return; }
-  if(!supabaseClient){ if(status) status.textContent='Please try again in a moment.'; return; }
-  if(!file.type.startsWith('image/')){ if(status) status.textContent='Please choose an image file.'; return; }
-  if(file.size > 5 * 1024 * 1024){ if(status) status.textContent='Image is too large. Please choose under 5MB.'; return; }
+  const status = document.getElementById('photo-upload-status');
+
+  if(!currentUser){
+    if(status) status.textContent = 'Please login first, then upload your photo.';
+    return;
+  }
+  if(!file.type || !file.type.startsWith('image/')){
+    if(status) status.textContent = 'Please choose a JPG, PNG, or WebP image.';
+    return;
+  }
+  if(file.size > 4 * 1024 * 1024){
+    if(status) status.textContent = 'Photo is too large. Please use an image under 4MB.';
+    return;
+  }
+
+  const readAsDataUrl = (f) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error || new Error('Could not read image'));
+    reader.readAsDataURL(f);
+  });
+
   try{
-    if(status) status.textContent='Uploading photo...';
-    const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
-    const filePath=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
-    const {error:uploadError}=await supabaseClient.storage
+    if(status) status.textContent = 'Preparing photo...';
+
+    // Show the photo immediately so the app never hangs on “Uploading photo...”
+    const localPreviewUrl = await readAsDataUrl(file);
+    showProfilePhoto(localPreviewUrl);
+    profileSettings.avatarUrl = localPreviewUrl;
+    saveLocalOnly();
+    if(status) status.textContent = 'Photo added on this device. Saving to cloud...';
+
+    if(!supabaseClient){
+      if(status) status.textContent = 'Photo saved on this device.';
+      return;
+    }
+
+    const safeExt = ((file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg');
+    const filePath = `${currentUser.id}/avatar.${safeExt}`;
+
+    const uploadPromise = supabaseClient.storage
       .from('profile-photos')
-      .upload(filePath,file,{cacheControl:'3600',upsert:true});
+      .upload(filePath, file, { cacheControl:'3600', upsert:true, contentType:file.type });
+
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Cloud upload is taking too long. Photo is saved on this device for now.')), 12000);
+    });
+
+    const { error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
     if(uploadError) throw uploadError;
-    const {data}=supabaseClient.storage.from('profile-photos').getPublicUrl(filePath);
-    const avatarUrl=data.publicUrl;
-    const {error:profileError}=await supabaseClient.from('profiles')
-      .upsert({id:currentUser.id,email:currentUser.email,avatar_url:avatarUrl},{onConflict:'id'});
+
+    const { data } = supabaseClient.storage.from('profile-photos').getPublicUrl(filePath);
+    const cloudUrl = data && data.publicUrl ? `${data.publicUrl}?v=${Date.now()}` : localPreviewUrl;
+
+    const { error: profileError } = await supabaseClient.from('profiles')
+      .upsert({ id: currentUser.id, email: currentUser.email, avatar_url: cloudUrl }, { onConflict:'id' });
     if(profileError) throw profileError;
-    showProfilePhoto(avatarUrl);
+
+    profileSettings.avatarUrl = cloudUrl;
+    showProfilePhoto(cloudUrl);
     saveData();
-    if(status) status.textContent='Photo uploaded successfully.';
+    if(status) status.textContent = 'Photo saved successfully.';
   }catch(e){
-    console.error('Profile photo upload failed',e);
-    if(status) status.textContent=e.message || 'Photo upload needs a smaller JPG or PNG. Please try again.';
+    console.error('Profile photo cloud save failed', e);
+    saveLocalOnly();
+    if(status) status.textContent = 'Photo is showing on this device. Cloud save needs Supabase storage policy check.';
+  }finally{
+    if(event.target) event.target.value = '';
   }
 }
+
 async function sendPasswordReset(){
   const msg=document.getElementById('profile-message');
   const email=currentUser?.email || prompt('Enter your email for password reset');
