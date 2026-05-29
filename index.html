@@ -423,7 +423,7 @@ select option{background:var(--black3);}
 <div class="auth-loading" id="auth-loading">
   <div class="logo-big">FitHerNova</div>
   <div class="spinner"></div>
-  <p>Loading your account…</p>
+  <p id="auth-loading-msg">Loading your account…</p>
 </div>
 
 <div class="notif-toast" id="notif-toast">
@@ -1273,22 +1273,85 @@ async function initAuth() {
   document.getElementById('main-app').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'none';
   purgeAllLegacyStorageKeys();
-  if (!supabaseClient) { document.getElementById('auth-loading').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; return; }
+  authResolved = false;
+
+  // Animated loading messages — user knows the app is alive, not frozen
+  const loadingMsgs = ['Loading your account…', 'Checking session…', 'Almost there…'];
+  let msgIdx = 0;
+  const msgEl = document.getElementById('auth-loading-msg');
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMsgs.length;
+    if (msgEl && !authResolved) msgEl.textContent = loadingMsgs[msgIdx];
+  }, 1200);
+
+  // Show login screen — clears spinner and interval
+  function showLogin() {
+    if (authResolved) return;
+    authResolved = true;
+    clearInterval(msgInterval);
+    document.getElementById('auth-loading').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+
+  // Log user in — prevent duplicate calls from parallel auth paths
+  let loginInProgress = false;
+  async function handleLogin(user) {
+    if (authResolved || loginInProgress) return;
+    loginInProgress = true;
+    authResolved = true;
+    clearInterval(msgInterval);
+    clearTimeout(safetyTimeout);
+    await onUserLoggedIn(user);
+  }
+
+  if (!supabaseClient) { clearInterval(msgInterval); showLogin(); return; }
+
+  // Safety net: 4 seconds max — if auth never resolves, show login
+  // Previously 8s which felt like a complete freeze to users
   const safetyTimeout = setTimeout(() => {
-    if (!authResolved) { authResolved = true; document.getElementById('auth-loading').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
-  }, 8000);
+    console.warn('FitHerNova: auth timeout — showing login');
+    showLogin();
+  }, 4000);
+
+  // THE KEY FIX: handle INITIAL_SESSION event
+  // On page refresh, Supabase fires INITIAL_SESSION (not SIGNED_IN).
+  // The old code only listened for SIGNED_IN so refreshes always got stuck forever.
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    const newUser = session?.user || null;
-    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && newUser && newUser.id !== currentUser?.id) { clearTimeout(safetyTimeout); authResolved = true; await onUserLoggedIn(newUser); }
-    else if (event === 'SIGNED_OUT') { clearTimeout(safetyTimeout); authResolved = true; onUserLoggedOut(); }
+    const user = session?.user || null;
+
+    if (event === 'INITIAL_SESSION') {
+      // Fires on every page load including refresh — this is the main fix
+      if (user) { await handleLogin(user); }
+      else { clearTimeout(safetyTimeout); showLogin(); }
+      return;
+    }
+
+    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && user) {
+      if (user.id !== currentUser?.id) await handleLogin(user);
+      return;
+    }
+
+    if (event === 'SIGNED_OUT') {
+      clearTimeout(safetyTimeout);
+      clearInterval(msgInterval);
+      authResolved = true;
+      onUserLoggedOut();
+      return;
+    }
   });
+
+  // Also call getSession() as a fast parallel path
+  // On most refreshes this resolves from localStorage in <100ms
   try {
     const { data, error } = await supabaseClient.auth.getSession();
     if (error) throw error;
     const user = data?.session?.user || null;
-    if (user) { clearTimeout(safetyTimeout); authResolved = true; await onUserLoggedIn(user); }
-    else { clearTimeout(safetyTimeout); authResolved = true; document.getElementById('auth-loading').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
-  } catch(e) { clearTimeout(safetyTimeout); authResolved = true; document.getElementById('auth-loading').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
+    if (user) await handleLogin(user);
+    // If no user here, INITIAL_SESSION event above handles it shortly
+  } catch(e) {
+    console.warn('FitHerNova: getSession error', e.message || e);
+    // Safety timeout handles any deadlock
+  }
 }
 
 // ── PROFILE ──────────────────────────────────────────────────────────────────
