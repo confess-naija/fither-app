@@ -1032,16 +1032,27 @@ const WORKOUT_DB = [
   {name:"Advanced Belly Shred",icon:"💥",level:"Advanced",badge:"badge-hard",dur:"30 min",calPM:13,ex:[{n:"Burpees",r:"4×15"},{n:"V-ups",r:"4×12"},{n:"Plank with hip dips",r:"4×20"},{n:"Scissor kicks",r:"4×20"},{n:"Russian twists",r:"4×20"},{n:"Sprint intervals",r:"5×30 sec"}]},
 ];
 
+// ── PLAYLIST ─────────────────────────────────────────────────────────────────
+// category field is ready for future radio station filtering:
+//   "gospel_workout" → 🙏 Gospel Workout Radio
+//   "fat_burn"       → 🔥 Fat Burn Radio
+//   "beast_mode"     → 💪 Beast Mode Radio
+//   "house_workout"  → 🎧 House Workout Radio
+//   "hiit_energy"    → ⚡ HIIT Energy Radio
+//   "recovery"       → 🌙 Recovery & Stretch Radio
+// ─────────────────────────────────────────────────────────────────────────────
 const BUILT_IN_TRACKS = [
-  {title:"LIFT ME UP",artist:"ZIK Blue",dur:"3:39",emoji:"🚀",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3"},
-  {title:"They Cannot (Remix)",artist:"Holy Fire",dur:"3:45",emoji:"🔥",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3"},
-  {title:"GLORY & FIRE",artist:"Ziyana Eya",dur:"4:00",emoji:"✨",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20&%20FIRE.mp3"},
-  {title:"Lord, Remember Me",artist:"Holy Fire",dur:"3:30",emoji:"🙏",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord,%20Rememer%20me.mp3"},
-  {title:"TESTED (Audio)",artist:"Zimora El",dur:"3:30",emoji:"💎",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20-%20TESTED%20(Audio).mp3"},
-  {title:"Lessons",artist:"Ziyana Eya",dur:"3:30",emoji:"🌿",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana-Eya-Lessons.mp3"},
-  {title:"Glory",artist:"Sharp",dur:"3:30",emoji:"🌟",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Sharp-%20GlORY.mp3"},
-  {title:"Reloaded",artist:"Zimora El",dur:"3:48",emoji:"⚡",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20Reloaded.mp3"}
+  {title:"LIFT ME UP",          artist:"ZIK Blue",          dur:"3:39",emoji:"🚀",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3"},
+  {title:"They Cannot (Remix)", artist:"Holy Fire",          dur:"3:45",emoji:"🔥",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3"},
+  {title:"Mix Jam 2026",        artist:"FitHerNova Radio",   dur:"3:30",emoji:"🎧",category:"fat_burn",      src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Mix%20Jam%202026.mp3"},
+  {title:"GLORY & FIRE",        artist:"Ziyana Eya",         dur:"4:00",emoji:"✨",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20&%20FIRE.mp3"},
+  {title:"Lord, Remember Me",   artist:"Holy Fire",          dur:"3:30",emoji:"🙏",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord,%20Rememer%20me.mp3"},
+  {title:"TESTED (Audio)",      artist:"Zimora El",          dur:"3:30",emoji:"💎",category:"beast_mode",    src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20-%20TESTED%20(Audio).mp3"},
+  {title:"Lessons",             artist:"Ziyana Eya",         dur:"3:30",emoji:"🌿",category:"recovery",      src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana-Eya-Lessons.mp3"},
+  {title:"Glory",               artist:"Sharp",              dur:"3:30",emoji:"🌟",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Sharp-%20GlORY.mp3"},
+  {title:"Reloaded",            artist:"Zimora El",          dur:"3:48",emoji:"⚡",category:"hiit_energy",   src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20Reloaded.mp3"},
 ];
+// Total tracks: 9 | No duplicates | autoplay logic untouched
 
 const FALLBACK_CHALLENGE_DAYS = [
   {day_number:1,title:'Day 1: Start Strong',workout:'10-min Belly Burn',meal_tip:'Drink 8 glasses of water and avoid sugary drinks today.',motivation:'Your journey starts with one decision.'},
