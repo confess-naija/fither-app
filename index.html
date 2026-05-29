@@ -1430,41 +1430,52 @@ function updateAuthUI() {
 // =====================================================================
 // AFTER SUCCESSFUL AUTH — load ALL user data fresh, then render
 // =====================================================================
+async // Mobile-safe timeout wrapper: never let the splash/loading screen stay forever.
+function withTimeout(promise, ms = 7000, label = 'task') {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise(resolve => setTimeout(() => {
+      console.warn('FitHerNova timeout:', label);
+      resolve(null);
+    }, ms))
+  ]);
+}
+
+function hideAuthLoadingShowApp() {
+  const loading = document.getElementById('auth-loading');
+  const auth = document.getElementById('auth-screen');
+  const app = document.getElementById('main-app');
+  if (loading) loading.style.display = 'none';
+  if (auth) auth.style.display = currentUser ? 'none' : 'flex';
+  if (app) app.style.display = currentUser ? 'flex' : 'none';
+}
+
 async function onUserLoggedIn(user) {
   currentUser = user;
 
-  // 1. Always start from empty state before loading this user's data
-  resetUserState();
+  try {
+    // 1. Always start from empty state before loading this user's data
+    resetUserState();
 
-  // 2. Load local cache first (instant)
-  loadLocal();
+    // 2. Load local cache first (instant)
+    loadLocal();
 
-  // 3. Load profile from Supabase profiles table
-  await loadUserProfile();
-
-  // 4. Load PRO status
-  await loadProStatus();
-
-  // 5. Load remote state (may overwrite local if newer)
-  await loadRemote();
-
-  // 6. Load challenge data
-  await loadChallengeData();
-
-  // 7. Load music tracks
-  await loadSupabaseTracks();
-
-  // 8. Render everything with this user's data
-  renderAll();
-  updateAuthUI();
-
-  // 9. Show the app, hide loading screen
-  document.getElementById('auth-loading').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('main-app').style.display = 'flex';
-
-  // 10. Check install prompt
-  checkInstallPrompt();
+    // 3–7. Mobile browsers can pause network calls after reopening.
+    // Each load has a timeout so the app can still open.
+    await withTimeout(loadUserProfile(), 5000, 'loadUserProfile');
+    await withTimeout(loadProStatus(), 5000, 'loadProStatus');
+    await withTimeout(loadRemote(), 6000, 'loadRemote');
+    await withTimeout(loadChallengeData(), 5000, 'loadChallengeData');
+    await withTimeout(loadSupabaseTracks(), 6000, 'loadSupabaseTracks');
+  } catch (e) {
+    console.warn('FitHerNova login load warning:', e?.message || e);
+  } finally {
+    // 8. Always render and open the app, even if one network call failed.
+    try { renderAll(); } catch (e) { console.warn('Render warning:', e?.message || e); }
+    try { updateAuthUI(); } catch (e) {}
+    hideAuthLoadingShowApp();
+    try { checkInstallPrompt(); } catch (e) {}
+  }
 }
 
 function onUserLoggedOut() {
@@ -1485,44 +1496,70 @@ async function initAuth() {
   document.getElementById('auth-loading').style.display = 'flex';
   document.getElementById('main-app').style.display = 'none';
 
+  // Hard fallback: even if mobile Safari/Chrome freezes Supabase session restore,
+  // do not leave users stuck on the loading screen forever.
+  const bootFallback = setTimeout(() => {
+    if (!authResolved) {
+      console.warn('FitHerNova auth boot fallback opened login screen.');
+      currentUser = null;
+      resetUserState();
+      document.getElementById('auth-loading').style.display = 'none';
+      document.getElementById('main-app').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'flex';
+      updateAuthUI();
+    }
+  }, 8000);
+
   // Purge ALL old unscoped keys that could leak data between users
   purgeAllLegacyStorageKeys();
 
   if (!supabaseClient) {
-    // No Supabase: go straight to login
+    clearTimeout(bootFallback);
+    authResolved = true;
     document.getElementById('auth-loading').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';
     return;
   }
 
-  // Subscribe to future auth changes FIRST (covers tab switches, token refresh, etc.)
+  let handlingAuth = false;
+  async function handleSessionUser(newUser) {
+    if (handlingAuth) return;
+    handlingAuth = true;
+    try {
+      if (newUser) {
+        await onUserLoggedIn(newUser);
+      } else {
+        onUserLoggedOut();
+      }
+    } finally {
+      handlingAuth = false;
+      authResolved = true;
+      clearTimeout(bootFallback);
+    }
+  }
+
+  // Subscribe to future auth changes FIRST.
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const newUser = session?.user || null;
-
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-      if (newUser && newUser.id !== currentUser?.id) {
-        // Different user (or first login): full load
-        await onUserLoggedIn(newUser);
-      } else if (newUser && !authResolved) {
-        // Same user, first resolution
-        await onUserLoggedIn(newUser);
+    if (event === 'SIGNED_OUT') {
+      await handleSessionUser(null);
+    } else if (newUser) {
+      // Covers SIGNED_IN, TOKEN_REFRESHED, INITIAL_SESSION, and mobile restore events.
+      if (!currentUser || newUser.id !== currentUser.id || !authResolved) {
+        await handleSessionUser(newUser);
       }
-    } else if (event === 'SIGNED_OUT') {
-      onUserLoggedOut();
     }
-    authResolved = true;
   });
 
-  // Then get the current session (triggers INITIAL_SESSION above)
-  const { data } = await supabaseClient.auth.getSession();
-  authResolved = true;
-
-  if (!data?.session?.user) {
-    // No active session: show login
-    document.getElementById('auth-loading').style.display = 'none';
-    document.getElementById('auth-screen').style.display = 'flex';
+  // Then explicitly read current session. Do NOT depend only on INITIAL_SESSION.
+  try {
+    const sessionResult = await withTimeout(supabaseClient.auth.getSession(), 6000, 'getSession');
+    const sessionUser = sessionResult?.data?.session?.user || null;
+    await handleSessionUser(sessionUser);
+  } catch (e) {
+    console.warn('FitHerNova getSession failed:', e?.message || e);
+    await handleSessionUser(null);
   }
-  // If there IS a session, onAuthStateChange already fired INITIAL_SESSION
 }
 
 // =====================================================================
