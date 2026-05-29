@@ -1436,28 +1436,34 @@ async function onUserLoggedIn(user) {
   // 1. Always start from empty state before loading this user's data
   resetUserState();
 
-  // 2. Load ONLY this user's local cache instantly, then render immediately.
-  // This prevents the loading screen from hanging on mobile reopen.
-  try { loadLocal(); } catch(e) { console.warn('Local user load skipped:', e.message || e); }
+  // 2. Load local cache first (instant)
+  loadLocal();
 
+  // 3. Load profile from Supabase profiles table
+  await loadUserProfile();
+
+  // 4. Load PRO status
+  await loadProStatus();
+
+  // 5. Load remote state (may overwrite local if newer)
+  await loadRemote();
+
+  // 6. Load challenge data
+  await loadChallengeData();
+
+  // 7. Load music tracks
+  await loadSupabaseTracks();
+
+  // 8. Render everything with this user's data
   renderAll();
   updateAuthUI();
-  hideAuthLoadingShowApp();
 
-  // 3. Continue cloud loads in the background with timeouts.
-  // If Supabase is slow, the app still opens and stays private.
-  try { await withTimeout(loadUserProfile(), 2500, 'Profile load'); } catch(e) { console.warn(e.message || e); }
-  try { await withTimeout(loadProStatus(), 2500, 'PRO load'); } catch(e) { console.warn(e.message || e); }
-  try { await withTimeout(loadRemote(), 3500, 'Remote state load'); } catch(e) { console.warn(e.message || e); }
-  try { await withTimeout(loadChallengeData(), 2500, 'Challenge load'); } catch(e) { console.warn(e.message || e); }
-  try { await withTimeout(loadSupabaseTracks(), 3500, 'Music load'); } catch(e) { console.warn(e.message || e); }
+  // 9. Show the app, hide loading screen
+  document.getElementById('auth-loading').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
 
-  // 4. Re-render after cloud data finishes or times out.
-  renderAll();
-  updateAuthUI();
-  hideAuthLoadingShowApp();
-
-  // 5. Check install prompt
+  // 10. Check install prompt
   checkInstallPrompt();
 }
 
@@ -1475,79 +1481,48 @@ function onUserLoggedOut() {
 // SUPABASE AUTH INIT — the single entry point for all auth state
 // =====================================================================
 async function initAuth() {
-  // Show loading screen briefly while Supabase checks the saved session.
-  const loading = document.getElementById('auth-loading');
-  const app = document.getElementById('main-app');
-  if (loading) loading.style.display = 'flex';
-  if (app) app.style.display = 'none';
+  // Show loading screen — app is hidden until we know who is logged in
+  document.getElementById('auth-loading').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'none';
 
-  // Purge ALL old unscoped keys that could leak data between users.
+  // Purge ALL old unscoped keys that could leak data between users
   purgeAllLegacyStorageKeys();
 
   if (!supabaseClient) {
-    hideAuthLoadingShowLogin();
+    // No Supabase: go straight to login
+    document.getElementById('auth-loading').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
     return;
   }
 
-  let handledInitialSession = false;
-
-  // Safety net: never allow the loading screen to stay forever.
-  const bootFailSafe = setTimeout(() => {
-    const loadingStillVisible = document.getElementById('auth-loading')?.style.display !== 'none';
-    if (loadingStillVisible && !currentUser) {
-      console.warn('FitHerNova: auth startup fallback opened login screen.');
-      hideAuthLoadingShowLogin();
-    } else if (loadingStillVisible && currentUser) {
-      hideAuthLoadingShowApp();
-    }
-  }, 6000);
-
-  // Subscribe to future auth changes first.
+  // Subscribe to future auth changes FIRST (covers tab switches, token refresh, etc.)
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const newUser = session?.user || null;
 
-    if (newUser) {
-      // Avoid duplicate full reloads for the same already-loaded user.
-      if (handledInitialSession && currentUser?.id === newUser.id && event !== 'SIGNED_IN') {
-        authResolved = true;
-        return;
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+      if (newUser && newUser.id !== currentUser?.id) {
+        // Different user (or first login): full load
+        await onUserLoggedIn(newUser);
+      } else if (newUser && !authResolved) {
+        // Same user, first resolution
+        await onUserLoggedIn(newUser);
       }
-      handledInitialSession = true;
-      authResolved = true;
-      await onUserLoggedIn(newUser);
-      return;
-    }
-
-    if (event === 'SIGNED_OUT') {
-      handledInitialSession = true;
-      authResolved = true;
+    } else if (event === 'SIGNED_OUT') {
       onUserLoggedOut();
     }
+    authResolved = true;
   });
 
-  // Get saved session, but do not let it hang forever on mobile browsers.
-  try {
-    const { data } = await withTimeout(supabaseClient.auth.getSession(), 4500, 'Auth session restore');
-    authResolved = true;
-    if (data?.session?.user) {
-      if (!handledInitialSession || currentUser?.id !== data.session.user.id) {
-        handledInitialSession = true;
-        await onUserLoggedIn(data.session.user);
-      }
-    } else if (!handledInitialSession) {
-      handledInitialSession = true;
-      onUserLoggedOut();
-    }
-  } catch(e) {
-    console.warn('FitHerNova auth startup warning:', e.message || e);
-    authResolved = true;
-    if (!handledInitialSession && !currentUser) {
-      handledInitialSession = true;
-      hideAuthLoadingShowLogin();
-    }
-  } finally {
-    clearTimeout(bootFailSafe);
+  // Then get the current session (triggers INITIAL_SESSION above)
+  const { data } = await supabaseClient.auth.getSession();
+  authResolved = true;
+
+  if (!data?.session?.user) {
+    // No active session: show login
+    document.getElementById('auth-loading').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
   }
+  // If there IS a session, onAuthStateChange already fired INITIAL_SESSION
 }
 
 // =====================================================================
