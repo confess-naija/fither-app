@@ -1275,7 +1275,7 @@ async function initAuth() {
   purgeAllLegacyStorageKeys();
   authResolved = false;
 
-  // Animated loading messages — user knows the app is alive, not frozen
+  // Animated loading messages
   const loadingMsgs = ['Loading your account…', 'Checking session…', 'Almost there…'];
   let msgIdx = 0;
   const msgEl = document.getElementById('auth-loading-msg');
@@ -1284,7 +1284,6 @@ async function initAuth() {
     if (msgEl && !authResolved) msgEl.textContent = loadingMsgs[msgIdx];
   }, 1200);
 
-  // Show login screen — clears spinner and interval
   function showLogin() {
     if (authResolved) return;
     authResolved = true;
@@ -1293,11 +1292,11 @@ async function initAuth() {
     document.getElementById('auth-screen').style.display = 'flex';
   }
 
-  // Log user in — prevent duplicate calls from parallel auth paths
-  let loginInProgress = false;
-  async function handleLogin(user) {
-    if (authResolved || loginInProgress) return;
-    loginInProgress = true;
+  // Prevent duplicate onUserLoggedIn calls during initial load only
+  let initialLoginDone = false;
+  async function handleInitialLogin(user) {
+    if (initialLoginDone) return;
+    initialLoginDone = true;
     authResolved = true;
     clearInterval(msgInterval);
     clearTimeout(safetyTimeout);
@@ -1306,28 +1305,37 @@ async function initAuth() {
 
   if (!supabaseClient) { clearInterval(msgInterval); showLogin(); return; }
 
-  // Safety net: 4 seconds max — if auth never resolves, show login
-  // Previously 8s which felt like a complete freeze to users
   const safetyTimeout = setTimeout(() => {
     console.warn('FitHerNova: auth timeout — showing login');
     showLogin();
   }, 4000);
 
-  // THE KEY FIX: handle INITIAL_SESSION event
-  // On page refresh, Supabase fires INITIAL_SESSION (not SIGNED_IN).
-  // The old code only listened for SIGNED_IN so refreshes always got stuck forever.
+  // Listen for ALL auth events
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const user = session?.user || null;
 
     if (event === 'INITIAL_SESSION') {
-      // Fires on every page load including refresh — this is the main fix
-      if (user) { await handleLogin(user); }
+      // Page load / refresh — use the deduplicated initial handler
+      if (user) { await handleInitialLogin(user); }
       else { clearTimeout(safetyTimeout); showLogin(); }
       return;
     }
 
-    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && user) {
-      if (user.id !== currentUser?.id) await handleLogin(user);
+    if (event === 'SIGNED_IN' && user) {
+      // Manual login via submitAuth() — authResolved may already be true
+      // so we call onUserLoggedIn directly, bypassing the initial-load guard
+      clearTimeout(safetyTimeout);
+      clearInterval(msgInterval);
+      authResolved = true;
+      if (user.id !== currentUser?.id) {
+        await onUserLoggedIn(user);
+      }
+      return;
+    }
+
+    if (event === 'TOKEN_REFRESHED' && user) {
+      // Silent token refresh — only act if not already logged in as this user
+      if (user.id !== currentUser?.id) await handleInitialLogin(user);
       return;
     }
 
@@ -1340,17 +1348,15 @@ async function initAuth() {
     }
   });
 
-  // Also call getSession() as a fast parallel path
-  // On most refreshes this resolves from localStorage in <100ms
+  // Fast path: getSession() reads from localStorage synchronously on most devices
   try {
     const { data, error } = await supabaseClient.auth.getSession();
     if (error) throw error;
     const user = data?.session?.user || null;
-    if (user) await handleLogin(user);
-    // If no user here, INITIAL_SESSION event above handles it shortly
+    if (user) await handleInitialLogin(user);
+    // No user → INITIAL_SESSION event will fire shortly, or safety timeout clears it
   } catch(e) {
     console.warn('FitHerNova: getSession error', e.message || e);
-    // Safety timeout handles any deadlock
   }
 }
 
@@ -1838,16 +1844,70 @@ function renderWorkoutHistory() {
 }
 
 // ── MUSIC ─────────────────────────────────────────────────────────────────────
+
+// One-time fix: rename "Mixtape Vol 2" rows in Supabase to "Mix Jam 2026"
+// and remove the duplicate. Runs silently, only affects your music_tracks table.
+async function fixMusicTableDuplicates() {
+  if (!supabaseClient || !currentUser) return;
+  try {
+    // Find all rows named "Mixtape Vol 2"
+    const { data: dupes } = await supabaseClient
+      .from('music_tracks')
+      .select('id, title, src, sort_order')
+      .ilike('title', 'Mixtape Vol 2');
+    if (!dupes || dupes.length === 0) return;
+
+    const mixJamSrc = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Mix%20Jam%202026.mp3';
+
+    if (dupes.length >= 2) {
+      // Keep the first one — rename it to Mix Jam 2026 with correct src
+      await supabaseClient.from('music_tracks').update({
+        title: 'Mix Jam 2026',
+        artist: 'FitHerNova Radio',
+        emoji: '🎧',
+        src: mixJamSrc
+      }).eq('id', dupes[0].id);
+      // Delete the duplicate(s)
+      const deleteIds = dupes.slice(1).map(d => d.id);
+      await supabaseClient.from('music_tracks').delete().in('id', deleteIds);
+      console.log('FitHerNova: fixed duplicate Mixtape Vol 2 entries in music_tracks');
+    } else if (dupes.length === 1) {
+      // Just rename the one entry
+      await supabaseClient.from('music_tracks').update({
+        title: 'Mix Jam 2026',
+        artist: 'FitHerNova Radio',
+        emoji: '🎧',
+        src: mixJamSrc
+      }).eq('id', dupes[0].id);
+      console.log('FitHerNova: renamed Mixtape Vol 2 → Mix Jam 2026');
+    }
+  } catch(e) {
+    console.warn('FitHerNova: music table fix skipped:', e.message || e);
+  }
+}
+
 async function loadSupabaseTracks() {
   const list   = document.getElementById('track-list');
   const status = document.getElementById('music-status');
   if (list) list.innerHTML = '<div class="text-grey" style="padding:10px 0;">Loading FitHerNova Radio…</div>';
   const useBuiltIn = () => { tracks = BUILT_IN_TRACKS.map(t => ({...t})); currentTrack = 0; renderTrackList(); updateMiniPlayer(); if (status) status.textContent = 'Choose a song and let the energy flow.'; };
   if (!supabaseClient) { useBuiltIn(); return; }
+
+  // Run the one-time duplicate fix first (silently)
+  await fixMusicTableDuplicates();
+
   try {
     const { data, error } = await supabaseClient.from('music_tracks').select('title,artist,duration,emoji,src,sort_order').eq('active', true).order('sort_order', { ascending:true }).order('created_at', { ascending:true });
     if (error) throw error;
-    const remote = Array.isArray(data) ? data.filter(t => t?.src?.trim()).map(t => ({ title:t.title||'Untitled', artist:t.artist||'Pro Media Records', dur:t.duration||'0:00', emoji:t.emoji||'🎵', src:t.src.trim() })) : [];
+    const rawRemote = Array.isArray(data) ? data.filter(t => t?.src?.trim()).map(t => ({ title:t.title||'Untitled', artist:t.artist||'Pro Media Records', dur:t.duration||'0:00', emoji:t.emoji||'🎵', src:t.src.trim() })) : [];
+    // Deduplicate by title — safety net in case DB still has duplicates
+    const seen = new Set();
+    const remote = rawRemote.filter(t => {
+      const key = t.title.toLowerCase().trim();
+      if (seen.has(key)) { console.warn('FitHerNova: duplicate track removed:', t.title); return false; }
+      seen.add(key);
+      return true;
+    });
     if (remote.length) { tracks = remote; currentTrack = Math.min(currentTrack, tracks.length-1); renderTrackList(); updateMiniPlayer(); if (status) status.textContent = tracks.length + ' song' + (tracks.length>1?'s':'') + ' ready.'; }
     else useBuiltIn();
   } catch(e) { console.warn('Music load used built-in playlist:', e.message||e); useBuiltIn(); }
