@@ -1481,48 +1481,76 @@ function onUserLoggedOut() {
 // SUPABASE AUTH INIT — the single entry point for all auth state
 // =====================================================================
 async function initAuth() {
-  // Show loading screen — app is hidden until we know who is logged in
+  // Show loading screen while Supabase checks if a user is already logged in.
   document.getElementById('auth-loading').style.display = 'flex';
   document.getElementById('main-app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
 
-  // Purge ALL old unscoped keys that could leak data between users
+  // Clear old unscoped browser storage so one user's data cannot leak to another user.
   purgeAllLegacyStorageKeys();
 
   if (!supabaseClient) {
-    // No Supabase: go straight to login
     document.getElementById('auth-loading').style.display = 'none';
+    document.getElementById('main-app').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';
     return;
   }
 
-  // Subscribe to future auth changes FIRST (covers tab switches, token refresh, etc.)
+  // Safety fallback: mobile browsers can sometimes hang while restoring a saved session.
+  // This makes sure the user never stays forever on the loading screen.
+  const safetyTimeout = setTimeout(() => {
+    if (!authResolved) {
+      authResolved = true;
+      document.getElementById('auth-loading').style.display = 'none';
+      document.getElementById('main-app').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'flex';
+    }
+  }, 8000);
+
+  // This listener is for FUTURE auth changes only: login, logout, token refresh.
+  // The page reload path is handled directly by getSession() below.
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const newUser = session?.user || null;
 
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
       if (newUser && newUser.id !== currentUser?.id) {
-        // Different user (or first login): full load
-        await onUserLoggedIn(newUser);
-      } else if (newUser && !authResolved) {
-        // Same user, first resolution
+        clearTimeout(safetyTimeout);
+        authResolved = true;
         await onUserLoggedIn(newUser);
       }
     } else if (event === 'SIGNED_OUT') {
+      clearTimeout(safetyTimeout);
+      authResolved = true;
       onUserLoggedOut();
     }
-    authResolved = true;
   });
 
-  // Then get the current session (triggers INITIAL_SESSION above)
-  const { data } = await supabaseClient.auth.getSession();
-  authResolved = true;
+  // Reliable reload path: directly check the stored Supabase session.
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
 
-  if (!data?.session?.user) {
-    // No active session: show login
+    const user = data?.session?.user || null;
+
+    if (user) {
+      clearTimeout(safetyTimeout);
+      authResolved = true;
+      await onUserLoggedIn(user);
+    } else {
+      clearTimeout(safetyTimeout);
+      authResolved = true;
+      document.getElementById('auth-loading').style.display = 'none';
+      document.getElementById('main-app').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'flex';
+    }
+  } catch (e) {
+    console.warn('FitHerNova initAuth error:', e?.message || e);
+    clearTimeout(safetyTimeout);
+    authResolved = true;
     document.getElementById('auth-loading').style.display = 'none';
+    document.getElementById('main-app').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';
   }
-  // If there IS a session, onAuthStateChange already fired INITIAL_SESSION
 }
 
 // =====================================================================
