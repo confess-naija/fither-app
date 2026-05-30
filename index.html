@@ -1208,7 +1208,6 @@ const BUILT_IN_TRACKS = [
   {title:"LIFT ME UP",artist:"ZIK Blue",dur:"3:39",emoji:"🚀",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3"},
   {title:"They Cannot (Remix)",artist:"Holy Fire",dur:"3:45",emoji:"🔥",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3"},
   {title:"Mix Jam 2026",artist:"FitHerNova Radio",dur:"3:30",emoji:"🎧",category:"fat_burn",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Mix%20Jam%202026.mp3"},
-  {title:"Mixtape Vol 2",artist:"FitHerNova Radio",dur:"3:45",emoji:"🎧",category:"fat_burn",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/mixtape%20vol%202.mp3"},
   {title:"GLORY & FIRE",artist:"Ziyana Eya",dur:"4:00",emoji:"✨",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20&%20FIRE.mp3"},
   {title:"Lord, Remember Me",artist:"Holy Fire",dur:"3:30",emoji:"🙏",category:"gospel_workout",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord,%20Rememer%20me.mp3"},
   {title:"TESTED (Audio)",artist:"Zimora El",dur:"3:30",emoji:"💎",category:"beast_mode",src:"https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20-%20TESTED%20(Audio).mp3"},
@@ -1240,7 +1239,6 @@ let proCardSessionDismissed = false; // FIX: pro card once per session
 let timerSec = 0, timerRunning = false, timerPaused = false, timerInterval = null;
 let tracks = BUILT_IN_TRACKS.map(t => ({...t}));
 let currentTrack = 0, isPlaying = false, audioEl = new Audio();
-audioEl.preload = "metadata";
 let progressInterval = null, djMode = true, miniPlayerActivated = false, miniPlayerDismissed = false;
 let isProUser = false, proPlan = "free";
 let remoteStateRowId = null, syncTimer = null;
@@ -2227,18 +2225,6 @@ const TRACK_CORRECTIONS = {
   'ZIK%20Blue%20LIFT%20ME%20UP.mp3': { title:'LIFT ME UP', artist:'ZIK Blue',       emoji:'🚀' },
 };
 
-function normalizeAudioUrl(url) {
-  if (!url) return '';
-  let clean = String(url).trim();
-  try {
-    // encodeURI preserves : / ? & = while fixing raw spaces and special characters in file names.
-    clean = encodeURI(clean);
-  } catch(e) {
-    clean = clean.replace(/ /g, '%20');
-  }
-  return clean;
-}
-
 function cleanAndDeduplicateTracks(rawList) {
   // Step 1: Apply title/emoji corrections based on src filename
   const corrected = rawList.map(t => {
@@ -2274,60 +2260,49 @@ function cleanAndDeduplicateTracks(rawList) {
   });
 }
 
-async async function loadSupabaseTracks() {
-  const list = document.getElementById('track-list');
+async function loadSupabaseTracks() {
+  const list   = document.getElementById('track-list');
   const status = document.getElementById('music-status');
   if (list) list.innerHTML = '<div class="text-grey" style="padding:10px 0;">Loading FitHerNova Radio…</div>';
-
-  const builtIn = BUILT_IN_TRACKS.map(t => ({
-    title: t.title || 'Untitled',
-    artist: t.artist || 'FitHerNova Radio',
-    dur: t.dur || t.duration || '0:00',
-    emoji: t.emoji || '🎵',
-    category: t.category || 'gospel_workout',
-    src: normalizeAudioUrl(t.src || '')
-  })).filter(t => t.src);
-
-  const finish = (finalTracks, message) => {
-    tracks = cleanAndDeduplicateTracks(finalTracks).filter(t => t && t.src);
-    if (!tracks.length) tracks = builtIn;
-    currentTrack = Math.min(Math.max(currentTrack || 0, 0), Math.max(tracks.length - 1, 0));
-    renderTrackList();
-    updateMiniPlayer();
-    if (status) status.textContent = message || (tracks.length + ' song' + (tracks.length > 1 ? 's' : '') + ' ready. Tap a track to play.');
+  const useBuiltIn = () => {
+    tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+    currentTrack = 0; renderTrackList(); updateMiniPlayer();
+    if (status) status.textContent = 'Choose a song and let the energy flow.';
   };
-
-  if (!supabaseClient) {
-    finish(builtIn, 'Choose a song and let the energy flow.');
-    return;
-  }
-
+  if (!supabaseClient) { useBuiltIn(); return; }
   try {
     const { data, error } = await supabaseClient
       .from('music_tracks')
-      .select('title,artist,duration,emoji,src,sort_order,active,created_at')
+      .select('title,artist,duration,emoji,src,sort_order')
       .eq('active', true)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: true });
-
     if (error) throw error;
 
-    const remote = Array.isArray(data)
-      ? data.filter(t => t && String(t.src || '').trim()).map(t => ({
-          title: t.title || 'Untitled',
-          artist: t.artist || 'FitHerNova Radio',
-          dur: t.duration || t.dur || '0:00',
-          emoji: t.emoji || '🎵',
-          category: t.category || 'gospel_workout',
-          src: normalizeAudioUrl(t.src)
+    const rawRemote = Array.isArray(data)
+      ? data.filter(t => t?.src?.trim()).map(t => ({
+          title:  t.title  || 'Untitled',
+          artist: t.artist || 'Pro Media Records',
+          dur:    t.duration || '0:00',
+          emoji:  t.emoji  || '🎵',
+          src:    t.src.trim()
         }))
       : [];
 
-    // Merge remote + built-in so the playlist never goes empty and old working songs remain playable.
-    finish([...remote, ...builtIn], (remote.length ? remote.length + ' Supabase song' + (remote.length > 1 ? 's' : '') + ' loaded. Tap a track to play.' : 'Choose a song and let the energy flow.'));
-  } catch (e) {
+    // Clean metadata + deduplicate by src AND title
+    const remote = cleanAndDeduplicateTracks(rawRemote);
+
+    if (remote.length) {
+      tracks = remote;
+      currentTrack = Math.min(currentTrack, tracks.length - 1);
+      renderTrackList(); updateMiniPlayer();
+      if (status) status.textContent = remote.length + ' song' + (remote.length > 1 ? 's' : '') + ' ready.';
+    } else {
+      useBuiltIn();
+    }
+  } catch(e) {
     console.warn('FitHerNova: music load used built-in playlist:', e.message || e);
-    finish(builtIn, 'Offline playlist ready. Tap a song to play.');
+    useBuiltIn();
   }
 }
 function updateMiniPlayer() {
@@ -2368,165 +2343,54 @@ function updateAudioProgress() {
   }
 }
 function playTrack(i, autoAdvance = false) {
-  if (!Array.isArray(tracks) || !tracks.length || !tracks[i]) return Promise.resolve(false);
-
+  if (!tracks.length || !tracks[i]) return Promise.resolve(false);
   const t = tracks[i];
   currentTrack = i;
-
-  const cleanSrc = normalizeAudioUrl(t.src || '');
-  setText('np-title', t.title || 'Untitled');
-  setText('np-artist', t.artist || 'FitHerNova Music');
-  const emoji = document.getElementById('np-emoji');
-  if (emoji) emoji.textContent = t.emoji || '🎵';
-  setText('np-total', t.dur || t.duration || '0:00');
-  setText('np-current', '0:00');
-  setStyle('np-progress','width','0%');
-  setStyle('mini-progress-fill','width','0%');
+  setText('np-title', t.title||'Untitled'); setText('np-artist', t.artist||'FitHerNova Music');
+  const emoji = document.getElementById('np-emoji'); if (emoji) emoji.textContent = t.emoji||'🎵';
+  setText('np-total', t.dur||'0:00'); setText('np-current', '0:00');
+  setStyle('np-progress','width','0%'); setStyle('mini-progress-fill','width','0%');
   clearInterval(progressInterval);
-
-  if (!cleanSrc) {
-    renderTrackList();
-    updateMiniPlayer();
-    setMusicStatus('This track has no audio link. Try another song.');
-    return Promise.resolve(false);
-  }
-
+  if (!t.src?.trim()) { renderTrackList(); updateMiniPlayer(); return Promise.resolve(false); }
   try { audioEl.pause(); } catch(e) {}
-  try {
-    audioEl.onended = null;
-    audioEl.onerror = null;
-    audioEl.ontimeupdate = null;
-    audioEl.onloadedmetadata = null;
-    audioEl.oncanplay = null;
-    audioEl.preload = 'auto';
-    audioEl.src = cleanSrc;
-    audioEl.load();
-  } catch(e) {
-    console.warn('Could not prepare audio:', e);
-  }
-
-  audioEl.ontimeupdate = updateAudioProgress;
-  audioEl.onloadedmetadata = updateAudioProgress;
-  audioEl.oncanplay = updateAudioProgress;
-  audioEl.onended = function() { autoNextTrack(1); };
-  audioEl.onerror = function() {
-    console.warn('FitHerNova audio error for:', cleanSrc);
-    isPlaying = false;
-    setPlayIcon(false);
-    document.getElementById('np-art')?.classList.remove('spinning');
-    renderTrackList();
-    updateMiniPlayer();
-    if (autoAdvance) setTimeout(() => autoNextTrack(1), 300);
-    else setMusicStatus('This song could not load. Tap another track or press Refresh.');
-  };
-
+  audioEl.onended = null; audioEl.onerror = null; audioEl.ontimeupdate = null; audioEl.onloadedmetadata = null;
+  audioEl.src = t.src.trim(); audioEl.load();
+  audioEl.ontimeupdate = updateAudioProgress; audioEl.onloadedmetadata = updateAudioProgress;
+  audioEl.onended = () => autoNextTrack(1);
+  audioEl.onerror = () => { isPlaying = false; setPlayIcon(false); document.getElementById('np-art')?.classList.remove('spinning'); renderTrackList(); updateMiniPlayer(); if (autoAdvance) setTimeout(() => autoNextTrack(1), 300); else setMusicStatus('Try another track — this one had a loading error.'); };
   if ('mediaSession' in navigator) {
-    try {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: t.title || 'FitHerNova',
-        artist: t.artist || 'FitHerNova Radio',
-        album: 'FitHerNova Radio'
-      });
-      navigator.mediaSession.setActionHandler('play', () => togglePlay());
-      navigator.mediaSession.setActionHandler('pause', () => togglePlay());
-      navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack());
-      navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack());
-    } catch(e) {}
+    try { navigator.mediaSession.metadata = new MediaMetadata({ title:t.title||'FitHerNova', artist:t.artist||'Pro Media Records', album:'FitHerNova Radio' }); navigator.mediaSession.setActionHandler('play', () => togglePlay()); navigator.mediaSession.setActionHandler('pause', () => togglePlay()); navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack()); navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack()); } catch(e) {}
   }
-
-  miniPlayerActivated = true;
-  miniPlayerDismissed = false;
-  updateMiniPlayer();
-
-  return Promise.resolve(audioEl.play()).then(() => {
-    isPlaying = true;
-    setPlayIcon(true);
-    document.getElementById('np-art')?.classList.add('spinning');
-    setMusicStatus('Now playing: ' + (t.title || 'Track') + ' by ' + (t.artist || 'FitHerNova'));
-    renderTrackList();
-    updateMiniPlayer();
-    clearInterval(progressInterval);
-    progressInterval = setInterval(updateAudioProgress, 500);
-    return true;
+  miniPlayerActivated = true; miniPlayerDismissed = false; updateMiniPlayer();
+  const playPromise = audioEl.play();
+  return Promise.resolve(playPromise).then(() => {
+    isPlaying = true; setPlayIcon(true); document.getElementById('np-art')?.classList.add('spinning');
+    setMusicStatus('Now playing: ' + (t.title||'Track') + ' by ' + (t.artist||'FitHerNova'));
+    renderTrackList(); updateMiniPlayer(); progressInterval = setInterval(updateAudioProgress, 500); return true;
   }).catch(err => {
-    console.warn('Playback did not start:', err && (err.name || err.message) ? (err.name + ' ' + (err.message || '')) : err);
-    isPlaying = false;
-    setPlayIcon(false);
-    document.getElementById('np-art')?.classList.remove('spinning');
-    if (err && err.name === 'NotAllowedError') {
-      setMusicStatus('Tap the song again or press ▶ to start music.');
-    } else if (autoAdvance) {
-      setTimeout(() => autoNextTrack(1), 300);
-    } else {
-      setMusicStatus('Tap ▶ again or choose another track.');
-    }
-    renderTrackList();
-    updateMiniPlayer();
-    return false;
+    if (err && err.name === 'NotAllowedError') { setMusicStatus('Tap the ▶ play button to start music.'); isPlaying = false; setPlayIcon(false); audioEl.load(); }
+    else { isPlaying = false; setPlayIcon(false); document.getElementById('np-art')?.classList.remove('spinning'); if (autoAdvance) setTimeout(() => autoNextTrack(1), 300); else setMusicStatus('Tap play or choose a different track.'); }
+    renderTrackList(); updateMiniPlayer(); return false;
   });
 }
 function autoNextTrack(step = 1) {
-  if (!Array.isArray(tracks) || !tracks.length) return;
+  if (!tracks.length) return;
   let next = (currentTrack + step + tracks.length) % tracks.length;
-  let attempts = 0;
-
-  const tryNext = () => {
-    if (attempts >= tracks.length) {
-      isPlaying = false;
-      setPlayIcon(false);
-      setMusicStatus('Choose a song and let the energy flow.');
-      renderTrackList();
-      updateMiniPlayer();
-      return;
-    }
-    const candidate = tracks[next];
+  for (let attempts = 0; attempts < tracks.length; attempts++) {
+    if (tracks[next]?.src) { currentTrack = next; playTrack(currentTrack, true).then(ok => { if (!ok && attempts < tracks.length-1) autoNextTrack(step); }); return; }
     next = (next + step + tracks.length) % tracks.length;
-    attempts++;
-    if (!candidate || !candidate.src) return tryNext();
-    currentTrack = (next - step + tracks.length) % tracks.length;
-    playTrack(currentTrack, true).then(ok => { if (!ok) tryNext(); });
-  };
-
-  tryNext();
+  }
+  isPlaying = false; setPlayIcon(false); setMusicStatus('Choose a song to continue.'); renderTrackList(); updateMiniPlayer();
 }
 function togglePlay() {
-  if (!Array.isArray(tracks) || !tracks.length) {
-    setMusicStatus('Choose a song first.');
-    return;
-  }
-
-  if (!audioEl.src || audioEl.src === window.location.href) {
-    playTrack(currentTrack || 0, false);
-    return;
-  }
-
+  if (!tracks.length) { setMusicStatus('Choose a song first.'); return; }
+  if (!audioEl.src || audioEl.src === window.location.href) { playTrack(currentTrack || 0, false); return; }
   const art = document.getElementById('np-art');
   if (audioEl.paused) {
-    Promise.resolve(audioEl.play()).then(() => {
-      isPlaying = true;
-      miniPlayerActivated = true;
-      miniPlayerDismissed = false;
-      setPlayIcon(true);
-      art?.classList.add('spinning');
-      setMusicStatus('Playing FitHerNova Radio.');
-      renderTrackList();
-      updateMiniPlayer();
-      clearInterval(progressInterval);
-      progressInterval = setInterval(updateAudioProgress, 500);
-    }).catch(err => {
-      console.warn('Toggle play failed:', err);
-      if (err && err.name === 'NotAllowedError') setMusicStatus('Tap a song card to start music.');
-      else setMusicStatus('Could not play. Try another track.');
-    });
-  } else {
-    audioEl.pause();
-    isPlaying = false;
-    setPlayIcon(false);
-    art?.classList.remove('spinning');
-    setMusicStatus('Paused.');
-    renderTrackList();
-    updateMiniPlayer();
-  }
+    const p = audioEl.play();
+    if (p) { p.then(() => { isPlaying = true; setPlayIcon(true); art?.classList.add('spinning'); setMusicStatus('Playing FitHerNova Radio.'); renderTrackList(); updateMiniPlayer(); }).catch(err => { if (err && err.name === 'NotAllowedError') setMusicStatus('Tap the ▶ button to start playing.'); else setMusicStatus('Could not play. Try another track.'); }); }
+    else { isPlaying = true; setPlayIcon(true); art?.classList.add('spinning'); renderTrackList(); updateMiniPlayer(); }
+  } else { audioEl.pause(); isPlaying = false; setPlayIcon(false); art?.classList.remove('spinning'); setMusicStatus('Paused.'); renderTrackList(); updateMiniPlayer(); }
 }
 function nextTrack() { if (!tracks.length) return; currentTrack = (currentTrack + 1) % tracks.length; playTrack(currentTrack, false); }
 function prevTrack() { if (!tracks.length) return; currentTrack = (currentTrack - 1 + tracks.length) % tracks.length; playTrack(currentTrack, false); }
