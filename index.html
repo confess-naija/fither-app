@@ -615,8 +615,8 @@ select option{background:var(--black3);}
       <div style="background:linear-gradient(135deg,#1a0810,#0a1a0a);border:1px solid var(--black4);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
         <div style="font-size:24px;">🌍</div>
         <div>
-          <div style="font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--white);">Global &amp; African Foods</div>
-          <div style="font-size:11px;color:var(--grey);margin-top:2px;">Healthy · High Protein · Weight Loss · Nigerian · African · Western</div>
+          <div style="font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--white);">Global Fitness Foods</div>
+          <div style="font-size:11px;color:var(--grey);margin-top:2px;">Healthy · High Protein · Weight Loss · African · Local · Western</div>
         </div>
       </div>
       <div class="filter-scroll" id="filter-scroll">
@@ -625,7 +625,7 @@ select option{background:var(--black3);}
         <div class="chip" onclick="setFilter('highprotein',this)">💪 High Protein</div>
         <div class="chip" onclick="setFilter('weightloss',this)">🔥 Weight Loss</div>
         <div class="chip" onclick="setFilter('african',this)">🌍 African</div>
-        <div class="chip" onclick="setFilter('nigerian',this)">🇳🇬 Nigerian</div>
+        <div class="chip" onclick="setFilter('nigerian',this)">🌍 Nigerian</div>
         <div class="chip" onclick="setFilter('western',this)">🍔 Western</div>
       </div>
       <input type="text" id="food-search" placeholder="Search any food…" oninput="doSearch()" style="margin-bottom:10px;"/>
@@ -850,7 +850,7 @@ select option{background:var(--black3);}
         <div class="sec-label" style="margin-bottom:0;">Quick help</div>
         <div class="coach-prompts">
           <button class="coach-prompt" onclick="coachAsk('what should i eat today')"><b>🍲 What should I eat today?</b><span>Quick meal guidance</span></button>
-          <button class="coach-prompt" onclick="coachAsk('nigerian fat loss meals')"><b>🥗 Nigerian fat-loss meals</b><span>Simple local food ideas</span></button>
+          <button class="coach-prompt" onclick="coachAsk('nigerian fat loss meals')"><b>🥗 African fat-loss meals</b><span>Healthy local food ideas</span></button>
           <button class="coach-prompt" onclick="coachAsk('quick breakfast ideas')"><b>⏱️ Quick breakfast ideas</b><span>Busy woman friendly</span></button>
           <button class="coach-prompt" onclick="coachAsk('give me belly workout')"><b>🔥 Belly workout</b><span>Quick routine to start</span></button>
           <button class="coach-prompt" onclick="coachAsk('motivate me')"><b>💖 Motivation</b><span>Soft push for consistency</span></button>
@@ -2230,7 +2230,7 @@ function coachAsk(q) {
   const curW  = weights.length ? Number(weights[weights.length-1]) : null;
   let answer = '';
   if (!question) { answer = 'Ask me something like: what should I eat today, give me a workout, motivate me, or how many calories are left?'; }
-  else if (question.includes('eat') || question.includes('meal') || question.includes('food') || question.includes('nigerian')) { answer = name + ', based on your ' + userGoal + ' kcal goal, you have about ' + rem + ' kcal remaining today.\n\nSimple plate idea:\n• Protein: grilled fish/chicken, egg, moi moi, or beans\n• Carb: small rice, small yam, oats, or controlled swallow\n• Vegetables: soup, salad, spinach, okra, cabbage\n• Drink: water first, avoid sugary drinks\n\nNigerian option: moi moi + salad, grilled fish + small jollof, or pepper soup.'; }
+  else if (question.includes('eat') || question.includes('meal') || question.includes('food') || question.includes('nigerian')) { answer = name + ', based on your ' + userGoal + ' kcal goal, you have about ' + rem + ' kcal remaining today.\n\nSimple plate idea:\n• Protein: grilled fish/chicken, egg, moi moi, or beans\n• Carb: small rice, small yam, oats, or controlled swallow\n• Vegetables: soup, salad, spinach, okra, cabbage\n• Drink: water first, avoid sugary drinks\n\nLocal option: moi moi + salad, grilled fish + small jollof, or pepper soup.'; }
   else if (question.includes('workout') || question.includes('belly') || question.includes('exercise')) { answer = name + ', do this 10-minute belly burn today:\n\n1. Standing march — 2 min\n2. Knee-to-elbow crunch — 3×12\n3. Leg raises — 3×10\n4. Plank — 3×20 sec\n5. Deep breathing — 1 min\n\nStart small. Finish strong. Log it in Timer.'; }
   else if (question.includes('water') || question.includes('drink')) { answer = 'Hydration plan:\n\n• 1 glass when you wake up\n• 1 glass before each meal\n• 1 glass after workout\n• 1 glass before evening\n\nYour tracker: ' + waterCups + '/8 glasses today 💧'; }
   else if (question.includes('calorie') || question.includes('left') || question.includes('remaining')) { answer = 'Today you logged ' + meals + ' kcal. Your goal is ' + userGoal + ' kcal. You have ' + rem + ' kcal remaining.\n\nUse remaining calories on protein + vegetables first, then small carbs if needed.'; }
