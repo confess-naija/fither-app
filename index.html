@@ -416,6 +416,14 @@ select option{background:var(--black3);}
 .text-pink{color:var(--pink-light);}
 .text-green{color:var(--green);}
 .divider{height:1px;background:var(--black4);margin:10px 0;}
+
+/* subtle pro strip — bottom of home */
+.pro-home-strip{display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--black2);border:1px solid rgba(255,45,107,.18);border-radius:var(--radius);padding:10px 14px;margin-top:12px;margin-bottom:12px;}
+.pro-home-strip .ps-text{font-size:12px;color:var(--grey);line-height:1.35;}
+.pro-home-strip .ps-text strong{font-size:12px;color:rgba(255,255,255,.75);display:block;margin-bottom:1px;}
+.pro-home-strip .ps-btn{flex-shrink:0;background:transparent;border:1px solid rgba(255,45,107,.45);color:var(--pink-light);border-radius:99px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.pro-home-strip .ps-btn:hover{background:rgba(255,45,107,.12);}
+
 </style>
 </head>
 <body>
@@ -602,13 +610,13 @@ select option{background:var(--black3);}
         </div>
       </div>
 
-      <!-- PRO upgrade — bottom of home -->
-      <div class="pro-inline-card" id="pro-home-card" style="display:none;">
-        <button class="pro-dismiss-btn" onclick="dismissProCard()" title="Dismiss">×</button>
-        <div class="pro-inline-title">FitHerNova PRO ✨</div>
-        <div class="pro-inline-sub">Unlock DJ Mode, premium workouts, Coach Nova PRO, meal plans &amp; advanced tracking.</div>
-        <span class="pro-badge free" id="pro-pill-home" style="margin-bottom:10px;display:inline-flex;">FREE</span>
-        <button class="btn btn-pink" onclick="openProModal()">Upgrade to PRO</button>
+      <!-- subtle PRO strip — bottom of home -->
+      <div class="pro-home-strip" id="pro-home-strip">
+        <div class="ps-text">
+          <strong>FitHerNova PRO ✨</strong>
+          DJ Mode · premium workouts · Coach Nova PRO
+        </div>
+        <button class="ps-btn" onclick="openProModal()">Upgrade</button>
       </div>
     </div>
 
@@ -1542,8 +1550,8 @@ async function loadProStatus() {
 function updateProUI() {
   const pills = [document.getElementById('pro-status-badge'), document.getElementById('pro-pill-home')];
   pills.forEach(el => { if (!el) return; el.textContent = isProUser ? ('PRO · ' + String(proPlan||'active').toUpperCase()) : 'FREE'; el.classList.toggle('free', !isProUser); });
-  const homeCard = document.getElementById('pro-home-card');
-  if (homeCard) homeCard.style.display = (isProUser || proCardSessionDismissed) ? 'none' : 'block';
+  const homeStrip = document.getElementById('pro-home-strip');
+  if (homeStrip) homeStrip.style.display = isProUser ? 'none' : 'flex';
   const ptxt = document.getElementById('profile-pro-text');
   if (ptxt) ptxt.textContent = isProUser ? 'Your FitHerNova PRO access is active. Enjoy premium features ✨' : 'You are on the Free plan. Upgrade to unlock premium workouts, Coach Nova PRO, full radio and advanced tracking.';
   const pbtn = document.getElementById('profile-pro-btn');
