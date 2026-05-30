@@ -2354,7 +2354,7 @@ function playTrack(i, autoAdvance = false) {
   if (!t.src?.trim()) { renderTrackList(); updateMiniPlayer(); return Promise.resolve(false); }
   try { audioEl.pause(); } catch(e) {}
   audioEl.onended = null; audioEl.onerror = null; audioEl.ontimeupdate = null; audioEl.onloadedmetadata = null;
-  audioEl.src = t.src.trim(); audioEl.load();
+  audioEl.src = t.src.trim();
   audioEl.ontimeupdate = updateAudioProgress; audioEl.onloadedmetadata = updateAudioProgress;
   audioEl.onended = () => autoNextTrack(1);
   audioEl.onerror = () => { isPlaying = false; setPlayIcon(false); document.getElementById('np-art')?.classList.remove('spinning'); renderTrackList(); updateMiniPlayer(); if (autoAdvance) setTimeout(() => autoNextTrack(1), 300); else setMusicStatus('Try another track — this one had a loading error.'); };
