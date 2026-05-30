@@ -2368,7 +2368,7 @@ function playTrack(i, autoAdvance = false) {
     setMusicStatus('Now playing: ' + (t.title||'Track') + ' by ' + (t.artist||'FitHerNova'));
     renderTrackList(); updateMiniPlayer(); progressInterval = setInterval(updateAudioProgress, 500); return true;
   }).catch(err => {
-    if (err && err.name === 'NotAllowedError') { setMusicStatus('Tap the ▶ play button to start music.'); isPlaying = false; setPlayIcon(false); audioEl.load(); }
+    if (err && err.name === 'NotAllowedError') { setMusicStatus('Tap the ▶ play button to start music.'); isPlaying = false; setPlayIcon(false); }
     else { isPlaying = false; setPlayIcon(false); document.getElementById('np-art')?.classList.remove('spinning'); if (autoAdvance) setTimeout(() => autoNextTrack(1), 300); else setMusicStatus('Tap play or choose a different track.'); }
     renderTrackList(); updateMiniPlayer(); return false;
   });
