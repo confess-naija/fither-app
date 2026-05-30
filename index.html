@@ -540,15 +540,6 @@ select option{background:var(--black3);}
         </div>
       </div>
 
-      <!-- PRO card — dismissable, once per session -->
-      <div class="pro-inline-card" id="pro-home-card" style="display:none;">
-        <button class="pro-dismiss-btn" onclick="dismissProCard()" title="Dismiss">×</button>
-        <div class="pro-inline-title">FitHerNova PRO ✨</div>
-        <div class="pro-inline-sub">Unlock DJ Mode, premium workouts, Coach Nova PRO, meal plans, themes and advanced tracking.</div>
-        <span class="pro-badge free" id="pro-pill-home" style="margin-bottom:10px;display:inline-flex;">FREE</span>
-        <button class="btn btn-pink" onclick="openProModal()">Upgrade to PRO</button>
-      </div>
-
       <div id="install-banner" class="install-banner" style="display:none;">
         <div style="font-size:28px;">📲</div>
         <div class="ib-text"><strong>Install FitHerNova App</strong>Save it to your phone for quick workouts, meals, Coach Nova and gospel radio.</div>
@@ -609,6 +600,15 @@ select option{background:var(--black3);}
           <button class="btn btn-ghost" style="flex:1;" onclick="addWater()">+ Glass</button>
           <button class="btn btn-ghost" onclick="resetWater()" style="border-color:#5c1a25;color:#ff8888;">Reset</button>
         </div>
+      </div>
+
+      <!-- PRO upgrade — bottom of home -->
+      <div class="pro-inline-card" id="pro-home-card" style="display:none;">
+        <button class="pro-dismiss-btn" onclick="dismissProCard()" title="Dismiss">×</button>
+        <div class="pro-inline-title">FitHerNova PRO ✨</div>
+        <div class="pro-inline-sub">Unlock DJ Mode, premium workouts, Coach Nova PRO, meal plans &amp; advanced tracking.</div>
+        <span class="pro-badge free" id="pro-pill-home" style="margin-bottom:10px;display:inline-flex;">FREE</span>
+        <button class="btn btn-pink" onclick="openProModal()">Upgrade to PRO</button>
       </div>
     </div>
 
