@@ -99,11 +99,21 @@ select option{background:var(--black3);}
 .meal-log-item:last-child{border-bottom:none;}
 .mli-left{display:flex;align-items:center;gap:8px;font-size:13px;}
 .mli-cal{font-size:13px;font-weight:600;color:var(--pink-light);}
-/* daily quote card */
-.daily-quote-card{background:linear-gradient(135deg,#1a0a10,#0a0a16);border:1px solid var(--pink-dark);border-radius:var(--radius);padding:14px;margin-bottom:12px;position:relative;}
-.daily-quote-text{font-size:13px;line-height:1.65;color:var(--white);font-style:italic;}
+/* Coach Nova challenge card — lively daily motivation */
+.daily-quote-card{background:radial-gradient(circle at 12% 0%,rgba(255,45,107,.34),transparent 34%),radial-gradient(circle at 95% 10%,rgba(255,209,102,.18),transparent 30%),linear-gradient(135deg,#1a0710,#07070b);border:1px solid rgba(255,45,107,.45);border-radius:22px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 14px 42px rgba(255,45,107,.12);}
+.daily-quote-card:before{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent,rgba(255,255,255,.055),transparent);transform:translateX(-120%);animation:coachShine 5.5s ease-in-out infinite;pointer-events:none;}
+@keyframes coachShine{0%,62%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.daily-quote-card .sec-label{color:rgba(255,255,255,.72);font-size:10px;letter-spacing:1.7px;}
+.daily-quote-text{font-size:13px;line-height:1.65;color:var(--white);position:relative;z-index:1;}
 .daily-quote-loading{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--grey);}
 .daily-quote-spinner{width:14px;height:14px;border:2px solid var(--black4);border-top-color:var(--pink);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+.coach-challenge-kicker{display:inline-flex;align-items:center;gap:6px;background:rgba(255,45,107,.18);border:1px solid rgba(255,45,107,.35);color:var(--pink-light);font-size:10px;font-weight:900;letter-spacing:.8px;border-radius:999px;padding:5px 9px;margin-bottom:9px;text-transform:uppercase;}
+.coach-challenge-line{font-family:var(--font-head);font-size:17px;font-weight:800;line-height:1.25;color:#fff;letter-spacing:-.25px;margin-bottom:7px;}
+.coach-challenge-sub{font-size:12px;color:rgba(255,255,255,.68);line-height:1.55;margin-bottom:12px;}
+.coach-challenge-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.coach-mission-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.28);color:var(--gold);border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;}
+.coach-refresh-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(255,255,255,.72);border-radius:999px;padding:6px 11px;font-size:11px;font-weight:800;cursor:pointer;}
+.coach-refresh-btn:hover{border-color:rgba(255,45,107,.5);color:#fff;background:rgba(255,45,107,.12);}
 /* pro card dismiss */
 .pro-inline-card{border-radius:22px;padding:15px;background:linear-gradient(135deg,#1a0710,#101010);border:1px solid rgba(255,45,107,.24);margin-bottom:12px;position:relative;}
 .pro-inline-title{font-family:var(--font-head);font-size:16px;font-weight:900;margin-bottom:4px;}
@@ -541,10 +551,10 @@ select option{background:var(--black3);}
 
       <!-- Daily AI Motivation Quote -->
       <div class="daily-quote-card" id="daily-quote-card">
-        <div class="sec-label" style="margin-bottom:6px;">Today's word from Coach Nova ✨</div>
+        <div class="sec-label" style="margin-bottom:8px;">🔥 Coach Nova's Challenge</div>
         <div id="daily-quote-text" class="daily-quote-loading">
           <div class="daily-quote-spinner"></div>
-          <span>Loading your daily motivation…</span>
+          <span>Preparing today's mission…</span>
         </div>
       </div>
 
@@ -1582,60 +1592,68 @@ async function startProCheckout(plan) {
   } catch(err) { setProMsg('Payment error: ' + (err.message||'Please try again.')); }
 }
 
-// ── DAILY AI MOTIVATION QUOTE ────────────────────────────────────────────────
-async function loadDailyQuote() {
-  const today = new Date().toISOString().slice(0, 10);
-  const cacheKey = 'fhn_daily_quote_' + (currentUser?.id || 'guest') + '_' + today;
-  const el = document.getElementById('daily-quote-text');
-  if (!el) return;
-
-  // Check cache first — no API call needed on repeat opens today
-  try {
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      el.innerHTML = '<span style="font-style:italic;">' + cached + '</span>';
-      return;
-    }
-  } catch(e) {}
-
-  const name = (profileSettings.fullName || 'Queen').split(' ')[0];
-  const goal = profileSettings.mainGoal || 'Build consistency';
-  const fallbacks = [
-    name + ', every rep you do today is writing the story of the woman you are becoming. Show up.',
-    'Your body is not a problem to fix. It is a gift to nurture. Move it with love today, ' + name + '.',
-    'Consistency beats perfection. One small action today keeps your glow-up momentum going.',
-    name + ', the woman who moves her body daily becomes unstoppable. Start now.',
-    'You did not come this far to stop. Your goals are closer than they feel today, ' + name + '.',
-    'Faith and fitness. Gospel and gains. You are built for both — keep going, ' + name + '.',
+// ── DAILY COACH NOVA CHALLENGE ───────────────────────────────────────────────
+function coachNovaMessages(name, goal) {
+  return [
+    {line:'Your future body is built by today’s choices.', sub:'One workout. One better meal. One glass of water. Small wins still count, '+name+'.', mission:'Complete one 10-minute workout'},
+    {line:'Discipline will carry you when motivation is quiet.', sub:'Do not wait to feel ready. Start moving and let your energy catch up.', mission:'Start the timer today'},
+    {line:'The woman you are becoming needs you to show up today.', sub:'Not perfectly. Not loudly. Just consistently. That is where the glow begins.', mission:'Do one thing before night'},
+    {line:'Your body is not your enemy — it is your assignment.', sub:'Train it with love, feed it with wisdom, and speak to it with faith.', mission:'Choose one healthy meal'},
+    {line:'No excuses mode: just ten minutes.', sub:'Ten minutes can break laziness, restart confidence, and remind you who you are.', mission:'Move for 10 minutes'},
+    {line:'Your glow-up is not a dream. It is a routine.', sub:'Every rep, every meal, every glass of water is proof that you are becoming stronger.', mission:'Log one progress action'},
+    {line:'Today, win the first battle.', sub:'Before the day gets noisy, give yourself one victory your future self will thank you for.', mission:'Do your first workout'},
+    {line:'Faith, focus, and fitness — that is your lane.', sub:'Stay there. Keep going. The results will meet you on the road of consistency.', mission:'Protect your streak'},
+    {line:'You do not need a perfect day to make progress.', sub:'You only need one honest action. Choose it now, '+name+'.', mission:'Pick one small win'},
+    {line:'Your goal is '+goal+'. Your power is consistency.', sub:'Do not negotiate with old habits today. Move like a woman who means it.', mission:'Show up for your goal'}
   ];
+}
 
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 120,
-        messages: [{
-          role: 'user',
-          content: 'Write one warm, personal fitness motivation (2 sentences max) for a Nigerian woman named ' + name + ' whose fitness goal is "' + goal + '". Make it feel personal and faith-inspired. No hashtags. No emoji. No quotation marks. Just plain warm sentences.'
-        }]
-      })
-    });
-    if (!res.ok) throw new Error('API error');
-    const data = await res.json();
-    const quote = data?.content?.[0]?.text?.trim();
-    if (quote && quote.length > 10) {
-      el.innerHTML = '<span style="font-style:italic;">' + quote + '</span>';
-      try { localStorage.setItem(cacheKey, quote); } catch(e) {}
-      return;
-    }
-  } catch(e) {}
+function renderCoachNovaChallenge(message) {
+  const el = document.getElementById('daily-quote-text');
+  if (!el || !message) return;
+  el.className = 'daily-quote-text';
+  el.innerHTML =
+    '<div class="coach-challenge-kicker">⚡ Today\'s mission</div>' +
+    '<div class="coach-challenge-line">' + escapeHtml(message.line) + '</div>' +
+    '<div class="coach-challenge-sub">' + escapeHtml(message.sub) + '</div>' +
+    '<div class="coach-challenge-bottom">' +
+      '<span class="coach-mission-pill">🎯 ' + escapeHtml(message.mission) + '</span>' +
+      '<button class="coach-refresh-btn" onclick="refreshCoachNovaChallenge()">New word</button>' +
+    '</div>';
+}
 
-  // Fallback quote
-  const fallback = fallbacks[new Date().getDate() % fallbacks.length];
-  el.innerHTML = '<span style="font-style:italic;">' + fallback + '</span>';
-  try { localStorage.setItem(cacheKey, fallback); } catch(e) {}
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>'"]/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+  });
+}
+
+async function loadDailyQuote(forceNew = false) {
+  const today = new Date().toISOString().slice(0, 10);
+  const cacheKey = 'fhn_daily_challenge_v2_' + (currentUser?.id || 'guest') + '_' + today;
+  const name = (profileSettings.fullName || 'Queen').split(' ')[0] || 'Queen';
+  const goal = profileSettings.mainGoal || 'Build consistency';
+  const messages = coachNovaMessages(name, goal);
+
+  if (!forceNew) {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        renderCoachNovaChallenge(JSON.parse(cached));
+        return;
+      }
+    } catch(e) {}
+  }
+
+  // Instant lively local message — no slow external API, no dead loading card.
+  const seed = today.split('-').join('') + (currentUser?.id || name).length + (forceNew ? Date.now() : 0);
+  const pick = messages[Math.abs(Number(seed)) % messages.length] || messages[0];
+  renderCoachNovaChallenge(pick);
+  try { localStorage.setItem(cacheKey, JSON.stringify(pick)); } catch(e) {}
+}
+
+function refreshCoachNovaChallenge() {
+  loadDailyQuote(true);
 }
 
 // ── DAILY CHECK-IN NUDGE (if no meal logged by 1pm) ─────────────────────────
