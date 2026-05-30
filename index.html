@@ -474,6 +474,43 @@ select option{background:var(--black3);}
 .pro-home-strip .ps-btn{flex-shrink:0;background:transparent;border:1px solid rgba(255,45,107,.45);color:var(--pink-light);border-radius:99px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
 .pro-home-strip .ps-btn:hover{background:rgba(255,45,107,.12);}
 
+
+
+/* ====== FITHER NOVA PREMIUM WORKOUT EXPERIENCE ====== */
+.workout-preview-card{display:none;position:relative;overflow:hidden;border-radius:24px;padding:16px;margin:0 0 14px;background:radial-gradient(circle at 12% 0%,rgba(255,45,107,.30),transparent 35%),radial-gradient(circle at 100% 15%,rgba(255,209,102,.18),transparent 34%),linear-gradient(145deg,#18070f,#0f0f0f);border:1px solid rgba(255,45,107,.30);box-shadow:0 18px 50px rgba(0,0,0,.45),0 0 28px rgba(255,45,107,.10);text-align:left;}
+.workout-preview-card.show{display:block;animation:fadeUp .3s ease;}
+.workout-preview-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.workout-preview-title{font-family:var(--font-head);font-size:18px;font-weight:900;letter-spacing:-.3px;color:#fff;}
+.workout-preview-sub{font-size:12px;color:rgba(255,255,255,.62);line-height:1.45;margin-top:3px;}
+.workout-preview-icon{width:52px;height:52px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--pink),var(--gold));font-size:26px;box-shadow:0 14px 35px rgba(255,45,107,.25);flex-shrink:0;}
+.workout-preview-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px;}
+.workout-preview-stat{border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);padding:10px;text-align:center;}
+.workout-preview-stat b{display:block;font-family:var(--font-head);font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.workout-preview-stat span{display:block;font-size:9px;color:var(--grey);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;}
+@media(max-width:560px){.workout-preview-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.coach-live-card{display:none;border-radius:22px;padding:14px;margin:0 0 14px;background:linear-gradient(145deg,#130910,#0d0d0d);border:1px solid rgba(255,209,102,.18);text-align:left;}
+.coach-live-card.show{display:block;animation:fadeUp .25s ease;}
+.coach-live-kicker{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;background:rgba(255,209,102,.10);border:1px solid rgba(255,209,102,.22);color:var(--gold);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.coach-live-message{font-family:var(--font-head);font-size:16px;font-weight:800;color:#fff;line-height:1.35;}
+.coach-live-sub{font-size:12px;color:rgba(255,255,255,.60);margin-top:5px;line-height:1.45;}
+.workout-goal-card{border-radius:20px;padding:14px;margin-bottom:14px;background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.08);text-align:left;}
+.workout-goal-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.workout-goal-title{font-family:var(--font-head);font-size:14px;font-weight:900;color:#fff;}
+.workout-goal-value{font-size:11px;color:var(--pink-light);font-weight:900;border:1px solid rgba(255,45,107,.25);background:rgba(255,45,107,.10);border-radius:999px;padding:5px 9px;}
+.workout-goal-track{height:8px;border-radius:999px;background:var(--black4);overflow:hidden;}
+.workout-goal-track>div{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .45s ease;}
+.workout-complete-boost{border-radius:22px;margin-top:12px;padding:12px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);}
+.reward-line{display:flex;justify-content:space-between;gap:10px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.06);}
+.reward-line:last-child{border-bottom:0;}
+.reward-line b{color:var(--gold);}
+.workout-badges-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px;}
+.workout-badge{border-radius:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);padding:10px;text-align:center;opacity:.45;}
+.workout-badge.earned{opacity:1;border-color:rgba(255,209,102,.34);background:linear-gradient(145deg,rgba(255,209,102,.09),rgba(255,45,107,.06));}
+.workout-badge .bi{font-size:22px;margin-bottom:4px;}
+.workout-badge .bt{font-family:var(--font-head);font-size:11px;font-weight:900;color:#fff;line-height:1.15;}
+.workout-badge .bs{font-size:9px;color:var(--grey);margin-top:3px;}
+@media(max-width:560px){.workout-badges-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
 </style>
 </head>
 <body>
@@ -752,7 +789,9 @@ select option{background:var(--black3);}
             <div class="rb-stat"><div class="rb-val" id="rb-pace">--</div><div class="rb-lbl">Intensity</div></div>
           </div>
           <div class="rb-msg" id="rb-msg"></div>
+          <div class="workout-complete-boost" id="workout-complete-rewards" style="display:none;"></div>
         </div>
+        <div class="workout-preview-card" id="workout-preview-card"></div>
         <div class="timer-workout-name" id="timer-wname">Select a workout below</div>
         <div class="timer-ring-wrap">
           <svg width="200" height="200" viewBox="0 0 200 200">
@@ -774,6 +813,18 @@ select option{background:var(--black3);}
           <div class="ts"><div class="tv" id="ts-cal">0</div><div class="tl">kcal burned</div></div>
           <div class="ts"><div class="tv" id="ts-pace">--</div><div class="tl">Intensity</div></div>
         </div>
+        <div class="coach-live-card" id="coach-live-card">
+          <div class="coach-live-kicker">✨ Coach Nova Live</div>
+          <div class="coach-live-message" id="coach-live-message">Select a workout and let's begin.</div>
+          <div class="coach-live-sub" id="coach-live-sub">Your guided session will appear here while the timer runs.</div>
+        </div>
+        <div class="workout-goal-card">
+          <div class="workout-goal-row">
+            <div class="workout-goal-title">Weekly Workout Goal</div>
+            <div class="workout-goal-value" id="workout-weekly-value">0/5 sessions</div>
+          </div>
+          <div class="workout-goal-track"><div id="workout-weekly-bar"></div></div>
+        </div>
         <div class="timer-btns">
           <button class="tbtn tbtn-go" id="btn-start" onclick="startTimer()">▶ Start</button>
           <button class="tbtn tbtn-pause" id="btn-pause" onclick="pauseTimer()" style="display:none;">⏸ Pause</button>
@@ -782,6 +833,8 @@ select option{background:var(--black3);}
       </div>
       <div class="pick-label">Choose your workout</div>
       <div id="workout-picker"></div>
+      <div class="sec-label mt12">Workout Badges</div>
+      <div class="card" id="workout-badges-card"><div class="text-grey">Complete a workout to unlock badges.</div></div>
       <div class="sec-label mt12">Workout history</div>
       <div class="card" id="workout-history"><div class="text-grey">No workouts logged yet</div></div>
     </div>
@@ -1825,6 +1878,7 @@ function goTo(page, isBack = false) {
     backBtn.style.display = showBack ? 'flex' : 'none';
   }
 
+  if (page === 'timer')     updateWorkoutExperienceUI();
   if (page === 'home')      updateHome();
   if (page === 'food')      { doSearch(); renderFoodLog(); }
   if (page === 'progress')  { renderProgress(); loadLeaderboard(); }
@@ -1841,7 +1895,7 @@ function todayKey() { return new Date().toISOString().slice(0,10); }
 function addNovaPoints(points) {
   novaPoints = Math.max(0, (Number(novaPoints)||0) + Number(points||0));
   scheduleSave();
-  updateFlyFeatures();
+  updateFlyFeatures(); updateWorkoutExperienceUI();
 }
 function awardAchievement(key, title, sub, points) {
   if (!key) return;
@@ -2145,7 +2199,7 @@ function toggleWorkout(i) {
   document.querySelectorAll('.workout-card').forEach(c => c.classList.remove('open'));
   if (!isOpen) { el.classList.add('open'); card.classList.add('open'); }
 }
-function startWorkoutFromList(name, calPM) { selWorkout = { name, calPM }; setText('timer-wname', name); setText('ts-pace', intensity(calPM)); renderWorkoutPicker(); goTo('timer'); }
+function startWorkoutFromList(name, calPM) { selWorkout = { name, calPM }; setText('timer-wname', name); setText('ts-pace', intensity(calPM)); renderWorkoutPicker(); renderWorkoutPreview(); goTo('timer'); }
 
 // ── TIMER ─────────────────────────────────────────────────────────────────────
 function renderWorkoutPicker() {
@@ -2153,9 +2207,123 @@ function renderWorkoutPicker() {
   if (!el) return;
   el.innerHTML = WORKOUT_DB.map(w => '<div class="pick-item' + (selWorkout && selWorkout.name === w.name ? ' selected' : '') + '" onclick="pickWorkout(\'' + w.name + '\',' + w.calPM + ')"><div class="pick-icon">' + w.icon + '</div><div class="pick-name">' + w.name + '</div><div class="pick-rate">' + w.calPM + ' kcal/min</div></div>').join('');
 }
-function pickWorkout(name, calPM) { selWorkout = { name, calPM }; setText('timer-wname', name); setText('ts-pace', intensity(calPM)); renderWorkoutPicker(); }
+function pickWorkout(name, calPM) { selWorkout = { name, calPM }; setText('timer-wname', name); setText('ts-pace', intensity(calPM)); renderWorkoutPicker(); renderWorkoutPreview(); }
 function fmt(s) { return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
 function intensity(c) { if (c <= 4) return 'Light'; if (c <= 6) return 'Moderate'; if (c <= 10) return 'High'; return 'Intense'; }
+
+function getWorkoutMeta(name, calPM) {
+  const base = WORKOUT_DB.find(w => w.name === name) || { name:name || 'Workout', icon:'🔥', level:intensity(calPM || 6), dur:'10 min', calPM:calPM || 6, ex:[] };
+  const mins = parseInt(String(base.dur || '10').match(/\d+/)?.[0] || '10', 10);
+  const advanced = String(base.level || '').toLowerCase().includes('advanced') || Number(base.calPM) >= 11;
+  const descriptions = {
+    '10-min Belly Burn':'A quick core-focused session to wake up your waistline and build consistency.',
+    'HIIT Core Blaster':'A high-energy sweat session for strength, stamina and serious calorie burn.',
+    'Stretch & Tone':'A smoother session for mobility, control and feminine tone.',
+    'Postpartum Restore':'Gentle rebuilding work for breath, core awareness and confidence.',
+    'Advanced Belly Shred':'A stronger challenge for days you want to push your limits.'
+  };
+  return {
+    ...base,
+    mins,
+    estCal: Math.round(mins * Number(base.calPM || calPM || 6)),
+    points: advanced ? 100 : (Number(base.calPM) >= 8 ? 70 : 50),
+    scoreBoost: advanced ? 10 : 5,
+    description: descriptions[base.name] || 'A focused FitHerNova session to move your body and protect your streak.'
+  };
+}
+function renderWorkoutPreview() {
+  const card = document.getElementById('workout-preview-card');
+  if (!card) return;
+  if (!selWorkout) { card.classList.remove('show'); card.innerHTML = ''; return; }
+  const meta = getWorkoutMeta(selWorkout.name, selWorkout.calPM);
+  card.classList.add('show');
+  card.innerHTML = '<div class="workout-preview-top"><div><div class="workout-preview-title">' + meta.icon + ' ' + meta.name + '</div><div class="workout-preview-sub">' + meta.description + '</div></div><div class="workout-preview-icon">' + meta.icon + '</div></div>' +
+    '<div class="workout-preview-stats">' +
+    '<div class="workout-preview-stat"><b>' + meta.mins + ' min</b><span>Duration</span></div>' +
+    '<div class="workout-preview-stat"><b>~' + meta.estCal + '</b><span>Calories</span></div>' +
+    '<div class="workout-preview-stat"><b>' + meta.level + '</b><span>Difficulty</span></div>' +
+    '<div class="workout-preview-stat"><b>+' + meta.points + '</b><span>Nova Points</span></div>' +
+    '</div>';
+}
+function getWorkoutMotivation(sec) {
+  const name = selWorkout?.name || 'workout';
+  const messages = [
+    ['🔥 Every rep counts.', 'Keep your body moving. Results come from consistency.'],
+    ['💪 Strong women do not quit.', 'Breathe, reset your form, and keep going.'],
+    ['⚡ You are building the future version of yourself.', 'This minute matters. Stay with it.'],
+    ['🏆 Keep moving.', 'Your workout history is being written right now.'],
+    ['✨ Coach Nova: Focus on form.', 'Quality movement beats rushed movement.'],
+    ['💖 Coach Nova: Breathe steadily.', 'Control your breath and protect your energy.'],
+    ['👑 Coach Nova: You are doing great.', 'The goal is progress, not perfection.'],
+    ['🔥 Finish this session strong.', name + ' is making you better today.']
+  ];
+  const idx = Math.floor(sec / 45) % messages.length;
+  return messages[idx];
+}
+function renderWorkoutLiveMessage(force=false) {
+  const card = document.getElementById('coach-live-card');
+  if (!card) return;
+  if (!timerRunning && !timerPaused) { card.classList.remove('show'); return; }
+  const msg = getWorkoutMotivation(timerSec || 0);
+  card.classList.add('show');
+  setText('coach-live-message', msg[0]);
+  setText('coach-live-sub', msg[1]);
+}
+function getWeeklyWorkoutCount() {
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7*86400000);
+  return workoutHistory.filter(w => {
+    if (w.iso) return new Date(w.iso) >= weekAgo;
+    return true;
+  }).length;
+}
+function updateWorkoutWeeklyProgress() {
+  const count = getWeeklyWorkoutCount();
+  const goal = 5;
+  setText('workout-weekly-value', Math.min(count, goal) + '/' + goal + ' sessions');
+  const bar = document.getElementById('workout-weekly-bar');
+  if (bar) bar.style.width = Math.min(100, Math.round(count/goal*100)) + '%';
+}
+function getWorkoutBadgeRows() {
+  const total = Number(workoutsDone) || 0;
+  const advancedCount = workoutHistory.filter(w => String(w.name||'').toLowerCase().includes('advanced') || String(w.name||'').toLowerCase().includes('hiit')).length;
+  return [
+    { key:'first_workout', icon:'🥉', title:'First Workout', sub:'Complete 1', earned:total >= 1 },
+    { key:'five_workouts', icon:'🥈', title:'5 Workouts', sub:'Complete 5', earned:total >= 5 },
+    { key:'twentyfive_workouts', icon:'🥇', title:'25 Workouts', sub:'Complete 25', earned:total >= 25 },
+    { key:'fitness_warrior', icon:'👑', title:'Fitness Warrior', sub:'5 strong sessions', earned:advancedCount >= 5 }
+  ];
+}
+function renderWorkoutBadges() {
+  const el = document.getElementById('workout-badges-card');
+  if (!el) return;
+  el.innerHTML = '<div class="workout-badges-grid">' + getWorkoutBadgeRows().map(b => '<div class="workout-badge ' + (b.earned ? 'earned' : '') + '"><div class="bi">' + b.icon + '</div><div class="bt">' + b.title + '</div><div class="bs">' + (b.earned ? 'Unlocked' : b.sub) + '</div></div>').join('') + '</div>';
+}
+function awardWorkoutRewards(meta, calB, durationText) {
+  const points = meta.points || 50;
+  const scoreBoost = meta.scoreBoost || 5;
+  novaPoints = Math.max(0, (Number(novaPoints)||0) + points);
+  awardAchievement('workout_complete_' + Date.now(), '🏆 Workout Complete', meta.name + ' finished. +' + points + ' Nova Points', 0);
+  getWorkoutBadgeRows().forEach(b => { if (b.earned) awardAchievement('badge_' + b.key, b.icon + ' ' + b.title, 'Workout badge unlocked.', 25); });
+  const rewards = document.getElementById('workout-complete-rewards');
+  if (rewards) {
+    rewards.style.display = 'block';
+    rewards.innerHTML = '<div class="reward-line"><span>Workout</span><b>' + meta.name + '</b></div>' +
+      '<div class="reward-line"><span>Duration</span><b>' + durationText + '</b></div>' +
+      '<div class="reward-line"><span>Calories Burned</span><b>' + calB + ' kcal</b></div>' +
+      '<div class="reward-line"><span>Nova Points</span><b>+' + points + '</b></div>' +
+      '<div class="reward-line"><span>Fitness Score Boost</span><b>+' + scoreBoost + '</b></div>';
+  }
+  updateWorkoutWeeklyProgress();
+  renderWorkoutBadges();
+  updateFlyFeatures();
+}
+function updateWorkoutExperienceUI() {
+  renderWorkoutPreview();
+  updateWorkoutWeeklyProgress();
+  renderWorkoutBadges();
+}
+
 function startTimer() {
   if (!selWorkout) { alert('Please select a workout first!'); return; }
   timerRunning = true; timerPaused = false;
@@ -2163,7 +2331,11 @@ function startTimer() {
   document.getElementById('btn-pause').style.display = 'flex';
   document.getElementById('btn-stop').style.display = 'flex';
   setText('timer-state', 'WORKING OUT');
-  document.getElementById('result-banner').style.display = 'none';
+  const rb = document.getElementById('result-banner'); if (rb) rb.style.display = 'none';
+  const rewards = document.getElementById('workout-complete-rewards'); if (rewards) { rewards.style.display = 'none'; rewards.innerHTML = ''; }
+  renderWorkoutPreview(); renderWorkoutLiveMessage(true);
+  clearInterval(timerInterval);
+  renderWorkoutLiveMessage();
   timerInterval = setInterval(tickTimer, 1000);
 }
 function tickTimer() {
@@ -2173,11 +2345,13 @@ function tickTimer() {
   const pct = Math.min(timerSec / 3600, 1);
   const ring = document.getElementById('timer-ring');
   if (ring) ring.style.strokeDashoffset = Math.round(553 - pct * 553);
+  if (timerSec === 1 || timerSec % 15 === 0) renderWorkoutLiveMessage();
 }
 function pauseTimer() {
   clearInterval(timerInterval); timerRunning = false; timerPaused = true;
   const btn = document.getElementById('btn-pause'); btn.textContent = '▶ Resume'; btn.onclick = resumeTimer;
   setText('timer-state', 'PAUSED');
+  renderWorkoutLiveMessage();
 }
 function resumeTimer() {
   timerRunning = true; timerPaused = false;
@@ -2188,13 +2362,16 @@ function resumeTimer() {
 function stopTimer() {
   if (!timerSec) return;
   clearInterval(timerInterval); timerRunning = false; timerPaused = false;
+  const meta = getWorkoutMeta(selWorkout.name, selWorkout.calPM);
+  const durationText = fmt(timerSec);
   const calB = Math.round((timerSec / 60) * selWorkout.calPM);
   totalBurned += calB; workoutsDone++; streak++;
   const msgs = ['Amazing work! 🏆','You are unstoppable! 💪','That belly is grateful! 🔥','Consistency is your superpower! ⚡','Your future self thanks you! 💚'];
-  setText('rb-time', fmt(timerSec)); setText('rb-cal', calB); setText('rb-pace', intensity(selWorkout.calPM));
+  setText('rb-time', durationText); setText('rb-cal', calB); setText('rb-pace', intensity(selWorkout.calPM));
   setText('rb-msg', msgs[Math.floor(Math.random() * msgs.length)]);
   document.getElementById('result-banner').style.display = 'block';
-  workoutHistory.unshift({ name:selWorkout.name, dur:fmt(timerSec), cal:calB, date:new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short' }) });
+  workoutHistory.unshift({ name:selWorkout.name, dur:durationText, cal:calB, iso:new Date().toISOString(), date:new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short' }) });
+  awardWorkoutRewards(meta, calB, durationText);
   renderWorkoutHistory();
   // Sync streak to Supabase profile for leaderboard
   if (supabaseClient && currentUser) {
@@ -2205,6 +2382,7 @@ function stopTimer() {
   document.getElementById('btn-pause').style.display = 'none';
   document.getElementById('btn-stop').style.display = 'none';
   setText('timer-display','00:00'); setText('timer-state','DONE!'); setText('ts-min','0'); setText('ts-cal','0');
+  document.getElementById('coach-live-card')?.classList.remove('show');
   const ring = document.getElementById('timer-ring');
   if (ring) ring.style.strokeDashoffset = '553';
   updateHome(); renderMilestones(); scheduleSave();
