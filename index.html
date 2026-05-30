@@ -511,6 +511,33 @@ select option{background:var(--black3);}
 .workout-badge .bs{font-size:9px;color:var(--grey);margin-top:3px;}
 @media(max-width:560px){.workout-badges-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 
+
+/* ====== CLEAN PREMIUM NAV + HOME HUB UPGRADE ====== */
+.bottom-nav{overflow:visible!important;justify-content:center!important;}
+.nav-item{min-width:0!important;}
+@media(max-width:430px){.nav-item{min-width:0!important}.nav-label{font-size:8.8px!important}.nav-item svg{width:19px!important;height:19px!important}}
+.today-plan-card{position:relative;overflow:hidden;border-radius:26px;padding:16px;margin-bottom:12px;background:radial-gradient(circle at 12% 0%,rgba(255,45,107,.34),transparent 36%),radial-gradient(circle at 95% 8%,rgba(255,209,102,.20),transparent 33%),linear-gradient(145deg,#1a0710,#0e0e0e);border:1px solid rgba(255,45,107,.30);box-shadow:0 18px 54px rgba(0,0,0,.44),0 0 24px rgba(255,45,107,.10);}
+.today-plan-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.today-plan-title{font-family:var(--font-head);font-size:20px;font-weight:900;letter-spacing:-.5px;color:#fff;line-height:1.1;}
+.today-plan-sub{font-size:12px;color:rgba(255,255,255,.66);line-height:1.45;margin-top:4px;}
+.today-plan-score{min-width:72px;text-align:center;border-radius:18px;padding:10px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.10);}
+.today-plan-score b{display:block;font-family:var(--font-head);font-size:22px;color:var(--gold);line-height:1;}
+.today-plan-score span{font-size:9px;color:var(--grey);text-transform:uppercase;letter-spacing:.6px;}
+.today-plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px;}
+.today-plan-pill{border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);padding:10px;}
+.today-plan-pill b{display:block;font-size:12px;color:#fff;margin-bottom:3px;}
+.today-plan-pill span{font-size:10px;color:rgba(255,255,255,.58);line-height:1.3;}
+.quick-hub{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px;}
+.hub-btn{border:1px solid rgba(255,255,255,.08);background:linear-gradient(145deg,#171717,#101010);color:white;border-radius:18px;padding:12px 8px;cursor:pointer;text-align:center;min-height:74px;transition:.2s;}
+.hub-btn:hover,.hub-btn:active{border-color:rgba(255,45,107,.45);background:#1a0810;transform:translateY(-1px);}
+.hub-emoji{font-size:22px;margin-bottom:5px;}
+.hub-label{font-size:11px;font-weight:900;font-family:var(--font-head);line-height:1.1;}
+.hub-sub{font-size:9px;color:var(--grey);margin-top:3px;line-height:1.2;}
+.pro-lock{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.25);color:var(--gold);padding:4px 7px;font-size:9px;font-weight:900;margin-top:7px;}
+.fab-start{position:fixed;right:16px;bottom:calc(146px + var(--safe-bottom));z-index:130;border:0;border-radius:999px;background:linear-gradient(135deg,var(--pink),var(--pink-light));color:white;box-shadow:0 16px 42px rgba(255,45,107,.40),0 8px 24px rgba(0,0,0,.40);height:48px;padding:0 16px;font-size:12px;font-weight:900;display:flex;align-items:center;gap:7px;cursor:pointer;}
+.fab-start:active{transform:scale(.96);}
+@media(max-width:560px){.today-plan-grid{grid-template-columns:1fr}.quick-hub{grid-template-columns:repeat(2,minmax(0,1fr));}.fab-start{bottom:calc(136px + var(--safe-bottom));right:12px;height:44px;}}
+
 </style>
 </head>
 <body>
@@ -574,12 +601,12 @@ select option{background:var(--black3);}
       <div>
         <div class="pro-kicker">FitHerNova PRO ✨</div>
         <div class="pro-title">Unlock the full glow-up experience.</div>
-        <div class="pro-sub">Get premium music, DJ Mode, advanced Coach Nova plans, premium workouts, custom meal plans, themes, and deeper progress insights.</div>
+        <div class="pro-sub">Get premium music, advanced Coach Nova plans, premium workouts, custom meal plans, themes, and deeper progress insights.</div>
       </div>
       <button class="pro-close" onclick="closeProModal()">×</button>
     </div>
     <div class="pro-features">
-      <div class="pro-feature"><b>🎵 Full Radio</b>Premium playlist + DJ Mode.</div>
+      <div class="pro-feature"><b>🎵 Full Radio</b>Premium playlist + automatic next-song play.</div>
       <div class="pro-feature"><b>✨ Coach Nova PRO</b>Smarter fitness + meal guidance.</div>
       <div class="pro-feature"><b>🔥 Premium Programs</b>Belly, tone, and challenge packs.</div>
       <div class="pro-feature"><b>📊 Pro Tracking</b>Better progress insights.</div>
@@ -625,6 +652,31 @@ select option{background:var(--black3);}
     <div class="page active" id="page-home">
       <div class="greeting"><span id="time-greeting">Hello</span>, <span id="user-name">Queen</span> 👑</div>
       <div class="sub-greeting" id="home-date">Let's crush today!</div>
+
+      <!-- Premium Today Plan -->
+      <div class="today-plan-card">
+        <div class="today-plan-top">
+          <div>
+            <div class="today-plan-title">Today’s FitHer Plan</div>
+            <div class="today-plan-sub">One workout, smart meals, water, and a clean win for your glow-up.</div>
+          </div>
+          <div class="today-plan-score"><b id="today-plan-score">0%</b><span>Ready</span></div>
+        </div>
+        <div class="today-plan-grid">
+          <div class="today-plan-pill"><b>🔥 Workout</b><span>10-minute belly burn or full timer session.</span></div>
+          <div class="today-plan-pill"><b>🥗 Meal</b><span>Log food early so Coach Nova can guide you.</span></div>
+          <div class="today-plan-pill"><b>💧 Water</b><span>Target 8 glasses before bedtime.</span></div>
+        </div>
+        <button class="btn btn-pink" onclick="goTo('timer')">Start Today’s Workout</button>
+      </div>
+
+      <!-- Extra tools moved out of bottom nav -->
+      <div class="quick-hub">
+        <button class="hub-btn" onclick="goTo('coach')"><div class="hub-emoji">👑</div><div class="hub-label">Coach</div><div class="hub-sub">Ask Nova</div></button>
+        <button class="hub-btn" onclick="goTo('challenge')"><div class="hub-emoji">🏆</div><div class="hub-label">Challenge</div><div class="hub-sub">30-day plan</div></button>
+        <button class="hub-btn" onclick="goTo('reminders')"><div class="hub-emoji">🔔</div><div class="hub-label">Reminders</div><div class="hub-sub">Stay consistent</div></button>
+        <button class="hub-btn" onclick="openProModal()"><div class="hub-emoji">✨</div><div class="hub-label">PRO</div><div class="hub-sub">Premium tools</div><span class="pro-lock">LOCKED</span></button>
+      </div>
 
       <!-- Daily AI Motivation Quote -->
       <div class="daily-quote-card" id="daily-quote-card">
@@ -740,7 +792,7 @@ select option{background:var(--black3);}
       <div class="pro-home-strip" id="pro-home-strip">
         <div class="ps-text">
           <strong>FitHerNova PRO ✨</strong>
-          DJ Mode · premium workouts · Coach Nova PRO
+          premium workouts · Coach Nova PRO · advanced tracking
         </div>
         <button class="ps-btn" onclick="openProModal()">Upgrade</button>
       </div>
@@ -852,7 +904,7 @@ select option{background:var(--black3);}
         <div class="music-topline">
           <div class="music-badge">FitHerNova Radio</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-            <button class="dj-toggle on" id="dj-toggle" onclick="toggleDJMode(event)">DJ Mode ON</button>
+            <button class="dj-toggle on" id="dj-toggle" onclick="toggleDJMode(event)">Auto Next ON</button>
             <div class="music-live">Gospel workout vibes</div>
           </div>
         </div>
@@ -1067,7 +1119,7 @@ select option{background:var(--black3);}
         <div class="pro-title">FitHerNova PRO ✨</div>
         <div class="pro-sub">A cleaner, stronger fitness lifestyle experience — premium music, Coach Nova PRO, advanced workouts, meal plans and progress insights.</div>
         <div class="pro-features">
-          <div class="pro-feature"><b>🎧 Premium Radio</b>Full music access, DJ Mode and exclusive songs.</div>
+          <div class="pro-feature"><b>🎧 Premium Radio</b>Full music access, automatic next-song play and exclusive songs.</div>
           <div class="pro-feature"><b>👑 Coach Nova PRO</b>Personalized guidance for your body goal.</div>
           <div class="pro-feature"><b>🔥 Premium Workouts</b>Belly fat, tone, glow and challenge programs.</div>
           <div class="pro-feature"><b>🍲 Meal Plans</b>Smarter Nigerian/African meal ideas.</div>
@@ -1132,6 +1184,16 @@ select option{background:var(--black3);}
         <button class="btn btn-pink" id="profile-pro-btn" onclick="openProModal()">Upgrade to PRO</button>
       </div>
       <div class="nova-card">
+        <div class="nova-title">More tools</div>
+        <div class="nova-sub">The app is cleaner now. Coach, Challenge, Reminders and PRO live here/Home instead of crowding the bottom bar.</div>
+        <div class="quick-hub" style="margin-top:12px;margin-bottom:0;">
+          <button class="hub-btn" onclick="goTo('coach')"><div class="hub-emoji">👑</div><div class="hub-label">Coach</div><div class="hub-sub">Nova support</div></button>
+          <button class="hub-btn" onclick="goTo('challenge')"><div class="hub-emoji">🏆</div><div class="hub-label">Challenge</div><div class="hub-sub">Daily push</div></button>
+          <button class="hub-btn" onclick="goTo('reminders')"><div class="hub-emoji">🔔</div><div class="hub-label">Reminders</div><div class="hub-sub">Alerts</div></button>
+          <button class="hub-btn" onclick="openProModal()"><div class="hub-emoji">✨</div><div class="hub-label">PRO</div><div class="hub-sub">Upgrade</div></button>
+        </div>
+      </div>
+      <div class="nova-card">
         <div class="nova-title">Account</div>
         <div class="nova-sub" id="profile-account-text">Loading…</div>
         <button class="btn btn-ghost mt12" onclick="sendPasswordReset()" style="width:100%;">Send password reset email</button>
@@ -1151,6 +1213,8 @@ select option{background:var(--black3);}
 
   </div><!-- end .content -->
 
+  <button class="fab-start" onclick="goTo('timer')">🔥 Start Workout</button>
+
   <!-- MINI PLAYER -->
   <div class="mini-player" id="mini-player" onclick="goTo('music')">
     <div class="mini-progress"><div class="mini-progress-fill" id="mini-progress-fill"></div></div>
@@ -1169,19 +1233,14 @@ select option{background:var(--black3);}
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- BOTTOM NAV — CLEAN PREMIUM 6-TAB VERSION -->
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="goTo('home')" id="nav-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="nav-label">Home</span></button>
     <button class="nav-item" onclick="goTo('food')" id="nav-food"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg><span class="nav-label">Food</span></button>
-    <button class="nav-item" onclick="goTo('timer')" id="nav-timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="nav-label">Timer</span></button>
-    <button class="nav-item" onclick="goTo('workouts')" id="nav-workouts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v16M18 4v16M2 9h4M18 9h4M2 15h4M18 15h4M6 9h12M6 15h12"/></svg><span class="nav-label">Workouts</span></button>
+    <button class="nav-item" onclick="goTo('timer')" id="nav-timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v16M18 4v16M2 9h4M18 9h4M2 15h4M18 15h4M6 9h12M6 15h12"/></svg><span class="nav-label">Workout</span></button>
     <button class="nav-item" onclick="goTo('music')" id="nav-music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span class="nav-label">Music</span></button>
     <button class="nav-item" onclick="goTo('progress')" id="nav-progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="nav-label">Progress</span></button>
-    <button class="nav-item" onclick="goTo('challenge')" id="nav-challenge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.7 1.1 6.6L12 17l-5.8 3.2 1.1-6.6L2.5 8.9 9.1 8 12 2z"/></svg><span class="nav-label">Challenge</span></button>
-    <button class="nav-item" onclick="goTo('coach')" id="nav-coach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a7 7 0 0 0-7 7v3a7 7 0 0 0 14 0V9a7 7 0 0 0-7-7z"/><path d="M9 10h.01M15 10h.01M9 15c1.6 1 4.4 1 6 0"/><path d="M4 20c2-2 14-2 16 0"/></svg><span class="nav-label">Coach</span></button>
-    <button class="nav-item" onclick="goTo('pro')" id="nav-pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l3 7 7 .5-5.3 4.6 1.7 6.9L12 17l-6.4 4 1.7-6.9L2 9.5 9 9l3-7z"/></svg><span class="nav-label">PRO</span></button>
     <button class="nav-item" onclick="goTo('profile')" id="nav-profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg><span class="nav-label">Profile</span></button>
-    <button class="nav-item" onclick="goTo('reminders')" id="nav-reminders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="nav-label">Reminders</span></button>
   </nav>
 </div>
 
@@ -1197,6 +1256,18 @@ const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_U
 const PAYSTACK_PUBLIC_KEY = "pk_live_4fa937b5b1e085b776aa9f21ee2e0b4af5a8cca5";
 const PRO_PRICES = { monthly: 350000, yearly: 3000000 };
 const DATA_SCHEMA_VERSION = 3;
+
+
+function updateTodayPlanCard() {
+  try {
+    const meals = (state.meals || []).filter(m => m.date === todayKey()).length;
+    const workouts = (state.workouts || []).filter(w => w.date === todayKey()).length;
+    const water = Number(state.water || 0);
+    const score = Math.min(100, Math.round(((meals ? 1 : 0) + (workouts ? 1 : 0) + (water >= 8 ? 1 : water / 8)) / 3 * 100));
+    const el = document.getElementById('today-plan-score');
+    if (el) el.textContent = score + '%';
+  } catch(e) {}
+}
 
 // ── FOOD DATABASE ────────────────────────────────────────────────────────────
 const FOOD_DB = [
@@ -1292,7 +1363,7 @@ let proCardSessionDismissed = false; // FIX: pro card once per session
 let timerSec = 0, timerRunning = false, timerPaused = false, timerInterval = null;
 let tracks = BUILT_IN_TRACKS.map(t => ({...t}));
 let currentTrack = 0, isPlaying = false, audioEl = new Audio();
-let progressInterval = null, djMode = true, miniPlayerActivated = false, miniPlayerDismissed = false;
+let progressInterval = null, djMode = true, miniPlayerActivated = false, miniPlayerDismissed = false; // djMode now means automatic next-song play
 let isProUser = false, proPlan = "free";
 let remoteStateRowId = null, syncTimer = null;
 let challengeDays = [], activeChallengeId = null;
@@ -2573,7 +2644,7 @@ function togglePlay() {
 function nextTrack() { if (!tracks.length) return; currentTrack = (currentTrack + 1) % tracks.length; playTrack(currentTrack, false); }
 function prevTrack() { if (!tracks.length) return; currentTrack = (currentTrack - 1 + tracks.length) % tracks.length; playTrack(currentTrack, false); }
 function seekTrack(e) { const bar = e.currentTarget; const rect = bar.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)); setStyle('np-progress','width',(pct*100)+'%'); if (Number.isFinite(audioEl.duration)) audioEl.currentTime = audioEl.duration * pct; }
-function toggleDJMode(event) { if (event) event.stopPropagation(); djMode = !djMode; const btn = document.getElementById('dj-toggle'); if (btn) { btn.textContent = djMode ? 'DJ Mode ON' : 'DJ Mode OFF'; btn.classList.toggle('on', djMode); } }
+function toggleDJMode(event) { if (event) event.stopPropagation(); djMode = !djMode; const btn = document.getElementById('dj-toggle'); if (btn) { btn.textContent = djMode ? 'Auto Next ON' : 'Auto Next OFF'; btn.classList.toggle('on', djMode); } }
 
 // ── PROGRESS ──────────────────────────────────────────────────────────────────
 function logWeight() {
