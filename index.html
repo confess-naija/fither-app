@@ -1466,6 +1466,25 @@ function setAuthMode(mode) {
   showAuthMsg('');
 }
 function showAuthMsg(msg) { const el = document.getElementById('auth-message'); if (el) el.textContent = msg || ''; }
+
+function enterAppFast(user) {
+  if (!user || !user.id) return;
+  currentUser = user;
+  localStorage.setItem('fhn_cached_user_id', user.id);
+  localStorage.setItem('fhn_cached_user_email', user.email || '');
+  resetUserState();
+  loadLocal();
+  renderAll();
+  updateAuthUI();
+  document.getElementById('auth-loading').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+  checkInstallPrompt();
+  loadDailyQuote();
+  checkDailyCheckin();
+  // Do the heavy Supabase reads after the user is already inside the app.
+  syncWithSupabaseInBackground();
+}
 async function submitAuth() {
   if (!supabaseClient) { showAuthMsg('Check your internet connection.'); return; }
   const email = document.getElementById('auth-email').value.trim();
@@ -1474,7 +1493,9 @@ async function submitAuth() {
   const isSignup = document.getElementById('auth-tab-signup').classList.contains('active');
   if (!email || !password) { showAuthMsg('Please enter email and password.'); return; }
   const btn = document.getElementById('auth-submit');
-  btn.textContent = 'Please wait…'; btn.disabled = true;
+  btn.textContent = isSignup ? 'Creating…' : 'Opening app…';
+  btn.disabled = true;
+  showAuthMsg(isSignup ? 'Creating your FitHerNova account…' : 'Signing you in…');
   try {
     let res;
     if (isSignup) {
@@ -1485,8 +1506,14 @@ async function submitAuth() {
       res = await supabaseClient.auth.signInWithPassword({ email, password });
       if (res.error) throw res.error;
     }
-  } catch(e) { showAuthMsg(e.message || 'Login failed. Please try again.'); }
-  finally { btn.textContent = isSignup ? 'Create account' : 'Login'; btn.disabled = false; }
+    const user = res?.data?.user || res?.data?.session?.user;
+    if (user) enterAppFast(user);
+  } catch(e) {
+    showAuthMsg(e.message || 'Login failed. Please try again.');
+  } finally {
+    btn.textContent = isSignup ? 'Create account' : 'Login';
+    btn.disabled = false;
+  }
 }
 async function logoutUser() {
   localStorage.removeItem('fhn_cached_user_id');
