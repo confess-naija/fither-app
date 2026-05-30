@@ -1845,72 +1845,92 @@ function renderWorkoutHistory() {
 
 // ── MUSIC ─────────────────────────────────────────────────────────────────────
 
-// One-time fix: rename "Mixtape Vol 2" rows in Supabase to "Mix Jam 2026"
-// and remove the duplicate. Runs silently, only affects your music_tracks table.
-async function fixMusicTableDuplicates() {
-  if (!supabaseClient || !currentUser) return;
-  try {
-    // Find all rows named "Mixtape Vol 2"
-    const { data: dupes } = await supabaseClient
-      .from('music_tracks')
-      .select('id, title, src, sort_order')
-      .ilike('title', 'Mixtape Vol 2');
-    if (!dupes || dupes.length === 0) return;
+// Correct track metadata — what every track SHOULD look like
+// Keyed by the storage filename so we can match regardless of bad titles in DB
+const TRACK_CORRECTIONS = {
+  'Mix%20Jam%202026.mp3':  { title:'Mix Jam 2026',       artist:'FitHerNova Radio', emoji:'🎧' },
+  'ZIK%20Blue%20LIFT%20ME%20UP.mp3': { title:'LIFT ME UP', artist:'ZIK Blue',       emoji:'🚀' },
+};
 
-    const mixJamSrc = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Mix%20Jam%202026.mp3';
-
-    if (dupes.length >= 2) {
-      // Keep the first one — rename it to Mix Jam 2026 with correct src
-      await supabaseClient.from('music_tracks').update({
-        title: 'Mix Jam 2026',
-        artist: 'FitHerNova Radio',
-        emoji: '🎧',
-        src: mixJamSrc
-      }).eq('id', dupes[0].id);
-      // Delete the duplicate(s)
-      const deleteIds = dupes.slice(1).map(d => d.id);
-      await supabaseClient.from('music_tracks').delete().in('id', deleteIds);
-      console.log('FitHerNova: fixed duplicate Mixtape Vol 2 entries in music_tracks');
-    } else if (dupes.length === 1) {
-      // Just rename the one entry
-      await supabaseClient.from('music_tracks').update({
-        title: 'Mix Jam 2026',
-        artist: 'FitHerNova Radio',
-        emoji: '🎧',
-        src: mixJamSrc
-      }).eq('id', dupes[0].id);
-      console.log('FitHerNova: renamed Mixtape Vol 2 → Mix Jam 2026');
+function cleanAndDeduplicateTracks(rawList) {
+  // Step 1: Apply title/emoji corrections based on src filename
+  const corrected = rawList.map(t => {
+    const srcStr = (t.src || '').trim();
+    // Find matching correction by checking if src contains the filename key
+    for (const [key, fix] of Object.entries(TRACK_CORRECTIONS)) {
+      if (srcStr.includes(key)) {
+        return { ...t, title: fix.title, artist: fix.artist, emoji: fix.emoji };
+      }
     }
-  } catch(e) {
-    console.warn('FitHerNova: music table fix skipped:', e.message || e);
-  }
+    return t;
+  });
+
+  // Step 2: Deduplicate by src URL (most reliable — same file = same song)
+  const seenSrc = new Set();
+  const seenTitle = new Set();
+  return corrected.filter(t => {
+    const srcKey = (t.src || '').trim().toLowerCase();
+    const titleKey = (t.title || '').trim().toLowerCase();
+    // Drop if same src already seen
+    if (srcKey && seenSrc.has(srcKey)) {
+      console.warn('FitHerNova: duplicate src removed:', t.title);
+      return false;
+    }
+    // Drop if same title already seen (catches renamed dupes)
+    if (titleKey && seenTitle.has(titleKey)) {
+      console.warn('FitHerNova: duplicate title removed:', t.title);
+      return false;
+    }
+    if (srcKey) seenSrc.add(srcKey);
+    if (titleKey) seenTitle.add(titleKey);
+    return true;
+  });
 }
 
 async function loadSupabaseTracks() {
   const list   = document.getElementById('track-list');
   const status = document.getElementById('music-status');
   if (list) list.innerHTML = '<div class="text-grey" style="padding:10px 0;">Loading FitHerNova Radio…</div>';
-  const useBuiltIn = () => { tracks = BUILT_IN_TRACKS.map(t => ({...t})); currentTrack = 0; renderTrackList(); updateMiniPlayer(); if (status) status.textContent = 'Choose a song and let the energy flow.'; };
+  const useBuiltIn = () => {
+    tracks = BUILT_IN_TRACKS.map(t => ({...t}));
+    currentTrack = 0; renderTrackList(); updateMiniPlayer();
+    if (status) status.textContent = 'Choose a song and let the energy flow.';
+  };
   if (!supabaseClient) { useBuiltIn(); return; }
-
-  // Run the one-time duplicate fix first (silently)
-  await fixMusicTableDuplicates();
-
   try {
-    const { data, error } = await supabaseClient.from('music_tracks').select('title,artist,duration,emoji,src,sort_order').eq('active', true).order('sort_order', { ascending:true }).order('created_at', { ascending:true });
+    const { data, error } = await supabaseClient
+      .from('music_tracks')
+      .select('title,artist,duration,emoji,src,sort_order')
+      .eq('active', true)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true });
     if (error) throw error;
-    const rawRemote = Array.isArray(data) ? data.filter(t => t?.src?.trim()).map(t => ({ title:t.title||'Untitled', artist:t.artist||'Pro Media Records', dur:t.duration||'0:00', emoji:t.emoji||'🎵', src:t.src.trim() })) : [];
-    // Deduplicate by title — safety net in case DB still has duplicates
-    const seen = new Set();
-    const remote = rawRemote.filter(t => {
-      const key = t.title.toLowerCase().trim();
-      if (seen.has(key)) { console.warn('FitHerNova: duplicate track removed:', t.title); return false; }
-      seen.add(key);
-      return true;
-    });
-    if (remote.length) { tracks = remote; currentTrack = Math.min(currentTrack, tracks.length-1); renderTrackList(); updateMiniPlayer(); if (status) status.textContent = tracks.length + ' song' + (tracks.length>1?'s':'') + ' ready.'; }
-    else useBuiltIn();
-  } catch(e) { console.warn('Music load used built-in playlist:', e.message||e); useBuiltIn(); }
+
+    const rawRemote = Array.isArray(data)
+      ? data.filter(t => t?.src?.trim()).map(t => ({
+          title:  t.title  || 'Untitled',
+          artist: t.artist || 'Pro Media Records',
+          dur:    t.duration || '0:00',
+          emoji:  t.emoji  || '🎵',
+          src:    t.src.trim()
+        }))
+      : [];
+
+    // Clean metadata + deduplicate by src AND title
+    const remote = cleanAndDeduplicateTracks(rawRemote);
+
+    if (remote.length) {
+      tracks = remote;
+      currentTrack = Math.min(currentTrack, tracks.length - 1);
+      renderTrackList(); updateMiniPlayer();
+      if (status) status.textContent = remote.length + ' song' + (remote.length > 1 ? 's' : '') + ' ready.';
+    } else {
+      useBuiltIn();
+    }
+  } catch(e) {
+    console.warn('FitHerNova: music load used built-in playlist:', e.message || e);
+    useBuiltIn();
+  }
 }
 function updateMiniPlayer() {
   const mini = document.getElementById('mini-player');
