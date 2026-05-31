@@ -6,6 +6,18 @@
 <meta name="theme-color" content="#ff2d6b"/>
 <title>FitHerNova</title>
 <link rel="stylesheet" href="styles.css"/>
+<style>
+  body { margin:0; font-family:sans-serif; background:#f8f8f8; }
+  .app-header { display:flex; justify-content:space-between; padding:10px 20px; background:#ff2d6b; color:#fff; }
+  .bottom-nav { display:flex; justify-content:space-around; position:fixed; bottom:0; left:0; right:0; background:#222; color:#fff; padding:10px 0; }
+  .bottom-nav .nav-item { cursor:pointer; }
+  .bottom-nav .nav-item.active { font-weight:bold; }
+  .page { display:none; padding:20px; margin-bottom:60px; }
+  .page.active { display:block; }
+  .playlist .track-item { padding:10px; border-bottom:1px solid #ccc; cursor:pointer; }
+  .mini-player { position:fixed; bottom:50px; left:0; right:0; background:#222; color:#fff; display:flex; align-items:center; justify-content:center; gap:10px; padding:8px; z-index:1000; }
+  .mini-player button { background:#ff2d6b; border:none; color:#fff; padding:4px 8px; cursor:pointer; border-radius:4px; }
+</style>
 </head>
 <body>
 <div class="app">
@@ -17,28 +29,24 @@
     <div class="user-pill">oracledeepwaters <button>Logout</button></div>
   </div>
 
-  <!-- Content -->
+  <!-- Pages -->
   <div class="content">
 
-    <!-- Home Section -->
     <div class="page home-page active">
       <h1>Home</h1>
       <p>Welcome to FitHerNova! Track your progress, workouts, and meals here.</p>
     </div>
 
-    <!-- Food Section -->
     <div class="page food-page">
       <h1>Food</h1>
       <p>Log your meals and calories here.</p>
     </div>
 
-    <!-- Workout Section -->
     <div class="page workout-page">
       <h1>Workout</h1>
       <p>Start and track your workouts here.</p>
     </div>
 
-    <!-- Music Section (images removed) -->
     <div class="page music-page">
       <h1>Music</h1>
       <button class="btn btn-pink" id="play-all-btn">Play All Pro</button>
@@ -76,18 +84,25 @@
       </div>
     </div>
 
-    <!-- Progress Section -->
     <div class="page progress-page">
       <h1>Progress</h1>
       <p>See your weekly and monthly progress here.</p>
     </div>
 
-    <!-- Profile Section -->
     <div class="page profile-page">
       <h1>Profile</h1>
       <p>Manage your profile and settings here.</p>
     </div>
 
+  </div>
+
+  <!-- Mini Player -->
+  <div class="mini-player" id="mini-player">
+    <span id="mini-track-name">No track playing</span> -
+    <span id="mini-track-artist"></span>
+    <button id="mini-play">▶</button>
+    <button id="mini-pause">⏸</button>
+    <button id="mini-stop">⏹</button>
   </div>
 
   <!-- Bottom Navigation -->
@@ -102,9 +117,8 @@
 
 </div>
 
-<script src="app.js"></script>
 <script>
-  // Play All Pro logic
+  // Play All Pro
   const playAllBtn = document.getElementById('play-all-btn');
   const tracks = Array.from(document.querySelectorAll('.track-item'));
   let currentTrack = 0;
@@ -122,14 +136,47 @@
         audio.play();
       }
     };
+    updateMiniPlayer(currentTrack);
   });
 
-  // Bottom nav page toggle logic
+  // Playlist click
+  tracks.forEach((track, i) => {
+    track.addEventListener('click', () => {
+      currentTrack = i;
+      audio.src = track.dataset.src;
+      audio.play();
+      updateMiniPlayer(i);
+    });
+  });
+
+  // Mini-player controls
+  const miniTrackName = document.getElementById('mini-track-name');
+  const miniTrackArtist = document.getElementById('mini-track-artist');
+  const miniPlay = document.getElementById('mini-play');
+  const miniPause = document.getElementById('mini-pause');
+  const miniStop = document.getElementById('mini-stop');
+
+  miniPlay.addEventListener('click', () => audio.play());
+  miniPause.addEventListener('click', () => audio.pause());
+  miniStop.addEventListener('click', () => {
+    audio.pause();
+    audio.currentTime = 0;
+    miniTrackName.textContent = 'No track playing';
+    miniTrackArtist.textContent = '';
+  });
+
+  function updateMiniPlayer(index){
+    const track = tracks[index];
+    miniTrackName.textContent = track.querySelector('.track-name').textContent;
+    miniTrackArtist.textContent = track.querySelector('.track-artist').textContent;
+  }
+
+  // Bottom navigation
   const navItems = document.querySelectorAll('.bottom-nav .nav-item');
   navItems.forEach(item => {
     item.addEventListener('click', () => {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+      navItems.forEach(n => n.classList.remove('active'));
       const targetClass = item.dataset.target;
       document.querySelector(`.${targetClass}`).classList.add('active');
       item.classList.add('active');
