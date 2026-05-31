@@ -1,54 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#ff2d6b"/>
 <title>FitHerNova</title>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 <div class="app">
-  <div class="music-page page active">
-    <h1>Music</h1>
-    <div class="playlist">
-      <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Lift%20Me.mp3">
-        <img src="Lift Me cover by Zik BLUE.png" alt="Lift Me Up">
-        <div class="track-info">
-          <div class="track-name">Lift Me Up</div>
-          <div class="track-artist">Zik Blue</div>
+
+  <!-- Header -->
+  <div class="app-header">
+    <div class="logo">FitHerNova</div>
+    <div class="header-streak">🔥 1 day streak</div>
+    <div class="user-pill">oracledeepwaters <button>Logout</button></div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Music Section -->
+    <div class="music-page page active">
+      <h1>Music</h1>
+      <button class="btn btn-pink" id="play-all-btn">Play All Pro</button>
+      <div class="playlist">
+        <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Lift%20Me.mp3">
+          <img src="Lift Me cover by Zik BLUE.png" alt="Lift Me Up">
+          <div class="track-info">
+            <div class="track-name">Lift Me Up</div>
+            <div class="track-artist">Zik Blue</div>
+          </div>
         </div>
-      </div>
-      <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/The%20Word%20(feat.%20Holy%20Spell).mp3">
-        <img src="Zik Blue ft Holy Spell cover photo.png" alt="The Word">
-        <div class="track-info">
-          <div class="track-name">The Word</div>
-          <div class="track-artist">Zik Blue ft. Holy Spell</div>
+        <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/The%20Word%20(feat.%20Holy%20Spell).mp3">
+          <img src="Zik Blue ft Holy Spell cover photo.png" alt="The Word">
+          <div class="track-info">
+            <div class="track-name">The Word</div>
+            <div class="track-artist">Zik Blue ft. Holy Spell</div>
+          </div>
         </div>
-      </div>
-      <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Glory%20&%20Fire.mp3">
-        <img src="Ziyana Eya Glory and fire cover.png" alt="Glory & Fire">
-        <div class="track-info">
-          <div class="track-name">Glory & Fire</div>
-          <div class="track-artist">Ziyana Eya</div>
+        <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Glory%20&%20Fire.mp3">
+          <img src="Ziyana Eya Glory and fire cover.png" alt="Glory & Fire">
+          <div class="track-info">
+            <div class="track-name">Glory & Fire</div>
+            <div class="track-artist">Ziyana Eya</div>
+          </div>
         </div>
-      </div>
-      <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Elevated.mp3">
-        <img src="ELEVATED HOLY FIRE.png" alt="Elevated">
-        <div class="track-info">
-          <div class="track-name">Elevated</div>
-          <div class="track-artist">Holy Fire</div>
+        <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Elevated.mp3">
+          <img src="ELEVATED HOLY FIRE.png" alt="Elevated">
+          <div class="track-info">
+            <div class="track-name">Elevated</div>
+            <div class="track-artist">Holy Fire</div>
+          </div>
         </div>
-      </div>
-      <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Tested.mp3">
-        <img src="tested- Zimora El.png" alt="Tested">
-        <div class="track-info">
-          <div class="track-name">Tested</div>
-          <div class="track-artist">Zimora El</div>
+        <div class="track-item" data-src="https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Tested.mp3">
+          <img src="tested- Zimora El.png" alt="Tested">
+          <div class="track-info">
+            <div class="track-name">Tested</div>
+            <div class="track-artist">Zimora El</div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Add your other sections here, e.g., Home, Workouts, Meals, Coach Nova -->
+
   </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item active">Home</div>
+    <div class="nav-item">Food</div>
+    <div class="nav-item">Workout</div>
+    <div class="nav-item">Music</div>
+    <div class="nav-item">Progress</div>
+    <div class="nav-item">Profile</div>
+  </div>
+
 </div>
+
 <script src="app.js"></script>
+<script>
+  const playAllBtn = document.getElementById('play-all-btn');
+  const tracks = Array.from(document.querySelectorAll('.track-item'));
+  let currentTrack = 0;
+  let audio = new Audio();
+
+  playAllBtn.addEventListener('click', () => {
+    if(tracks.length === 0) return;
+    currentTrack = 0;
+    audio.src = tracks[currentTrack].dataset.src;
+    audio.play();
+    audio.onended = () => {
+      currentTrack++;
+      if(currentTrack < tracks.length){
+        audio.src = tracks[currentTrack].dataset.src;
+        audio.play();
+      }
+    };
+  });
+</script>
 </body>
 </html>
