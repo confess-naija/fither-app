@@ -549,6 +549,14 @@ select option{background:var(--black3);}
 /* ══ END PATCH ══════════════════════════════════════════════════════════════ */
 
 </style>
+<!-- Ensure SUPABASE_URL and ANON_KEY are correctly set in your JS -->
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+const supabaseUrl = 'https://norgzcztduoxkshtthkm.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcmd6Y3p0ZHVveGtzaHR0aGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTM0NTcsImV4cCI6MjA5MzY5NDU3fQ.XNN3QLs5NWVUQU9MhbDdA2E0fqpQUGjAsvNljkVsjPg'
+window.supabase = createClient(supabaseUrl, supabaseKey)
+</script>
 </head>
 <body>
 
