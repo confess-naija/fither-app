@@ -310,6 +310,19 @@ select option{background:var(--black3);}
 .transform-arrow-head{font-size:18px;}
 .transform-label{font-size:9px;color:var(--grey);letter-spacing:.8px;text-transform:uppercase;writing-mode:vertical-rl;transform:rotate(180deg);}
 .photo-date-tag{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:9px;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:.5px;background:rgba(0,0,0,.45);padding:3px 0;}
+
+/* ── PHOTO ACTION SHEET ── */
+.photo-action-sheet{position:fixed;inset:0;z-index:4000;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);}
+.photo-action-sheet.show{display:flex;}
+.photo-action-inner{width:min(480px,100%);background:#1a1a1a;border-radius:24px 24px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.1);}
+.photo-action-title{font-family:var(--font-head);font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;}
+.photo-action-sub{font-size:12px;color:var(--grey);margin-bottom:18px;}
+.photo-action-btn{width:100%;height:50px;border-radius:14px;border:none;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--font-body);}
+.photo-action-btn.upload{background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;box-shadow:0 4px 18px var(--pink-glow);}
+.photo-action-btn.delete{background:#2a0a0f;border:1px solid #5c1a25;color:#ff6b6b;}
+.photo-action-btn.cancel{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--grey);}
+/* Camera icon inside slot */
+.photo-slot-btn{position:absolute;bottom:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,45,107,.85);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.4);}
 .reminder-freq{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
 .freq-card{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px;cursor:pointer;text-align:center;transition:all 0.2s;}
 .freq-card.active{border-color:var(--pink);background:#1a0810;}
@@ -386,7 +399,11 @@ select option{background:var(--black3);}
 .pro-feature{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px;font-size:12px;color:rgba(255,255,255,.78);}
 .pro-feature b{display:block;color:#fff;font-family:var(--font-head);font-size:13px;margin-bottom:2px;}
 .pro-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;}
-@media(max-width:620px){.pro-plans{grid-template-columns:1fr}}
+@media(max-width:620px){.pro-plans{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pro-plan.lifetime{border-color:rgba(255,209,102,.55);background:linear-gradient(145deg,#1a1400,#101010);box-shadow:0 0 30px rgba(255,209,102,.1);}
+.pro-plan.free-tier{border-color:rgba(255,255,255,.08);}
+.pro-savings-badge{display:inline-block;background:rgba(6,214,160,.15);border:1px solid rgba(6,214,160,.3);color:var(--green);border-radius:99px;padding:2px 8px;font-size:9px;font-weight:800;margin-bottom:6px;letter-spacing:.5px;}
+.pro-countdown{font-size:10px;color:var(--gold);margin-top:6px;font-weight:700;}
 .pro-plan{background:linear-gradient(145deg,#171717,#101010);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:15px;position:relative;overflow:hidden;}
 .pro-plan.best{border-color:rgba(255,45,107,.55);box-shadow:0 0 30px rgba(255,45,107,.13);}
 .pro-plan-tag{position:absolute;right:12px;top:12px;border-radius:999px;padding:4px 8px;background:rgba(255,209,102,.13);border:1px solid rgba(255,209,102,.28);color:var(--gold);font-size:10px;font-weight:900;}
@@ -510,6 +527,7 @@ select option{background:var(--black3);}
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://js.paystack.co/v2/inline.js"></script>
 <script>
 (function() {
   var SUPABASE_URL = 'https://norgzcztduoxkshtthkm.supabase.co';
@@ -934,10 +952,9 @@ select option{background:var(--black3);}
         <div class="progress-photo-section">
           <!-- BEFORE -->
           <div class="photo-frame-wrap">
-            <div class="progress-photo-slot" id="photo-before" onclick="triggerPhotoUpload('before')">
-              <span class="photo-slot-icon">📷</span>
-              <span class="photo-slot-text">Before</span>
-              <div class="photo-date-tag" id="before-date"></div>
+            <div class="progress-photo-slot" id="photo-before" onclick="openPhotoSheet('before')">
+              <span class="photo-slot-icon" id="before-icon">📷</span>
+              <span class="photo-slot-text" id="before-text">Tap to add</span>
             </div>
             <div class="photo-frame-label before">Before</div>
           </div>
@@ -949,15 +966,31 @@ select option{background:var(--black3);}
           </div>
           <!-- AFTER -->
           <div class="photo-frame-wrap">
-            <div class="progress-photo-slot after-slot" id="photo-after" onclick="triggerPhotoUpload('after')">
-              <span class="photo-slot-icon">✨</span>
-              <span class="photo-slot-text">After</span>
-              <div class="photo-date-tag" id="after-date"></div>
+            <div class="progress-photo-slot after-slot" id="photo-after" onclick="openPhotoSheet('after')">
+              <span class="photo-slot-icon" id="after-icon">✨</span>
+              <span class="photo-slot-text" id="after-text">Tap to add</span>
             </div>
             <div class="photo-frame-label after">After ✨</div>
           </div>
         </div>
         <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)"/>
+
+        <!-- Photo Action Sheet -->
+        <div class="photo-action-sheet" id="photo-action-sheet" onclick="closePhotoSheet(event)">
+          <div class="photo-action-inner">
+            <div class="photo-action-title" id="sheet-title">📷 Before Photo</div>
+            <div class="photo-action-sub" id="sheet-sub">Choose what you want to do</div>
+            <button class="photo-action-btn upload" onclick="confirmPhotoUpload()">
+              📁 Choose from Gallery
+            </button>
+            <button class="photo-action-btn delete" id="sheet-delete-btn" onclick="deletePhoto()" style="display:none;">
+              🗑️ Delete Photo
+            </button>
+            <button class="photo-action-btn cancel" onclick="closePhotoSheet()">
+              Cancel
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Milestones -->
@@ -1092,6 +1125,144 @@ select option{background:var(--black3);}
       </div>
     </div>
 
+
+    <!-- ══ PRO PAGE ══ -->
+    <div class="page" id="page-pro">
+
+      <!-- Hero -->
+      <div class="pro-hero">
+        <div class="pro-kicker">⭐ Unlock Full Potential</div>
+        <div class="pro-title">FitHerNova<br/>Pro</div>
+        <div class="pro-sub">Everything you need to transform your body, fuel your spirit, and stay accountable — all in one place.</div>
+        <div class="pro-features">
+          <div class="pro-feature"><b>🤖 Unlimited Coach Nova</b>Unlimited AI coaching, meal plans & motivation</div>
+          <div class="pro-feature"><b>🎵 Full Music Library</b>All gospel workout tracks + new drops every week</div>
+          <div class="pro-feature"><b>📊 Advanced Analytics</b>Detailed charts, body metrics & weekly reports</div>
+          <div class="pro-feature"><b>🥗 Custom Meal Plans</b>7-day personalized plans based on your goals</div>
+          <div class="pro-feature"><b>💪 Premium Workouts</b>50+ workouts including Pilates, HIIT & Yoga</div>
+          <div class="pro-feature"><b>🔔 Smart Reminders</b>Custom reminders for water, meals & workouts</div>
+        </div>
+      </div>
+
+      <!-- Free trial banner -->
+      <div style="background:linear-gradient(135deg,#071912,#0f0f0f);border:1px solid rgba(6,214,160,.25);border-radius:18px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
+        <div style="font-size:28px;">🎁</div>
+        <div>
+          <div style="font-family:var(--font-head);font-size:14px;font-weight:800;color:#fff;margin-bottom:3px;">7-Day Free Trial Included</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.45;">Try any Pro plan with secure Paystack checkout. Cancel monthly anytime. Lifetime is yours forever.</div>
+        </div>
+      </div>
+
+      <!-- Plans -->
+      <div class="sec-label" style="margin-bottom:12px;">Choose Your Plan</div>
+      <div class="pro-plans">
+
+        <!-- FREE -->
+        <div class="pro-plan free-tier">
+          <div class="pro-plan-name" style="font-size:14px;">Free</div>
+          <div class="pro-price" style="font-size:22px;">$0<span>/forever</span></div>
+          <div class="pro-small">Basic features, always free.</div>
+          <button class="btn btn-ghost" style="height:38px;font-size:12px;width:100%;" onclick="showToast('✅ You are on Free!', 'Upgrade anytime to unlock Pro features.')">Current Plan</button>
+        </div>
+
+        <!-- MONTHLY -->
+        <div class="pro-plan">
+          <div class="pro-plan-name" style="font-size:14px;">Monthly</div>
+          <div class="pro-price" style="font-size:22px;">₦4,500<span>/mo</span></div>
+          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">≈ $3 USD / month</div>
+          <div class="pro-small">Billed monthly. Cancel anytime.</div>
+          <button class="btn btn-pink" onclick="selectPlan('monthly')" style="height:38px;font-size:12px;">Try Free →</button>
+          <div class="pro-status" id="pro-status-monthly"></div>
+        </div>
+
+        <!-- ANNUAL -->
+        <div class="pro-plan best">
+          <div class="pro-plan-tag">Save 48%</div>
+          <div class="pro-savings-badge">MOST POPULAR</div>
+          <div class="pro-plan-name" style="font-size:14px;">Annual</div>
+          <div class="pro-price" style="font-size:22px;">₦35,000<span>/yr</span></div>
+          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">≈ $22 USD / year</div>
+          <div class="pro-small">Just ₦2,917/mo. Best value.</div>
+          <button class="btn btn-pink" onclick="selectPlan('annual')" style="height:38px;font-size:12px;">Try Free →</button>
+          <div class="pro-status" id="pro-status-annual"></div>
+        </div>
+
+        <!-- LIFETIME -->
+        <div class="pro-plan lifetime">
+          <div class="pro-plan-tag" style="background:rgba(255,209,102,.18);border-color:rgba(255,209,102,.4);color:var(--gold);">⚡ Limited</div>
+          <div class="pro-plan-name" style="font-size:14px;">Lifetime</div>
+          <div class="pro-price" style="font-size:22px;">₦65,000<span> once</span></div>
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">≈ $40 USD · One time only</div>
+          <div class="pro-small">Pay once, own forever. Early access pricing.</div>
+          <button class="btn btn-pink" onclick="selectPlan('lifetime')" style="height:38px;font-size:12px;background:linear-gradient(135deg,#c8920a,var(--gold));color:#000;">Get Lifetime</button>
+          <div class="pro-countdown">🔥 Early access pricing</div>
+          <div class="pro-status" id="pro-status-lifetime"></div>
+        </div>
+
+      </div>
+
+      <!-- Free vs Pro comparison -->
+      <div class="card" style="margin-top:14px;">
+        <div class="sec-label">What You Get</div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:8px;padding-right:4px;">
+          <span style="font-size:9px;color:var(--grey);font-weight:700;min-width:48px;text-align:center;">FREE</span>
+          <span style="font-size:9px;color:var(--gold);font-weight:700;min-width:48px;text-align:center;">⭐ PRO</span>
+        </div>
+        <div style="display:grid;gap:0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--black4);">
+            <span style="font-size:12px;color:rgba(255,255,255,.75);">🤖 Coach Nova</span>
+            <div style="display:flex;gap:10px;">
+              <span style="font-size:11px;color:var(--grey);min-width:48px;text-align:center;">5/day</span>
+              <span style="font-size:11px;color:var(--gold);font-weight:700;min-width:48px;text-align:center;">Unlimited</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--black4);">
+            <span style="font-size:12px;color:rgba(255,255,255,.75);">💪 Workouts</span>
+            <div style="display:flex;gap:10px;">
+              <span style="font-size:11px;color:var(--grey);min-width:48px;text-align:center;">6</span>
+              <span style="font-size:11px;color:var(--gold);font-weight:700;min-width:48px;text-align:center;">50+</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--black4);">
+            <span style="font-size:12px;color:rgba(255,255,255,.75);">🥗 Meal Plans</span>
+            <div style="display:flex;gap:10px;">
+              <span style="font-size:11px;color:var(--grey);min-width:48px;text-align:center;">Basic</span>
+              <span style="font-size:11px;color:var(--gold);font-weight:700;min-width:48px;text-align:center;">Custom</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--black4);">
+            <span style="font-size:12px;color:rgba(255,255,255,.75);">🎵 Music</span>
+            <div style="display:flex;gap:10px;">
+              <span style="font-size:11px;color:var(--grey);min-width:48px;text-align:center;">Your songs</span>
+              <span style="font-size:11px;color:var(--gold);font-weight:700;min-width:48px;text-align:center;">+ Library</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--black4);">
+            <span style="font-size:12px;color:rgba(255,255,255,.75);">📊 Analytics</span>
+            <div style="display:flex;gap:10px;">
+              <span style="font-size:11px;color:var(--grey);min-width:48px;text-align:center;">Basic</span>
+              <span style="font-size:11px;color:var(--gold);font-weight:700;min-width:48px;text-align:center;">Full</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;">
+            <span style="font-size:12px;color:rgba(255,255,255,.75);">📷 Progress Photos</span>
+            <div style="display:flex;gap:10px;">
+              <span style="font-size:11px;color:var(--grey);min-width:48px;text-align:center;">2 slots</span>
+              <span style="font-size:11px;color:var(--gold);font-weight:700;min-width:48px;text-align:center;">Unlimited</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:16px 0 8px;font-size:11px;color:var(--grey);line-height:1.8;">
+        🔒 Secure payment via Paystack<br/>
+        Cancel anytime · No hidden fees · 7-day free trial<br/>
+        <span style="color:var(--pink-light);">support@fithernova.app</span>
+      </div>
+
+    </div>
+    <!-- end pro -->
+
   </div><!-- end content -->
 
   <!-- Bottom Nav -->
@@ -1119,6 +1290,10 @@ select option{background:var(--black3);}
     <button class="nav-item" id="nav-coach" onclick="navTo('coach')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       <span class="nav-label">Coach</span>
+    </button>
+    <button class="nav-item" id="nav-pro" onclick="navTo('pro')" style="position:relative;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span class="nav-label" style="color:var(--gold);">Pro ⭐</span>
     </button>
     <button class="nav-item" id="nav-profile" onclick="navTo('profile')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1230,6 +1405,8 @@ let appState = {
   workoutLog: [],
   activeGoal: 'weightloss',
   currentPhoto: null,
+  isProUser: false,
+  proPlan: 'free',
 };
 
 // ══════════════════════════════════════════════════════════════
@@ -2399,26 +2576,73 @@ function renderLeaderboard() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// PHOTO UPLOAD
+// PHOTO UPLOAD — action sheet with delete support
 // ══════════════════════════════════════════════════════════════
-function triggerPhotoUpload(slot) {
+function openPhotoSheet(slot) {
   currentPhotoSlot = slot;
-  document.getElementById('photo-input').click();
+  const hasPhoto = !!localStorage.getItem('fnova_photo_' + slot);
+  const label = slot === 'before' ? 'Before' : 'After';
+
+  // Update sheet UI
+  document.getElementById('sheet-title').textContent = (slot === 'before' ? '📷' : '✨') + ' ' + label + ' Photo';
+  document.getElementById('sheet-sub').textContent = hasPhoto
+    ? 'Replace or delete your ' + label.toLowerCase() + ' photo'
+    : 'Choose a photo from your gallery';
+  document.getElementById('sheet-delete-btn').style.display = hasPhoto ? 'flex' : 'none';
+
+  // Show the sheet
+  document.getElementById('photo-action-sheet').classList.add('show');
+}
+
+function closePhotoSheet(e) {
+  // Close if clicking the backdrop (not the inner card)
+  if (e && e.target !== document.getElementById('photo-action-sheet')) return;
+  document.getElementById('photo-action-sheet').classList.remove('show');
+}
+
+function confirmPhotoUpload() {
+  document.getElementById('photo-action-sheet').classList.remove('show');
+  // Small delay so sheet closes before picker opens (prevents UI freeze on Android)
+  setTimeout(() => {
+    const input = document.getElementById('photo-input');
+    input.value = ''; // reset so same file can be re-selected
+    input.click();
+  }, 200);
+}
+
+function deletePhoto() {
+  const slot = currentPhotoSlot;
+  const slotEl = document.getElementById('photo-' + slot);
+  if (slotEl) {
+    const isAfter = slot === 'after';
+    slotEl.innerHTML = `
+      <span class="photo-slot-icon">${isAfter ? '✨' : '📷'}</span>
+      <span class="photo-slot-text">Tap to add</span>`;
+    slotEl.classList.remove('has-photo');
+  }
+  localStorage.removeItem('fnova_photo_' + slot);
+  localStorage.removeItem('fnova_photo_date_' + slot);
+  document.getElementById('photo-action-sheet').classList.remove('show');
+  showToast('🗑️ Photo deleted', slot.charAt(0).toUpperCase() + slot.slice(1) + ' photo removed');
 }
 
 function handlePhotoUpload(e) {
   const file = e.target.files[0];
-  if (!file) return;
+  if (!file) return; // user pressed back — nothing happens, no freeze
   const reader = new FileReader();
   reader.onload = ev => {
-    const slot = document.getElementById('photo-' + currentPhotoSlot);
-    if (slot) {
+    const slotEl = document.getElementById('photo-' + currentPhotoSlot);
+    if (slotEl) {
       const dateStr = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      slot.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" /><div class="photo-date-tag">${dateStr}</div>`;
-      slot.classList.add('has-photo');
+      slotEl.innerHTML = `
+        <img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;display:block;" />
+        <div class="photo-date-tag">${dateStr}</div>`;
+      slotEl.classList.add('has-photo');
     }
     localStorage.setItem('fnova_photo_' + currentPhotoSlot, ev.target.result);
-    localStorage.setItem('fnova_photo_date_' + currentPhotoSlot, new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}));
+    localStorage.setItem('fnova_photo_date_' + currentPhotoSlot,
+      new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}));
+    showToast('✅ Photo saved!', 'Your ' + currentPhotoSlot + ' photo has been saved');
   };
   reader.readAsDataURL(file);
 }
@@ -2574,6 +2798,154 @@ function scheduleWaterReminder() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// PRO UPGRADE — PAYSTACK
+// ══════════════════════════════════════════════════════════════
+const PAYSTACK_PUBLIC_KEY = 'pk_live_4fa937b5b1e085b776aa9f21ee2e0b4af5a8cca5';
+const PRO_PRICES = {
+  monthly:  450000,    // ₦4,500/mo (~$3 USD)
+  annual:   3500000,   // ₦35,000/yr (~$22 USD)
+  lifetime: 6500000    // ₦65,000 once (~$40 USD)
+};
+const PRO_LABELS = {
+  monthly:  'Monthly Pro — ₦4,500/mo',
+  annual:   'Annual Pro — ₦35,000/yr',
+  lifetime: 'Lifetime Pro — ₦65,000 once'
+};
+
+// ── Local PRO persistence ──────────────────────────────────────
+function getProKey() {
+  if (!currentUser) return null;
+  return 'fithernova_pro_v1_' + currentUser.id;
+}
+function getLocalPro() {
+  const key = getProKey();
+  if (!key) return null;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    return d?.active ? d : null;
+  } catch(e) { return null; }
+}
+function setLocalPro(plan, ref) {
+  const key = getProKey();
+  if (!key) return;
+  const d = {
+    active: true, plan, ref: ref || ('local_' + Date.now()),
+    email: currentUser?.email || '',
+    activatedAt: new Date().toISOString()
+  };
+  localStorage.setItem(key, JSON.stringify(d));
+  appState.isProUser = true;
+  appState.proPlan   = plan;
+  updateProBadges();
+}
+async function saveProToSupabase(plan, ref) {
+  if (!window.supabase || !currentUser) return;
+  try {
+    await window.supabase.from('profiles').upsert({
+      id: currentUser.id,
+      email: currentUser.email,
+      is_pro: true,
+      pro_plan: plan,
+      pro_reference: ref,
+      pro_started_at: new Date().toISOString()
+    }, { onConflict: 'id' });
+  } catch(e) { console.warn('PRO cloud save skipped:', e.message || e); }
+}
+async function loadProStatus() {
+  const local = getLocalPro();
+  if (local) { appState.isProUser = true; appState.proPlan = local.plan || 'pro'; }
+  if (window.supabase && currentUser) {
+    try {
+      const { data } = await window.supabase
+        .from('profiles').select('is_pro,pro_plan')
+        .eq('id', currentUser.id).maybeSingle();
+      if (data?.is_pro) { appState.isProUser = true; appState.proPlan = data.pro_plan || 'pro'; }
+    } catch(e) {}
+  }
+  updateProBadges();
+}
+function updateProBadges() {
+  // Update any pro badge elements in the UI
+  const badge = document.getElementById('pro-status-badge');
+  if (badge) {
+    badge.textContent = appState.isProUser
+      ? ('PRO · ' + String(appState.proPlan || 'active').toUpperCase())
+      : 'FREE';
+    badge.classList.toggle('free', !appState.isProUser);
+  }
+  const psPage = document.getElementById('pro-page-status');
+  if (psPage) psPage.textContent = appState.isProUser
+    ? '✅ FitHerNova PRO is active on your account! Enjoy all features. ✨'
+    : '';
+}
+
+// ── Paystack checkout ──────────────────────────────────────────
+function setProStatus(plan, msg) {
+  const el = document.getElementById('pro-status-' + plan);
+  if (el) el.textContent = msg;
+}
+async function ensurePaystackLoaded() {
+  return new Promise((resolve, reject) => {
+    if (window.PaystackPop) return resolve(true);
+    const script = document.createElement('script');
+    script.src = 'https://js.paystack.co/v2/inline.js';
+    script.async = true;
+    script.onload  = () => resolve(true);
+    script.onerror = () => reject(new Error('Paystack failed to load'));
+    document.head.appendChild(script);
+  });
+}
+
+async function selectPlan(plan) {
+  if (!currentUser) {
+    showToast('Please sign in first', 'You need an account to upgrade to Pro');
+    return;
+  }
+  const amount = PRO_PRICES[plan];
+  const label  = PRO_LABELS[plan] || 'FitHerNova Pro';
+  const email  = currentUser.email || '';
+  if (!email.includes('@')) {
+    showToast('Invalid email', 'Please log in with a valid email before upgrading');
+    return;
+  }
+  const reference = 'FHN_' + plan.toUpperCase() + '_' + Date.now();
+  setProStatus(plan, '⏳ Opening secure checkout…');
+
+  try {
+    await ensurePaystackLoaded();
+    const paystack = new window.PaystackPop();
+    paystack.newTransaction({
+      key:       PAYSTACK_PUBLIC_KEY,
+      email,
+      amount,
+      currency:  'NGN',
+      reference,
+      metadata:  { plan, app: 'FitHerNova', custom_fields:[{ display_name:'Plan', variable_name:'plan', value:label }] },
+      onSuccess: async function(tx) {
+        const ref = tx?.reference || tx?.trxref || reference;
+        setProStatus(plan, '✅ Payment successful! Unlocking Pro…');
+        setLocalPro(plan, ref);
+        await saveProToSupabase(plan, ref);
+        setProStatus(plan, '');
+        updateProBadges();
+        showToast('🎉 Welcome to FitHerNova Pro!', 'All features are now unlocked ✨');
+        showAchievement('⭐', 'Pro Unlocked!', 'Welcome to FitHerNova Pro — enjoy all features!');
+      },
+      onCancel: function() {
+        setProStatus(plan, '');
+        showToast('Payment cancelled', 'You can upgrade anytime from the Pro tab');
+      }
+    });
+  } catch(err) {
+    setProStatus(plan, '');
+    showToast('Payment error', err.message || 'Please try again');
+    console.warn('Paystack error:', err);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
 // DATA CLEAR
 // ══════════════════════════════════════════════════════════════
 async function clearAllData() {
@@ -2606,14 +2978,14 @@ async function clearAllData() {
 // INIT
 // ══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // Load saved photos
+  // Restore saved photos
   ['before','after'].forEach(slot => {
     const saved = localStorage.getItem('fnova_photo_' + slot);
     const savedDate = localStorage.getItem('fnova_photo_date_' + slot) || '';
     if (saved) {
       const el = document.getElementById('photo-' + slot);
       if (el) {
-        el.innerHTML = `<img src="${saved}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" /><div class="photo-date-tag">${savedDate}</div>`;
+        el.innerHTML = `<img src="${saved}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;display:block;" /><div class="photo-date-tag">${savedDate}</div>`;
         el.classList.add('has-photo');
       }
     }
