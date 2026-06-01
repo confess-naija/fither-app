@@ -38,11 +38,12 @@
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 const supabaseUrl = 'https://norgzcztduoxkshtthkm.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcmd6Y3p0ZHVveGtzaHR0aGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTM0NTcsImV4cCI6MjA5NTM2OTQ1N30.XNN3QLs5NWVUQU9MhbDdA2E0fqpQUGjAsvNljkVsjPg';
 window.supabase = createClient(supabaseUrl, supabaseKey);
 
 function todayStr() { return new Date().toISOString().slice(0,10); }
 
+// Water Tracker
 async function loadWater(userId){
   let count = 0;
   const { data, error } = await supabase.from('user_water_tracker').select('water_cups').eq('user_id', userId).eq('date', todayStr()).single();
@@ -55,13 +56,19 @@ async function updateWater(userId,newCount){
   await supabase.from('user_water_tracker').upsert({user_id:userId,date:todayStr(),water_cups:newCount});
   localStorage.setItem('fhn_water_'+todayStr(), newCount);
 }
+
+// Toggle Coach Nova card
 function toggleCoach(){ document.getElementById('coach-challenge').classList.toggle('collapsed'); }
+
+// Supabase persistence helpers
 async function loadGoals(userId){ const { data, error } = await supabase.from('user_goals').select('*').eq('user_id',userId); if(error){console.error('Supabase error:',error); return []} return data; }
 async function saveGoal(userId,goalType,value){ const { data, error } = await supabase.from('user_goals').upsert({user_id:userId,goal_type:goalType,current_value:value}).select(); if(error) console.error('Supabase error:',error); }
 async function loadChallenges(userId){ const { data, error } = await supabase.from('user_challenge_progress').select('*').eq('user_id',userId); return error?[]:data; }
 async function loadWorkouts(userId){ const { data, error } = await supabase.from('user_workout_logs').select('*').eq('user_id',userId); return error?[]:data; }
 async function loadMeals(userId){ const { data, error } = await supabase.from('user_meal_logs').select('*').eq('user_id',userId); return error?[]:data; }
 async function loadMusicPrefs(userId){ const { data, error } = await supabase.from('user_music_progress').select('*').eq('user_id',userId); return error?[]:data; }
+
+// Logout
 function logout(){ console.log('User logged out'); }
 </script>
 </body>
