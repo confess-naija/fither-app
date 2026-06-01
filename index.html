@@ -78,6 +78,9 @@ select option{background:var(--black3);}
 @media(max-width:430px){.nav-label{font-size:9px;}.nav-item{min-width:50px;padding:9px 4px 7px;}.nav-item svg{width:20px;height:20px;}.header-streak{display:none!important;}.logo{font-size:20px;letter-spacing:0px;}.app-header{align-items:center;padding:10px 10px 0 10px;}.user-pill{max-width:100px;}}
 @media(max-width:360px){.logo{font-size:17px}.header-streak{display:none!important}.user-pill{max-width:80px;}.user-pill .uname{max-width:24px;}}
 .greeting{font-family:var(--font-head);font-size:22px;font-weight:700;margin-bottom:2px;}
+.home-greeting-row{display:flex;align-items:center;gap:12px;margin-bottom:2px;}
+.home-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--pink-dark),var(--black3));border:2px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(255,45,107,.22);}
+.home-avatar img{width:100%;height:100%;object-fit:cover;display:none;border-radius:50%;}
 .greeting span{background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .sub-greeting{font-size:13px;color:var(--grey);margin-bottom:18px;}
 .ring-section{display:flex;align-items:center;gap:16px;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
@@ -289,9 +292,25 @@ select option{background:var(--black3);}
 .lb-rank{font-family:var(--font-head);font-size:16px;font-weight:800;width:26px;text-align:center;}
 .lb-name{flex:1;font-size:13px;}
 .lb-streak{font-size:13px;font-weight:600;color:var(--pink-light);}
-.progress-photo-slot{height:130px;background:var(--black3);border-radius:var(--radius-sm);border:1px dashed var(--black4);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color 0.2s;position:relative;}
-.progress-photo-slot:hover{border-color:var(--grey2);}
-.progress-photo-slot img{width:100%;height:100%;object-fit:cover;}
+/* ── PROGRESS PHOTO FRAMES ── */
+.progress-photo-section{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.photo-frame-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.photo-frame-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;}
+.photo-frame-label.before{color:var(--grey);}
+.photo-frame-label.after{color:var(--pink-light);}
+.progress-photo-slot{width:100%;aspect-ratio:3/4;background:linear-gradient(145deg,#1a1a1a,#111);border-radius:18px;border:2px dashed rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:all .25s;position:relative;gap:6px;}
+.progress-photo-slot:hover{border-color:rgba(255,45,107,.5);transform:translateY(-2px);}
+.progress-photo-slot.has-photo{border:2px solid rgba(255,45,107,.4);}
+.progress-photo-slot.after-slot{border-color:rgba(255,45,107,.25);box-shadow:0 0 24px rgba(255,45,107,.1);}
+.progress-photo-slot.after-slot:hover{box-shadow:0 0 35px rgba(255,45,107,.22);}
+.progress-photo-slot img{width:100%;height:100%;object-fit:cover;display:block;}
+.photo-slot-icon{font-size:28px;opacity:.5;}
+.photo-slot-text{font-size:11px;color:var(--grey);font-weight:600;}
+.photo-transform-arrow{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;padding-bottom:30px;}
+.transform-arrow-line{width:2px;height:40px;background:linear-gradient(180deg,var(--grey2),var(--pink));border-radius:2px;}
+.transform-arrow-head{font-size:18px;}
+.transform-label{font-size:9px;color:var(--grey);letter-spacing:.8px;text-transform:uppercase;writing-mode:vertical-rl;transform:rotate(180deg);}
+.photo-date-tag{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:9px;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:.5px;background:rgba(0,0,0,.45);padding:3px 0;}
 .reminder-freq{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
 .freq-card{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px;cursor:pointer;text-align:center;transition:all 0.2s;}
 .freq-card.active{border-color:var(--pink);background:#1a0810;}
@@ -564,8 +583,17 @@ select option{background:var(--black3);}
 
     <!-- ══ HOME PAGE ══ -->
     <div class="page active" id="page-home">
-      <div class="greeting">Good <span id="time-greeting">morning</span>, <span id="user-first-name">there</span>! 👋</div>
-      <div class="sub-greeting" id="home-date-line">Let's crush your goals today.</div>
+      <div class="home-greeting-row">
+        <div class="home-avatar" id="home-avatar">
+          <img id="home-avatar-img" src="" alt=""/>
+          <span id="home-avatar-placeholder">👤</span>
+        </div>
+        <div>
+          <div class="greeting">Good <span id="time-greeting">morning</span>, <span id="user-first-name">there</span>! 👋</div>
+          <div class="sub-greeting" id="home-date-line" style="margin-bottom:0;">Let's crush your goals today.</div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;"></div>
 
       <!-- Today Plan Card -->
       <div class="today-plan-card">
@@ -697,9 +725,12 @@ select option{background:var(--black3);}
       </div>
 
       <!-- Recent Meals -->
-      <div class="card">
-        <div class="sec-label">Today's Meals</div>
-        <div id="home-meal-list"><div style="font-size:12px;color:var(--grey);">No meals logged yet. Tap Log Meal to start!</div></div>
+      <div class="card" style="padding-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="sec-label" style="margin:0;">Today's Meals</div>
+          <button onclick="navTo('food')" style="background:rgba(255,45,107,.12);border:1px solid rgba(255,45,107,.28);color:var(--pink-light);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;">+ Log Meal</button>
+        </div>
+        <div id="home-meal-list"></div>
       </div>
     </div>
     <!-- end home -->
@@ -888,19 +919,34 @@ select option{background:var(--black3);}
 
       <!-- Progress Photos -->
       <div class="card">
-        <div class="sec-label">Progress Photos</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">
-          <div>
-            <div style="font-size:10px;color:var(--grey);margin-bottom:5px;">Before</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div class="sec-label" style="margin:0;">Your Transformation</div>
+          <span style="font-size:10px;color:var(--grey);">Tap a frame to upload</span>
+        </div>
+        <div class="progress-photo-section">
+          <!-- BEFORE -->
+          <div class="photo-frame-wrap">
             <div class="progress-photo-slot" id="photo-before" onclick="triggerPhotoUpload('before')">
-              <span style="font-size:24px;color:var(--grey2);">📷</span>
+              <span class="photo-slot-icon">📷</span>
+              <span class="photo-slot-text">Before</span>
+              <div class="photo-date-tag" id="before-date"></div>
             </div>
+            <div class="photo-frame-label before">Before</div>
           </div>
-          <div>
-            <div style="font-size:10px;color:var(--grey);margin-bottom:5px;">After</div>
-            <div class="progress-photo-slot" id="photo-after" onclick="triggerPhotoUpload('after')">
-              <span style="font-size:24px;color:var(--grey2);">📷</span>
+          <!-- ARROW -->
+          <div class="photo-transform-arrow">
+            <div class="transform-label">Journey</div>
+            <div class="transform-arrow-line"></div>
+            <div class="transform-arrow-head">💪</div>
+          </div>
+          <!-- AFTER -->
+          <div class="photo-frame-wrap">
+            <div class="progress-photo-slot after-slot" id="photo-after" onclick="triggerPhotoUpload('after')">
+              <span class="photo-slot-icon">✨</span>
+              <span class="photo-slot-text">After</span>
+              <div class="photo-date-tag" id="after-date"></div>
             </div>
+            <div class="photo-frame-label after">After ✨</div>
           </div>
         </div>
         <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)"/>
@@ -1303,6 +1349,9 @@ async function bootApp() {
   document.getElementById('profile-display-email').textContent = currentUser.email || '';
   document.getElementById('time-greeting').textContent = greetingByHour();
   document.getElementById('home-date-line').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  // Restore avatar on boot
+  const bootAvatar = localStorage.getItem('fnova_avatar');
+  if (bootAvatar) setAvatarEverywhere(bootAvatar);
 
   // Build static UI
   renderFoodList();
@@ -1891,16 +1940,33 @@ function renderHomeMeals() {
   const wrap = document.getElementById('home-meal-list');
   if (!wrap) return;
   if (!appState.mealLog.length) {
-    wrap.innerHTML = '<div style="font-size:12px;color:var(--grey);">No meals logged yet. Tap Log Meal to start!</div>';
+    wrap.innerHTML = `
+      <div style="text-align:center;padding:18px 0 6px;">
+        <div style="font-size:32px;margin-bottom:8px;">🍽️</div>
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:4px;">No meals logged yet</div>
+        <div style="font-size:11px;color:var(--grey);margin-bottom:14px;">Start tracking to see your calorie progress here</div>
+        <button onclick="navTo('food')" style="background:linear-gradient(135deg,var(--pink),var(--pink-light));border:none;color:#fff;border-radius:12px;padding:9px 22px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px var(--pink-glow);">🥗 Log Your First Meal</button>
+      </div>`;
     return;
   }
   const recent = appState.mealLog.slice(-4).reverse();
+  const totalCal = appState.mealLog.reduce((a,m) => a + (m.calories||0), 0);
   wrap.innerHTML = recent.map(m => `
     <div class="meal-log-item">
-      <div class="mli-left"><span>🍽</span><span>${m.food_name || m.name}</span></div>
+      <div class="mli-left">
+        <span style="font-size:18px;">🍽️</span>
+        <div>
+          <div style="font-size:13px;font-weight:500;">${m.food_name || m.name}</div>
+          <div style="font-size:10px;color:var(--grey);">${m.protein||0}g protein · ${m.carbs||0}g carbs</div>
+        </div>
+      </div>
       <span class="mli-cal">${m.calories} kcal</span>
     </div>
-  `).join('');
+  `).join('') + `
+    <div style="border-top:1px solid var(--black4);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;color:var(--grey);">${appState.mealLog.length} meal${appState.mealLog.length!==1?'s':''} today</span>
+      <span style="font-size:12px;font-weight:700;color:var(--pink-light);">${totalCal} kcal total</span>
+    </div>`;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2337,9 +2403,12 @@ function handlePhotoUpload(e) {
   reader.onload = ev => {
     const slot = document.getElementById('photo-' + currentPhotoSlot);
     if (slot) {
-      slot.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;" />`;
+      const dateStr = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      slot.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" /><div class="photo-date-tag">${dateStr}</div>`;
+      slot.classList.add('has-photo');
     }
     localStorage.setItem('fnova_photo_' + currentPhotoSlot, ev.target.result);
+    localStorage.setItem('fnova_photo_date_' + currentPhotoSlot, new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}));
   };
   reader.readAsDataURL(file);
 }
@@ -2349,13 +2418,23 @@ function handleAvatarUpload(e) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    const img = document.getElementById('profile-avatar-img');
-    const placeholder = document.getElementById('profile-avatar-placeholder');
-    if (img) { img.src = ev.target.result; img.style.display = 'block'; }
-    if (placeholder) placeholder.style.display = 'none';
+    setAvatarEverywhere(ev.target.result);
     localStorage.setItem('fnova_avatar', ev.target.result);
   };
   reader.readAsDataURL(file);
+}
+
+function setAvatarEverywhere(src) {
+  // Profile page avatar
+  const img = document.getElementById('profile-avatar-img');
+  const placeholder = document.getElementById('profile-avatar-placeholder');
+  if (img) { img.src = src; img.style.display = 'block'; }
+  if (placeholder) placeholder.style.display = 'none';
+  // Home page avatar
+  const homeImg = document.getElementById('home-avatar-img');
+  const homePh = document.getElementById('home-avatar-placeholder');
+  if (homeImg) { homeImg.src = src; homeImg.style.display = 'block'; }
+  if (homePh) homePh.style.display = 'none';
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2520,18 +2599,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load saved photos
   ['before','after'].forEach(slot => {
     const saved = localStorage.getItem('fnova_photo_' + slot);
+    const savedDate = localStorage.getItem('fnova_photo_date_' + slot) || '';
     if (saved) {
       const el = document.getElementById('photo-' + slot);
-      if (el) el.innerHTML = `<img src="${saved}" style="width:100%;height:100%;object-fit:cover;" />`;
+      if (el) {
+        el.innerHTML = `<img src="${saved}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" /><div class="photo-date-tag">${savedDate}</div>`;
+        el.classList.add('has-photo');
+      }
     }
   });
   const savedAvatar = localStorage.getItem('fnova_avatar');
-  if (savedAvatar) {
-    const img = document.getElementById('profile-avatar-img');
-    const ph = document.getElementById('profile-avatar-placeholder');
-    if (img) { img.src = savedAvatar; img.style.display = 'block'; }
-    if (ph) ph.style.display = 'none';
-  }
+  if (savedAvatar) setAvatarEverywhere(savedAvatar);
   loadReminders();
   initAuth();
 });
