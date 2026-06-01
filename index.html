@@ -489,12 +489,20 @@ select option{background:var(--black3);}
 .hub-sub{font-size:9px;color:var(--grey);margin-top:3px;line-height:1.2;}
 </style>
 
-<!-- Supabase -->
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-const SUPABASE_URL = 'https://norgzcztduoxkshtthkm.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcmd6Y3p0ZHVveGtzaHR0aGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTM0NTcsImV4cCI6MjA5NTM2OTQ1N30.XNN3QLs5NWVUQU9MhbDdA2E0fqpQUGjAsvNljkVsjPg';
-window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+<!-- Supabase UMD (no module, works synchronously in window scope) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+(function() {
+  var SUPABASE_URL = 'https://norgzcztduoxkshtthkm.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcmd6Y3p0ZHVveGtzaHR0aGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTM0NTcsImV4cCI6MjA5NTM2OTQ1N30.XNN3QLs5NWVUQU9MhbDdA2E0fqpQUGjAsvNljkVsjPg';
+  try {
+    window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    window.supabase = window._sb; // overwrite the namespace with the client instance
+  } catch(e) {
+    console.warn('Supabase init failed, offline mode active.', e);
+    window.supabase = null;
+  }
+})();
 </script>
 </head>
 <body>
@@ -1159,17 +1167,35 @@ let appState = {
 // AUTH
 // ══════════════════════════════════════════════════════════════
 async function initAuth() {
+  const msgEl = document.getElementById('auth-loading-msg');
+
+  // If Supabase failed to load (offline / CDN blocked), go straight to auth screen
+  if (!window.supabase) {
+    if (msgEl) msgEl.textContent = 'Offline mode — please sign in.';
+    setTimeout(showAuthScreen, 800);
+    return;
+  }
+
+  // Race Supabase getSession against a 6-second timeout
   try {
-    const { data: { session } } = await window.supabase.auth.getSession();
+    if (msgEl) msgEl.textContent = 'Checking your session…';
+    const sessionPromise = window.supabase.auth.getSession();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 6000)
+    );
+    const { data } = await Promise.race([sessionPromise, timeoutPromise]);
+    const session = data && data.session;
     if (session && session.user) {
       currentUser = session.user;
+      if (msgEl) msgEl.textContent = 'Loading your data…';
       await bootApp();
     } else {
       showAuthScreen();
     }
   } catch(e) {
-    console.error('Auth init error:', e);
-    showAuthScreen();
+    console.warn('Auth check failed:', e.message);
+    if (msgEl) msgEl.textContent = 'Could not connect — showing sign-in…';
+    setTimeout(showAuthScreen, 900);
   }
 }
 
@@ -1192,11 +1218,13 @@ async function doLogin() {
   const password = document.getElementById('login-password').value;
   const msg = document.getElementById('auth-msg');
   if (!email || !password) { msg.textContent = 'Please fill in all fields.'; return; }
+  if (!window.supabase) { msg.textContent = 'No connection. Try refreshing the page.'; return; }
   msg.textContent = 'Signing in…';
   try {
     const { data, error } = await window.supabase.auth.signInWithPassword({ email, password });
     if (error) { msg.textContent = error.message; return; }
     currentUser = data.user;
+    msg.textContent = '';
     await bootApp();
   } catch(e) {
     msg.textContent = 'Sign in failed. Check your connection.';
@@ -1239,12 +1267,17 @@ async function bootApp() {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('main-app').style.display = 'none';
 
-  await Promise.allSettled([
-    loadGoals(),
-    loadMealLog(),
-    loadWorkoutLog(),
-    loadWater(),
-  ]);
+  // Use allSettled so one failing table never blocks the whole app
+  try {
+    await Promise.allSettled([
+      loadGoals(),
+      loadMealLog(),
+      loadWorkoutLog(),
+      loadWater(),
+    ]);
+  } catch(e) {
+    console.warn('Data load partial failure:', e);
+  }
 
   // User display
   const meta = currentUser.user_metadata || {};
@@ -2181,7 +2214,7 @@ function handleAvatarUpload(e) {
 // COACH NOVA CHALLENGE
 // ══════════════════════════════════════════════════════════════
 const CHALLENGES = [
-  { headline:'💪 30-Minute Belly Burn', sub:'Do 3 rounds of mountain climbers, bicycle crunches, and high knees. No excuses — your belly fat doesn't stand a chance today!', mission:'Complete 3 rounds' },
+  { headline:'💪 30-Minute Belly Burn', sub:'Do 3 rounds of mountain climbers, bicycle crunches, and high knees. No excuses — your belly fat doesn\'t stand a chance today!', mission:'Complete 3 rounds' },
   { headline:'🥗 Clean Eating Day', sub:'Challenge: eat only whole foods today. No processed snacks. Log every meal and hit your protein goal of 80g+. Your body will thank you!', mission:'Log 4 clean meals' },
   { headline:'💧 Hydration Hustle', sub:'Drink 8 full cups of water before 8PM. Water accelerates fat loss, boosts energy, and clears your skin. Tap each cup as you go!', mission:'Drink 8 cups' },
   { headline:'🏃 10K Steps Challenge', sub:'Walk or jog your way to 10,000 steps. Take the stairs, walk during lunch, dance in your kitchen — every step counts toward your goal!', mission:'Hit 10K steps' },
