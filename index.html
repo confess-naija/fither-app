@@ -173,6 +173,8 @@ select option{background:var(--black3);}
 .food-tag-healthy{background:#0a2a1a;color:var(--green);}
 .food-tag-highprotein{background:#1a0810;color:var(--pink-light);}
 .food-tag-weightloss{background:#2a1a00;color:var(--gold);}
+.food-tag-african{background:#1a1500;color:#f4c842;}
+.food-tag-nigerian{background:#1a1500;color:#f4c842;}
 .show-more-foods{background:var(--black3);border:1px dashed var(--grey2);color:var(--grey);height:40px;font-size:13px;width:100%;margin-top:4px;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;}
 .show-more-foods:hover{border-color:var(--pink);color:var(--pink-light);}
 .workout-card{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s;}
@@ -738,7 +740,7 @@ select option{background:var(--black3);}
         <div class="chip" onclick="filterFood('healthy',this)">🥦 Healthy</div>
         <div class="chip" onclick="filterFood('highprotein',this)">💪 High Protein</div>
         <div class="chip" onclick="filterFood('weightloss',this)">⚡ Weight Loss</div>
-        <div class="chip" onclick="filterFood('nigerian',this)">🇳🇬 Nigerian</div>
+        <div class="chip" onclick="filterFood('african',this)">🌍 African</div>
       </div>
 
       <div id="food-list-wrap"></div>
@@ -814,12 +816,12 @@ select option{background:var(--black3);}
         <div class="music-stage">
           <div class="vinyl-wrap">
             <div class="vinyl-disc" id="vinyl-disc">
-              <div class="vinyl-label">🙏</div>
+              <div class="vinyl-label">🔥</div>
             </div>
           </div>
           <div class="music-info">
-            <div class="music-title" id="music-title">Gospel Workout</div>
-            <div class="music-artist" id="music-artist">Select a track below</div>
+            <div class="music-title" id="music-title">Holy Fire — Elevated</div>
+            <div class="music-artist" id="music-artist">Holy Fire</div>
             <div class="music-meta-line">
               <span class="music-pill" id="music-bpm">— BPM</span>
               <span class="music-pill" id="music-genre">Gospel</span>
@@ -838,13 +840,25 @@ select option{background:var(--black3);}
             </div>
           </div>
         </div>
-        <div class="music-status" id="music-status">Choose a gospel track to begin your workout session!</div>
+        <div class="music-status" id="music-status">🔥 10 gospel tracks loaded — tap ▶ to start your workout session!</div>
       </div>
 
       <div class="playlist-head">
-        <div class="sec-label" style="margin:0;">Playlist</div>
+        <div class="sec-label" style="margin:0;">Your Playlist</div>
         <button class="refresh-music-btn" onclick="shufflePlaylist()">↻ Shuffle</button>
       </div>
+
+      <!-- Songs are configured — guide card hidden -->
+      <div id="add-songs-card" style="display:none;background:linear-gradient(135deg,#0e1a0e,#111);border:1px solid rgba(6,214,160,.25);border-radius:18px;padding:14px;margin-bottom:12px;">
+        <div style="font-family:var(--font-head);font-size:13px;font-weight:800;color:var(--green);margin-bottom:6px;">🎵 Add Your Own Songs</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.65);line-height:1.6;">
+          To add your songs, open <strong style="color:#fff;">index.html</strong>, find the <strong style="color:#fff;">PLAYLIST</strong> array near the bottom, and replace each entry with your song details:<br/><br/>
+          <code style="background:#0a0a0a;border-radius:6px;padding:6px 8px;display:block;font-size:11px;color:var(--green);margin-top:4px;">{ title:'Song Name', artist:'Artist', src:'songs/mysong.mp3', duration:240 }</code><br/>
+          Place your <strong style="color:#fff;">.mp3 files</strong> in a <strong style="color:#fff;">songs/</strong> folder next to index.html. Or paste a direct URL in the <strong style="color:#fff;">src</strong> field.
+        </div>
+        <button onclick="document.getElementById('add-songs-card').style.display='none'" style="margin-top:10px;background:none;border:1px solid rgba(255,255,255,.12);color:var(--grey);border-radius:8px;padding:5px 12px;font-size:11px;cursor:pointer;">Got it ✓</button>
+      </div>
+
       <div id="playlist-wrap"></div>
     </div>
 
@@ -1064,8 +1078,8 @@ select option{background:var(--black3);}
     <div class="mini-player-inner">
       <div class="mini-art" id="mini-art">🙏</div>
       <div style="min-width:0;">
-        <div class="mini-title" id="mini-track-title">Gospel Workout</div>
-        <div class="mini-sub" id="mini-track-sub">Tap Music tab for full player</div>
+        <div class="mini-title" id="mini-track-title">Holy Fire — Elevated</div>
+        <div class="mini-sub" id="mini-track-sub">Tap ▶ to play · Music tab for full player</div>
       </div>
       <div class="mini-actions">
         <button class="mini-btn" onclick="prevTrack()">
@@ -1689,24 +1703,49 @@ function updateFoodMacros() {
 // FOOD DATABASE & LIST
 // ══════════════════════════════════════════════════════════════
 const FOODS = [
-  { id:1, emoji:'🥚', name:'Boiled Eggs (2)', cal:150, protein:12, carbs:1, fat:10, tags:['healthy','highprotein'] },
-  { id:2, emoji:'🍗', name:'Grilled Chicken Breast', cal:165, protein:31, carbs:0, fat:3.6, tags:['healthy','highprotein','weightloss'] },
-  { id:3, emoji:'🥗', name:'Greek Salad', cal:120, protein:4, carbs:10, fat:7, tags:['healthy','weightloss'] },
-  { id:4, emoji:'🍌', name:'Banana', cal:89, protein:1, carbs:23, fat:0.3, tags:['healthy'] },
-  { id:5, emoji:'🥛', name:'Greek Yogurt (cup)', cal:100, protein:17, carbs:6, fat:0.7, tags:['healthy','highprotein'] },
-  { id:6, emoji:'🍚', name:'White Rice (1 cup)', cal:206, protein:4, carbs:45, fat:0.4, tags:[] },
-  { id:7, emoji:'🫘', name:'Black Beans (½ cup)', cal:114, protein:8, carbs:20, fat:0.5, tags:['healthy','weightloss'] },
-  { id:8, emoji:'🥑', name:'Avocado (½)', cal:120, protein:1.5, carbs:6, fat:11, tags:['healthy'] },
-  { id:9, emoji:'🍠', name:'Sweet Potato', cal:103, protein:2, carbs:24, fat:0.1, tags:['healthy','weightloss'] },
-  { id:10, emoji:'🥜', name:'Almonds (28g)', cal:164, protein:6, carbs:6, fat:14, tags:['healthy'] },
-  { id:11, emoji:'🍲', name:'Egusi Soup (1 cup)', cal:320, protein:14, carbs:8, fat:25, tags:['nigerian'] },
-  { id:12, emoji:'🍱', name:'Jollof Rice (1 plate)', cal:380, protein:8, carbs:72, fat:8, tags:['nigerian'] },
-  { id:13, emoji:'🐟', name:'Grilled Tilapia', cal:128, protein:26, carbs:0, fat:2.7, tags:['healthy','highprotein','nigerian'] },
-  { id:14, emoji:'🫙', name:'Groundnut Soup (1 cup)', cal:280, protein:12, carbs:10, fat:22, tags:['nigerian'] },
-  { id:15, emoji:'🥬', name:'Efo Riro (1 cup)', cal:180, protein:10, carbs:8, fat:12, tags:['nigerian','healthy'] },
-  { id:16, emoji:'🍞', name:'Whole Grain Bread (2 slices)', cal:160, protein:6, carbs:28, fat:2, tags:['healthy'] },
-  { id:17, emoji:'🥤', name:'Protein Shake', cal:130, protein:25, carbs:6, fat:2, tags:['highprotein','weightloss'] },
-  { id:18, emoji:'🫐', name:'Mixed Berries (1 cup)', cal:80, protein:1, carbs:19, fat:0.5, tags:['healthy','weightloss'] },
+  // ── Everyday / International ──
+  { id:1,  emoji:'🥚', name:'Boiled Eggs (2)', cal:150, protein:12, carbs:1, fat:10, tags:['healthy','highprotein'] },
+  { id:2,  emoji:'🍗', name:'Grilled Chicken Breast', cal:165, protein:31, carbs:0, fat:3.6, tags:['healthy','highprotein','weightloss'] },
+  { id:3,  emoji:'🥑', name:'Avocado Toast (1 slice)', cal:195, protein:5, carbs:18, fat:12, tags:['healthy'] },
+  { id:4,  emoji:'🍌', name:'Banana', cal:89, protein:1, carbs:23, fat:0.3, tags:['healthy'] },
+  { id:5,  emoji:'🥛', name:'Greek Yogurt (cup)', cal:100, protein:17, carbs:6, fat:0.7, tags:['healthy','highprotein'] },
+  { id:6,  emoji:'🍚', name:'Brown Rice (1 cup, cooked)', cal:216, protein:5, carbs:45, fat:1.8, tags:['healthy'] },
+  { id:7,  emoji:'🥗', name:'Chicken Caesar Salad', cal:320, protein:28, carbs:14, fat:18, tags:['healthy','highprotein'] },
+  { id:8,  emoji:'🥜', name:'Peanut Butter (2 tbsp)', cal:190, protein:7, carbs:6, fat:16, tags:['healthy'] },
+  { id:9,  emoji:'🍠', name:'Sweet Potato (medium)', cal:103, protein:2, carbs:24, fat:0.1, tags:['healthy','weightloss'] },
+  { id:10, emoji:'🫐', name:'Mixed Berries (1 cup)', cal:80, protein:1, carbs:19, fat:0.5, tags:['healthy','weightloss'] },
+  { id:11, emoji:'🐟', name:'Baked Salmon (100g)', cal:208, protein:20, carbs:0, fat:13, tags:['healthy','highprotein'] },
+  { id:12, emoji:'🥦', name:'Stir-Fry Veggies + Tofu', cal:180, protein:14, carbs:15, fat:7, tags:['healthy','weightloss'] },
+  { id:13, emoji:'🍳', name:'Veggie Omelette (3 eggs)', cal:220, protein:18, carbs:5, fat:14, tags:['healthy','highprotein'] },
+  { id:14, emoji:'🍞', name:'Whole Grain Bread (2 slices)', cal:160, protein:6, carbs:28, fat:2, tags:['healthy'] },
+  { id:15, emoji:'🥤', name:'Protein Shake', cal:130, protein:25, carbs:6, fat:2, tags:['highprotein','weightloss'] },
+  { id:16, emoji:'🫘', name:'Lentil Soup (1 cup)', cal:230, protein:18, carbs:40, fat:1, tags:['healthy','weightloss'] },
+  { id:17, emoji:'🍝', name:'Pasta + Grilled Chicken', cal:480, protein:38, carbs:55, fat:10, tags:['highprotein'] },
+  { id:18, emoji:'🥙', name:'Chicken Wrap (whole wheat)', cal:360, protein:28, carbs:35, fat:10, tags:['healthy','highprotein'] },
+  { id:19, emoji:'🧆', name:'Falafel Bowl (4 pieces)', cal:330, protein:13, carbs:38, fat:15, tags:['healthy'] },
+  { id:20, emoji:'🍣', name:'Salmon Sushi (6 pieces)', cal:290, protein:20, carbs:40, fat:6, tags:['healthy','highprotein'] },
+  // ── African Diaspora / West African ──
+  { id:21, emoji:'🍲', name:'Egusi Soup (1 cup)', cal:320, protein:14, carbs:8, fat:25, tags:['african'] },
+  { id:22, emoji:'🍛', name:'Jollof Rice (1 plate)', cal:380, protein:8, carbs:72, fat:8, tags:['african'] },
+  { id:23, emoji:'🐟', name:'Grilled Tilapia', cal:128, protein:26, carbs:0, fat:2.7, tags:['healthy','highprotein','african'] },
+  { id:24, emoji:'🥬', name:'Efo Riro (1 cup)', cal:180, protein:10, carbs:8, fat:12, tags:['african','healthy'] },
+  { id:25, emoji:'🫙', name:'Groundnut Soup (1 cup)', cal:280, protein:12, carbs:10, fat:22, tags:['african'] },
+  { id:26, emoji:'🍖', name:'Suya (beef skewer, 100g)', cal:210, protein:25, carbs:4, fat:11, tags:['african','highprotein'] },
+  { id:27, emoji:'🍘', name:'Akara (bean fritters, 3 pcs)', cal:245, protein:10, carbs:28, fat:11, tags:['african'] },
+  { id:28, emoji:'🥘', name:'Pepper Soup (chicken, 1 cup)', cal:190, protein:22, carbs:5, fat:9, tags:['african','healthy','weightloss'] },
+  { id:29, emoji:'🌽', name:'Pounded Yam + Egusi (small)', cal:520, protein:16, carbs:80, fat:18, tags:['african'] },
+  { id:30, emoji:'🍌', name:'Fried Plantain (5 slices)', cal:218, protein:1, carbs:47, fat:4, tags:['african'] },
+  { id:31, emoji:'🥣', name:'Oats + Almond Milk', cal:210, protein:7, carbs:36, fat:5, tags:['healthy','weightloss'] },
+  { id:32, emoji:'🍗', name:'Jerk Chicken (Caribbean-style)', cal:240, protein:30, carbs:6, fat:11, tags:['african','highprotein'] },
+  { id:33, emoji:'🥗', name:'Ugali + Sukuma Wiki (East African)', cal:310, protein:8, carbs:58, fat:5, tags:['african','healthy'] },
+  { id:34, emoji:'🍲', name:'Ndole (Cameroon greens, 1 cup)', cal:260, protein:14, carbs:12, fat:18, tags:['african','healthy'] },
+  { id:35, emoji:'🥜', name:'Groundnut Stew (Ghana, 1 cup)', cal:340, protein:18, carbs:14, fat:24, tags:['african'] },
+  { id:36, emoji:'🫔', name:'Injera + Lentil (Ethiopian)', cal:290, protein:12, carbs:54, fat:3, tags:['african','healthy'] },
+  // ── Weight Loss Focused ──
+  { id:37, emoji:'🥬', name:'Spinach Smoothie (16oz)', cal:140, protein:5, carbs:22, fat:4, tags:['healthy','weightloss'] },
+  { id:38, emoji:'🍋', name:'Lemon Herb Grilled Fish', cal:145, protein:28, carbs:2, fat:3, tags:['healthy','highprotein','weightloss'] },
+  { id:39, emoji:'🥒', name:'Cucumber + Hummus Snack', cal:120, protein:4, carbs:14, fat:6, tags:['healthy','weightloss'] },
+  { id:40, emoji:'🍵', name:'Green Tea + 2 Rice Cakes', cal:75, protein:2, carbs:16, fat:0.5, tags:['weightloss'] },
 ];
 
 let filteredFoods = [...FOODS];
@@ -1719,26 +1758,57 @@ function filterFood(tag, el) {
   el.classList.add('active');
   filteredFoods = tag === 'all' ? [...FOODS] : FOODS.filter(f => f.tags.includes(tag));
   selectedFood = null;
+  foodListExpanded = false;
   renderFoodList();
   renderFoodDetail();
 }
 
+let foodListExpanded = false;
+const FOOD_INITIAL_COUNT = 6;
+
 function renderFoodList() {
   const wrap = document.getElementById('food-list-wrap');
   if (!wrap) return;
-  wrap.innerHTML = filteredFoods.map(f => `
+  const toShow = foodListExpanded ? filteredFoods : filteredFoods.slice(0, FOOD_INITIAL_COUNT);
+  const remaining = filteredFoods.length - FOOD_INITIAL_COUNT;
+
+  wrap.innerHTML = toShow.map(f => `
     <div class="food-item ${selectedFood && selectedFood.id === f.id ? 'selected' : ''}" onclick="selectFood(${f.id})">
       <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
         <div class="food-emoji">${f.emoji}</div>
         <div style="min-width:0;">
           <div class="food-name">${f.name}</div>
           <div class="food-meta">${f.protein}g protein · ${f.carbs}g carbs · ${f.fat}g fat</div>
-          <div>${f.tags.map(t => `<span class="food-tag food-tag-${t}">${t}</span>`).join('')}</div>
+          <div>${f.tags.map(t => '<span class="food-tag food-tag-'+t+'">'+t+'</span>').join('')}</div>
         </div>
       </div>
       <div class="food-cal">${f.cal}</div>
     </div>
   `).join('');
+
+  if (!foodListExpanded && remaining > 0) {
+    wrap.innerHTML += `
+      <button class="show-more-foods" onclick="expandFoodList()">
+        ＋ Show ${remaining} more foods
+      </button>`;
+  } else if (foodListExpanded && filteredFoods.length > FOOD_INITIAL_COUNT) {
+    wrap.innerHTML += `
+      <button class="show-more-foods" onclick="collapseFoodList()" style="color:var(--grey2);">
+        ▲ Show less
+      </button>`;
+  }
+}
+
+function expandFoodList() {
+  foodListExpanded = true;
+  renderFoodList();
+  // smooth scroll to the new items
+  document.querySelector('.content').scrollBy({ top: 200, behavior: 'smooth' });
+}
+
+function collapseFoodList() {
+  foodListExpanded = false;
+  renderFoodList();
 }
 
 function selectFood(id) {
@@ -1992,14 +2062,56 @@ function backToWorkoutList() {
 // MUSIC
 // ══════════════════════════════════════════════════════════════
 const PLAYLIST = [
-  { id:1, emoji:'🙏', title:'Way Maker', artist:'Sinach', bpm:128, genre:'Gospel Worship', duration:240 },
-  { id:2, emoji:'🔥', title:'You Are Great', artist:'Nathaniel Bassey', bpm:140, genre:'Gospel Afrobeat', duration:210 },
-  { id:3, emoji:'⚡', title:'Oceans (Workout Edit)', artist:'Hillsong', bpm:135, genre:'Contemporary Gospel', duration:195 },
-  { id:4, emoji:'💃', title:'Take Over', artist:'Tasha Cobbs', bpm:145, genre:'Gospel R&B', duration:225 },
-  { id:5, emoji:'🌟', title:'Power in Your Name', artist:'Lincoln Brewster', bpm:132, genre:'Gospel Rock', duration:218 },
-  { id:6, emoji:'🎵', title:'Reckless Love', artist:'Cory Asbury', bpm:138, genre:'Contemporary Gospel', duration:230 },
-  { id:7, emoji:'🙌', title:'Good Grace', artist:'Hillsong United', bpm:150, genre:'Gospel Dance', duration:205 },
-  { id:8, emoji:'✨', title:'Lion & The Lamb', artist:'Bethel Music', bpm:120, genre:'Gospel Worship', duration:248 },
+  {
+    id:1, emoji:'🔥', title:'Holy Fire — Elevated',
+    artist:'Holy Fire', bpm:128, genre:'Gospel Worship', duration:240,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire%20%20Elevated.mp3'
+  },
+  {
+    id:2, emoji:'🙏', title:'Lord, Remember Me',
+    artist:'Holy Fire', bpm:72, genre:'Gospel Worship', duration:270,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord,%20Rememer%20me.mp3'
+  },
+  {
+    id:3, emoji:'🎛️', title:'Mix Jam 2026',
+    artist:'FitHerNova Mix', bpm:145, genre:'Gospel Workout Mix', duration:300,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Mix%20Jam%202026.mp3'
+  },
+  {
+    id:4, emoji:'💿', title:'Mixtape Vol. 2',
+    artist:'FitHerNova Mix', bpm:140, genre:'Gospel Mixtape', duration:320,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/mixtape%20vol%202.mp3'
+  },
+  {
+    id:5, emoji:'✨', title:'Sharp — Glory',
+    artist:'Sharp', bpm:132, genre:'Gospel Afrobeat', duration:250,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Sharp-%20GlORY.mp3'
+  },
+  {
+    id:6, emoji:'📖', title:'The Word (feat. Holy Spell)',
+    artist:'Holy Spell', bpm:90, genre:'Gospel Spoken Word', duration:280,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/The%20Word%20(feat.%20Holy%20Spell).mp3'
+  },
+  {
+    id:7, emoji:'💙', title:'ZIK Blue — Lift Me Up',
+    artist:'ZIK Blue', bpm:118, genre:'Gospel Praise', duration:255,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3'
+  },
+  {
+    id:8, emoji:'🌿', title:'Zimora El Reloaded',
+    artist:'Zimora El', bpm:125, genre:'Gospel Worship', duration:290,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20Reloaded.mp3'
+  },
+  {
+    id:9, emoji:'🌟', title:'Glory & Fire',
+    artist:'Ziyana Eya', bpm:138, genre:'Gospel Fire', duration:265,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20%26%20FIRE.mp3'
+  },
+  {
+    id:10, emoji:'🎓', title:'Lessons',
+    artist:'Ziyana Eya', bpm:95, genre:'Gospel R&B', duration:245,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana-Eya-Lessons.mp3'
+  },
 ];
 
 let currentTrackIdx = 0;
@@ -2061,26 +2173,51 @@ function updateMusicUI() {
   const mp2 = document.getElementById('mini-player'); if(mp2) mp2.classList.toggle('show', true);
 }
 
+let audioEl = null; // HTML5 Audio element for real playback
+
 function togglePlay() {
+  const t = PLAYLIST[currentTrackIdx];
+
+  // If this track has a real src URL, use HTML5 Audio
+  if (t.src && t.src.trim() !== '') {
+    if (!audioEl) {
+      audioEl = new Audio();
+      audioEl.addEventListener('timeupdate', () => {
+        musicProgress = Math.round(audioEl.currentTime);
+        const dur = audioEl.duration || t.duration;
+        const pct = (musicProgress / dur) * 100;
+        const mp = document.getElementById('music-progress'); if(mp) mp.style.width = pct + '%';
+        const mf = document.getElementById('mini-prog-fill'); if(mf) mf.style.width = pct + '%';
+        const tc = document.getElementById('music-current'); if(tc) tc.textContent = fmtTime(musicProgress);
+      });
+      audioEl.addEventListener('ended', () => { musicProgress = 0; nextTrack(); });
+    }
+    if (musicPlaying) {
+      audioEl.pause();
+      musicPlaying = false;
+    } else {
+      if (audioEl.src !== t.src) { audioEl.src = t.src; musicProgress = 0; }
+      audioEl.play().catch(e => console.warn('Audio play failed:', e));
+      musicPlaying = true;
+    }
+    updateMusicUI();
+    return;
+  }
+
+  // Fallback: simulated progress timer (no real audio)
   if (musicPlaying) {
     clearInterval(musicInterval);
     musicPlaying = false;
     updateMusicUI();
   } else {
     musicPlaying = true;
-    const t = PLAYLIST[currentTrackIdx];
     musicInterval = setInterval(() => {
       musicProgress++;
-      if (musicProgress >= t.duration) {
-        musicProgress = 0;
-        nextTrack();
-        return;
-      }
+      if (musicProgress >= t.duration) { musicProgress = 0; nextTrack(); return; }
       const pct = (musicProgress / t.duration) * 100;
       const mp = document.getElementById('music-progress'); if(mp) mp.style.width = pct + '%';
       const mf = document.getElementById('mini-prog-fill'); if(mf) mf.style.width = pct + '%';
-      const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
-      setEl('music-current', fmtTime(musicProgress));
+      const tc = document.getElementById('music-current'); if(tc) tc.textContent = fmtTime(musicProgress);
     }, 1000);
     updateMusicUI();
   }
@@ -2089,15 +2226,19 @@ function togglePlay() {
 function nextTrack() {
   currentTrackIdx = (currentTrackIdx + 1) % PLAYLIST.length;
   musicProgress = 0;
-  if (musicPlaying) { clearInterval(musicInterval); musicPlaying = false; togglePlay(); }
-  else updateMusicUI();
+  if (audioEl) { audioEl.pause(); audioEl.src = ''; }
+  clearInterval(musicInterval);
+  musicPlaying = false;
+  togglePlay();
 }
 
 function prevTrack() {
   currentTrackIdx = (currentTrackIdx - 1 + PLAYLIST.length) % PLAYLIST.length;
   musicProgress = 0;
-  if (musicPlaying) { clearInterval(musicInterval); musicPlaying = false; togglePlay(); }
-  else updateMusicUI();
+  if (audioEl) { audioEl.pause(); audioEl.src = ''; }
+  clearInterval(musicInterval);
+  musicPlaying = false;
+  togglePlay();
 }
 
 function shufflePlaylist() {
