@@ -69,9 +69,8 @@ select option{background:var(--black3);}
 .auth-message{min-height:18px;font-size:12px;color:var(--gold);line-height:1.35;margin-top:4px;}
 .auth-small{font-size:11px;color:var(--grey);text-align:center;margin-top:12px;line-height:1.45;}
 /* ── USER PILL (always visible, contains logout) ── */
-.user-pill{display:flex!important;align-items:center;gap:5px;background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:5px 9px;font-size:11px;color:var(--grey);white-space:nowrap;max-width:140px;overflow:hidden;flex-shrink:1;}
-.user-pill .uname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:62px;flex-shrink:1;}
-.user-pill .logout-btn{background:transparent;border:0;color:var(--pink-light);font-weight:700;cursor:pointer;font-size:10px;flex-shrink:0;padding:0;font-family:var(--font-body);}
+.user-pill{display:flex!important;align-items:center;gap:5px;background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:5px 10px;font-size:11px;color:var(--grey);white-space:nowrap;max-width:130px;overflow:hidden;flex-shrink:1;}
+.user-pill .uname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:72px;flex-shrink:1;}
 @media(max-width:430px){.user-pill{font-size:10px;padding:5px 7px;max-width:120px;}.user-pill .uname{max-width:50px;}}
 @media(max-width:360px){.user-pill{font-size:9px;padding:4px 6px;max-width:90px;gap:4px;}.user-pill .uname{max-width:28px;}}
 @media(min-width:700px){.stats-row{grid-template-columns:repeat(4,1fr)}.food-item,.workout-card,.card,.detail-card,.ring-section{border-radius:20px}.logo{font-size:30px}.page{padding-left:28px;padding-right:28px}.app-header{padding-left:28px;padding-right:28px}}
@@ -570,10 +569,8 @@ select option{background:var(--black3);}
     <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
       <div class="header-streak" id="header-streak">🔥 0 days</div>
       <div class="user-pill" id="user-pill">
-        <span style="font-size:9px;margin-right:2px;">👤</span>
+        <span style="font-size:9px;">👤</span>
         <span class="uname" id="header-username">You</span>
-        <span style="color:var(--black4);margin:0 1px;">|</span>
-        <button class="logout-btn" onclick="doLogout()">Sign Out</button>
       </div>
     </div>
   </div>
@@ -732,6 +729,17 @@ select option{background:var(--black3);}
         </div>
         <div id="home-meal-list"></div>
       </div>
+
+      <!-- Sign Out — bottom of home page -->
+      <div style="margin-top:8px;margin-bottom:4px;text-align:center;padding:18px 0 10px;">
+        <div style="font-size:11px;color:var(--grey);margin-bottom:12px;">Logged in as <span id="home-user-email" style="color:rgba(255,255,255,.5);"></span></div>
+        <button onclick="doLogout()" style="background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--grey);border-radius:99px;padding:9px 28px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+        <div style="margin-top:14px;font-size:10px;color:rgba(255,255,255,.15);">FitHerNova v1.0 · Your Wellness Journey</div>
+      </div>
+
     </div>
     <!-- end home -->
 
@@ -1347,6 +1355,8 @@ async function bootApp() {
   document.getElementById('header-username').textContent = firstName;
   document.getElementById('profile-display-name').textContent = meta.full_name || firstName;
   document.getElementById('profile-display-email').textContent = currentUser.email || '';
+  const homeEmail = document.getElementById('home-user-email');
+  if (homeEmail) homeEmail.textContent = currentUser.email || '';
   document.getElementById('time-greeting').textContent = greetingByHour();
   document.getElementById('home-date-line').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   // Restore avatar on boot
