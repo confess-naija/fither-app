@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitHerNova</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#ff2d6b">
+<link href="https://fonts.googleapis.com/css2?family=Syne&family=DM+Sans&display=swap" rel="stylesheet">
+<style>
+.stats-row { padding: 8px; display: flex; flex-wrap: wrap; }
+.stats-row > div { flex: 0 0 50%; box-sizing: border-box; }
+.coach-card { max-height: 400px; overflow: hidden; transition: max-height 0.3s ease; }
+.coach-card.collapsed { max-height: 50px; }
+.section-divider { height:1px; background:#ccc; margin:12px 0; }
+.logout-btn { background-color:#ff2d6b; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer; font-size:16px; }
+.user-pill { display:flex; align-items:center; gap:5px; }
+.user-pill .uname { text-overflow:ellipsis; overflow:hidden; white-space:nowrap; }
+@media(max-width:360px){.user-pill{flex:1; justify-content:flex-end;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="user-pill">
+    <span class="avatar">A</span>
+    <span class="uname">AliceVeryLongNameThatTruncates</span>
+    <button class="logout-btn" onclick="logout()">Exit</button>
+  </div>
+</div>
+<div class="homepage">
+  <div class="stats-row">
+    <div id="goal-remaining">Goal Remaining</div>
+    <div id="coach-challenge" class="coach-card">Coach Nova Challenge <button onclick="toggleCoach()">Toggle</button></div>
+  </div>
+  <div class="section-divider"></div>
+</div>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabaseUrl = 'https://norgzcztduoxkshtthkm.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+window.supabase = createClient(supabaseUrl, supabaseKey);
+
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+async function loadWater(userId){
+  let count = 0;
+  const { data, error } = await supabase.from('user_water_tracker').select('water_cups').eq('user_id', userId).eq('date', todayStr()).single();
+  if(!error && data) count = data.water_cups;
+  else { const local = localStorage.getItem('fhn_water_'+todayStr()); if(local) count = parseInt(local); }
+  document.getElementById('water-count').innerText = count;
+  return count;
+}
+async function updateWater(userId,newCount){
+  await supabase.from('user_water_tracker').upsert({user_id:userId,date:todayStr(),water_cups:newCount});
+  localStorage.setItem('fhn_water_'+todayStr(), newCount);
+}
+function toggleCoach(){ document.getElementById('coach-challenge').classList.toggle('collapsed'); }
+async function loadGoals(userId){ const { data, error } = await supabase.from('user_goals').select('*').eq('user_id',userId); if(error){console.error('Supabase error:',error); return []} return data; }
+async function saveGoal(userId,goalType,value){ const { data, error } = await supabase.from('user_goals').upsert({user_id:userId,goal_type:goalType,current_value:value}).select(); if(error) console.error('Supabase error:',error); }
+async function loadChallenges(userId){ const { data, error } = await supabase.from('user_challenge_progress').select('*').eq('user_id',userId); return error?[]:data; }
+async function loadWorkouts(userId){ const { data, error } = await supabase.from('user_workout_logs').select('*').eq('user_id',userId); return error?[]:data; }
+async function loadMeals(userId){ const { data, error } = await supabase.from('user_meal_logs').select('*').eq('user_id',userId); return error?[]:data; }
+async function loadMusicPrefs(userId){ const { data, error } = await supabase.from('user_music_progress').select('*').eq('user_id',userId); return error?[]:data; }
+function logout(){ console.log('User logged out'); }
+</script>
+</body>
+</html>
