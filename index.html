@@ -1872,19 +1872,66 @@ async function saveMealEntry(entry) {
   updateFoodMacros();
 }
 
-async function deleteMealEntry(id) {
-  appState.mealLog = appState.mealLog.filter(m => m.id !== id);
-  try {
-    await window.supabase.from('user_meal_logs').delete().eq('id', id);
-  } catch(e) {
+// confirmDeleteMeal — uses array index (reliable) + Supabase ID (for DB sync)
+function confirmDeleteMeal(idx, sbId) {
+  const meal = appState.mealLog[idx];
+  if (!meal) return;
+  const name = meal.food_name || meal.name || 'this meal';
+
+  // Show mini confirmation toast instead of browser confirm()
+  const toastEl = document.getElementById('notif-toast');
+  document.getElementById('nt-title').textContent = 'Delete ' + name + '?';
+  document.getElementById('nt-sub').textContent = meal.calories + ' kcal will be removed';
+  // Replace OK button with Confirm + Cancel
+  const btn = document.querySelector('.nt-btn');
+  if (btn) {
+    btn.textContent = 'Delete';
+    btn.style.background = '#c4004d';
+    btn.onclick = function() {
+      doDeleteMeal(idx, sbId);
+      btn.textContent = 'OK';
+      btn.style.background = '';
+      btn.onclick = dismissToast;
+      dismissToast();
+    };
+  }
+  toastEl.classList.add('show');
+  setTimeout(() => {
+    toastEl.classList.remove('show');
+    if (btn) { btn.textContent = 'OK'; btn.style.background = ''; btn.onclick = dismissToast; }
+  }, 5000);
+}
+
+async function doDeleteMeal(idx, sbId) {
+  // Remove from local state by index — always correct
+  appState.mealLog.splice(idx, 1);
+
+  // Delete from Supabase if we have a real UUID
+  if (sbId && sbId.length > 10 && window.supabase) {
+    try {
+      await window.supabase.from('user_meal_logs').delete().eq('id', sbId);
+    } catch(e) {
+      // Fallback: save updated list to localStorage
+      localStorage.setItem('fnova_meals_' + todayStr(), JSON.stringify(appState.mealLog));
+    }
+  } else {
+    // No Supabase ID — save to localStorage
     localStorage.setItem('fnova_meals_' + todayStr(), JSON.stringify(appState.mealLog));
   }
+
   recalcMacros();
   renderHomeMeals();
   renderFoodLog();
   updateCalRing();
   updateHomeStats();
   updateFoodMacros();
+  showToast('🗑️ Meal removed', 'Calorie total updated');
+}
+
+// Keep old function as alias for backwards compat
+async function deleteMealEntry(id) {
+  const idx = appState.mealLog.findIndex(m => String(m.id) === String(id));
+  if (idx !== -1) doDeleteMeal(idx, String(id));
 }
 
 function recalcMacros() {
@@ -2308,15 +2355,32 @@ function renderFoodLog() {
     wrap.innerHTML = '<div style="font-size:12px;color:var(--grey);">Nothing logged yet today.</div>';
     return;
   }
-  wrap.innerHTML = appState.mealLog.map(m => `
-    <div class="log-list-item">
-      <span>${m.food_name || m.name}</span>
-      <span style="display:flex;align-items:center;gap:8px;">
-        <span style="color:var(--pink-light);font-weight:600;">${m.calories} kcal</span>
-        <button class="del-btn" onclick="deleteMealEntry(${m.id || 0})">✕</button>
-      </span>
-    </div>
-  `).join('');
+  wrap.innerHTML = '';
+  appState.mealLog.forEach(function(m, idx) {
+    const name = m.food_name || m.name || 'Food';
+    const cal  = m.calories  || 0;
+    const row  = document.createElement('div');
+    row.className = 'log-list-item';
+    row.innerHTML =
+      '<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">' +
+        '<span style="font-size:16px;">🍽️</span>' +
+        '<div style="min-width:0;">' +
+          '<div style="font-size:13px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + name + '</div>' +
+          '<div style="font-size:10px;color:var(--grey);">' + (m.protein||0) + 'g protein · ' + (m.carbs||0) + 'g carbs · ' + (m.fat||0) + 'g fat</div>' +
+        '</div>' +
+      '</div>' +
+      '<span style="display:flex;align-items:center;gap:8px;flex-shrink:0;">' +
+        '<span style="color:var(--pink-light);font-weight:700;font-size:13px;">' + cal + ' kcal</span>' +
+        '<button class="del-btn" style="width:28px;height:28px;border-radius:50%;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.25);color:#ff6b6b;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">✕</button>' +
+      '</span>';
+    // Attach delete via addEventListener — zero quote escaping issues
+    const delBtn = row.querySelector('.del-btn');
+    const sbId   = String(m.id || '');
+    delBtn.addEventListener('click', function() {
+      confirmDeleteMeal(idx, sbId);
+    });
+    wrap.appendChild(row);
+  });
 }
 
 function renderHomeMeals() {
