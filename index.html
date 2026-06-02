@@ -1946,6 +1946,8 @@ async function bootApp() {
   updateFoodMacros();
   loadCoachChallenge();
   renderChallengeCard();
+  // Load reminders from Supabase now that user is known
+  loadReminders();
 
   // Midnight water reset
   scheduleMidnightReset();
@@ -3623,6 +3625,7 @@ async function saveReminders() {
   const waterChecked   = document.getElementById('remind-water').checked;
   const timeInput      = document.getElementById('workout-time-input');
   const workoutTime    = timeInput ? timeInput.value : '08:00';
+
   if (workoutChecked || mealChecked || waterChecked) {
     const granted = await requestNotifPermission();
     if (!granted) {
@@ -3632,31 +3635,87 @@ async function saveReminders() {
       return;
     }
   }
+
   const prefs = { workout: workoutChecked, meal: mealChecked, water: waterChecked, workoutTime: workoutTime };
+
+  // Save to localStorage as fast cache
   uSet('fnova_reminders', JSON.stringify(prefs));
+
+  // Save to Supabase so it survives logout/login
+  if (window.supabase && currentUser) {
+    try {
+      await window.supabase.from('profiles').upsert({
+        id: currentUser.id,
+        remind_workout:  workoutChecked,
+        remind_meal:     mealChecked,
+        remind_water:    waterChecked,
+        workout_time:    workoutTime,
+        updated_at:      new Date().toISOString()
+      }, { onConflict: 'id' });
+    } catch(e) {
+      console.warn('Reminder save to Supabase failed, using localStorage only:', e.message);
+    }
+  }
+
   scheduleAllReminders();
   const active = [workoutChecked && 'workout', mealChecked && 'meals', waterChecked && 'water'].filter(Boolean);
   showToast('Reminders saved!', active.length ? 'Active: ' + active.join(', ') : 'All reminders off');
 }
 
-function loadReminders() {
-  const saved = uGet('fnova_reminders');
-  if (!saved) return;
-  try {
-    const p = JSON.parse(saved);
-    const rw  = document.getElementById('remind-workout');
-    const rm  = document.getElementById('remind-meal');
-    const rwt = document.getElementById('remind-water');
-    const rt  = document.getElementById('workout-time-input');
-    if (rw)  rw.checked  = p.workout || false;
-    if (rm)  rm.checked  = p.meal    || false;
-    if (rwt) rwt.checked = p.water   || false;
-    if (rt && p.workoutTime) rt.value = p.workoutTime;
-    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') scheduleAllReminders();
-  } catch(e) {}
+async function loadReminders() {
+  let prefs = null;
+
+  // Try Supabase first — most up to date after login
+  if (window.supabase && currentUser) {
+    try {
+      const { data, error } = await window.supabase
+        .from('profiles')
+        .select('remind_workout, remind_meal, remind_water, workout_time')
+        .eq('id', currentUser.id)
+        .single();
+      if (data && !error) {
+        prefs = {
+          workout:     data.remind_workout  || false,
+          meal:        data.remind_meal     || false,
+          water:       data.remind_water    || false,
+          workoutTime: data.workout_time    || '08:00'
+        };
+        // Sync back to localStorage
+        uSet('fnova_reminders', JSON.stringify(prefs));
+      }
+    } catch(e) {
+      console.warn('Could not load reminders from Supabase:', e.message);
+    }
+  }
+
+  // Fallback to localStorage if Supabase failed
+  if (!prefs) {
+    const saved = uGet('fnova_reminders');
+    if (saved) {
+      try { prefs = JSON.parse(saved); } catch(e) {}
+    }
+  }
+
+  if (!prefs) return;
+
+  // Apply to UI
+  const rw  = document.getElementById('remind-workout');
+  const rm  = document.getElementById('remind-meal');
+  const rwt = document.getElementById('remind-water');
+  const rt  = document.getElementById('workout-time-input');
+  if (rw)  rw.checked  = prefs.workout || false;
+  if (rm)  rm.checked  = prefs.meal    || false;
+  if (rwt) rwt.checked = prefs.water   || false;
+  if (rt && prefs.workoutTime) rt.value = prefs.workoutTime;
+
+  // Restart reminders if permission already granted
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted'
+      && (prefs.workout || prefs.meal || prefs.water)) {
+    scheduleAllReminders();
+  }
 }
 
-function scheduleWaterReminder() {} // legacy no-op — handled by scheduleAllReminders
+function scheduleWaterReminder() {} // legacy no-op
 
 // ══════════════════════════════════════════════════════════════
 // PRO UPGRADE — FLUTTERWAVE
@@ -4229,7 +4288,7 @@ self.addEventListener('notificationclick', e => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  loadReminders();
+  // loadReminders() is called inside bootApp once user is known
   initAuth();
 });
 
