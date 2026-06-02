@@ -1539,6 +1539,43 @@ select option{background:var(--black3);}
 
 <script>
 // ══════════════════════════════════════════════════════════════
+// GLOBAL AUDIO STOP — declared first so doLogout can always call it
+// ══════════════════════════════════════════════════════════════
+window._fhnAudio = null; // will hold audioEl reference once created
+
+window.stopAllAudio = function() {
+  // Stop via stored reference
+  if (window._fhnAudio) {
+    try {
+      window._fhnAudio.pause();
+      window._fhnAudio.src  = '';
+      window._fhnAudio.load();
+    } catch(e) {}
+  }
+  // Also stop any other Audio elements on the page
+  document.querySelectorAll('audio').forEach(function(a) {
+    try { a.pause(); a.src = ''; } catch(e) {}
+  });
+  // Reset music state variables if they exist
+  try { musicPlaying    = false; } catch(e) {}
+  try { currentTrackIdx = 0;     } catch(e) {}
+  try { musicProgress   = 0;     } catch(e) {}
+  try { _loadedSrc      = '';    } catch(e) {}
+  // Hide mini player
+  var mp = document.getElementById('mini-player');
+  if (mp) { mp.classList.remove('show'); mp.style.display = 'none'; }
+  // Reset play buttons
+  var pb = document.getElementById('play-btn');
+  if (pb) pb.textContent = '▶';
+  // Stop vinyl spinning
+  var v = document.getElementById('vinyl-disc');
+  if (v) v.classList.remove('spinning');
+  var ma = document.getElementById('mini-art');
+  if (ma) ma.classList.remove('spinning');
+  console.log('🔇 Audio stopped by stopAllAudio()');
+};
+
+// ══════════════════════════════════════════════════════════════
 // UTILITIES
 // ══════════════════════════════════════════════════════════════
 function todayStr() {
@@ -1659,6 +1696,13 @@ async function initAuth() {
 }
 
 function showAuthScreen() {
+  // Nuclear option: reload the page completely on logout
+  // This guarantees zero state leakage between users
+  if (currentUser === null) {
+    // We just logged out — reload to fresh state
+    window.location.href = window.location.origin + window.location.pathname;
+    return;
+  }
   document.getElementById('auth-loading').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('main-app').style.display = 'none';
@@ -1701,7 +1745,10 @@ async function doSignup() {
   try {
     const { data, error } = await window.supabase.auth.signUp({
       email, password,
-      options: { data: { full_name: name } }
+      options: {
+        data: { full_name: name },
+        emailRedirectTo: 'https://fither-app-one.vercel.app'
+      }
     });
     if (error) { msg.textContent = error.message; return; }
 
@@ -1734,10 +1781,13 @@ async function doSignup() {
 }
 
 async function doLogout() {
-  // 1. Stop music — use window.stopAllAudio() so it works regardless of declaration order
+  // 1. Stop music immediately
   window.stopAllAudio && window.stopAllAudio();
 
-  // 2. Reset ALL app state to defaults — critical for multi-user
+  // 2. Clear avatar from UI immediately
+  clearAvatarUI();
+
+  // 3. Reset ALL app state to defaults
   Object.assign(appState, {
     calorieGoal: 1800, caloriesEaten: 0, caloriesBurned: 0,
     protein: 0, carbs: 0, fat: 0, waterCups: 0, streak: 0,
@@ -1747,15 +1797,31 @@ async function doLogout() {
     isProUser: false, proPlan: 'free'
   });
 
-  // 3. Clear all localStorage for this session
+  // 4. Clear this user's localStorage
   uClear();
 
-  // 4. Sign out from Supabase
+  // 5. Sign out from Supabase
   try { await window.supabase.auth.signOut(); } catch(e) {}
   currentUser = null;
 
-  // 5. Show auth screen
+  // 6. Show auth screen
   showAuthScreen();
+}
+
+// Clear avatar from all UI elements
+function clearAvatarUI() {
+  const imgs = ['profile-avatar-img', 'home-avatar-img'];
+  const phs  = ['profile-avatar-placeholder', 'home-avatar-placeholder'];
+  imgs.forEach(id => { const el = document.getElementById(id); if(el) { el.src=''; el.style.display='none'; }});
+  phs.forEach(id  => { const el = document.getElementById(id);  if(el) el.style.display=''; });
+  // Also clear progress photos
+  ['before','after'].forEach(slot => {
+    const el = document.getElementById('photo-' + slot);
+    if (!el) return;
+    const isAfter = slot === 'after';
+    el.innerHTML = '<span class="photo-slot-icon">' + (isAfter ? '✨' : '📷') + '</span><span class="photo-slot-text">Tap to add</span>';
+    el.classList.remove('has-photo');
+  });
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2782,12 +2848,14 @@ function updateMusicUI() {
 // ── AUDIO ENGINE ─────────────────────────────────────────────
 const audioEl = new Audio();
 audioEl.volume = 1.0;
+window._fhnAudio = audioEl; // register globally so stopAllAudio() can reach it
 
 let _loadedSrc   = '';
 let musicPlaying = false;
 
 // Global stop function — callable from anywhere including before audio engine loads
-window.stopAllAudio = function() {
+// (kept here as backup, primary is at top of script)
+window._stopAudioBackup = function() {
   try {
     audioEl.pause();
     audioEl.src = '';
@@ -3905,9 +3973,20 @@ async function loadProgressPhotos() {
 // Listen for auth state changes
 window.addEventListener('load', () => {
   if (window.supabase && window.supabase.auth) {
-    window.supabase.auth.onAuthStateChange((event, session) => {
+    window.supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event);
       if (event === 'SIGNED_OUT') {
         showAuthScreen();
+      } else if (event === 'SIGNED_IN' && session && session.user) {
+        // User confirmed email and was redirected back — boot the app
+        if (!currentUser) {
+          currentUser = session.user;
+          await bootApp();
+          if (isNewUser()) {
+            document.getElementById('main-app').style.display = 'none';
+            showOnboarding();
+          }
+        }
       }
     });
   }
