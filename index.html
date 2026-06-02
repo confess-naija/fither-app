@@ -1046,8 +1046,9 @@ select option{background:var(--black3);}
         <div style="display:flex;align-items:center;gap:10px;margin-top:12px;position:relative;z-index:1;">
           <span style="font-size:14px;">🔈</span>
           <input type="range" id="volume-slider" min="0" max="100" value="100"
-            style="flex:1;height:4px;accent-color:var(--pink);cursor:pointer;"
-            oninput="setVolume(this.value)"/>
+            style="flex:1;height:6px;accent-color:var(--pink);cursor:pointer;border-radius:3px;"
+            oninput="setVolume(this.value)"
+            onchange="setVolume(this.value)"/>
           <span style="font-size:14px;">🔊</span>
         </div>
       </div>
@@ -2708,12 +2709,32 @@ function updateMusicUI() {
 }
 
 // ── AUDIO ENGINE ─────────────────────────────────────────────
-// Single shared Audio element, fully reset on each track load
+// Single shared Audio element — NO crossOrigin (breaks Supabase)
 const audioEl = new Audio();
-// NOTE: do NOT set crossOrigin — Supabase public storage works without it
-// Setting crossOrigin='anonymous' actually BLOCKS playback from Supabase
-audioEl.preload = 'metadata';
-audioEl.volume  = 1.0; // full volume
+audioEl.preload = 'none'; // don't preload until user taps
+audioEl.volume  = 1.0;
+
+// Unlock audio context on FIRST user touch anywhere on page
+// This is required by Chrome/Safari autoplay policy
+let _audioUnlocked = false;
+function unlockAudio() {
+  if (_audioUnlocked) return;
+  _audioUnlocked = true;
+  // Play silent buffer to unlock audio context
+  audioEl.volume = 0;
+  audioEl.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAYAAAAAAAAAGgHoMAAAAAAAAAAAAAAAAAAAAA==';
+  const p = audioEl.play();
+  if (p) p.then(() => {
+    audioEl.pause();
+    audioEl.src = '';
+    audioEl.volume = 1.0;
+    console.log('Audio unlocked!');
+  }).catch(() => {});
+  document.removeEventListener('touchstart', unlockAudio);
+  document.removeEventListener('click', unlockAudio);
+}
+document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('click', unlockAudio, { once: true });
 
 let _loadedSrc = ''; // track which src is currently loaded
 
@@ -2757,40 +2778,51 @@ function loadAndPlay(src) {
   if (!src || !src.trim()) return;
   const cleanSrc = src.trim();
 
+  // Always set volume before doing anything
+  audioEl.volume = 1.0;
+  audioEl.muted  = false;
+
   // Only reload if src actually changed
   if (_loadedSrc !== cleanSrc) {
     audioEl.pause();
+    audioEl.currentTime = 0;
     audioEl.src    = cleanSrc;
     _loadedSrc     = cleanSrc;
     musicProgress  = 0;
   }
 
-  // Ensure volume is up
-  audioEl.volume = 1.0;
-  audioEl.muted  = false;
+  // Small delay to let browser register the src before play()
+  setTimeout(function() {
+    audioEl.volume = 1.0;
+    audioEl.muted  = false;
 
-  const playPromise = audioEl.play();
-  if (playPromise !== undefined) {
-    playPromise.then(function() {
-      musicPlaying = true;
-      updateMusicUI();
-      showToast('🎵 Now playing', PLAYLIST[currentTrackIdx]?.title || 'FitHerNova Radio');
-    }).catch(function(err) {
-      console.warn('Play error:', err.name, err.message);
-      musicPlaying = false;
-      updateMusicUI();
-      if (err.name === 'NotAllowedError') {
-        // Browser blocked autoplay — user must tap play
-        showToast('🎵 Tap ▶ to play', 'Browser requires a tap to start audio');
-      } else if (err.name === 'NotSupportedError') {
-        showToast('⚠️ Format not supported', 'Skipping to next track…');
-        setTimeout(nextTrack, 1000);
-      } else {
-        showToast('⚠️ Could not play', 'Check your connection · Trying next track…');
-        setTimeout(nextTrack, 2000);
-      }
-    });
-  }
+    const playPromise = audioEl.play();
+    if (playPromise !== undefined) {
+      playPromise.then(function() {
+        musicPlaying = true;
+        audioEl.volume = 1.0; // enforce again after play starts
+        updateMusicUI();
+      }).catch(function(err) {
+        console.warn('Play error:', err.name, err.message);
+        musicPlaying = false;
+        updateMusicUI();
+        if (err.name === 'NotAllowedError') {
+          showToast('🎵 Tap ▶ to play', 'Tap the play button to start music');
+        } else if (err.name === 'NotSupportedError') {
+          showToast('⚠️ Format not supported', 'Skipping to next track…');
+          setTimeout(nextTrack, 1000);
+        } else {
+          console.warn('Trying direct play after error…');
+          // Last resort — try again after 500ms
+          setTimeout(function() {
+            audioEl.play().catch(function(e2) {
+              showToast('⚠️ Could not play', e2.message || 'Please try again');
+            });
+          }, 500);
+        }
+      });
+    }
+  }, 100);
 }
 
 function togglePlay() {
