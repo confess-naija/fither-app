@@ -68,6 +68,37 @@ select option{background:var(--black3);}
 .auth-form{display:flex;flex-direction:column;gap:10px;}
 .auth-message{min-height:18px;font-size:12px;color:var(--gold);line-height:1.35;margin-top:4px;}
 .auth-small{font-size:11px;color:var(--grey);text-align:center;margin-top:12px;line-height:1.45;}
+
+/* ── ONBOARDING ── */
+.onboard-screen{position:fixed;inset:0;z-index:8000;background:radial-gradient(circle at 15% 0%,rgba(255,45,107,.22),transparent 38%),radial-gradient(circle at 90% 100%,rgba(255,209,102,.14),transparent 38%),var(--black);display:none;align-items:center;justify-content:center;padding:20px;}
+.onboard-screen.show{display:flex;}
+.onboard-card{width:min(480px,100%);background:rgba(18,18,18,.98);border:1px solid rgba(255,45,107,.2);border-radius:28px;padding:28px 24px;box-shadow:0 28px 80px rgba(0,0,0,.6);}
+.onboard-step-dots{display:flex;justify-content:center;gap:8px;margin-bottom:24px;}
+.onboard-dot{width:8px;height:8px;border-radius:50%;background:var(--black4);transition:all .3s;}
+.onboard-dot.active{width:24px;border-radius:4px;background:var(--pink);}
+.onboard-dot.done{background:var(--pink-dark);}
+.onboard-emoji{font-size:48px;text-align:center;margin-bottom:16px;}
+.onboard-title{font-family:var(--font-head);font-size:24px;font-weight:900;color:#fff;text-align:center;letter-spacing:-.5px;margin-bottom:8px;line-height:1.1;}
+.onboard-sub{font-size:13px;color:rgba(255,255,255,.6);text-align:center;line-height:1.55;margin-bottom:24px;}
+.onboard-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.onboard-option{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:16px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.onboard-option:hover{border-color:rgba(255,45,107,.4);background:rgba(255,45,107,.08);}
+.onboard-option.selected{border-color:var(--pink);background:rgba(255,45,107,.15);box-shadow:0 0 20px rgba(255,45,107,.15);}
+.onboard-option .oo-emoji{font-size:28px;margin-bottom:6px;}
+.onboard-option .oo-label{font-family:var(--font-head);font-size:13px;font-weight:800;color:#fff;}
+.onboard-option .oo-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.3;}
+.onboard-input-wrap{margin-bottom:20px;}
+.onboard-input-label{font-size:12px;color:var(--grey);margin-bottom:8px;display:block;}
+.onboard-input{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;color:#fff;font-size:16px;padding:14px 16px;width:100%;outline:none;transition:border-color .2s;font-family:var(--font-body);}
+.onboard-input:focus{border-color:var(--pink);}
+.onboard-input::placeholder{color:rgba(255,255,255,.3);}
+.onboard-btn{width:100%;height:52px;border-radius:16px;border:none;background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;font-family:var(--font-head);font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px var(--pink-glow);transition:all .2s;margin-bottom:10px;}
+.onboard-btn:hover{transform:translateY(-1px);box-shadow:0 12px 32px var(--pink-glow);}
+.onboard-btn:active{transform:translateY(0);}
+.onboard-skip{width:100%;background:none;border:none;color:rgba(255,255,255,.35);font-size:12px;cursor:pointer;padding:6px;}
+.onboard-skip:hover{color:rgba(255,255,255,.6);}
+.onboard-progress{height:3px;background:rgba(255,255,255,.08);border-radius:999px;margin-bottom:24px;overflow:hidden;}
+.onboard-progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .4s ease;}
 /* ── USER PILL (always visible, contains logout) ── */
 .user-pill{display:flex!important;align-items:center;gap:5px;background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:5px 10px;font-size:11px;color:var(--grey);white-space:nowrap;max-width:130px;overflow:hidden;flex-shrink:1;}
 .user-pill .uname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:72px;flex-shrink:1;}
@@ -573,6 +604,109 @@ select option{background:var(--black3);}
     </div>
     <div class="auth-message" id="auth-msg"></div>
     <div class="auth-small">By signing in you agree to our Terms &amp; Privacy Policy.</div>
+  </div>
+</div>
+
+<!-- ══ ONBOARDING ══ -->
+<div class="onboard-screen" id="onboard-screen">
+  <div class="onboard-card">
+    <!-- Progress bar -->
+    <div class="onboard-progress">
+      <div class="onboard-progress-fill" id="onboard-progress-fill" style="width:33%;"></div>
+    </div>
+    <!-- Step dots -->
+    <div class="onboard-step-dots">
+      <div class="onboard-dot active" id="dot-1"></div>
+      <div class="onboard-dot" id="dot-2"></div>
+      <div class="onboard-dot" id="dot-3"></div>
+    </div>
+
+    <!-- STEP 1: Goal -->
+    <div id="onboard-step-1">
+      <div class="onboard-emoji">🎯</div>
+      <div class="onboard-title">What's your main goal?</div>
+      <div class="onboard-sub">Coach Nova will personalize your plan around this</div>
+      <div class="onboard-options">
+        <div class="onboard-option selected" id="goal-weightloss" onclick="selectOnboardGoal('weightloss',this)">
+          <div class="oo-emoji">⚡</div>
+          <div class="oo-label">Lose Weight</div>
+          <div class="oo-sub">Burn fat & slim down</div>
+        </div>
+        <div class="onboard-option" id="goal-muscle" onclick="selectOnboardGoal('muscle',this)">
+          <div class="oo-emoji">💪</div>
+          <div class="oo-label">Build Muscle</div>
+          <div class="oo-sub">Tone & strengthen</div>
+        </div>
+        <div class="onboard-option" id="goal-endurance" onclick="selectOnboardGoal('endurance',this)">
+          <div class="oo-emoji">🏃</div>
+          <div class="oo-label">Endurance</div>
+          <div class="oo-sub">Stamina & cardio</div>
+        </div>
+        <div class="onboard-option" id="goal-wellness" onclick="selectOnboardGoal('wellness',this)">
+          <div class="oo-emoji">🧘</div>
+          <div class="oo-label">Wellness</div>
+          <div class="oo-sub">Balance & mindfulness</div>
+        </div>
+      </div>
+      <button class="onboard-btn" onclick="onboardNext(1)">Continue →</button>
+      <button class="onboard-skip" onclick="skipOnboarding()">Skip for now</button>
+    </div>
+
+    <!-- STEP 2: Body stats -->
+    <div id="onboard-step-2" style="display:none;">
+      <div class="onboard-emoji">⚖️</div>
+      <div class="onboard-title">Let's set your targets</div>
+      <div class="onboard-sub">This helps Coach Nova calculate your ideal calorie goal</div>
+      <div class="onboard-input-wrap">
+        <label class="onboard-input-label">Current weight (kg)</label>
+        <input class="onboard-input" type="number" id="ob-weight" placeholder="e.g. 75" min="30" max="300" step="0.1"/>
+      </div>
+      <div class="onboard-input-wrap">
+        <label class="onboard-input-label">Target weight (kg)</label>
+        <input class="onboard-input" type="number" id="ob-target" placeholder="e.g. 65" min="30" max="300" step="0.1"/>
+      </div>
+      <div class="onboard-input-wrap">
+        <label class="onboard-input-label">Height (cm)</label>
+        <input class="onboard-input" type="number" id="ob-height" placeholder="e.g. 165" min="100" max="220" step="1"/>
+      </div>
+      <button class="onboard-btn" onclick="onboardNext(2)">Continue →</button>
+      <button class="onboard-skip" onclick="skipOnboarding()">Skip for now</button>
+    </div>
+
+    <!-- STEP 3: Calorie & workout level -->
+    <div id="onboard-step-3" style="display:none;">
+      <div class="onboard-emoji">🔥</div>
+      <div class="onboard-title">Almost done!</div>
+      <div class="onboard-sub">One last thing — how active are you right now?</div>
+      <div class="onboard-options">
+        <div class="onboard-option selected" id="level-beginner" onclick="selectOnboardLevel('beginner',this)">
+          <div class="oo-emoji">🌱</div>
+          <div class="oo-label">Beginner</div>
+          <div class="oo-sub">Just starting out</div>
+        </div>
+        <div class="onboard-option" id="level-moderate" onclick="selectOnboardLevel('moderate',this)">
+          <div class="oo-emoji">🔄</div>
+          <div class="oo-label">Moderate</div>
+          <div class="oo-sub">Exercise sometimes</div>
+        </div>
+        <div class="onboard-option" id="level-active" onclick="selectOnboardLevel('active',this)">
+          <div class="oo-emoji">⚡</div>
+          <div class="oo-label">Active</div>
+          <div class="oo-sub">Train regularly</div>
+        </div>
+        <div class="onboard-option" id="level-athlete" onclick="selectOnboardLevel('athlete',this)">
+          <div class="oo-emoji">🏆</div>
+          <div class="oo-label">Athlete</div>
+          <div class="oo-sub">Intense training</div>
+        </div>
+      </div>
+      <div class="onboard-input-wrap">
+        <label class="onboard-input-label">Daily calorie goal <span id="ob-cal-hint" style="color:var(--pink-light);font-weight:700;"></span></label>
+        <input class="onboard-input" type="number" id="ob-calories" placeholder="e.g. 1800" min="1000" max="4000"/>
+      </div>
+      <button class="onboard-btn" onclick="finishOnboarding()">🚀 Start My Journey!</button>
+      <button class="onboard-skip" onclick="skipOnboarding()">Skip for now</button>
+    </div>
   </div>
 </div>
 
@@ -1541,8 +1675,13 @@ async function doSignup() {
     });
     if (error) { msg.textContent = error.message; return; }
     currentUser = data.user;
-    msg.textContent = '✅ Account created! Loading app…';
+    msg.textContent = '✅ Account created! Setting up your journey…';
     await bootApp();
+    // Show onboarding for brand new users
+    if (isNewUser()) {
+      document.getElementById('main-app').style.display = 'none';
+      showOnboarding();
+    }
   } catch(e) {
     msg.textContent = 'Sign up failed. Check your connection.';
   }
@@ -3169,6 +3308,142 @@ async function updateDailyStreak() {
 
 // No longer needed but kept as no-op for safety
 function restoreStreakFromStorage() {}
+
+// ══════════════════════════════════════════════════════════════
+// ONBOARDING
+// ══════════════════════════════════════════════════════════════
+let onboardData = { goal: 'weightloss', level: 'beginner' };
+
+function showOnboarding() {
+  document.getElementById('onboard-screen').classList.add('show');
+  document.getElementById('auth-loading').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'none';
+}
+
+function hideOnboarding() {
+  document.getElementById('onboard-screen').classList.remove('show');
+}
+
+function isNewUser() {
+  if (!currentUser) return false;
+  const key = 'fnova_onboarded_' + currentUser.id;
+  return !localStorage.getItem(key);
+}
+
+function markOnboarded() {
+  if (!currentUser) return;
+  localStorage.setItem('fnova_onboarded_' + currentUser.id, '1');
+}
+
+function selectOnboardGoal(goal, el) {
+  onboardData.goal = goal;
+  document.querySelectorAll('[id^="goal-"]').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectOnboardLevel(level, el) {
+  onboardData.level = level;
+  document.querySelectorAll('[id^="level-"]').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  // Auto-calculate suggested calories based on level
+  const calories = { beginner: 1600, moderate: 1800, active: 2000, athlete: 2400 };
+  const hint = { beginner: '(suggested for beginners)', moderate: '(suggested for moderate)', active: '(suggested for active)', athlete: '(suggested for athletes)' };
+  const calInput = document.getElementById('ob-calories');
+  const calHint  = document.getElementById('ob-cal-hint');
+  if (calInput) calInput.value = calories[level] || 1800;
+  if (calHint)  calHint.textContent = hint[level] || '';
+}
+
+function onboardNext(step) {
+  // Hide current step
+  document.getElementById('onboard-step-' + step).style.display = 'none';
+  // Show next step
+  const next = step + 1;
+  document.getElementById('onboard-step-' + next).style.display = 'block';
+  // Update progress
+  const pct = { 2: 66, 3: 100 };
+  const fill = document.getElementById('onboard-progress-fill');
+  if (fill) fill.style.width = (pct[next] || 66) + '%';
+  // Update dots
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('dot-' + i);
+    if (!dot) continue;
+    if (i < next)      { dot.classList.add('done'); dot.classList.remove('active'); }
+    else if (i === next){ dot.classList.add('active'); dot.classList.remove('done'); }
+    else               { dot.classList.remove('active','done'); }
+  }
+  // Pre-fill calories suggestion on step 3
+  if (next === 3) selectOnboardLevel(onboardData.level,
+    document.getElementById('level-' + onboardData.level) || document.getElementById('level-beginner'));
+}
+
+async function finishOnboarding() {
+  // Collect all data
+  const weight   = parseFloat(document.getElementById('ob-weight')?.value) || null;
+  const target   = parseFloat(document.getElementById('ob-target')?.value) || 65;
+  const height   = parseFloat(document.getElementById('ob-height')?.value) || null;
+  const calories = parseInt(document.getElementById('ob-calories')?.value)  || 1800;
+
+  // Apply to appState
+  appState.calorieGoal  = calories;
+  appState.activeGoal   = onboardData.goal;
+
+  // Save to Supabase
+  try {
+    await Promise.allSettled([
+      window.supabase && window.supabase.from('user_goals').upsert({
+        user_id:      currentUser.id,
+        calorie_goal: calories,
+        active_goal:  onboardData.goal,
+        updated_at:   new Date().toISOString()
+      }, { onConflict: 'user_id' }),
+
+      window.supabase && window.supabase.from('profiles').upsert({
+        id:             currentUser.id,
+        email:          currentUser.email,
+        calorie_goal:   calories,
+        target_weight:  target,
+        height_cm:      height,
+        workout_level:  onboardData.level
+      }, { onConflict: 'id' }),
+
+      // Log first weight if provided
+      weight && window.supabase && window.supabase.from('user_workout_logs').select('id').limit(1),
+    ]);
+
+    // Also save weight to goals for chart
+    if (weight && window.supabase) {
+      await window.supabase.from('user_goals').upsert({
+        user_id: currentUser.id,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+    }
+  } catch(e) {
+    console.warn('Onboarding save failed:', e.message || e);
+  }
+
+  markOnboarded();
+  hideOnboarding();
+
+  // Update UI
+  updateCalRing();
+  updateHomeStats();
+
+  // Welcome toast
+  const firstName = (currentUser.user_metadata?.full_name || '').split(' ')[0] || 'Queen';
+  showToast('🎉 Welcome to FitHerNova, ' + firstName + '!', 'Your personalized journey starts now 💪');
+
+  // Show app
+  document.getElementById('main-app').style.display = 'flex';
+}
+
+function skipOnboarding() {
+  markOnboarded();
+  hideOnboarding();
+  document.getElementById('main-app').style.display = 'flex';
+  showToast('👋 Welcome!', 'You can set your goals anytime in the Profile tab');
+}
 
 // ══════════════════════════════════════════════════════════════
 // PWA — INSTALL PROMPT & SERVICE WORKER
