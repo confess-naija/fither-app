@@ -1683,14 +1683,30 @@ async function doSignup() {
       options: { data: { full_name: name } }
     });
     if (error) { msg.textContent = error.message; return; }
+
     currentUser = data.user;
+
+    // ── CRITICAL: wipe any stale state from a previous user ──
+    Object.assign(appState, {
+      calorieGoal: 1800, caloriesEaten: 0, caloriesBurned: 0,
+      protein: 0, carbs: 0, fat: 0, waterCups: 0, streak: 0,
+      totalWorkouts: 0, totalCalBurned: 0,
+      weeklyActivity: [0,0,0,0,0,0,0],
+      mealLog: [], workoutLog: [], activeGoal: 'weightloss',
+      isProUser: false, proPlan: 'free'
+    });
+
+    // New user — show onboarding FIRST, skip bootApp dashboard load
+    if (isNewUser()) {
+      document.getElementById('auth-loading').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'none';
+      showOnboarding();
+      return; // onboarding will call bootApp after finishing
+    }
+
+    // Returning user (re-signup edge case) — boot normally
     msg.textContent = '✅ Account created! Setting up your journey…';
     await bootApp();
-    // Show onboarding for brand new users
-    if (isNewUser()) {
-      document.getElementById('main-app').style.display = 'none';
-      showOnboarding();
-    }
   } catch(e) {
     msg.textContent = 'Sign up failed. Check your connection.';
   }
@@ -3620,22 +3636,18 @@ async function finishOnboarding() {
   markOnboarded();
   hideOnboarding();
 
-  // Update UI
-  updateCalRing();
-  updateHomeStats();
+  // Boot the app fresh with new user's clean data
+  await bootApp();
 
-  // Welcome toast
+  // Welcome toast (after bootApp renders the UI)
   const firstName = (currentUser.user_metadata?.full_name || '').split(' ')[0] || 'Queen';
   showToast('🎉 Welcome to FitHerNova, ' + firstName + '!', 'Your personalized journey starts now 💪');
-
-  // Show app
-  document.getElementById('main-app').style.display = 'flex';
 }
 
-function skipOnboarding() {
+async function skipOnboarding() {
   markOnboarded();
   hideOnboarding();
-  document.getElementById('main-app').style.display = 'flex';
+  await bootApp();
   showToast('👋 Welcome!', 'You can set your goals anytime in the Profile tab');
 }
 
