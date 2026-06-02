@@ -1247,29 +1247,43 @@ select option{background:var(--black3);}
         <button class="btn btn-pink" onclick="saveGoals()">Save Goals</button>
       </div>
 
-      <!-- Reminders -->
+      <!-- Reminders / Notifications -->
       <div class="card">
-        <div class="sec-label">Reminders</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="sec-label" style="margin:0;">🔔 Notifications</div>
+          <button onclick="testNotification()" style="background:rgba(255,45,107,.12);border:1px solid rgba(255,45,107,.28);color:var(--pink-light);border-radius:99px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;">Test 🔔</button>
+        </div>
+        <div style="background:linear-gradient(135deg,#1a0710,#0f0f0f);border:1px solid rgba(255,209,102,.2);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px;">
+          <span id="notif-permission-icon" style="font-size:10px;font-weight:900;padding:3px 8px;background:rgba(255,255,255,.1);border-radius:99px;white-space:nowrap;">🔔 OFF</span>
+          <span id="notif-permission-text">Tap any toggle below to enable push notifications</span>
+        </div>
         <div class="reminder-item">
-          <div>
-            <div style="font-size:13px;font-weight:500;">Workout Reminder</div>
-            <div style="font-size:11px;color:var(--grey);margin-top:2px;">Daily at your set time</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:500;">💪 Workout Reminder</div>
+            <div style="font-size:11px;color:var(--grey);margin-top:2px;">Daily at chosen time</div>
+            <input type="time" id="workout-time-input" value="08:00"
+              style="margin-top:6px;height:34px;font-size:12px;width:120px;background:var(--black3);border:1px solid var(--black4);border-radius:8px;color:#fff;padding:0 8px;"
+              onchange="saveReminders()"/>
           </div>
           <label class="toggle"><input type="checkbox" id="remind-workout" onchange="saveReminders()"/><span class="toggle-slider"></span></label>
         </div>
         <div class="reminder-item">
           <div>
-            <div style="font-size:13px;font-weight:500;">Meal Log Reminder</div>
-            <div style="font-size:11px;color:var(--grey);margin-top:2px;">After meals</div>
+            <div style="font-size:13px;font-weight:500;">🥗 Meal Log Reminder</div>
+            <div style="font-size:11px;color:var(--grey);margin-top:2px;">8am, 1pm &amp; 7pm daily</div>
           </div>
           <label class="toggle"><input type="checkbox" id="remind-meal" onchange="saveReminders()"/><span class="toggle-slider"></span></label>
         </div>
         <div class="reminder-item">
           <div>
-            <div style="font-size:13px;font-weight:500;">Water Reminder</div>
-            <div style="font-size:11px;color:var(--grey);margin-top:2px;">Every 2 hours</div>
+            <div style="font-size:13px;font-weight:500;">💧 Water Reminder</div>
+            <div style="font-size:11px;color:var(--grey);margin-top:2px;">Every 2 hours (8am–10pm)</div>
           </div>
           <label class="toggle"><input type="checkbox" id="remind-water" onchange="saveReminders()"/><span class="toggle-slider"></span></label>
+        </div>
+        <div style="margin-top:10px;padding:10px;background:var(--black3);border-radius:10px;font-size:11px;color:var(--grey);line-height:1.55;">
+          📱 <strong style="color:rgba(255,255,255,.6);">iPhone:</strong> Install app to home screen first, then enable.<br/>
+          🤖 <strong style="color:rgba(255,255,255,.6);">Android/Desktop:</strong> Works immediately after allowing.
         </div>
       </div>
 
@@ -1891,6 +1905,9 @@ async function bootApp() {
 
   // Check if app can be installed
   checkInstallPrompt();
+
+  // Update notification permission status
+  updateNotifPermissionUI();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -3329,38 +3346,151 @@ async function coachSend() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// REMINDERS
+// PUSH NOTIFICATIONS + REMINDERS
 // ══════════════════════════════════════════════════════════════
-function saveReminders() {
-  const prefs = {
-    workout: document.getElementById('remind-workout').checked,
-    meal: document.getElementById('remind-meal').checked,
-    water: document.getElementById('remind-water').checked,
-  };
+var _reminderTimers = [];
+
+async function requestNotifPermission() {
+  if (!('Notification' in window)) { showToast('Not supported', 'Try Chrome or Edge'); return false; }
+  if (Notification.permission === 'granted') return true;
+  if (Notification.permission === 'denied') { showToast('Blocked', 'Enable in browser Settings > Site Settings'); return false; }
+  const result = await Notification.requestPermission();
+  updateNotifPermissionUI();
+  if (result === 'granted') {
+    sendNotification('FitHerNova', 'Notifications ON! We will keep you on track.');
+    showToast('Notifications enabled!', 'You will now receive reminders');
+    return true;
+  }
+  return false;
+}
+
+function sendNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SHOW_NOTIFICATION', title: title, body: body,
+        icon: '/icon-192.png', badge: '/icon-192.png', tag: 'fithernova-reminder',
+        data: { url: 'https://fither-app-one.vercel.app' }
+      });
+    } else {
+      new Notification(title, { body: body, icon: '/icon-192.png', tag: 'fithernova-reminder' });
+    }
+  } catch(e) { console.warn('Notification error:', e); }
+}
+
+function scheduleAllReminders() {
+  _reminderTimers.forEach(function(t) { clearInterval(t); });
+  _reminderTimers = [];
+  var saved = uGet('fnova_reminders');
+  if (!saved) return;
+  var prefs; try { prefs = JSON.parse(saved); } catch(e) { return; }
+  if (prefs.water) {
+    var t = setInterval(function() {
+      var h = new Date().getHours();
+      if (h >= 8 && h <= 22 && appState.waterCups < 8) {
+        sendNotification('Time to hydrate!', 'You have had ' + appState.waterCups + '/8 cups today!');
+        showToast('Water reminder!', appState.waterCups + '/8 cups — drink up!');
+      }
+    }, 2 * 60 * 60 * 1000);
+    _reminderTimers.push(t);
+  }
+  if (prefs.meal) {
+    var t2 = setInterval(function() {
+      var h = new Date().getHours();
+      if (h === 8 || h === 13 || h === 19) {
+        var meal = h === 8 ? 'breakfast' : h === 13 ? 'lunch' : 'dinner';
+        sendNotification('Log your ' + meal + '!', 'Track your calories. Every meal counts!');
+      }
+    }, 60 * 60 * 1000);
+    _reminderTimers.push(t2);
+  }
+  if (prefs.workout && prefs.workoutTime) scheduleWorkoutReminder(prefs.workoutTime);
+}
+
+function scheduleWorkoutReminder(timeStr) {
+  function msUntil(ts) {
+    var p = ts.split(':'), h = parseInt(p[0]), m = parseInt(p[1]);
+    var now = new Date(), target = new Date();
+    target.setHours(h, m, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 1);
+    return target - now;
+  }
+  setTimeout(function() {
+    sendNotification('Time to workout!', 'Your daily workout is waiting. You have got this!');
+    showToast('Workout time!', 'Your scheduled workout reminder');
+    var daily = setInterval(function() {
+      sendNotification('Time to workout!', 'Your daily workout is waiting. You have got this!');
+    }, 24 * 60 * 60 * 1000);
+    _reminderTimers.push(daily);
+  }, msUntil(timeStr));
+}
+
+function updateNotifPermissionUI() {
+  var icon = document.getElementById('notif-permission-icon');
+  var text = document.getElementById('notif-permission-text');
+  if (!icon || !text) return;
+  if (!('Notification' in window)) {
+    icon.textContent = 'N/A'; text.textContent = 'Not supported in this browser';
+  } else if (Notification.permission === 'granted') {
+    icon.textContent = '✅ ON'; text.textContent = 'Notifications are enabled!';
+    icon.style.background = 'rgba(6,214,160,.2)'; icon.style.color = '#06d6a0';
+  } else if (Notification.permission === 'denied') {
+    icon.textContent = '🚫 BLOCKED'; text.textContent = 'Go to Settings > Site Settings to allow.';
+    icon.style.background = 'rgba(255,107,107,.15)'; icon.style.color = '#ff6b6b';
+  } else {
+    icon.textContent = '🔔 OFF'; text.textContent = 'Tap any toggle to enable push notifications';
+  }
+}
+
+async function testNotification() {
+  const granted = await requestNotifPermission();
+  if (granted) {
+    sendNotification('FitHerNova Test!', 'Notifications working! Stay on track, Queen!');
+    showToast('Test sent!', 'Check your notification tray');
+  }
+}
+
+async function saveReminders() {
+  const workoutChecked = document.getElementById('remind-workout').checked;
+  const mealChecked    = document.getElementById('remind-meal').checked;
+  const waterChecked   = document.getElementById('remind-water').checked;
+  const timeInput      = document.getElementById('workout-time-input');
+  const workoutTime    = timeInput ? timeInput.value : '08:00';
+  if (workoutChecked || mealChecked || waterChecked) {
+    const granted = await requestNotifPermission();
+    if (!granted) {
+      document.getElementById('remind-workout').checked = false;
+      document.getElementById('remind-meal').checked    = false;
+      document.getElementById('remind-water').checked   = false;
+      return;
+    }
+  }
+  const prefs = { workout: workoutChecked, meal: mealChecked, water: waterChecked, workoutTime: workoutTime };
   uSet('fnova_reminders', JSON.stringify(prefs));
-  showToast('Reminders saved!', 'We\'ll keep you on track 🔔');
-  if (prefs.water) scheduleWaterReminder();
+  scheduleAllReminders();
+  const active = [workoutChecked && 'workout', mealChecked && 'meals', waterChecked && 'water'].filter(Boolean);
+  showToast('Reminders saved!', active.length ? 'Active: ' + active.join(', ') : 'All reminders off');
 }
 
 function loadReminders() {
   const saved = uGet('fnova_reminders');
-  if (saved) {
+  if (!saved) return;
+  try {
     const p = JSON.parse(saved);
-    const rw = document.getElementById('remind-workout');
-    const rm = document.getElementById('remind-meal');
+    const rw  = document.getElementById('remind-workout');
+    const rm  = document.getElementById('remind-meal');
     const rwt = document.getElementById('remind-water');
-    if (rw) rw.checked = p.workout || false;
-    if (rm) rm.checked = p.meal || false;
-    if (rwt) rwt.checked = p.water || false;
-    if (p.water) scheduleWaterReminder();
-  }
+    const rt  = document.getElementById('workout-time-input');
+    if (rw)  rw.checked  = p.workout || false;
+    if (rm)  rm.checked  = p.meal    || false;
+    if (rwt) rwt.checked = p.water   || false;
+    if (rt && p.workoutTime) rt.value = p.workoutTime;
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') scheduleAllReminders();
+  } catch(e) {}
 }
 
-function scheduleWaterReminder() {
-  setInterval(() => {
-    if (appState.waterCups < 8) showToast('💧 Time to hydrate!', `You've had ${appState.waterCups}/8 cups today.`);
-  }, 2 * 60 * 60 * 1000); // every 2 hours
-}
+function scheduleWaterReminder() {} // legacy no-op — handled by scheduleAllReminders
 
 // ══════════════════════════════════════════════════════════════
 // PRO UPGRADE — FLUTTERWAVE
@@ -3879,14 +4009,10 @@ window.addEventListener('appinstalled', () => {
 // Service Worker — enables offline use + PWA
 if ('serviceWorker' in navigator) {
   const swCode = `
-const CACHE = 'fithernova-v2';
+const CACHE = 'fithernova-v3';
 const CORE  = ['/'];
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE)
-      .then(c => c.addAll(CORE))
-      .then(() => self.skipWaiting())
-  );
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(
@@ -3898,13 +4024,30 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-        return res;
-      })
-      .catch(() => caches.match(e.request).then(r => r || caches.match('/')))
+    fetch(e.request).then(res => {
+      const clone = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, clone));
+      return res;
+    }).catch(() => caches.match(e.request).then(r => r || caches.match('/')))
+  );
+});
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SHOW_NOTIFICATION') {
+    const { title, body, icon, badge, tag, data } = e.data;
+    e.waitUntil(
+      self.registration.showNotification(title, { body, icon, badge, tag, data, vibrate: [200,100,200] })
+    );
+  }
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cls => {
+      const url = 'https://fither-app-one.vercel.app';
+      const open = cls.find(c => c.url.startsWith(url));
+      if (open) return open.focus();
+      return clients.openWindow(url);
+    })
   );
 });
   `;
