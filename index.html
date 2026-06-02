@@ -557,6 +557,34 @@ select option{background:var(--black3);}
 .hub-emoji{font-size:22px;margin-bottom:5px;}
 .hub-label{font-size:11px;font-weight:900;font-family:var(--font-head);line-height:1.1;}
 .hub-sub{font-size:9px;color:var(--grey);margin-top:3px;line-height:1.2;}
+
+/* ── 30-DAY CHALLENGE CARD ── */
+.challenge-card{position:relative;overflow:hidden;border-radius:22px;padding:16px;margin-bottom:12px;background:radial-gradient(circle at 10% 0%,rgba(255,209,102,.28),transparent 38%),radial-gradient(circle at 95% 100%,rgba(255,45,107,.22),transparent 38%),linear-gradient(145deg,#1a1200,#0e0e0e);border:1px solid rgba(255,209,102,.35);box-shadow:0 14px 40px rgba(0,0,0,.4);}
+.challenge-card:before{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent,rgba(255,255,255,.04),transparent);transform:translateX(-120%);animation:challengeShine 6s ease-in-out infinite;pointer-events:none;}
+@keyframes challengeShine{0%,65%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.challenge-kicker{font-size:9px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+.challenge-title{font-family:var(--font-head);font-size:18px;font-weight:900;color:#fff;letter-spacing:-.4px;margin-bottom:3px;}
+.challenge-sub{font-size:11px;color:rgba(255,255,255,.6);margin-bottom:12px;line-height:1.45;}
+.challenge-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.challenge-day-count{font-family:var(--font-head);font-size:28px;font-weight:900;color:var(--gold);line-height:1;}
+.challenge-day-label{font-size:10px;color:rgba(255,255,255,.55);line-height:1.3;}
+.challenge-bar-wrap{flex:1;}
+.challenge-bar{height:7px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden;margin-bottom:4px;}
+.challenge-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--pink));transition:width .5s ease;}
+.challenge-bar-label{font-size:10px;color:rgba(255,255,255,.45);}
+.challenge-today-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px 12px;margin-bottom:10px;}
+.challenge-today-title{font-family:var(--font-head);font-size:13px;font-weight:800;color:#fff;margin-bottom:2px;}
+.challenge-today-meta{font-size:11px;color:rgba(255,255,255,.55);}
+.challenge-actions{display:flex;gap:8px;}
+.challenge-btn{flex:1;height:40px;border-radius:12px;border:none;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font-head);transition:all .2s;}
+.challenge-btn-primary{background:linear-gradient(135deg,var(--gold),#e8a000);color:#000;box-shadow:0 6px 20px rgba(255,209,102,.25);}
+.challenge-btn-primary:active{transform:scale(.97);}
+.challenge-btn-secondary{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);}
+.challenge-dot-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:10px;}
+.challenge-dot{width:10px;height:10px;border-radius:3px;background:rgba(255,255,255,.1);transition:all .3s;}
+.challenge-dot.done{background:var(--gold);box-shadow:0 0 6px rgba(255,209,102,.4);}
+.challenge-dot.today{background:var(--pink);box-shadow:0 0 8px rgba(255,45,107,.4);animation:pulseDot 1.5s ease-in-out infinite;}
+@keyframes pulseDot{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -768,6 +796,10 @@ select option{background:var(--black3);}
           <div id="today-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:999px;transition:width .45s ease;"></div>
         </div>
       </div>
+
+
+      <!-- 30-Day Challenge Card -->
+      <div id="challenge-card-wrap"></div>
 
       <!-- Quick Hub -->
       <div class="quick-hub">
@@ -1893,6 +1925,7 @@ async function bootApp() {
   updateHomeStats();
   updateFoodMacros();
   loadCoachChallenge();
+  renderChallengeCard();
 
   // Midnight water reset
   scheduleMidnightReset();
@@ -4127,6 +4160,185 @@ window.addEventListener('load', () => {
     });
   }
 });
+
+// ══════════════════════════════════════════════════════════════
+// 30-DAY CHALLENGE
+// ══════════════════════════════════════════════════════════════
+const CHALLENGE_DAYS = [
+  {day:1,  title:'Ignite', workout:'Beginner Basics', cal:120, note:'Start strong — every journey begins here.'},
+  {day:2,  title:'Core Awaken', workout:'Core Sculptor', cal:150, note:'Feel your center light up.'},
+  {day:3,  title:'Fat Blast', workout:'Belly Fat Blast', cal:220, note:'Today we turn up the heat!'},
+  {day:4,  title:'Flow & Restore', workout:'Yoga Flow', cal:100, note:'Recovery is part of the plan.'},
+  {day:5,  title:'Full Power', workout:'Full Body Burn', cal:280, note:'You made it to Day 5!'},
+  {day:6,  title:'Cardio Rush', workout:'HIIT Cardio', cal:200, note:'Short, sharp, effective.'},
+  {day:7,  title:'Rest & Reflect', workout:'Yoga Flow', cal:100, note:'7 days done. You are incredible!'},
+  {day:8,  title:'Rising Up', workout:'Beginner Basics', cal:130, note:'Week 2 — push a little harder.'},
+  {day:9,  title:'Core Fire', workout:'Core Sculptor', cal:160, note:'Your core is getting stronger!'},
+  {day:10, title:'Burn Session', workout:'Belly Fat Blast', cal:230, note:'10 days — you are unstoppable!'},
+  {day:11, title:'Breathe Deep', workout:'Yoga Flow', cal:110, note:'Calm mind, fierce body.'},
+  {day:12, title:'Power Hour', workout:'Full Body Burn', cal:290, note:'Feel the difference from Day 1?'},
+  {day:13, title:'Speed Round', workout:'HIIT Cardio', cal:210, note:'Almost 2 weeks!'},
+  {day:14, title:'Halfway Mark', workout:'Core Sculptor', cal:160, note:'14 days in. Halfway to glory!'},
+  {day:15, title:'Level Up', workout:'Full Body Burn', cal:300, note:'Week 3 — you are stronger now.'},
+  {day:16, title:'Belly Warrior', workout:'Belly Fat Blast', cal:240, note:'Your body is changing!'},
+  {day:17, title:'Flow State', workout:'Yoga Flow', cal:110, note:'Move with intention today.'},
+  {day:18, title:'HIIT Peak', workout:'HIIT Cardio', cal:220, note:'Push your limits!'},
+  {day:19, title:'Total Body', workout:'Full Body Burn', cal:310, note:'You are on fire!'},
+  {day:20, title:'Core Legend', workout:'Core Sculptor', cal:170, note:'20 days — you are a legend!'},
+  {day:21, title:'3-Week Victory', workout:'Yoga Flow', cal:110, note:'3 weeks complete. Celebrate!'},
+  {day:22, title:'Final Push', workout:'Belly Fat Blast', cal:250, note:'Last week — make it count!'},
+  {day:23, title:'Speed Demon', workout:'HIIT Cardio', cal:230, note:'Fastest you have ever gone!'},
+  {day:24, title:'Power Through', workout:'Full Body Burn', cal:320, note:'6 days to go!'},
+  {day:25, title:'Core Champion', workout:'Core Sculptor', cal:180, note:'Your abs will thank you!'},
+  {day:26, title:'Breathe & Flow', workout:'Yoga Flow', cal:110, note:'Almost there, Queen!'},
+  {day:27, title:'All Out', workout:'HIIT Cardio', cal:240, note:'3 days left — leave it all on the floor!'},
+  {day:28, title:'Final Burn', workout:'Belly Fat Blast', cal:260, note:'This is your moment!'},
+  {day:29, title:'Victory Lap', workout:'Full Body Burn', cal:330, note:'One more day after this!'},
+  {day:30, title:'Champion', workout:'Full Body Burn', cal:350, note:'30 DAYS DONE. You are a CHAMPION!'},
+];
+
+function getChallengeState() {
+  try {
+    const raw = uGet('fnova_challenge');
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function saveChallengeState(state) {
+  uSet('fnova_challenge', JSON.stringify(state));
+}
+
+function startChallenge() {
+  const state = {
+    active: true,
+    startDate: todayStr(),
+    completedDays: [],
+    currentDay: 1
+  };
+  saveChallengeState(state);
+  renderChallengeCard();
+  showToast('🔥 Challenge Started!', '30 days to transform your body. Day 1 — LETS GO!');
+  showAchievement('🔥', '30-Day Challenge ON!', 'Day 1 of 30 — you just made a commitment!');
+}
+
+function completeChallengDay() {
+  const state = getChallengeState();
+  if (!state || !state.active) return;
+  const today = todayStr();
+  if (!state.completedDays.includes(today)) {
+    state.completedDays.push(today);
+    state.currentDay = Math.min(30, state.completedDays.length + 1);
+    saveChallengeState(state);
+    renderChallengeCard();
+    const done = state.completedDays.length;
+    if (done === 30) {
+      showAchievement('🏆', '30-Day CHAMPION!', 'You completed the full challenge! Legendary!');
+      showToast('🏆 CHAMPION!', '30 days complete — you are absolutely incredible!');
+    } else {
+      showAchievement('✅', 'Day ' + done + ' Complete!', (30 - done) + ' days to go. Keep going!');
+      showToast('Day ' + done + ' done!', (30 - done) + ' days remaining — stay strong!');
+    }
+    navTo('workout');
+  }
+}
+
+function renderChallengeCard() {
+  const wrap = document.getElementById('challenge-card-wrap');
+  if (!wrap) return;
+
+  const state = getChallengeState();
+
+  if (!state || !state.active) {
+    wrap.innerHTML = `
+      <div class="challenge-card">
+        <div class="challenge-kicker">
+          <span>🔥 30-Day Challenge</span>
+          <span style="color:rgba(255,255,255,.3);">NOT STARTED</span>
+        </div>
+        <div class="challenge-title">Transform in 30 Days</div>
+        <div class="challenge-sub">A structured daily workout plan. One workout a day. 30 days of consistency. Results guaranteed.</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+          <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:10px;text-align:center;">
+            <div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:var(--gold);">30</div>
+            <div style="font-size:10px;color:var(--grey);margin-top:2px;">Workouts</div>
+          </div>
+          <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:10px;text-align:center;">
+            <div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:var(--pink-light);">6k+</div>
+            <div style="font-size:10px;color:var(--grey);margin-top:2px;">kcal Burned</div>
+          </div>
+          <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:10px;text-align:center;">
+            <div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:var(--green);">∞</div>
+            <div style="font-size:10px;color:var(--grey);margin-top:2px;">Confidence</div>
+          </div>
+        </div>
+        <button class="challenge-btn challenge-btn-primary" style="width:100%;height:46px;font-size:14px;" onclick="startChallenge()">
+          🚀 Start My 30-Day Journey
+        </button>
+      </div>`;
+    return;
+  }
+
+  const done = state.completedDays.length;
+  const pct  = Math.round((done / 30) * 100);
+  const today = todayStr();
+  const todayDone = state.completedDays.includes(today);
+  const dayIdx = Math.min(29, done);
+  const todayChallenge = CHALLENGE_DAYS[dayIdx];
+  const remaining = 30 - done;
+
+  // Build dot grid (show last 10 + next few)
+  const dots = CHALLENGE_DAYS.slice(0, 30).map((d, i) => {
+    const doneDay = i < done;
+    const isToday = i === done && !todayDone;
+    return `<div class="challenge-dot ${doneDay ? 'done' : isToday ? 'today' : ''}" title="Day ${d.day}: ${d.title}"></div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="challenge-card">
+      <div class="challenge-kicker">
+        <span>🔥 30-Day Challenge</span>
+        <span style="color:var(--gold);">Day ${done}/${30}</span>
+      </div>
+      <div class="challenge-title">${todayDone ? '✅ Today Complete!' : todayChallenge.title}</div>
+      <div class="challenge-sub">${todayDone ? 'Amazing work! Come back tomorrow for Day ' + (done+1) + '.' : todayChallenge.note}</div>
+      <div class="challenge-progress-row">
+        <div>
+          <div class="challenge-day-count">${done}</div>
+          <div class="challenge-day-label">Days<br/>Done</div>
+        </div>
+        <div class="challenge-bar-wrap">
+          <div class="challenge-bar">
+            <div class="challenge-bar-fill" style="width:${pct}%;"></div>
+          </div>
+          <div class="challenge-bar-label">${pct}% complete · ${remaining} days left</div>
+        </div>
+      </div>
+      ${!todayDone ? `
+      <div class="challenge-today-box">
+        <div class="challenge-today-title">Today: ${todayChallenge.workout}</div>
+        <div class="challenge-today-meta">${todayChallenge.cal} kcal · Day ${done+1} of 30</div>
+      </div>
+      <div class="challenge-actions">
+        <button class="challenge-btn challenge-btn-primary" onclick="completeChallengDay()">✅ Mark Complete</button>
+        <button class="challenge-btn challenge-btn-secondary" onclick="navTo('workout')">▶ Start Workout</button>
+      </div>` : `
+      <div class="challenge-actions">
+        <button class="challenge-btn challenge-btn-secondary" style="flex:1;" onclick="navTo('workout')">▶ Browse Workouts</button>
+      </div>`}
+      <div class="challenge-dot-row">${dots}</div>
+    </div>`;
+}
+
+function shufflePlaylist() {
+  for (let i = PLAYLIST.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [PLAYLIST[i], PLAYLIST[j]] = [PLAYLIST[j], PLAYLIST[i]];
+  }
+  currentTrackIdx = 0;
+  renderPlaylist();
+  showToast('Shuffled!', 'Playlist order randomized');
+}
+
 </script>
 </body>
 </html>
