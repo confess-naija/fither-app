@@ -1577,6 +1577,24 @@ function showAchievement(icon, title, sub) {
   setTimeout(() => el.classList.remove('show'), 3500);
 }
 
+// ── USER-SCOPED localStorage ───────────────────────────────────
+// Every key is prefixed with the user's ID so different users
+// on the same browser never share data.
+function uKey(key) {
+  const uid = currentUser ? currentUser.id : 'anon';
+  return 'u_' + uid + '_' + key;
+}
+function uGet(key) { try { return localStorage.getItem(uKey(key)); } catch(e) { return null; } }
+function uSet(key, val) { try { localStorage.setItem(uKey(key), val); } catch(e) {} }
+function uRemove(key) { try { localStorage.removeItem(uKey(key)); } catch(e) {} }
+function uClear() {
+  // Only remove keys belonging to current user
+  const prefix = 'u_' + (currentUser ? currentUser.id : 'anon') + '_';
+  try {
+    Object.keys(localStorage).filter(k => k.startsWith(prefix)).forEach(k => localStorage.removeItem(k));
+  } catch(e) {}
+}
+
 // ══════════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════════
@@ -1713,17 +1731,8 @@ async function doSignup() {
 }
 
 async function doLogout() {
-  // 1. Stop music immediately
-  try {
-    audioEl.pause();
-    audioEl.src = '';
-    _loadedSrc = '';
-  } catch(e) {}
-  musicPlaying    = false;
-  currentTrackIdx = 0;
-  musicProgress   = 0;
-  const miniP = document.getElementById('mini-player');
-  if (miniP) miniP.classList.remove('show');
+  // 1. Stop music — use window.stopAllAudio() so it works regardless of declaration order
+  window.stopAllAudio && window.stopAllAudio();
 
   // 2. Reset ALL app state to defaults — critical for multi-user
   Object.assign(appState, {
@@ -1735,11 +1744,8 @@ async function doLogout() {
     isProUser: false, proPlan: 'free'
   });
 
-  // 3. Clear cached session so next user starts fresh
-  try {
-    localStorage.removeItem('fhn_cached_user_id');
-    localStorage.removeItem('fhn_cached_user_email');
-  } catch(e) {}
+  // 3. Clear all localStorage for this session
+  uClear();
 
   // 4. Sign out from Supabase
   try { await window.supabase.auth.signOut(); } catch(e) {}
@@ -1780,9 +1786,20 @@ async function bootApp() {
   if (homeEmail) homeEmail.textContent = currentUser.email || '';
   document.getElementById('time-greeting').textContent = greetingByHour();
   document.getElementById('home-date-line').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  // Restore avatar on boot
-  const bootAvatar = localStorage.getItem('fnova_avatar');
-  if (bootAvatar) setAvatarEverywhere(bootAvatar);
+  // Restore avatar from Supabase first, localStorage as fallback
+  try {
+    const { data: profileData } = await window.supabase
+      .from('profiles').select('avatar_url').eq('id', currentUser.id).single();
+    if (profileData && profileData.avatar_url) {
+      setAvatarEverywhere(profileData.avatar_url);
+    } else {
+      const localAvatar = uGet('fnova_avatar');
+      if (localAvatar) setAvatarEverywhere(localAvatar);
+    }
+  } catch(e) {
+    const localAvatar = uGet('fnova_avatar');
+    if (localAvatar) setAvatarEverywhere(localAvatar);
+  }
 
   // Update daily streak
   updateDailyStreak();
@@ -1806,6 +1823,9 @@ async function bootApp() {
 
   document.getElementById('auth-loading').style.display = 'none';
   document.getElementById('main-app').style.display = 'flex';
+
+  // Load progress photos from Supabase
+  loadProgressPhotos();
 
   // Check if app can be installed
   checkInstallPrompt();
@@ -1834,7 +1854,7 @@ async function loadGoals() {
     }
   } catch(e) {
     // Fallback localStorage
-    const saved = localStorage.getItem('fnova_goals');
+    const saved = uGet('fnova_goals');
     if (saved) Object.assign(appState, JSON.parse(saved));
   }
 }
@@ -1857,7 +1877,7 @@ async function saveGoals() {
   try {
     await window.supabase.from('user_goals').upsert(payload, { onConflict: 'user_id' });
   } catch(e) {
-    localStorage.setItem('fnova_goals', JSON.stringify(payload));
+    uSet('fnova_goals', JSON.stringify(payload));
   }
   updateCalRing();
   updateHomeStats();
@@ -1887,7 +1907,7 @@ async function loadMealLog() {
       recalcMacros();
     }
   } catch(e) {
-    const saved = localStorage.getItem('fnova_meals_' + today);
+    const saved = uGet('fnova_meals_' + today);
     if (saved) {
       appState.mealLog = JSON.parse(saved);
       recalcMacros();
@@ -1918,7 +1938,7 @@ async function saveMealEntry(entry) {
   } catch(e) {
     appState.mealLog.push({ ...payload, id: Date.now() });
     const today2 = todayStr();
-    localStorage.setItem('fnova_meals_' + today2, JSON.stringify(appState.mealLog));
+    uSet('fnova_meals_' + today2, JSON.stringify(appState.mealLog));
   }
   recalcMacros();
   renderHomeMeals();
@@ -1968,11 +1988,11 @@ async function doDeleteMeal(idx, sbId) {
       await window.supabase.from('user_meal_logs').delete().eq('id', sbId);
     } catch(e) {
       // Fallback: save updated list to localStorage
-      localStorage.setItem('fnova_meals_' + todayStr(), JSON.stringify(appState.mealLog));
+      uSet('fnova_meals_' + todayStr(), JSON.stringify(appState.mealLog));
     }
   } else {
     // No Supabase ID — save to localStorage
-    localStorage.setItem('fnova_meals_' + todayStr(), JSON.stringify(appState.mealLog));
+    uSet('fnova_meals_' + todayStr(), JSON.stringify(appState.mealLog));
   }
 
   recalcMacros();
@@ -2012,7 +2032,7 @@ async function loadWorkoutLog() {
       appState.workoutLog = data;
     }
   } catch(e) {
-    const saved = localStorage.getItem('fnova_workouts_' + today);
+    const saved = uGet('fnova_workouts_' + today);
     if (saved) appState.workoutLog = JSON.parse(saved);
   }
 }
@@ -2032,7 +2052,7 @@ async function saveWorkoutEntry(entry) {
     await window.supabase.from('user_workout_logs').insert(payload);
   } catch(e) {
     appState.workoutLog.push({ ...payload, id: Date.now() });
-    localStorage.setItem('fnova_workouts_' + today, JSON.stringify(appState.workoutLog));
+    uSet('fnova_workouts_' + today, JSON.stringify(appState.workoutLog));
   }
   appState.totalWorkouts++;
   appState.totalCalBurned += entry.calories;
@@ -2060,7 +2080,7 @@ async function saveGoalsQuiet() {
   try {
     await window.supabase.from('user_goals').upsert(payload, { onConflict: 'user_id' });
   } catch(e) {
-    localStorage.setItem('fnova_goals', JSON.stringify(payload));
+    uSet('fnova_goals', JSON.stringify(payload));
   }
 }
 
@@ -2080,12 +2100,12 @@ async function loadWater() {
       appState.waterCups = data.water_cups || 0;
     } else {
       // Try localStorage fallback
-      const lsKey = 'fnova_water_' + today;
-      appState.waterCups = parseInt(localStorage.getItem(lsKey) || '0');
+      const lsKey = 'fnova_water_' + today; // used with uGet/uSet
+      appState.waterCups = parseInt(uGet(lsKey) || '0');
     }
   } catch(e) {
-    const lsKey = 'fnova_water_' + today;
-    appState.waterCups = parseInt(localStorage.getItem(lsKey) || '0');
+    const lsKey = 'fnova_water_' + today; // used with uGet/uSet
+    appState.waterCups = parseInt(uGet(lsKey) || '0');
   }
 }
 
@@ -2100,7 +2120,7 @@ async function saveWater() {
   try {
     await window.supabase.from('user_water_tracker').upsert(payload, { onConflict: ['user_id','date'] });
   } catch(e) {
-    localStorage.setItem('fnova_water_' + today, String(appState.waterCups));
+    uSet('fnova_water_' + today, String(appState.waterCups));
   }
 }
 
@@ -2763,6 +2783,32 @@ audioEl.volume = 1.0;
 let _loadedSrc   = '';
 let musicPlaying = false;
 
+// Global stop function — callable from anywhere including before audio engine loads
+window.stopAllAudio = function() {
+  try {
+    audioEl.pause();
+    audioEl.src = '';
+    audioEl.load();
+  } catch(e) {}
+  _loadedSrc      = '';
+  musicPlaying    = false;
+  currentTrackIdx = 0;
+  musicProgress   = 0;
+  // Hide mini player
+  const miniP = document.getElementById('mini-player');
+  if (miniP) { miniP.classList.remove('show'); miniP.style.display = 'none'; }
+  // Reset play button
+  const pb = document.getElementById('play-btn');
+  if (pb) pb.textContent = '▶';
+  const mpb = document.getElementById('mini-play-btn');
+  if (mpb) mpb.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  // Stop vinyl spinning
+  const vinyl = document.getElementById('vinyl-disc');
+  if (vinyl) vinyl.classList.remove('spinning');
+  const miniArt = document.getElementById('mini-art');
+  if (miniArt) miniArt.classList.remove('spinning');
+};
+
 // Progress update
 audioEl.addEventListener('timeupdate', function() {
   if (!audioEl.duration) return;
@@ -2946,7 +2992,7 @@ function renderLeaderboard() {
 
 function openPhotoSheet(slot) {
   currentPhotoSlot = slot;
-  const hasPhoto = !!localStorage.getItem('fnova_photo_' + slot);
+  const hasPhoto = !!uGet('fnova_photo_' + slot);
   const label = slot === 'before' ? 'Before' : 'After';
   const emoji = slot === 'before' ? '📷' : '✨';
 
@@ -3004,8 +3050,8 @@ function deletePhoto() {
   }
 
   // Clear localStorage
-  localStorage.removeItem('fnova_photo_' + slot);
-  localStorage.removeItem('fnova_photo_date_' + slot);
+  uRemove('fnova_photo_' + slot);
+  uRemove('fnova_photo_date_' + slot);
 
   // Close sheet
   const sheet = document.getElementById('photo-action-sheet');
@@ -3034,30 +3080,53 @@ function handlePhotoUpload(e) {
     showToast('⚠️ Large file', 'Photo is large — it may take a moment to save');
   }
 
+  // Show photo immediately in UI while uploading
   const reader = new FileReader();
-  reader.onload = function(ev) {
-    const result = ev.target.result;
+  reader.onload = async function(ev) {
+    const base64 = ev.target.result;
+    const dateStr = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
     const slotEl = document.getElementById('photo-' + slot);
     if (slotEl) {
-      const dateStr = new Date().toLocaleDateString('en-US', {
-        month: 'short', day: 'numeric', year: 'numeric'
-      });
       slotEl.innerHTML =
-        '<img src="' + result + '" style="width:100%;height:100%;object-fit:cover;border-radius:16px;display:block;" />' +
+        '<img src="' + base64 + '" style="width:100%;height:100%;object-fit:cover;border-radius:16px;display:block;" />' +
         '<div class="photo-date-tag">' + dateStr + '</div>';
       slotEl.classList.add('has-photo');
     }
-    // Persist to localStorage
+
+    // Upload to Supabase Storage
     try {
-      localStorage.setItem('fnova_photo_' + slot, result);
-      localStorage.setItem('fnova_photo_date_' + slot,
-        new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }));
-    } catch(storageErr) {
-      // localStorage full — show warning but photo still shows in UI
-      showToast('⚠️ Storage full', 'Photo shown but may not persist after reload');
-      return;
+      const ext  = file.name.split('.').pop() || 'jpg';
+      const path = currentUser.id + '/' + slot + '.' + ext;
+      const { error: upErr } = await window.supabase.storage
+        .from('progress-photos')
+        .upload(path, file, { upsert: true, contentType: file.type });
+
+      if (upErr) throw upErr;
+
+      const { data: urlData } = window.supabase.storage.from('progress-photos').getPublicUrl(path);
+      const publicUrl = urlData.publicUrl;
+
+      // Save URL + date to profiles
+      const col = slot === 'before' ? 'photo_before_url' : 'photo_after_url';
+      const dateCol = slot === 'before' ? 'photo_before_date' : 'photo_after_date';
+      await window.supabase.from('profiles').upsert({
+        id: currentUser.id,
+        [col]: publicUrl,
+        [dateCol]: dateStr
+      }, { onConflict: 'id' });
+
+      showToast('✅ Photo saved!', slot.charAt(0).toUpperCase() + slot.slice(1) + ' photo saved to your account');
+    } catch(err) {
+      console.warn('Progress photo upload failed, using local fallback:', err.message || err);
+      // Fallback: save base64 locally
+      try {
+        uSet('fnova_photo_' + slot, base64);
+        uSet('fnova_photo_date_' + slot, dateStr);
+        showToast('✅ Photo saved locally', 'Saved on this device');
+      } catch(storageErr) {
+        showToast('⚠️ Storage full', 'Photo shown but may not persist');
+      }
     }
-    showToast('✅ Photo saved!', slot.charAt(0).toUpperCase() + slot.slice(1) + ' photo saved successfully');
   };
   reader.onerror = function() {
     showToast('❌ Upload failed', 'Could not read the photo. Please try again.');
@@ -3065,15 +3134,29 @@ function handlePhotoUpload(e) {
   reader.readAsDataURL(file);
 }
 
-function handleAvatarUpload(e) {
+async function handleAvatarUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    setAvatarEverywhere(ev.target.result);
-    localStorage.setItem('fnova_avatar', ev.target.result);
-  };
-  reader.readAsDataURL(file);
+  if (!file.type.startsWith('image/')) { showToast('❌ Invalid file', 'Please choose an image'); return; }
+  showToast('⏳ Uploading…', 'Saving your avatar');
+  try {
+    const ext  = file.name.split('.').pop() || 'jpg';
+    const path = currentUser.id + '/avatar.' + ext;
+    const { error: upErr } = await window.supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) throw upErr;
+    const { data: urlData } = window.supabase.storage.from('avatars').getPublicUrl(path);
+    const publicUrl = urlData.publicUrl;
+    await window.supabase.from('profiles').upsert({ id: currentUser.id, avatar_url: publicUrl }, { onConflict: 'id' });
+    setAvatarEverywhere(publicUrl);
+    showToast('✅ Avatar saved!', 'Your photo is now linked to your account');
+  } catch(err) {
+    console.warn('Avatar Supabase upload failed, using local:', err.message || err);
+    const reader = new FileReader();
+    reader.onload = ev => { setAvatarEverywhere(ev.target.result); uSet('fnova_avatar', ev.target.result); showToast('✅ Photo saved locally', 'Avatar updated'); };
+    reader.readAsDataURL(file);
+  }
 }
 
 function setAvatarEverywhere(src) {
@@ -3190,13 +3273,13 @@ function saveReminders() {
     meal: document.getElementById('remind-meal').checked,
     water: document.getElementById('remind-water').checked,
   };
-  localStorage.setItem('fnova_reminders', JSON.stringify(prefs));
+  uSet('fnova_reminders', JSON.stringify(prefs));
   showToast('Reminders saved!', 'We\'ll keep you on track 🔔');
   if (prefs.water) scheduleWaterReminder();
 }
 
 function loadReminders() {
-  const saved = localStorage.getItem('fnova_reminders');
+  const saved = uGet('fnova_reminders');
   if (saved) {
     const p = JSON.parse(saved);
     const rw = document.getElementById('remind-workout');
@@ -3417,7 +3500,7 @@ async function clearAllData() {
       window.supabase.from('user_water_tracker').delete().eq('user_id', currentUser.id),
     ]);
   } catch(e) {}
-  localStorage.clear();
+  uClear();
   Object.assign(appState, {
     calorieGoal:1800, caloriesEaten:0, caloriesBurned:0, protein:0, carbs:0, fat:0,
     waterCups:0, streak:0, totalWorkouts:0, totalCalBurned:0,
@@ -3773,10 +3856,39 @@ self.addEventListener('fetch', e => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Restore saved photos on load
+  loadReminders();
+  initAuth();
+});
+
+// Called after bootApp — loads progress photos from Supabase
+async function loadProgressPhotos() {
+  try {
+    const { data } = await window.supabase.from('profiles')
+      .select('photo_before_url, photo_before_date, photo_after_url, photo_after_date')
+      .eq('id', currentUser.id).single();
+
+    if (data) {
+      ['before', 'after'].forEach(slot => {
+        const url  = slot === 'before' ? data.photo_before_url  : data.photo_after_url;
+        const date = slot === 'before' ? data.photo_before_date : data.photo_after_date;
+        if (!url) return;
+        const el = document.getElementById('photo-' + slot);
+        if (!el) return;
+        el.innerHTML =
+          '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:16px;display:block;" />' +
+          (date ? '<div class="photo-date-tag">' + date + '</div>' : '');
+        el.classList.add('has-photo');
+      });
+      return;
+    }
+  } catch(e) {
+    console.warn('Could not load photos from Supabase, trying local:', e.message);
+  }
+
+  // Fallback: localStorage
   ['before', 'after'].forEach(function(slot) {
-    const saved     = localStorage.getItem('fnova_photo_' + slot);
-    const savedDate = localStorage.getItem('fnova_photo_date_' + slot) || '';
+    const saved     = uGet('fnova_photo_' + slot);
+    const savedDate = uGet('fnova_photo_date_' + slot) || '';
     if (!saved) return;
     const el = document.getElementById('photo-' + slot);
     if (!el) return;
@@ -3785,11 +3897,7 @@ document.addEventListener('DOMContentLoaded', () => {
       (savedDate ? '<div class="photo-date-tag">' + savedDate + '</div>' : '');
     el.classList.add('has-photo');
   });
-  const savedAvatar = localStorage.getItem('fnova_avatar');
-  if (savedAvatar) setAvatarEverywhere(savedAvatar);
-  loadReminders();
-  initAuth();
-});
+}
 
 // Listen for auth state changes
 window.addEventListener('load', () => {
