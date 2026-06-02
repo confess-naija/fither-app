@@ -558,7 +558,7 @@ select option{background:var(--black3);}
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="https://js.paystack.co/v2/inline.js"></script>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 <script>
 (function() {
   var SUPABASE_URL = 'https://norgzcztduoxkshtthkm.supabase.co';
@@ -1042,6 +1042,14 @@ select option{background:var(--black3);}
           </div>
         </div>
         <div class="music-status" id="music-status">🔥 10 gospel tracks loaded — tap ▶ to start your workout session!</div>
+        <!-- Volume control -->
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px;position:relative;z-index:1;">
+          <span style="font-size:14px;">🔈</span>
+          <input type="range" id="volume-slider" min="0" max="100" value="100"
+            style="flex:1;height:4px;accent-color:var(--pink);cursor:pointer;"
+            oninput="setVolume(this.value)"/>
+          <span style="font-size:14px;">🔊</span>
+        </div>
       </div>
 
       <div class="playlist-head">
@@ -1306,14 +1314,14 @@ select option{background:var(--black3);}
           <div class="pro-plan-name" style="font-size:14px;">Free</div>
           <div class="pro-price" style="font-size:22px;">$0<span>/forever</span></div>
           <div class="pro-small">Basic features, always free.</div>
-          <button class="btn btn-ghost" style="height:38px;font-size:12px;width:100%;" onclick="showToast('✅ You are on Free!', 'Upgrade anytime to unlock Pro features.')">Current Plan</button>
+          <button class="btn btn-ghost" style="height:38px;font-size:12px;width:100%;" onclick="showToast('✅ You are on Free!', 'Upgrade anytime to unlock Pro features.')">Current Plan ✓</button>
         </div>
 
         <!-- MONTHLY -->
         <div class="pro-plan">
           <div class="pro-plan-name" style="font-size:14px;">Monthly</div>
-          <div class="pro-price" style="font-size:22px;">₦4,500<span>/mo</span></div>
-          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">≈ $3 USD / month</div>
+          <div class="pro-price" style="font-size:22px;">$3<span>/mo</span></div>
+          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">USD · Cancel anytime</div>
           <div class="pro-small">Billed monthly. Cancel anytime.</div>
           <button class="btn btn-pink" onclick="selectPlan('monthly')" style="height:38px;font-size:12px;">Try Free →</button>
           <div class="pro-status" id="pro-status-monthly"></div>
@@ -1324,8 +1332,8 @@ select option{background:var(--black3);}
           <div class="pro-plan-tag">Save 48%</div>
           <div class="pro-savings-badge">MOST POPULAR</div>
           <div class="pro-plan-name" style="font-size:14px;">Annual</div>
-          <div class="pro-price" style="font-size:22px;">₦35,000<span>/yr</span></div>
-          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">≈ $22 USD / year</div>
+          <div class="pro-price" style="font-size:22px;">$22<span>/yr</span></div>
+          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">USD · Save 39% vs monthly</div>
           <div class="pro-small">Just ₦2,917/mo. Best value.</div>
           <button class="btn btn-pink" onclick="selectPlan('annual')" style="height:38px;font-size:12px;">Try Free →</button>
           <div class="pro-status" id="pro-status-annual"></div>
@@ -1335,8 +1343,8 @@ select option{background:var(--black3);}
         <div class="pro-plan lifetime">
           <div class="pro-plan-tag" style="background:rgba(255,209,102,.18);border-color:rgba(255,209,102,.4);color:var(--gold);">⚡ Limited</div>
           <div class="pro-plan-name" style="font-size:14px;">Lifetime</div>
-          <div class="pro-price" style="font-size:22px;">₦65,000<span> once</span></div>
-          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">≈ $40 USD · One time only</div>
+          <div class="pro-price" style="font-size:22px;">$40<span> once</span></div>
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">USD · Pay once, own forever</div>
           <div class="pro-small">Pay once, own forever. Early access pricing.</div>
           <button class="btn btn-pink" onclick="selectPlan('lifetime')" style="height:38px;font-size:12px;background:linear-gradient(135deg,#c8920a,var(--gold));color:#000;">Get Lifetime</button>
           <div class="pro-countdown">🔥 Early access pricing</div>
@@ -1399,7 +1407,7 @@ select option{background:var(--black3);}
       </div>
 
       <div style="text-align:center;padding:16px 0 8px;font-size:11px;color:var(--grey);line-height:1.8;">
-        🔒 Secure payment via Paystack<br/>
+        🔒 Secure payment via Flutterwave · USD, GBP, EUR accepted<br/>
         Cancel anytime · No hidden fees · 7-day free trial<br/>
         <span style="color:var(--pink-light);">support@fithernova.app</span>
       </div>
@@ -2583,45 +2591,55 @@ const PLAYLIST = [
   {
     id:2, emoji:'🙏', title:'Lord, Remember Me',
     artist:'Holy Fire', bpm:72, genre:'Gospel Worship', duration:270,
-    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord,%20Rememer%20me.mp3'
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20Lord%2C%20Rememer%20me.mp3'
   },
   {
-    id:3, emoji:'🎛️', title:'Mix Jam 2026',
+    id:3, emoji:'⚡', title:'They Cannot (Remix)',
+    artist:'Holy Fire', bpm:135, genre:'Gospel Afrobeat', duration:225,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Holy%20Fire-%20THEY%20CANNOT%20(REMIX).mp3'
+  },
+  {
+    id:4, emoji:'🎛️', title:'Mix Jam 2026',
     artist:'FitHerNova Mix', bpm:145, genre:'Gospel Workout Mix', duration:300,
     src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Mix%20Jam%202026.mp3'
   },
   {
-    id:4, emoji:'💿', title:'Mixtape Vol. 2',
+    id:5, emoji:'💿', title:'Mixtape Vol. 2',
     artist:'FitHerNova Mix', bpm:140, genre:'Gospel Mixtape', duration:320,
     src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/mixtape%20vol%202.mp3'
   },
   {
-    id:5, emoji:'✨', title:'Sharp — Glory',
+    id:6, emoji:'✨', title:'Sharp — Glory',
     artist:'Sharp', bpm:132, genre:'Gospel Afrobeat', duration:250,
     src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Sharp-%20GlORY.mp3'
   },
   {
-    id:6, emoji:'📖', title:'The Word (feat. Holy Spell)',
+    id:7, emoji:'📖', title:'The Word (feat. Holy Spell)',
     artist:'Holy Spell', bpm:90, genre:'Gospel Spoken Word', duration:280,
     src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/The%20Word%20(feat.%20Holy%20Spell).mp3'
   },
   {
-    id:7, emoji:'💙', title:'ZIK Blue — Lift Me Up',
+    id:8, emoji:'💙', title:'ZIK Blue — Lift Me Up',
     artist:'ZIK Blue', bpm:118, genre:'Gospel Praise', duration:255,
     src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/ZIK%20Blue%20LIFT%20ME%20UP.mp3'
   },
   {
-    id:8, emoji:'🌿', title:'Zimora El Reloaded',
+    id:9, emoji:'💎', title:'Zimora El — Tested',
+    artist:'Zimora El', bpm:120, genre:'Gospel Worship', duration:228,
+    src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20-%20TESTED%20(Audio).mp3'
+  },
+  {
+    id:10, emoji:'🌿', title:'Zimora El Reloaded',
     artist:'Zimora El', bpm:125, genre:'Gospel Worship', duration:290,
     src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Zimora%20El%20Reloaded.mp3'
   },
   {
-    id:9, emoji:'🌟', title:'Glory & Fire',
+    id:11, emoji:'🌟', title:'Glory & Fire',
     artist:'Ziyana Eya', bpm:138, genre:'Gospel Fire', duration:265,
     src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana%20Eya%20%20GLORY%20%26%20FIRE.mp3'
   },
   {
-    id:10, emoji:'🎓', title:'Lessons',
+    id:12, emoji:'🎓', title:'Lessons',
     artist:'Ziyana Eya', bpm:95, genre:'Gospel R&B', duration:245,
     src:'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/music-tracks/Ziyana-Eya-Lessons.mp3'
   },
@@ -2692,8 +2710,10 @@ function updateMusicUI() {
 // ── AUDIO ENGINE ─────────────────────────────────────────────
 // Single shared Audio element, fully reset on each track load
 const audioEl = new Audio();
-audioEl.crossOrigin = 'anonymous'; // allow CORS from Supabase storage
-audioEl.preload    = 'auto';
+// NOTE: do NOT set crossOrigin — Supabase public storage works without it
+// Setting crossOrigin='anonymous' actually BLOCKS playback from Supabase
+audioEl.preload = 'metadata';
+audioEl.volume  = 1.0; // full volume
 
 let _loadedSrc = ''; // track which src is currently loaded
 
@@ -2715,37 +2735,59 @@ audioEl.addEventListener('ended', function() {
   nextTrack();
 });
 
-// Error handler
+// Error handler — fires when audio file can't be loaded
 audioEl.addEventListener('error', function(e) {
-  console.warn('Audio error:', e);
+  const err = audioEl.error;
+  const codes = { 1:'ABORTED', 2:'NETWORK', 3:'DECODE', 4:'NOT_SUPPORTED' };
+  const code  = err ? (codes[err.code] || 'UNKNOWN') : 'UNKNOWN';
+  console.warn('Audio error code:', code, err);
   musicPlaying = false;
+  _loadedSrc = ''; // allow retry
   updateMusicUI();
-  showToast('⚠️ Track error', 'Could not load this song — trying next one');
-  setTimeout(nextTrack, 1000);
+  if (code === 'NETWORK') {
+    showToast('📶 Network error', 'Check your connection · Retrying…');
+    setTimeout(() => { if (!musicPlaying) loadAndPlay(PLAYLIST[currentTrackIdx]?.src || ''); }, 3000);
+  } else {
+    showToast('⚠️ Track skipped', 'Could not load — jumping to next song');
+    setTimeout(nextTrack, 1500);
+  }
 });
 
 function loadAndPlay(src) {
-  // Always create fresh if src changed
-  if (_loadedSrc !== src) {
+  if (!src || !src.trim()) return;
+  const cleanSrc = src.trim();
+
+  // Only reload if src actually changed
+  if (_loadedSrc !== cleanSrc) {
     audioEl.pause();
-    audioEl.src = src;
-    audioEl.load(); // force reload
-    _loadedSrc = src;
-    musicProgress = 0;
+    audioEl.src    = cleanSrc;
+    _loadedSrc     = cleanSrc;
+    musicProgress  = 0;
   }
+
+  // Ensure volume is up
+  audioEl.volume = 1.0;
+  audioEl.muted  = false;
+
   const playPromise = audioEl.play();
   if (playPromise !== undefined) {
     playPromise.then(function() {
       musicPlaying = true;
       updateMusicUI();
+      showToast('🎵 Now playing', PLAYLIST[currentTrackIdx]?.title || 'FitHerNova Radio');
     }).catch(function(err) {
-      console.warn('Play blocked:', err.name, err.message);
+      console.warn('Play error:', err.name, err.message);
       musicPlaying = false;
       updateMusicUI();
       if (err.name === 'NotAllowedError') {
-        showToast('🎵 Tap play to start', 'Tap the ▶ button to begin your music');
+        // Browser blocked autoplay — user must tap play
+        showToast('🎵 Tap ▶ to play', 'Browser requires a tap to start audio');
+      } else if (err.name === 'NotSupportedError') {
+        showToast('⚠️ Format not supported', 'Skipping to next track…');
+        setTimeout(nextTrack, 1000);
       } else {
-        showToast('⚠️ Playback error', 'Check your connection and try again');
+        showToast('⚠️ Could not play', 'Check your connection · Trying next track…');
+        setTimeout(nextTrack, 2000);
       }
     });
   }
@@ -2794,6 +2836,12 @@ function prevTrack() {
     if (t && t.src) loadAndPlay(t.src.trim());
   }
   updateMusicUI();
+}
+
+function setVolume(val) {
+  const vol = parseInt(val) / 100;
+  audioEl.volume = Math.max(0, Math.min(1, vol));
+  audioEl.muted  = vol === 0;
 }
 
 function shufflePlaylist() {
@@ -3159,18 +3207,27 @@ function scheduleWaterReminder() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// PRO UPGRADE — PAYSTACK
+// PRO UPGRADE — FLUTTERWAVE
 // ══════════════════════════════════════════════════════════════
-const PAYSTACK_PUBLIC_KEY = 'pk_live_4fa937b5b1e085b776aa9f21ee2e0b4af5a8cca5';
-const PRO_PRICES = {
-  monthly:  450000,    // ₦4,500/mo (~$3 USD)
-  annual:   3500000,   // ₦35,000/yr (~$22 USD)
-  lifetime: 6500000    // ₦65,000 once (~$40 USD)
+const FLW_PUBLIC_KEY = 'FLWPUBK-79d99d18e7250db24f911e3d4380dda1-X';
+
+// Flutterwave hosted payment links — open in new tab
+const FLW_LINKS = {
+  monthly:  'https://flutterwave.com/pay/kkcqyczwspgc',
+  annual:   'https://flutterwave.com/pay/p3kqhzwnbc6x',
+  lifetime: 'https://flutterwave.com/pay/o0rhdacydnah'
 };
+
+const PRO_PRICES = {
+  monthly:  '$3/mo',
+  annual:   '$22/yr',
+  lifetime: '$40 once'
+};
+
 const PRO_LABELS = {
-  monthly:  'Monthly Pro — ₦4,500/mo',
-  annual:   'Annual Pro — ₦35,000/yr',
-  lifetime: 'Lifetime Pro — ₦65,000 once'
+  monthly:  'Monthly Pro — $3/mo',
+  annual:   'Annual Pro — $22/yr',
+  lifetime: 'Lifetime Pro — $40 once'
 };
 
 // ── Local PRO persistence ──────────────────────────────────────
@@ -3247,63 +3304,95 @@ function setProStatus(plan, msg) {
   const el = document.getElementById('pro-status-' + plan);
   if (el) el.textContent = msg;
 }
-async function ensurePaystackLoaded() {
-  return new Promise((resolve, reject) => {
-    if (window.PaystackPop) return resolve(true);
-    const script = document.createElement('script');
-    script.src = 'https://js.paystack.co/v2/inline.js';
-    script.async = true;
-    script.onload  = () => resolve(true);
-    script.onerror = () => reject(new Error('Paystack failed to load'));
-    document.head.appendChild(script);
-  });
-}
 
 async function selectPlan(plan) {
   if (!currentUser) {
     showToast('Please sign in first', 'You need an account to upgrade to Pro');
     return;
   }
-  const amount = PRO_PRICES[plan];
-  const label  = PRO_LABELS[plan] || 'FitHerNova Pro';
-  const email  = currentUser.email || '';
+
+  const email = currentUser.email || '';
   if (!email.includes('@')) {
     showToast('Invalid email', 'Please log in with a valid email before upgrading');
     return;
   }
-  const reference = 'FHN_' + plan.toUpperCase() + '_' + Date.now();
+
+  const link  = FLW_LINKS[plan];
+  const label = PRO_LABELS[plan] || 'FitHerNova Pro';
+
+  if (!link) {
+    showToast('Plan not found', 'Please try again');
+    return;
+  }
+
   setProStatus(plan, '⏳ Opening secure checkout…');
 
-  try {
-    await ensurePaystackLoaded();
-    const paystack = new window.PaystackPop();
-    paystack.newTransaction({
-      key:       PAYSTACK_PUBLIC_KEY,
-      email,
-      amount,
-      currency:  'NGN',
-      reference,
-      metadata:  { plan, app: 'FitHerNova', custom_fields:[{ display_name:'Plan', variable_name:'plan', value:label }] },
-      onSuccess: async function(tx) {
-        const ref = tx?.reference || tx?.trxref || reference;
-        setProStatus(plan, '✅ Payment successful! Unlocking Pro…');
-        setLocalPro(plan, ref);
-        await saveProToSupabase(plan, ref);
-        setProStatus(plan, '');
-        updateProBadges();
-        showToast('🎉 Welcome to FitHerNova Pro!', 'All features are now unlocked ✨');
-        showAchievement('⭐', 'Pro Unlocked!', 'Welcome to FitHerNova Pro — enjoy all features!');
+  // Try Flutterwave inline first, fallback to payment link
+  if (window.FlutterwaveCheckout) {
+    const reference = 'FHN_' + plan.toUpperCase() + '_' + Date.now();
+    const amounts   = { monthly: 3, annual: 22, lifetime: 40 };
+
+    window.FlutterwaveCheckout({
+      public_key:  FLW_PUBLIC_KEY,
+      tx_ref:      reference,
+      amount:      amounts[plan] || 3,
+      currency:    'USD',
+      payment_options: 'card,ussd,banktransfer',
+      customer: {
+        email:    email,
+        name:     currentUser.user_metadata?.full_name || 'FitHerNova User',
       },
-      onCancel: function() {
+      customizations: {
+        title:       'FitHerNova Pro',
+        description: label,
+        logo:        'https://fither-app-one.vercel.app/icon-192.png',
+      },
+      callback: async function(response) {
+        if (response.status === 'successful' || response.status === 'completed') {
+          const ref = response.transaction_id || response.tx_ref || reference;
+          setProStatus(plan, '✅ Payment successful! Unlocking Pro…');
+          setLocalPro(plan, String(ref));
+          await saveProToSupabase(plan, String(ref));
+          setProStatus(plan, '');
+          updateProBadges();
+          showToast('🎉 Welcome to FitHerNova Pro!', 'All features are now unlocked ✨');
+          showAchievement('⭐', 'Pro Unlocked!', 'Welcome to FitHerNova Pro — enjoy all features!');
+        } else {
+          setProStatus(plan, '');
+          showToast('Payment incomplete', 'Please try again or use the payment link below');
+        }
+      },
+      onclose: function() {
         setProStatus(plan, '');
-        showToast('Payment cancelled', 'You can upgrade anytime from the Pro tab');
       }
     });
-  } catch(err) {
+  } else {
+    // Fallback: open Flutterwave hosted payment link in new tab
     setProStatus(plan, '');
-    showToast('Payment error', err.message || 'Please try again');
-    console.warn('Paystack error:', err);
+    window.open(link + '?email=' + encodeURIComponent(email), '_blank');
+    showToast('🔗 Payment page opened', 'Complete your payment then come back to activate Pro');
+
+    // Poll for pro activation (user comes back after paying)
+    setTimeout(async () => {
+      await loadProStatus();
+      if (appState.isProUser) {
+        showToast('🎉 Welcome to FitHerNova Pro!', 'All features are now unlocked ✨');
+      } else {
+        showToast('ℹ️ Activate Pro', 'After payment tap Profile → Activate Pro to unlock');
+      }
+    }, 30000); // check after 30 seconds
   }
+}
+
+// Manual Pro activation — for users who paid via link
+async function activateProManually() {
+  const ref = prompt('Enter your Flutterwave transaction ID:');
+  if (!ref || ref.length < 5) return;
+  setLocalPro('manual', ref);
+  await saveProToSupabase('manual', ref);
+  updateProBadges();
+  showToast('🎉 Pro Activated!', 'Welcome to FitHerNova Pro ✨');
+  showAchievement('⭐', 'Pro Unlocked!', 'All features are now available!');
 }
 
 // ══════════════════════════════════════════════════════════════
