@@ -1975,7 +1975,7 @@ function updateHomeStats() {
   setEl('stat-protein', Math.round(appState.protein) + 'g');
   setEl('stat-water-cups', appState.waterCups);
   setEl('stat-workouts', todayWorkouts);
-  setEl('header-streak', '🔥 ' + streak + ' days');
+  setEl('header-streak', '🔥 ' + streak + (streak === 1 ? ' day' : ' days'));
   setEl('prog-streak', streak);
   setEl('prog-workouts', appState.totalWorkouts);
   setEl('prog-calories', appState.totalCalBurned);
