@@ -1945,9 +1945,11 @@ async function bootApp() {
   updateHomeStats();
   updateFoodMacros();
   loadCoachChallenge();
+  // Load challenge + reminders from Supabase then render
+  await loadChallengeFromSupabase();
   renderChallengeCard();
   // Load reminders from Supabase now that user is known
-  loadReminders();
+  await loadReminders();
 
   // Midnight water reset
   scheduleMidnightReset();
@@ -4401,14 +4403,57 @@ const CHALLENGE_DAYS = [
 ];
 
 function getChallengeState() {
+  // Read from localStorage cache first (fastest)
   try {
     const raw = uGet('fnova_challenge');
     return raw ? JSON.parse(raw) : null;
   } catch(e) { return null; }
 }
 
-function saveChallengeState(state) {
+async function saveChallengeState(state) {
+  // Save to localStorage immediately (instant UI)
   uSet('fnova_challenge', JSON.stringify(state));
+
+  // Save to Supabase so it survives logout/login
+  if (window.supabase && currentUser) {
+    try {
+      await window.supabase.from('profiles').upsert({
+        id:                    currentUser.id,
+        challenge_active:      state.active,
+        challenge_start_date:  state.startDate,
+        challenge_completed:   JSON.stringify(state.completedDays || []),
+        challenge_current_day: state.currentDay || 1,
+        updated_at:            new Date().toISOString()
+      }, { onConflict: 'id' });
+    } catch(e) {
+      console.warn('Challenge save to Supabase failed:', e.message);
+    }
+  }
+}
+
+async function loadChallengeFromSupabase() {
+  if (!window.supabase || !currentUser) return;
+  try {
+    const { data, error } = await window.supabase
+      .from('profiles')
+      .select('challenge_active, challenge_start_date, challenge_completed, challenge_current_day')
+      .eq('id', currentUser.id)
+      .single();
+
+    if (data && !error && data.challenge_active) {
+      const state = {
+        active:        data.challenge_active,
+        startDate:     data.challenge_start_date || todayStr(),
+        completedDays: JSON.parse(data.challenge_completed || '[]'),
+        currentDay:    data.challenge_current_day || 1
+      };
+      // Sync to localStorage cache
+      uSet('fnova_challenge', JSON.stringify(state));
+      console.log('Challenge loaded from Supabase: Day', state.currentDay);
+    }
+  } catch(e) {
+    console.warn('Could not load challenge from Supabase:', e.message);
+  }
 }
 
 function startChallenge() {
@@ -4547,6 +4592,16 @@ function abandonChallenge() {
     btn.style.background = '#c4004d';
     btn.onclick = function() {
       uRemove('fnova_challenge');
+      // Also clear from Supabase
+      if (window.supabase && currentUser) {
+        window.supabase.from('profiles').upsert({
+          id: currentUser.id,
+          challenge_active: false,
+          challenge_completed: '[]',
+          challenge_current_day: 1,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' }).catch(e => console.warn('Abandon clear failed:', e.message));
+      }
       renderChallengeCard();
       btn.textContent = 'OK';
       btn.style.background = '';
