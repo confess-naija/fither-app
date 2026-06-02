@@ -2678,7 +2678,6 @@ const PLAYLIST = [
 ];
 
 let currentTrackIdx = 0;
-let musicPlaying = false;
 let musicProgress = 0;
 let musicInterval = null;
 let djMode = false;
@@ -2709,7 +2708,7 @@ function selectTrack(idx) {
   musicPlaying = false;
   updateMusicUI();
   // Small delay so UI updates first then audio starts
-  setTimeout(togglePlay, 50);
+  playCurrentTrack(); // direct
 }
 
 function updateMusicUI() {
@@ -2741,140 +2740,110 @@ function updateMusicUI() {
 
 // ── AUDIO ENGINE ─────────────────────────────────────────────
 // Keep it simple — exactly like the working version
-// No crossOrigin, no preload tricks, just plain Audio()
+// ── AUDIO ENGINE ─────────────────────────────────────────────
 const audioEl = new Audio();
 audioEl.volume = 1.0;
 
-let _loadedSrc = ''; // track which src is currently loaded
+let _loadedSrc   = '';
+let musicPlaying = false;
 
-// Progress ticker
+// Progress update
 audioEl.addEventListener('timeupdate', function() {
   if (!audioEl.duration) return;
   musicProgress = Math.round(audioEl.currentTime);
   const pct = (audioEl.currentTime / audioEl.duration) * 100;
-  const mp = document.getElementById('music-progress'); if(mp) mp.style.width = pct + '%';
-  const mf = document.getElementById('mini-prog-fill'); if(mf) mf.style.width = pct + '%';
-  const tc = document.getElementById('music-current'); if(tc) tc.textContent = fmtTime(musicProgress);
-  const td = document.getElementById('music-duration'); if(td) td.textContent = fmtTime(Math.round(audioEl.duration));
+  const mp = document.getElementById('music-progress'); if (mp) mp.style.width = pct + '%';
+  const mf = document.getElementById('mini-prog-fill'); if (mf) mf.style.width = pct + '%';
+  const tc = document.getElementById('music-current'); if (tc) tc.textContent = fmtTime(musicProgress);
+  const td = document.getElementById('music-duration'); if (td) td.textContent = fmtTime(Math.round(audioEl.duration));
 });
 
-// Auto-advance when track ends
+// Auto next on end
 audioEl.addEventListener('ended', function() {
   musicProgress = 0;
-  _loadedSrc = '';
-  nextTrack();
+  _loadedSrc    = '';
+  currentTrackIdx = (currentTrackIdx + 1) % PLAYLIST.length;
+  playCurrentTrack();
 });
 
-// Error handler — fires when audio file can't be loaded
-audioEl.addEventListener('error', function(e) {
-  const err = audioEl.error;
-  const codes = { 1:'ABORTED', 2:'NETWORK', 3:'DECODE', 4:'NOT_SUPPORTED' };
-  const code  = err ? (codes[err.code] || 'UNKNOWN') : 'UNKNOWN';
-  console.warn('Audio error code:', code, err);
+// Error — skip to next
+audioEl.addEventListener('error', function() {
+  console.warn('Audio error on:', _loadedSrc);
   musicPlaying = false;
-  _loadedSrc = ''; // allow retry
+  _loadedSrc   = '';
   updateMusicUI();
-  if (code === 'NETWORK') {
-    showToast('📶 Network error', 'Check your connection · Retrying…');
-    setTimeout(() => { if (!musicPlaying) loadAndPlay(PLAYLIST[currentTrackIdx]?.src || ''); }, 3000);
-  } else {
-    showToast('⚠️ Track skipped', 'Could not load — jumping to next song');
-    setTimeout(nextTrack, 1500);
-  }
+  setTimeout(function() {
+    currentTrackIdx = (currentTrackIdx + 1) % PLAYLIST.length;
+    playCurrentTrack();
+  }, 1000);
 });
 
-function loadAndPlay(src) {
-  if (!src || !src.trim()) return;
-  const cleanSrc = src.trim();
-
-  // Only reload if src changed
-  if (_loadedSrc !== cleanSrc) {
+// Core play function — called directly from user gesture handlers
+function playCurrentTrack() {
+  const t = PLAYLIST[currentTrackIdx];
+  if (!t || !t.src) return;
+  const src = t.src.trim();
+  if (_loadedSrc !== src) {
     audioEl.pause();
-    audioEl.src   = cleanSrc;
-    _loadedSrc    = cleanSrc;
+    audioEl.src  = src;
+    _loadedSrc   = src;
     musicProgress = 0;
   }
-
   audioEl.volume = 1.0;
-
-  // play() must be called directly in user gesture — no setTimeout
-  const p = audioEl.play();
-  if (p !== undefined) {
-    p.then(function() {
-      musicPlaying = true;
-      audioEl.volume = 1.0;
-      updateMusicUI();
-    }).catch(function(err) {
-      console.warn('Audio play error:', err.name, err.message);
-      musicPlaying = false;
-      updateMusicUI();
-      if (err.name === 'NotAllowedError') {
-        showToast('🎵 Tap ▶ to start', 'Tap the play button to begin');
-      } else {
-        showToast('⚠️ Playback error', 'Check your connection and try again');
-      }
-    });
-  }
+  audioEl.play().then(function() {
+    musicPlaying = true;
+    updateMusicUI();
+  }).catch(function(err) {
+    console.warn('Play failed:', err.name);
+    musicPlaying = false;
+    updateMusicUI();
+    if (err.name === 'NotAllowedError') {
+      showToast('🎵 Tap ▶ to start', 'Tap play to begin music');
+    }
+  });
 }
 
 function togglePlay() {
-  const t = PLAYLIST[currentTrackIdx];
-  if (!t) return;
-
   if (musicPlaying) {
-    // PAUSE
     audioEl.pause();
     musicPlaying = false;
     updateMusicUI();
   } else {
-    // PLAY
-    if (t.src && t.src.trim()) {
-      loadAndPlay(t.src.trim());
-    } else {
-      showToast('⚠️ No audio', 'This track has no audio file attached');
-    }
+    playCurrentTrack();
   }
+}
+
+function selectTrack(idx) {
+  currentTrackIdx = idx;
+  musicProgress   = 0;
+  _loadedSrc      = '';
+  musicPlaying    = false;
+  audioEl.pause();
+  playCurrentTrack(); // called directly — no setTimeout
 }
 
 function nextTrack() {
   currentTrackIdx = (currentTrackIdx + 1) % PLAYLIST.length;
-  musicProgress = 0;
-  _loadedSrc = '';
-  if (musicPlaying) {
-    audioEl.pause();
-    musicPlaying = false;
-    const t = PLAYLIST[currentTrackIdx];
-    if (t && t.src) loadAndPlay(t.src.trim());
-  }
-  updateMusicUI();
+  musicProgress   = 0;
+  _loadedSrc      = '';
+  musicPlaying    = false;
+  audioEl.pause();
+  playCurrentTrack();
 }
 
 function prevTrack() {
   currentTrackIdx = (currentTrackIdx - 1 + PLAYLIST.length) % PLAYLIST.length;
-  musicProgress = 0;
-  _loadedSrc = '';
-  if (musicPlaying) {
-    audioEl.pause();
-    musicPlaying = false;
-    const t = PLAYLIST[currentTrackIdx];
-    if (t && t.src) loadAndPlay(t.src.trim());
-  }
-  updateMusicUI();
+  musicProgress   = 0;
+  _loadedSrc      = '';
+  musicPlaying    = false;
+  audioEl.pause();
+  playCurrentTrack();
 }
 
 function setVolume(val) {
-  const vol = parseInt(val) / 100;
-  audioEl.volume = Math.max(0, Math.min(1, vol));
-  audioEl.muted  = vol === 0;
+  audioEl.volume = Math.max(0, Math.min(1, parseInt(val) / 100));
 }
 
-function shufflePlaylist() {
-  currentTrackIdx = Math.floor(Math.random() * PLAYLIST.length);
-  musicProgress = 0;
-  if (musicPlaying) { clearInterval(musicInterval); musicPlaying = false; togglePlay(); }
-  else updateMusicUI();
-  renderPlaylist();
-}
 
 function seekTrack(e) {
   const bar = e.currentTarget;
