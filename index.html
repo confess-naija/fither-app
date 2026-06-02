@@ -1696,13 +1696,6 @@ async function initAuth() {
 }
 
 function showAuthScreen() {
-  // Nuclear option: reload the page completely on logout
-  // This guarantees zero state leakage between users
-  if (currentUser === null) {
-    // We just logged out — reload to fresh state
-    window.location.href = window.location.origin + window.location.pathname;
-    return;
-  }
   document.getElementById('auth-loading').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('main-app').style.display = 'none';
@@ -1804,8 +1797,8 @@ async function doLogout() {
   try { await window.supabase.auth.signOut(); } catch(e) {}
   currentUser = null;
 
-  // 6. Show auth screen
-  showAuthScreen();
+  // 6. Reload page completely — guarantees clean slate for next user
+  window.location.href = window.location.origin + window.location.pathname;
 }
 
 // Clear avatar from all UI elements
