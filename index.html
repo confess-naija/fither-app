@@ -1285,9 +1285,15 @@ select option{background:var(--black3);}
           <div class="sec-label" style="margin:0;">🔔 Notifications</div>
           <button onclick="testNotification()" style="background:rgba(255,45,107,.12);border:1px solid rgba(255,45,107,.28);color:var(--pink-light);border-radius:99px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;">Test 🔔</button>
         </div>
-        <div style="background:linear-gradient(135deg,#1a0710,#0f0f0f);border:1px solid rgba(255,209,102,.2);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px;">
-          <span id="notif-permission-icon" style="font-size:10px;font-weight:900;padding:3px 8px;background:rgba(255,255,255,.1);border-radius:99px;white-space:nowrap;">🔔 OFF</span>
-          <span id="notif-permission-text">Tap any toggle below to enable push notifications</span>
+        <div style="background:linear-gradient(135deg,#1a0710,#0f0f0f);border:1px solid rgba(255,209,102,.2);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:rgba(255,255,255,.7);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span id="notif-permission-icon" style="font-size:10px;font-weight:900;padding:3px 8px;background:rgba(255,255,255,.1);border-radius:99px;white-space:nowrap;">🔔 OFF</span>
+            <span id="notif-permission-text">Tap below to enable push notifications</span>
+          </div>
+          <button onclick="requestNotifPermission()" id="enable-notif-btn"
+            style="width:100%;height:38px;border-radius:10px;border:1px solid rgba(255,209,102,.4);background:rgba(255,209,102,.1);color:var(--gold);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+            🔔 Enable Push Notifications
+          </button>
         </div>
         <div class="reminder-item">
           <div style="flex:1;">
@@ -1521,6 +1527,12 @@ select option{background:var(--black3);}
         </button>
         <button class="mini-btn" onclick="nextTrack()">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+        <button class="mini-btn" onclick="closeMiniPlayer()" title="Close player"
+          style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
         </button>
       </div>
     </div>
@@ -3016,6 +3028,25 @@ function prevTrack() {
   playCurrentTrack();
 }
 
+function closeMiniPlayer() {
+  // Stop audio
+  audioEl.pause();
+  musicPlaying = false;
+  _loadedSrc = '';
+  // Hide mini player
+  const mp = document.getElementById('mini-player');
+  if (mp) { mp.classList.remove('show'); }
+  // Reset UI
+  const pb = document.getElementById('play-btn');
+  if (pb) pb.textContent = '▶';
+  const vinyl = document.getElementById('vinyl-disc');
+  if (vinyl) vinyl.classList.remove('spinning');
+  const miniArt = document.getElementById('mini-art');
+  if (miniArt) miniArt.classList.remove('spinning');
+  const mpb = document.getElementById('mini-play-btn');
+  if (mpb) mpb.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+}
+
 function setVolume(val) {
   audioEl.volume = Math.max(0, Math.min(1, parseInt(val) / 100));
 }
@@ -3384,32 +3415,68 @@ async function coachSend() {
 var _reminderTimers = [];
 
 async function requestNotifPermission() {
-  if (!('Notification' in window)) { showToast('Not supported', 'Try Chrome or Edge'); return false; }
+  if (!('Notification' in window)) {
+    showToast('Not supported', 'Use Chrome or Edge browser for notifications');
+    return false;
+  }
   if (Notification.permission === 'granted') return true;
-  if (Notification.permission === 'denied') { showToast('Blocked', 'Enable in browser Settings > Site Settings'); return false; }
-  const result = await Notification.requestPermission();
+  if (Notification.permission === 'denied') {
+    showToast('Notifications blocked!', 'Go to browser Settings > Site Settings > Allow');
+    return false;
+  }
+  // Ask for permission
+  showToast('Allow notifications', 'Look for the browser permission popup above');
+  let result;
+  try {
+    result = await Notification.requestPermission();
+  } catch(e) {
+    // Older callback-style API
+    result = await new Promise(resolve => Notification.requestPermission(resolve));
+  }
   updateNotifPermissionUI();
   if (result === 'granted') {
-    sendNotification('FitHerNova', 'Notifications ON! We will keep you on track.');
-    showToast('Notifications enabled!', 'You will now receive reminders');
+    // Fire a real test notification immediately so user knows it worked
+    setTimeout(function() {
+      try {
+        new Notification('FitHerNova', {
+          body: 'Notifications are ON! We will keep you on track.',
+          icon: '/icon-192.png',
+          tag: 'fhn-welcome'
+        });
+      } catch(e) { console.warn('Welcome notif failed:', e); }
+    }, 500);
+    showToast('Notifications enabled!', 'You will now receive workout, meal & water reminders');
     return true;
   }
+  showToast('Permission not granted', 'You can enable notifications in browser settings anytime');
   return false;
 }
 
 function sendNotification(title, body) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  // Always try direct Notification first — most reliable across all browsers
+  // SW postMessage only works on installed PWAs, so we use it as secondary
   try {
-    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({
-        type: 'SHOW_NOTIFICATION', title: title, body: body,
-        icon: '/icon-192.png', badge: '/icon-192.png', tag: 'fithernova-reminder',
-        data: { url: 'https://fither-app-one.vercel.app' }
-      });
-    } else {
-      new Notification(title, { body: body, icon: '/icon-192.png', tag: 'fithernova-reminder' });
-    }
-  } catch(e) { console.warn('Notification error:', e); }
+    new Notification(title, {
+      body: body,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: 'fithernova-' + Date.now(),
+      requireInteraction: false
+    });
+  } catch(e) {
+    // Fallback: try via service worker (installed PWA on mobile)
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'SHOW_NOTIFICATION', title: title, body: body,
+          icon: '/icon-192.png', badge: '/icon-192.png',
+          tag: 'fithernova-reminder',
+          data: { url: 'https://fither-app-one.vercel.app' }
+        });
+      }
+    } catch(e2) { console.warn('Notification fallback failed:', e2); }
+  }
 }
 
 function scheduleAllReminders() {
@@ -3462,26 +3529,41 @@ function scheduleWorkoutReminder(timeStr) {
 function updateNotifPermissionUI() {
   var icon = document.getElementById('notif-permission-icon');
   var text = document.getElementById('notif-permission-text');
+  var btn  = document.getElementById('enable-notif-btn');
   if (!icon || !text) return;
   if (!('Notification' in window)) {
-    icon.textContent = 'N/A'; text.textContent = 'Not supported in this browser';
+    icon.textContent = 'N/A';
+    text.textContent = 'Not supported — use Chrome or Edge';
+    if (btn) btn.style.display = 'none';
   } else if (Notification.permission === 'granted') {
-    icon.textContent = '✅ ON'; text.textContent = 'Notifications are enabled!';
-    icon.style.background = 'rgba(6,214,160,.2)'; icon.style.color = '#06d6a0';
+    icon.textContent = '✅ ON';
+    icon.style.background = 'rgba(6,214,160,.2)';
+    icon.style.color = '#06d6a0';
+    text.textContent = 'Push notifications are active!';
+    if (btn) btn.style.display = 'none'; // hide once granted
   } else if (Notification.permission === 'denied') {
-    icon.textContent = '🚫 BLOCKED'; text.textContent = 'Go to Settings > Site Settings to allow.';
-    icon.style.background = 'rgba(255,107,107,.15)'; icon.style.color = '#ff6b6b';
+    icon.textContent = '🚫 BLOCKED';
+    icon.style.background = 'rgba(255,107,107,.15)';
+    icon.style.color = '#ff6b6b';
+    text.textContent = 'Blocked — go to browser Settings > Site Settings > Allow';
+    if (btn) { btn.textContent = '⚙️ Open Browser Settings'; btn.onclick = function(){ showToast('Open browser settings', 'Settings > Privacy > Notifications > Allow fither-app-one.vercel.app'); }; }
   } else {
-    icon.textContent = '🔔 OFF'; text.textContent = 'Tap any toggle to enable push notifications';
+    icon.textContent = '🔔 OFF';
+    icon.style.background = 'rgba(255,255,255,.1)';
+    icon.style.color = '';
+    text.textContent = 'Tap below to enable push notifications';
+    if (btn) { btn.style.display = 'flex'; btn.textContent = '🔔 Enable Push Notifications'; btn.onclick = requestNotifPermission; }
   }
 }
 
 async function testNotification() {
   const granted = await requestNotifPermission();
-  if (granted) {
-    sendNotification('FitHerNova Test!', 'Notifications working! Stay on track, Queen!');
-    showToast('Test sent!', 'Check your notification tray');
-  }
+  if (!granted) return;
+  // Small delay so permission dialog closes first
+  setTimeout(function() {
+    sendNotification('FitHerNova Test!', 'Notifications are working! Stay on track, Queen!');
+  }, 800);
+  showToast('Test notification sent!', 'Check your notification tray or banner at top of screen');
 }
 
 async function saveReminders() {
@@ -4326,7 +4408,37 @@ function renderChallengeCard() {
         <button class="challenge-btn challenge-btn-secondary" style="flex:1;" onclick="navTo('workout')">▶ Browse Workouts</button>
       </div>`}
       <div class="challenge-dot-row">${dots}</div>
+      <div style="text-align:center;margin-top:10px;">
+        <button onclick="abandonChallenge()" style="background:none;border:none;color:rgba(255,255,255,.25);font-size:10px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all .2s;" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='rgba(255,255,255,.25)'">
+          ✕ Abandon Challenge
+        </button>
+      </div>
     </div>`;
+}
+
+function abandonChallenge() {
+  const toastEl = document.getElementById('notif-toast');
+  document.getElementById('nt-title').textContent = 'Abandon challenge?';
+  document.getElementById('nt-sub').textContent = 'Your progress will be lost. You can restart anytime.';
+  const btn = document.querySelector('.nt-btn');
+  if (btn) {
+    btn.textContent = 'Yes, stop';
+    btn.style.background = '#c4004d';
+    btn.onclick = function() {
+      uRemove('fnova_challenge');
+      renderChallengeCard();
+      btn.textContent = 'OK';
+      btn.style.background = '';
+      btn.onclick = dismissToast;
+      dismissToast();
+      showToast('Challenge stopped', 'You can restart anytime from the Home page');
+    };
+  }
+  toastEl.classList.add('show');
+  setTimeout(() => {
+    toastEl.classList.remove('show');
+    if (btn) { btn.textContent = 'OK'; btn.style.background = ''; btn.onclick = dismissToast; }
+  }, 6000);
 }
 
 function shufflePlaylist() {
