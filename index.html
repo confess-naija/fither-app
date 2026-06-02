@@ -1697,8 +1697,39 @@ async function doSignup() {
 }
 
 async function doLogout() {
+  // 1. Stop music immediately
+  try {
+    audioEl.pause();
+    audioEl.src = '';
+    _loadedSrc = '';
+  } catch(e) {}
+  musicPlaying    = false;
+  currentTrackIdx = 0;
+  musicProgress   = 0;
+  const miniP = document.getElementById('mini-player');
+  if (miniP) miniP.classList.remove('show');
+
+  // 2. Reset ALL app state to defaults — critical for multi-user
+  Object.assign(appState, {
+    calorieGoal: 1800, caloriesEaten: 0, caloriesBurned: 0,
+    protein: 0, carbs: 0, fat: 0, waterCups: 0, streak: 0,
+    totalWorkouts: 0, totalCalBurned: 0,
+    weeklyActivity: [0,0,0,0,0,0,0],
+    mealLog: [], workoutLog: [], activeGoal: 'weightloss',
+    isProUser: false, proPlan: 'free'
+  });
+
+  // 3. Clear cached session so next user starts fresh
+  try {
+    localStorage.removeItem('fhn_cached_user_id');
+    localStorage.removeItem('fhn_cached_user_email');
+  } catch(e) {}
+
+  // 4. Sign out from Supabase
   try { await window.supabase.auth.signOut(); } catch(e) {}
   currentUser = null;
+
+  // 5. Show auth screen
   showAuthScreen();
 }
 
