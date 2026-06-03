@@ -2094,6 +2094,9 @@ async function bootApp() {
 
   // Render weekly summary
   renderWeeklySummary();
+
+  // Update scanner button label with scan count
+  updateScannerBtnLabel();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -5041,11 +5044,68 @@ function copyShareText() {
 // ══════════════════════════════════════════════════════════════
 // FOOD SCANNER — Claude Vision AI
 // ══════════════════════════════════════════════════════════════
+function getScanCount() {
+  const key = 'fnova_scans_' + todayStr();
+  return parseInt(localStorage.getItem(key) || '0');
+}
+
+function incrementScanCount() {
+  const key = 'fnova_scans_' + todayStr();
+  localStorage.setItem(key, getScanCount() + 1);
+}
+
+const FREE_SCAN_LIMIT = 5;
+
 function openFoodScanner() {
+  // Check Pro status
+  if (!appState.isProUser) {
+    const used = getScanCount();
+    const left = FREE_SCAN_LIMIT - used;
+    if (used >= FREE_SCAN_LIMIT) {
+      // Limit hit — prompt upgrade
+      showScanLimitModal();
+      return;
+    }
+    // Update button to show remaining
+    const btn = document.querySelector('.scanner-btn span:last-child');
+    if (btn) btn.textContent = left + ' scan' + (left !== 1 ? 's' : '') + ' left today';
+  }
   const input = document.getElementById('food-camera-input');
   if (!input) return;
   input.value = '';
   input.click();
+}
+
+function showScanLimitModal() {
+  // Reuse notif toast as upgrade prompt
+  const toastEl = document.getElementById('notif-toast');
+  document.getElementById('nt-icon').textContent = '📷';
+  document.getElementById('nt-title').textContent = 'Daily scan limit reached!';
+  document.getElementById('nt-sub').textContent = 'Free plan: 5 scans/day. Upgrade to Pro for unlimited scans.';
+  const btn = document.querySelector('.nt-btn');
+  if (btn) {
+    btn.textContent = 'Upgrade';
+    btn.style.background = 'linear-gradient(135deg,#c8920a,var(--gold))';
+    btn.style.color = '#000';
+    btn.onclick = function() {
+      navTo('pro');
+      dismissToast();
+      btn.textContent = 'OK';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.onclick = dismissToast;
+    };
+  }
+  toastEl.classList.add('show');
+  setTimeout(() => {
+    toastEl.classList.remove('show');
+    if (btn) {
+      btn.textContent = 'OK';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.onclick = dismissToast;
+    }
+  }, 6000);
 }
 
 async function handleFoodScan(e) {
@@ -5157,7 +5217,11 @@ async function logScannedFood(parsed) {
     fat:      Math.round(parsed.fat      || 0),
     portions: 1,
   });
+  // Count this scan
+  incrementScanCount();
   closeScannerResult();
+  // Update scanner button label
+  updateScannerBtnLabel();
   showToast('Food logged!', parsed.name + ' — ' + Math.round(parsed.calories) + ' kcal added');
   showNutritionInsight(parsed);
 }
@@ -5168,6 +5232,27 @@ function closeScannerResult() {
   if (card) card.classList.remove('show');
   if (preview) { preview.src = ''; preview.style.display = 'none'; }
   document.getElementById('scanner-result-content').innerHTML = '';
+}
+
+function updateScannerBtnLabel() {
+  const btn = document.querySelector('.scanner-btn');
+  if (!btn) return;
+  if (appState.isProUser) {
+    btn.querySelector('span:nth-child(3)').textContent = 'Scan Food with AI Camera';
+    const badge = btn.querySelector('span:last-child');
+    if (badge) badge.textContent = 'PRO ⭐';
+    return;
+  }
+  const used = getScanCount();
+  const left = Math.max(0, FREE_SCAN_LIMIT - used);
+  btn.querySelector('span:nth-child(3)').textContent = 'Scan Food with AI Camera';
+  const badge = btn.querySelector('span:last-child');
+  if (badge) {
+    badge.textContent = left + '/' + FREE_SCAN_LIMIT + ' scans left';
+    badge.style.background = left === 0 ? 'rgba(255,45,107,.25)' : 'rgba(139,92,246,.25)';
+    badge.style.borderColor = left === 0 ? 'rgba(255,45,107,.4)' : 'rgba(139,92,246,.4)';
+    badge.style.color = left === 0 ? 'var(--pink-light)' : '#c4b5fd';
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -5253,7 +5338,8 @@ async function showNutritionInsight(food) {
   insightEl.className = 'nutrition-insight show ' + type;
   insightEl.innerHTML = '<span class="ni-icon">' + icon + '</span>' + msg;
 
-  // Then enhance with Claude AI asynchronously (replace after 1-2s)
+  // Claude AI insight — Pro only. Free users keep the instant local tip.
+  if (!appState.isProUser) return;
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
