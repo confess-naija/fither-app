@@ -614,6 +614,38 @@ select option{background:var(--black3);}
 .share-btn-wa{background:#25D366;color:#fff;}
 .share-btn-ig{background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;}
 .share-btn-copy{background:var(--black3);border:1px solid var(--black4);color:var(--white);}
+
+/* ── FOOD SCANNER ── */
+.scanner-btn{width:100%;height:52px;border-radius:16px;border:none;background:linear-gradient(135deg,#1a0a30,#0d0d1a);border:1px solid rgba(139,92,246,.45);color:#c4b5fd;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;font-family:var(--font-head);transition:all .2s;position:relative;overflow:hidden;}
+.scanner-btn:hover{border-color:rgba(139,92,246,.8);background:linear-gradient(135deg,#250d42,#0d0d1a);transform:translateY(-1px);}
+.scanner-btn:active{transform:scale(.98);}
+.scanner-btn .sb-icon{font-size:22px;}
+.scanner-pulse{position:absolute;inset:0;background:rgba(139,92,246,.12);animation:scanPulse 2s ease-in-out infinite;}
+@keyframes scanPulse{0%,100%{opacity:0;}50%{opacity:1;}}
+.scanner-result-card{background:linear-gradient(135deg,#0d0a1a,#0a0a0a);border:1px solid rgba(139,92,246,.4);border-radius:16px;padding:14px;margin-bottom:10px;display:none;}
+.scanner-result-card.show{display:block;animation:fadeUp .3s ease;}
+.scanner-result-title{font-family:var(--font-head);font-size:15px;font-weight:800;color:#c4b5fd;margin-bottom:4px;}
+.scanner-result-sub{font-size:11px;color:rgba(255,255,255,.55);margin-bottom:10px;}
+.scanner-photo-preview{width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;display:none;}
+.scanner-loading{display:flex;align-items:center;gap:10px;padding:14px 0;color:var(--grey);font-size:13px;}
+.scanner-spinner{width:18px;height:18px;border:2px solid rgba(139,92,246,.3);border-top-color:#c4b5fd;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+
+/* ── CUSTOM FOOD ENTRY ── */
+.custom-food-toggle{width:100%;height:42px;border-radius:12px;border:1px solid var(--black4);background:var(--black3);color:var(--grey);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;transition:all .2s;}
+.custom-food-toggle:hover{border-color:var(--pink);color:var(--pink-light);}
+.custom-food-form{background:var(--black2);border:1px solid var(--black4);border-radius:16px;padding:14px;margin-bottom:10px;display:none;}
+.custom-food-form.show{display:block;animation:fadeUp .3s ease;}
+.custom-food-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.custom-food-grid input{font-size:13px;}
+.custom-food-name{grid-column:1/-1;}
+
+/* ── NUTRITION INSIGHT ── */
+.nutrition-insight{border-radius:14px;padding:11px 14px;margin-top:8px;font-size:12px;line-height:1.55;display:none;border:1px solid;}
+.nutrition-insight.show{display:block;animation:fadeUp .3s ease;}
+.nutrition-insight.positive{background:rgba(6,214,160,.08);border-color:rgba(6,214,160,.25);color:rgba(255,255,255,.8);}
+.nutrition-insight.warning{background:rgba(255,209,102,.08);border-color:rgba(255,209,102,.25);color:rgba(255,255,255,.8);}
+.nutrition-insight.tip{background:rgba(255,45,107,.08);border-color:rgba(255,45,107,.25);color:rgba(255,255,255,.8);}
+.ni-icon{font-size:16px;margin-right:6px;}
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -1010,6 +1042,47 @@ select option{background:var(--black3);}
         <div class="chip" onclick="filterFood('weightloss',this)">⚡ Weight Loss</div>
         <div class="chip" onclick="filterFood('african',this)">🌍 African</div>
       </div>
+
+      <!-- Food Scanner -->
+      <div style="margin-bottom:10px;">
+        <button class="scanner-btn" onclick="openFoodScanner()">
+          <div class="scanner-pulse"></div>
+          <span class="sb-icon">📷</span>
+          <span>Scan Food with AI Camera</span>
+          <span style="font-size:10px;background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.4);border-radius:99px;padding:2px 8px;color:#c4b5fd;">NEW</span>
+        </button>
+        <input type="file" id="food-camera-input" accept="image/*" capture="environment" style="display:none;" onchange="handleFoodScan(event)"/>
+
+        <!-- Scanner Result -->
+        <div class="scanner-result-card" id="scanner-result-card">
+          <img id="scanner-photo-preview" class="scanner-photo-preview" src="" alt="Food photo"/>
+          <div id="scanner-loading" class="scanner-loading" style="display:none;">
+            <div class="scanner-spinner"></div>
+            <span>Coach Nova is analysing your food…</span>
+          </div>
+          <div id="scanner-result-content"></div>
+        </div>
+      </div>
+
+      <!-- Custom Food Entry -->
+      <button class="custom-food-toggle" onclick="toggleCustomFood()">
+        ✏️ Can't find your food? Add it manually
+      </button>
+      <div class="custom-food-form" id="custom-food-form">
+        <div class="sec-label" style="margin-bottom:10px;">✏️ Custom Food Entry</div>
+        <div class="custom-food-grid">
+          <input type="text" id="cf-name" placeholder="Food name" class="custom-food-name"/>
+          <input type="number" id="cf-cal" placeholder="Calories (kcal)" min="0" max="5000"/>
+          <input type="number" id="cf-protein" placeholder="Protein (g)" min="0" max="500"/>
+          <input type="number" id="cf-carbs" placeholder="Carbs (g)" min="0" max="500"/>
+          <input type="number" id="cf-fat" placeholder="Fat (g)" min="0" max="500"/>
+          <input type="number" id="cf-portions" placeholder="Portions" min="0.5" max="10" step="0.5" value="1"/>
+        </div>
+        <button class="btn btn-pink" onclick="logCustomFood()">+ Log Custom Food</button>
+      </div>
+
+      <!-- Nutrition Insight -->
+      <div class="nutrition-insight" id="nutrition-insight"></div>
 
       <div id="food-list-wrap"></div>
       <div id="food-detail-wrap"></div>
@@ -4962,6 +5035,245 @@ function copyShareText() {
   }).catch(() => {
     showToast('FitHerNova', 'https://fither-app-one.vercel.app');
   });
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// FOOD SCANNER — Claude Vision AI
+// ══════════════════════════════════════════════════════════════
+function openFoodScanner() {
+  const input = document.getElementById('food-camera-input');
+  if (!input) return;
+  input.value = '';
+  input.click();
+}
+
+async function handleFoodScan(e) {
+  if (!e || !e.target || !e.target.files || !e.target.files[0]) return;
+  const file = e.target.files[0];
+  if (!file.type.startsWith('image/')) { showToast('Please take a photo', 'Image files only'); return; }
+
+  // Show card + preview
+  const card    = document.getElementById('scanner-result-card');
+  const preview = document.getElementById('scanner-photo-preview');
+  const loading = document.getElementById('scanner-loading');
+  const resultDiv = document.getElementById('scanner-result-content');
+  card.classList.add('show');
+  loading.style.display = 'flex';
+  resultDiv.innerHTML = '';
+
+  // Show photo preview
+  const reader = new FileReader();
+  reader.onload = async function(ev) {
+    const base64Full = ev.target.result;
+    const base64Data = base64Full.split(',')[1];
+    const mimeType   = file.type;
+
+    if (preview) { preview.src = base64Full; preview.style.display = 'block'; }
+
+    try {
+      // Call Claude Vision
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 500,
+          system: 'You are a nutrition expert AI inside a fitness app. Analyse the food in the image and respond ONLY with a JSON object — no markdown, no explanation. Format: {"name":"food name","calories":number,"protein":number,"carbs":number,"fat":number,"confidence":"high|medium|low","note":"brief one-line note about this food"}. Estimate for a standard single serving. If multiple foods are visible, estimate the combined totals. If no food is visible, return {"error":"No food detected"}.',
+          messages: [{
+            role: 'user',
+            content: [{
+              type: 'image',
+              source: { type: 'base64', media_type: mimeType, data: base64Data }
+            }, {
+              type: 'text',
+              text: 'What food is this? Give me the nutritional info for what you see.'
+            }]
+          }]
+        })
+      });
+
+      const data = await resp.json();
+      loading.style.display = 'none';
+
+      if (!data.content || !data.content[0]) throw new Error('No response');
+
+      let parsed;
+      try {
+        const raw = data.content[0].text.replace(/```json|```/g, '').trim();
+        parsed = JSON.parse(raw);
+      } catch(e) {
+        throw new Error('Could not parse response');
+      }
+
+      if (parsed.error) {
+        resultDiv.innerHTML = '<div style="color:var(--grey);font-size:13px;padding:8px 0;">No food detected — try a clearer photo.</div>';
+        return;
+      }
+
+      // Show result with log button
+      const confColor = parsed.confidence === 'high' ? 'var(--green)' : parsed.confidence === 'medium' ? 'var(--gold)' : 'var(--grey)';
+      resultDiv.innerHTML = `
+        <div class="scanner-result-title">${parsed.name}</div>
+        <div class="scanner-result-sub">${parsed.note || ''} · <span style="color:${confColor};font-weight:700;">${parsed.confidence || 'medium'} confidence</span></div>
+        <div class="macro-chips" style="margin-bottom:12px;">
+          <div class="mc"><div class="mv" style="color:var(--pink-light);">${parsed.calories}</div><div class="ml">kcal</div></div>
+          <div class="mc"><div class="mv">${parsed.protein}g</div><div class="ml">Protein</div></div>
+          <div class="mc"><div class="mv">${parsed.carbs}g</div><div class="ml">Carbs</div></div>
+          <div class="mc"><div class="mv">${parsed.fat}g</div><div class="ml">Fat</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button class="btn btn-pink" onclick="logScannedFood(${JSON.stringify(parsed).replace(/'/g,'')})">
+            + Log This Food
+          </button>
+          <button class="btn btn-ghost" onclick="closeScannerResult()">
+            Retake Photo
+          </button>
+        </div>
+      `;
+
+      // Show nutrition insight
+      showNutritionInsight(parsed);
+
+    } catch(err) {
+      loading.style.display = 'none';
+      console.warn('Food scan error:', err);
+      resultDiv.innerHTML = `
+        <div style="color:var(--grey);font-size:13px;padding:4px 0 8px;">Could not analyse photo. Try better lighting or a closer shot.</div>
+        <button class="btn btn-ghost" style="width:100%;" onclick="openFoodScanner()">Try Again</button>
+      `;
+    }
+  };
+  reader.onerror = function() { loading.style.display = 'none'; showToast('Photo error', 'Could not read image'); };
+  reader.readAsDataURL(file);
+}
+
+async function logScannedFood(parsed) {
+  await saveMealEntry({
+    name:     parsed.name,
+    calories: Math.round(parsed.calories || 0),
+    protein:  Math.round(parsed.protein  || 0),
+    carbs:    Math.round(parsed.carbs    || 0),
+    fat:      Math.round(parsed.fat      || 0),
+    portions: 1,
+  });
+  closeScannerResult();
+  showToast('Food logged!', parsed.name + ' — ' + Math.round(parsed.calories) + ' kcal added');
+  showNutritionInsight(parsed);
+}
+
+function closeScannerResult() {
+  const card = document.getElementById('scanner-result-card');
+  const preview = document.getElementById('scanner-photo-preview');
+  if (card) card.classList.remove('show');
+  if (preview) { preview.src = ''; preview.style.display = 'none'; }
+  document.getElementById('scanner-result-content').innerHTML = '';
+}
+
+// ══════════════════════════════════════════════════════════════
+// CUSTOM FOOD ENTRY
+// ══════════════════════════════════════════════════════════════
+function toggleCustomFood() {
+  const form = document.getElementById('custom-food-form');
+  if (!form) return;
+  form.classList.toggle('show');
+  if (form.classList.contains('show')) {
+    setTimeout(() => document.getElementById('cf-name').focus(), 100);
+  }
+}
+
+async function logCustomFood() {
+  const name     = document.getElementById('cf-name').value.trim();
+  const cal      = parseInt(document.getElementById('cf-cal').value)     || 0;
+  const protein  = parseFloat(document.getElementById('cf-protein').value) || 0;
+  const carbs    = parseFloat(document.getElementById('cf-carbs').value)   || 0;
+  const fat      = parseFloat(document.getElementById('cf-fat').value)     || 0;
+  const portions = parseFloat(document.getElementById('cf-portions').value) || 1;
+
+  if (!name) { showToast('Enter food name', 'Name is required'); return; }
+  if (!cal)  { showToast('Enter calories', 'Calories are required'); return; }
+
+  await saveMealEntry({
+    name:     name,
+    calories: Math.round(cal * portions),
+    protein:  Math.round(protein * portions),
+    carbs:    Math.round(carbs * portions),
+    fat:      Math.round(fat * portions),
+    portions: portions,
+  });
+
+  // Clear form
+  ['cf-name','cf-cal','cf-protein','cf-carbs','cf-fat'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('cf-portions').value = '1';
+  document.getElementById('custom-food-form').classList.remove('show');
+
+  showToast('Custom food logged!', name + ' — ' + Math.round(cal * portions) + ' kcal added');
+  showNutritionInsight({ name, calories: cal * portions, protein: protein * portions, carbs: carbs * portions, fat: fat * portions });
+}
+
+// ══════════════════════════════════════════════════════════════
+// NUTRITION INSIGHT — Coach Nova powered
+// ══════════════════════════════════════════════════════════════
+async function showNutritionInsight(food) {
+  const insightEl = document.getElementById('nutrition-insight');
+  if (!insightEl) return;
+
+  const goal       = appState.activeGoal || 'weightloss';
+  const eaten      = appState.caloriesEaten || 0;
+  const calGoal    = appState.calorieGoal || 1800;
+  const protein    = appState.protein || 0;
+  const remaining  = Math.max(0, calGoal - eaten);
+  const carbPct    = Math.round(((appState.carbs || 0) / 250) * 100);
+
+  // Quick local insight first (instant)
+  let type = 'tip', icon = '💡', msg = '';
+
+  if (food.protein >= 20) {
+    type = 'positive'; icon = '💪';
+    msg = food.name + ' is a great protein source (' + food.protein + 'g)! Perfect for your ' + goal + ' goal.';
+  } else if (food.calories > remaining && remaining > 0) {
+    type = 'warning'; icon = '⚠️';
+    msg = 'This meal puts you ' + Math.round(food.calories - remaining) + ' kcal over your remaining budget. Consider a smaller portion.';
+  } else if (food.fat > 20 && goal === 'weightloss') {
+    type = 'warning'; icon = '🧐';
+    msg = 'High fat content (' + food.fat + 'g). Enjoy in moderation — healthy fats are fine but watch portions.';
+  } else if (carbPct > 80 && goal === 'weightloss') {
+    type = 'warning'; icon = '🌾';
+    msg = "You are at " + carbPct + "% of your daily carb estimate. Balance with protein and veggies for the rest of the day.";
+  } else if (food.calories <= 200 && food.protein >= 10) {
+    type = 'positive'; icon = '🌟';
+    msg = 'Great choice! Low calorie, decent protein — ideal for fat loss.';
+  } else {
+    type = 'tip'; icon = '💡';
+    msg = 'Logged! You have ' + remaining + ' kcal remaining today. Stay consistent — every meal counts!';
+  }
+
+  insightEl.className = 'nutrition-insight show ' + type;
+  insightEl.innerHTML = '<span class="ni-icon">' + icon + '</span>' + msg;
+
+  // Then enhance with Claude AI asynchronously (replace after 1-2s)
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 80,
+        system: 'You are a nutrition coach. Give ONE short (max 20 words), specific, encouraging insight about this meal in context of the user goal. No emojis at start — use them naturally. Return plain text only.',
+        messages: [{ role: 'user', content: 'Food: ' + food.name + ' (' + food.calories + ' kcal, ' + food.protein + 'g protein, ' + food.carbs + 'g carbs, ' + food.fat + 'g fat). User goal: ' + goal + '. Calories eaten today: ' + eaten + ' of ' + calGoal + ' goal.' }]
+      })
+    });
+    const aiData = await resp.json();
+    if (aiData.content && aiData.content[0]) {
+      const aiMsg = aiData.content[0].text.trim();
+      insightEl.innerHTML = '<span class="ni-icon">' + icon + '</span>' + aiMsg;
+    }
+  } catch(e) { /* keep local insight */ }
+
+  // Auto hide after 12 seconds
+  setTimeout(() => { insightEl.classList.remove('show'); }, 12000);
 }
 
 </script>
