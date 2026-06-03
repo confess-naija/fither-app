@@ -585,6 +585,35 @@ select option{background:var(--black3);}
 .challenge-dot.done{background:var(--gold);box-shadow:0 0 6px rgba(255,209,102,.4);}
 .challenge-dot.today{background:var(--pink);box-shadow:0 0 8px rgba(255,45,107,.4);animation:pulseDot 1.5s ease-in-out infinite;}
 @keyframes pulseDot{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
+
+/* ── WEIGHT TRACKER ── */
+.weight-log-input{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:14px;}
+.weight-log-btn{height:44px;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;font-size:13px;font-weight:700;cursor:pointer;padding:0 16px;white-space:nowrap;}
+.weight-chart-wrap{position:relative;height:160px;margin:10px 0 6px;}
+.weight-chart-svg{width:100%;height:100%;overflow:visible;}
+.weight-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.weight-stat{background:var(--black3);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px;text-align:center;}
+.weight-stat .wv{font-family:var(--font-head);font-size:18px;font-weight:800;}
+.weight-stat .wl{font-size:10px;color:var(--grey);margin-top:2px;}
+.weight-entry-list{margin-top:10px;max-height:140px;overflow-y:auto;scrollbar-width:none;}
+.weight-entry-list::-webkit-scrollbar{display:none;}
+.weight-entry-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--black4);font-size:12px;}
+.weight-entry-row:last-child{border-bottom:none;}
+
+/* ── WEEKLY SUMMARY CARD ── */
+.weekly-summary-card{position:relative;overflow:hidden;border-radius:22px;padding:16px;margin-bottom:12px;background:radial-gradient(circle at 10% 0%,rgba(6,214,160,.2),transparent 38%),linear-gradient(145deg,#071a12,#0e0e0e);border:1px solid rgba(6,214,160,.3);box-shadow:0 14px 40px rgba(0,0,0,.4);}
+.weekly-summary-title{font-family:var(--font-head);font-size:17px;font-weight:900;color:#fff;margin-bottom:4px;}
+.weekly-summary-sub{font-size:11px;color:rgba(255,255,255,.55);margin-bottom:14px;}
+.weekly-summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
+.ws-tile{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px;}
+.ws-tile .wst-val{font-family:var(--font-head);font-size:20px;font-weight:900;}
+.ws-tile .wst-label{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;}
+.share-strip{display:flex;gap:8px;margin-top:4px;}
+.share-btn{flex:1;height:40px;border-radius:12px;border:none;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .2s;}
+.share-btn:active{opacity:.8;}
+.share-btn-wa{background:#25D366;color:#fff;}
+.share-btn-ig{background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;}
+.share-btn-copy{background:var(--black3);border:1px solid var(--black4);color:var(--white);}
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -917,6 +946,9 @@ select option{background:var(--black3);}
         <div id="home-meal-list"></div>
       </div>
 
+      <!-- Weekly Summary -->
+      <div id="weekly-summary-wrap"></div>
+
       <!-- Install App Banner -->
       <div class="install-banner" id="install-banner" style="display:none;">
         <div style="font-size:28px;">📲</div>
@@ -1125,7 +1157,25 @@ select option{background:var(--black3);}
         </div>
       </div>
 
-      <!-- Weekly Chart -->
+      <!-- Weight Tracker -->
+      <div class="card">
+        <div class="sec-label">⚖️ Weight Tracker</div>
+        <div class="weight-log-input">
+          <input type="number" id="weight-input" placeholder="Today's weight (kg)" min="30" max="300" step="0.1"/>
+          <button class="weight-log-btn" onclick="logWeight()">+ Log</button>
+        </div>
+        <div class="weight-stats-row">
+          <div class="weight-stat"><div class="wv pink" id="w-start">—</div><div class="wl">Start (kg)</div></div>
+          <div class="weight-stat"><div class="wv" id="w-current" style="color:var(--gold);">—</div><div class="wl">Current (kg)</div></div>
+          <div class="weight-stat"><div class="wv" id="w-lost" style="color:var(--green);">—</div><div class="wl">Lost (kg)</div></div>
+        </div>
+        <div class="weight-chart-wrap">
+          <svg class="weight-chart-svg" id="weight-chart-svg" viewBox="0 0 400 160" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="weight-entry-list" id="weight-entry-list"></div>
+      </div>
+
+      <!-- Weekly Activity Chart -->
       <div class="chart-wrap">
         <div class="sec-label">Weekly Activity</div>
         <div class="chart-area" id="weekly-chart"></div>
@@ -1965,6 +2015,12 @@ async function bootApp() {
 
   // Update notification permission status
   updateNotifPermissionUI();
+
+  // Load weight log from Supabase
+  loadWeightLog();
+
+  // Render weekly summary
+  renderWeeklySummary();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2632,24 +2688,70 @@ function renderHomeMeals() {
 // WORKOUT
 // ══════════════════════════════════════════════════════════════
 const WORKOUTS = [
-  { id:1, emoji:'🏋️', name:'Full Body Burn', meta:'30 min · 280 kcal', badge:'badge-med', level:'Moderate',
-    exercises:[{name:'Jumping Jacks',reps:'3×30'},{name:'Squats',reps:'3×15'},{name:'Push-ups',reps:'3×10'},{name:'Lunges',reps:'3×12'},{name:'Plank',reps:'3×30s'}],
-    duration:1800, calories:280 },
-  { id:2, emoji:'💃', name:'Belly Fat Blast', meta:'20 min · 220 kcal', badge:'badge-hard', level:'Intense',
-    exercises:[{name:'Bicycle Crunches',reps:'3×20'},{name:'Mountain Climbers',reps:'3×30s'},{name:'Russian Twists',reps:'3×15'},{name:'High Knees',reps:'3×40'},{name:'Leg Raises',reps:'3×12'}],
-    duration:1200, calories:220 },
-  { id:3, emoji:'🧘', name:'Yoga Flow', meta:'25 min · 100 kcal', badge:'badge-gentle', level:'Gentle',
-    exercises:[{name:'Child\'s Pose',reps:'2 min'},{name:'Downward Dog',reps:'1 min'},{name:'Warrior I',reps:'1 min each'},{name:'Pigeon Pose',reps:'1 min each'},{name:'Savasana',reps:'3 min'}],
-    duration:1500, calories:100 },
-  { id:4, emoji:'🏃', name:'HIIT Cardio', meta:'15 min · 200 kcal', badge:'badge-hard', level:'Intense',
-    exercises:[{name:'Burpees',reps:'3×10'},{name:'Sprint in Place',reps:'3×30s'},{name:'Jump Squats',reps:'3×12'},{name:'Box Steps',reps:'3×20'},{name:'Skaters',reps:'3×15'}],
-    duration:900, calories:200 },
-  { id:5, emoji:'🎯', name:'Core Sculptor', meta:'20 min · 150 kcal', badge:'badge-med', level:'Moderate',
-    exercises:[{name:'Crunches',reps:'3×20'},{name:'Side Planks',reps:'30s each'},{name:'Dead Bug',reps:'3×10'},{name:'Hip Bridges',reps:'3×15'},{name:'V-Ups',reps:'3×10'}],
-    duration:1200, calories:150 },
-  { id:6, emoji:'🌟', name:'Beginner Basics', meta:'20 min · 120 kcal', badge:'badge-easy', level:'Easy',
-    exercises:[{name:'March in Place',reps:'2 min'},{name:'Wall Push-ups',reps:'2×10'},{name:'Seated Squats',reps:'2×10'},{name:'Arm Circles',reps:'2×20'},{name:'Stretch & Cool',reps:'3 min'}],
+  // ── BEGINNER ──
+  { id:1, emoji:'🌟', name:'Beginner Basics', meta:'20 min · 120 kcal', badge:'badge-easy', level:'Easy',
+    exercises:[{name:'March in Place',reps:'2 min'},{name:'Wall Push-ups',reps:'2x10'},{name:'Seated Squats',reps:'2x10'},{name:'Arm Circles',reps:'2x20'},{name:'Stretch & Cool Down',reps:'3 min'}],
     duration:1200, calories:120 },
+  { id:2, emoji:'🚶', name:'Walk & Tone', meta:'25 min · 140 kcal', badge:'badge-easy', level:'Easy',
+    exercises:[{name:'Brisk Walk in Place',reps:'5 min'},{name:'Side Steps',reps:'3x20'},{name:'Calf Raises',reps:'3x15'},{name:'Hip Circles',reps:'2x10 each'},{name:'Cool Down Stretch',reps:'3 min'}],
+    duration:1500, calories:140 },
+  { id:3, emoji:'🌸', name:'Gentle Morning Flow', meta:'15 min · 80 kcal', badge:'badge-easy', level:'Easy',
+    exercises:[{name:'Neck Rolls',reps:'1 min'},{name:'Shoulder Shrugs',reps:'2x15'},{name:'Cat-Cow Stretch',reps:'2 min'},{name:'Side Stretch',reps:'1 min each'},{name:'Deep Breathing',reps:'2 min'}],
+    duration:900, calories:80 },
+  // ── MODERATE ──
+  { id:4, emoji:'🏋️', name:'Full Body Burn', meta:'30 min · 280 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Jumping Jacks',reps:'3x30'},{name:'Squats',reps:'3x15'},{name:'Push-ups',reps:'3x10'},{name:'Lunges',reps:'3x12'},{name:'Plank',reps:'3x30s'}],
+    duration:1800, calories:280 },
+  { id:5, emoji:'🎯', name:'Core Sculptor', meta:'20 min · 150 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Crunches',reps:'3x20'},{name:'Side Planks',reps:'30s each'},{name:'Dead Bug',reps:'3x10'},{name:'Hip Bridges',reps:'3x15'},{name:'V-Ups',reps:'3x10'}],
+    duration:1200, calories:150 },
+  { id:6, emoji:'🍑', name:'Glute & Legs', meta:'25 min · 200 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Sumo Squats',reps:'3x20'},{name:'Donkey Kicks',reps:'3x15 each'},{name:'Fire Hydrants',reps:'3x15 each'},{name:'Hip Thrusts',reps:'3x20'},{name:'Wall Sit',reps:'3x45s'}],
+    duration:1500, calories:200 },
+  { id:7, emoji:'💪', name:'Upper Body Tone', meta:'25 min · 170 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Push-ups',reps:'3x12'},{name:'Tricep Dips',reps:'3x15'},{name:'Superman Hold',reps:'3x10'},{name:'Shoulder Taps',reps:'3x20'},{name:'Arm Circles',reps:'3x20'}],
+    duration:1500, calories:170 },
+  { id:8, emoji:'🧘', name:'Pilates Core', meta:'30 min · 160 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'The Hundred',reps:'100 pumps'},{name:'Single Leg Stretch',reps:'3x10 each'},{name:'Roll Up',reps:'3x10'},{name:'Scissors',reps:'3x10 each'},{name:'Swan Dive',reps:'3x8'}],
+    duration:1800, calories:160 },
+  { id:9, emoji:'🏊', name:'Low Impact Cardio', meta:'20 min · 160 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Step Touch',reps:'3 min'},{name:'Knee Lifts',reps:'3x20'},{name:'Low Kicks',reps:'3x20'},{name:'Heel Digs',reps:'3x20'},{name:'March & Swing',reps:'3 min'}],
+    duration:1200, calories:160 },
+  { id:10, emoji:'🔄', name:'Circuit Training', meta:'30 min · 260 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Squats',reps:'45s'},{name:'Push-ups',reps:'45s'},{name:'Mountain Climbers',reps:'45s'},{name:'Lunges',reps:'45s'},{name:'Plank Hold',reps:'45s'}],
+    duration:1800, calories:260 },
+  // ── INTENSE ──
+  { id:11, emoji:'💃', name:'Belly Fat Blast', meta:'20 min · 220 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Bicycle Crunches',reps:'3x20'},{name:'Mountain Climbers',reps:'3x30s'},{name:'Russian Twists',reps:'3x15'},{name:'High Knees',reps:'3x40'},{name:'Leg Raises',reps:'3x12'}],
+    duration:1200, calories:220 },
+  { id:12, emoji:'🏃', name:'HIIT Cardio', meta:'15 min · 200 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Burpees',reps:'3x10'},{name:'Sprint in Place',reps:'3x30s'},{name:'Jump Squats',reps:'3x12'},{name:'Box Steps',reps:'3x20'},{name:'Skaters',reps:'3x15'}],
+    duration:900, calories:200 },
+  { id:13, emoji:'⚡', name:'Tabata Torch', meta:'20 min · 280 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Jump Squats',reps:'8x20s on/10s off'},{name:'Burpees',reps:'8x20s on/10s off'},{name:'High Knees',reps:'8x20s on/10s off'},{name:'Push-up Jacks',reps:'8x20s on/10s off'},{name:'Rest',reps:'1 min'}],
+    duration:1200, calories:280 },
+  { id:14, emoji:'🔥', name:'Fat Furnace', meta:'25 min · 300 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Jump Rope',reps:'3 min'},{name:'Burpees',reps:'3x12'},{name:'Speed Skaters',reps:'3x20'},{name:'Tuck Jumps',reps:'3x10'},{name:'Sprint Intervals',reps:'5x30s'}],
+    duration:1500, calories:300 },
+  { id:15, emoji:'🥊', name:'Cardio Kickbox', meta:'30 min · 320 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Jab-Cross Combo',reps:'3x30s'},{name:'Front Kicks',reps:'3x15 each'},{name:'Uppercuts',reps:'3x20'},{name:'Bob & Weave',reps:'3x20'},{name:'Knee Strikes',reps:'3x15 each'}],
+    duration:1800, calories:320 },
+  // ── GENTLE ──
+  { id:16, emoji:'🧘', name:'Yoga Flow', meta:'25 min · 100 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Childs Pose',reps:'2 min'},{name:'Downward Dog',reps:'1 min'},{name:'Warrior I',reps:'1 min each'},{name:'Pigeon Pose',reps:'1 min each'},{name:'Savasana',reps:'3 min'}],
+    duration:1500, calories:100 },
+  { id:17, emoji:'🌙', name:'Evening Wind Down', meta:'20 min · 70 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Legs Up Wall',reps:'3 min'},{name:'Spinal Twist',reps:'2 min each'},{name:'Happy Baby',reps:'2 min'},{name:'Butterfly Stretch',reps:'2 min'},{name:'Body Scan Breathing',reps:'5 min'}],
+    duration:1200, calories:70 },
+  { id:18, emoji:'🤰', name:'Postpartum Recovery', meta:'20 min · 90 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Diaphragmatic Breathing',reps:'3 min'},{name:'Pelvic Floor Holds',reps:'3x10'},{name:'Gentle Bridge',reps:'2x10'},{name:'Side-lying Clam',reps:'2x10 each'},{name:'Cat-Cow',reps:'2 min'}],
+    duration:1200, calories:90 },
+  { id:19, emoji:'🌿', name:'Stress Relief Stretch', meta:'15 min · 60 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Neck & Shoulder Release',reps:'2 min'},{name:'Chest Opener',reps:'1 min'},{name:'Hip Flexor Stretch',reps:'1 min each'},{name:'Forward Fold',reps:'2 min'},{name:'Meditation Breathing',reps:'4 min'}],
+    duration:900, calories:60 },
+  { id:20, emoji:'💆', name:'Full Body Stretch', meta:'25 min · 80 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Quad Stretch',reps:'1 min each'},{name:'Hamstring Stretch',reps:'1 min each'},{name:'Chest Stretch',reps:'2 min'},{name:'Tricep Stretch',reps:'1 min each'},{name:'Spinal Twist',reps:'2 min each'}],
+    duration:1500, calories:80 },
 ];
 
 let activeWorkout = null;
@@ -3414,7 +3516,24 @@ async function coachSend() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 400,
-        system: 'You are Coach Nova, an energetic and motivating women\'s fitness coach. You specialize in belly fat loss, Nigerian nutrition, gospel-inspired fitness motivation, and holistic wellness for African women. Keep responses concise (under 200 words), actionable, warm, and empowering. Use emojis sparingly.',
+        system: (function() {
+          const meta = currentUser ? (currentUser.user_metadata || {}) : {};
+          const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
+          const streak    = appState.streak || 0;
+          const goal      = appState.activeGoal || 'weightloss';
+          const calGoal   = appState.calorieGoal || 1800;
+          const eaten     = appState.caloriesEaten || 0;
+          const burned    = appState.caloriesBurned || 0;
+          const water     = appState.waterCups || 0;
+          const todayW    = appState.workoutLog ? appState.workoutLog.length : 0;
+          const ch        = getChallengeState();
+          const chInfo    = ch && ch.active
+            ? 'She is on Day ' + (ch.completedDays ? ch.completedDays.length : 0) + ' of her 30-Day Challenge.'
+            : 'She has not started the 30-Day Challenge yet.';
+          const wEntries  = JSON.parse(uGet('fnova_weight') || '[]');
+          const curWeight = wEntries.length > 0 ? wEntries[wEntries.length-1].kg + 'kg' : 'not logged yet';
+          return 'You are Coach Nova, a personal AI wellness coach inside the FitHerNova app. USER CONTEXT: Name: ' + firstName + '. Goal: ' + goal + '. Streak: ' + streak + ' days. Today: eaten ' + eaten + ' of ' + calGoal + ' kcal goal, burned ' + burned + ' kcal, ' + water + '/8 cups water, ' + todayW + ' workouts done. Current weight: ' + curWeight + '. ' + chInfo + ' Use this context naturally — address her by name occasionally and reference her real numbers when relevant. You specialize in belly fat loss, Nigerian & African nutrition, gospel-inspired motivation, and holistic wellness for African women. Keep responses concise (under 200 words), actionable, warm, and empowering. Use emojis sparingly.';
+        })(),
         messages: [{ role: 'user', content: q }]
       })
     });
@@ -4625,6 +4744,224 @@ function shufflePlaylist() {
   currentTrackIdx = 0;
   renderPlaylist();
   showToast('Shuffled!', 'Playlist order randomized');
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// WEIGHT TRACKER
+// ══════════════════════════════════════════════════════════════
+async function logWeight() {
+  const input = document.getElementById('weight-input');
+  const kg = parseFloat(input.value);
+  if (!kg || kg < 30 || kg > 300) { showToast('Enter a valid weight', '30–300 kg range'); return; }
+
+  const entries = JSON.parse(uGet('fnova_weight') || '[]');
+  const today = todayStr();
+  // Replace today's entry if exists
+  const existing = entries.findIndex(e => e.date === today);
+  if (existing >= 0) entries[existing].kg = kg;
+  else entries.push({ date: today, kg: kg });
+  // Keep last 30 days
+  const trimmed = entries.slice(-30);
+  uSet('fnova_weight', JSON.stringify(trimmed));
+
+  // Save to Supabase
+  if (window.supabase && currentUser) {
+    try {
+      await window.supabase.from('profiles').upsert({
+        id: currentUser.id,
+        weight_log: JSON.stringify(trimmed),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+    } catch(e) { console.warn('Weight save failed:', e.message); }
+  }
+
+  input.value = '';
+  renderWeightChart();
+  showToast('Weight logged!', kg + ' kg recorded for today');
+}
+
+async function loadWeightLog() {
+  // Try Supabase first
+  if (window.supabase && currentUser) {
+    try {
+      const { data } = await window.supabase
+        .from('profiles').select('weight_log').eq('id', currentUser.id).single();
+      if (data && data.weight_log) {
+        uSet('fnova_weight', data.weight_log);
+      }
+    } catch(e) {}
+  }
+  renderWeightChart();
+}
+
+function renderWeightChart() {
+  const entries = JSON.parse(uGet('fnova_weight') || '[]');
+  const svg     = document.getElementById('weight-chart-svg');
+  const list    = document.getElementById('weight-entry-list');
+  const wStart  = document.getElementById('w-start');
+  const wCurr   = document.getElementById('w-current');
+  const wLost   = document.getElementById('w-lost');
+
+  if (!svg) return;
+
+  if (entries.length === 0) {
+    svg.innerHTML = '<text x="200" y="85" text-anchor="middle" fill="#555" font-size="13" font-family="DM Sans">Log your first weight above</text>';
+    if (list) list.innerHTML = '';
+    if (wStart) wStart.textContent = '—';
+    if (wCurr)  wCurr.textContent  = '—';
+    if (wLost)  wLost.textContent  = '—';
+    return;
+  }
+
+  const weights = entries.map(e => e.kg);
+  const minW    = Math.min(...weights) - 1;
+  const maxW    = Math.max(...weights) + 1;
+  const W = 400, H = 150, padX = 20, padY = 10;
+
+  const toX = (i) => padX + (i / Math.max(entries.length - 1, 1)) * (W - padX * 2);
+  const toY = (w) => padY + ((maxW - w) / (maxW - minW)) * (H - padY * 2);
+
+  // Build path
+  const points = entries.map((e, i) => `${toX(i)},${toY(e.kg)}`).join(' ');
+  const firstX = toX(0), lastX = toX(entries.length - 1);
+  const firstY = toY(entries[0].kg), lastY = toY(entries[entries.length - 1].kg);
+
+  const trend  = weights[0] > weights[weights.length - 1] ? '#06d6a0' : '#ff6b9d';
+  const filled = `M${firstX},${H} L${firstX},${firstY} ` +
+    entries.map((e,i) => `L${toX(i)},${toY(e.kg)}`).join(' ') +
+    ` L${lastX},${H} Z`;
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="wGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${trend}" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="${trend}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${filled}" fill="url(#wGrad)"/>
+    <polyline points="${points}" fill="none" stroke="${trend}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${entries.map((e,i) => `
+      <circle cx="${toX(i)}" cy="${toY(e.kg)}" r="4" fill="${trend}" stroke="#0d0d0d" stroke-width="2"/>
+    `).join('')}
+    <text x="${toX(entries.length-1)}" y="${toY(weights[weights.length-1]) - 10}" text-anchor="middle" fill="#fff" font-size="11" font-family="Syne" font-weight="700">${weights[weights.length-1]}kg</text>
+  `;
+
+  // Stats
+  const lost = (weights[0] - weights[weights.length - 1]).toFixed(1);
+  if (wStart) wStart.textContent = weights[0] + ' kg';
+  if (wCurr)  wCurr.textContent  = weights[weights.length - 1] + ' kg';
+  if (wLost) {
+    wLost.textContent = (lost > 0 ? '-' : '+') + Math.abs(lost) + ' kg';
+    wLost.style.color = lost >= 0 ? 'var(--green)' : 'var(--pink-light)';
+  }
+
+  // Entry list (most recent first)
+  if (list) {
+    list.innerHTML = [...entries].reverse().map(e => `
+      <div class="weight-entry-row">
+        <span style="color:var(--grey);">${e.date}</span>
+        <span style="font-weight:700;color:var(--white);">${e.kg} kg</span>
+      </div>
+    `).join('');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// WEEKLY SUMMARY + SOCIAL SHARE
+// ══════════════════════════════════════════════════════════════
+function renderWeeklySummary() {
+  const wrap = document.getElementById('weekly-summary-wrap');
+  if (!wrap) return;
+
+  // Only show on Sundays OR if user has data worth showing
+  const dayOfWeek = new Date().getDay(); // 0 = Sunday
+  const totalWorkouts = appState.totalWorkouts || 0;
+  const streak = appState.streak || 0;
+  if (totalWorkouts === 0 && streak === 0) { wrap.innerHTML = ''; return; }
+
+  // Weekly stats
+  const weekActivity = appState.weeklyActivity || [0,0,0,0,0,0,0];
+  const weekWorkouts = weekActivity.reduce((a,b) => a + b, 0);
+  const calsBurned   = appState.totalCalBurned || 0;
+  const waterAvg     = appState.waterCups || 0;
+  const meta = currentUser ? (currentUser.user_metadata || {}) : {};
+  const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
+
+  const shareText = `🔥 ${firstName}'s FitHerNova Week!
+💪 ${weekWorkouts} workouts done
+🔥 ${streak} day streak
+💧 ${waterAvg}/8 cups water
+⚡ ${calsBurned} kcal burned total
+
+Join me on FitHerNova 👇
+https://fither-app-one.vercel.app`;
+
+  wrap.innerHTML = `
+    <div class="weekly-summary-card">
+      <div class="weekly-summary-title">📊 Your Week in Review</div>
+      <div class="weekly-summary-sub">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+      <div class="weekly-summary-grid">
+        <div class="ws-tile">
+          <div class="wst-val" style="color:var(--pink-light);">${weekWorkouts}</div>
+          <div class="wst-label">Workouts This Week</div>
+        </div>
+        <div class="ws-tile">
+          <div class="wst-val" style="color:var(--gold);">${streak}</div>
+          <div class="wst-label">Day Streak 🔥</div>
+        </div>
+        <div class="ws-tile">
+          <div class="wst-val" style="color:var(--green);">${calsBurned}</div>
+          <div class="wst-label">Total kcal Burned</div>
+        </div>
+        <div class="ws-tile">
+          <div class="wst-val" style="color:#6bbfff;">${waterAvg}/8</div>
+          <div class="wst-label">Cups Today</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:8px;font-weight:600;letter-spacing:.5px;">SHARE YOUR PROGRESS</div>
+      <div class="share-strip">
+        <button class="share-btn share-btn-wa" onclick="shareToWhatsApp()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </button>
+        <button class="share-btn share-btn-ig" onclick="shareToInstagram()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          Instagram
+        </button>
+        <button class="share-btn share-btn-copy" onclick="copyShareText()">📋 Copy</button>
+      </div>
+    </div>`;
+
+  // Store share text for use in functions
+  wrap._shareText = shareText;
+}
+
+function shareToWhatsApp() {
+  const wrap = document.getElementById('weekly-summary-wrap');
+  const text = wrap && wrap._shareText ? wrap._shareText : 'Check out FitHerNova! https://fither-app-one.vercel.app';
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+function shareToInstagram() {
+  // Instagram doesn't support direct text share — copy to clipboard instead
+  const wrap = document.getElementById('weekly-summary-wrap');
+  const text = wrap && wrap._shareText ? wrap._shareText : 'Check out FitHerNova!';
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied for Instagram!', 'Open Instagram, create a Story and paste your stats');
+  }).catch(() => {
+    showToast('Share FitHerNova!', 'https://fither-app-one.vercel.app');
+  });
+}
+
+function copyShareText() {
+  const wrap = document.getElementById('weekly-summary-wrap');
+  const text = wrap && wrap._shareText ? wrap._shareText : 'Check out FitHerNova! https://fither-app-one.vercel.app';
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied!', 'Paste anywhere to share your progress');
+  }).catch(() => {
+    showToast('FitHerNova', 'https://fither-app-one.vercel.app');
+  });
 }
 
 </script>
