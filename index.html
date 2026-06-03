@@ -1317,6 +1317,42 @@ select option{background:var(--black3);}
       </div>
     </div>
 
+    <!-- ══ HISTORY PAGE ══ -->
+    <div class="page" id="page-history">
+      <div class="sec-label" style="margin-bottom:14px;">🏋️ Workout History</div>
+
+      <!-- Filter tabs -->
+      <div class="filter-scroll" style="margin-bottom:12px;">
+        <div class="chip active" onclick="filterHistory('all',this)">All Time</div>
+        <div class="chip" onclick="filterHistory('week',this)">This Week</div>
+        <div class="chip" onclick="filterHistory('month',this)">This Month</div>
+      </div>
+
+      <!-- Summary stats -->
+      <div class="prog-header" style="margin-bottom:12px;">
+        <div class="prog-stat-big">
+          <div class="psb-val pink" id="hist-total">0</div>
+          <div style="font-size:11px;color:var(--grey);margin-top:4px;">Total Sessions</div>
+        </div>
+        <div class="prog-stat-big">
+          <div class="psb-val gold" id="hist-kcal">0</div>
+          <div style="font-size:11px;color:var(--grey);margin-top:4px;">kcal Burned</div>
+        </div>
+        <div class="prog-stat-big">
+          <div class="psb-val green" id="hist-time">0h</div>
+          <div style="font-size:11px;color:var(--grey);margin-top:4px;">Total Time</div>
+        </div>
+      </div>
+
+      <!-- History list -->
+      <div id="history-list">
+        <div style="text-align:center;padding:40px 0;color:var(--grey);font-size:13px;">
+          <div style="font-size:40px;margin-bottom:12px;">🏋️</div>
+          No workouts yet — complete your first session!
+        </div>
+      </div>
+    </div>
+
     <!-- ══ COACH PAGE ══ -->
     <div class="page" id="page-coach">
       <div class="coach-hero-clean">
@@ -1446,6 +1482,15 @@ select option{background:var(--black3);}
           📱 <strong style="color:rgba(255,255,255,.6);">iPhone:</strong> Install app to home screen first, then enable.<br/>
           🤖 <strong style="color:rgba(255,255,255,.6);">Android/Desktop:</strong> Works immediately after allowing.
         </div>
+      </div>
+
+      <!-- Referral -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="sec-label">🎁 Refer a Friend</div>
+        <div style="font-size:12px;color:var(--grey);line-height:1.55;margin-bottom:12px;">
+          Share your unique referral link. When a friend signs up using your link, you both get <strong style="color:var(--gold);">7 days Pro free!</strong>
+        </div>
+        <button class="btn btn-pink" onclick="showReferralCard()">🔗 Get My Referral Link</button>
       </div>
 
       <!-- Danger Zone -->
@@ -1609,6 +1654,10 @@ select option{background:var(--black3);}
     <button class="nav-item" id="nav-workout" onclick="navTo('workout')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 5v14M18 5v14M2 9h4M18 9h4M2 15h4M18 15h4"/></svg>
       <span class="nav-label">Workout</span>
+    </button>
+    <button class="nav-item" id="nav-history" onclick="navTo('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="nav-label">History</span>
     </button>
     <button class="nav-item" id="nav-music" onclick="navTo('music')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -2097,6 +2146,18 @@ async function bootApp() {
 
   // Update scanner button label with scan count
   updateScannerBtnLabel();
+
+  // Load workout history
+  loadWorkoutHistory();
+
+  // Load coach chat history
+  loadCoachHistory();
+
+  // Check referral code in URL
+  checkReferral();
+
+  // Load announcements
+  loadAnnouncements();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2452,6 +2513,8 @@ function navTo(page) {
   const nav = document.getElementById('nav-' + page);
   if (nav) nav.classList.add('active');
   document.querySelector('.content').scrollTo(0, 0);
+  // Refresh history page when navigated to
+  if (page === 'history') loadWorkoutHistory();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2828,6 +2891,116 @@ const WORKOUTS = [
   { id:20, emoji:'💆', name:'Full Body Stretch', meta:'25 min · 80 kcal', badge:'badge-gentle', level:'Gentle',
     exercises:[{name:'Quad Stretch',reps:'1 min each'},{name:'Hamstring Stretch',reps:'1 min each'},{name:'Chest Stretch',reps:'2 min'},{name:'Tricep Stretch',reps:'1 min each'},{name:'Spinal Twist',reps:'2 min each'}],
     duration:1500, calories:80 },
+
+  // ── DANCE & CARDIO ──
+  { id:21, emoji:'💃', name:'Zumba Dance Cardio', meta:'30 min · 300 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Salsa Steps',reps:'3 min'},{name:'Merengue March',reps:'3 min'},{name:'Cumbia Bounce',reps:'3 min'},{name:'Reggaeton Groove',reps:'3 min'},{name:'Cool Down Dance',reps:'2 min'}],
+    duration:1800, calories:300 },
+  { id:22, emoji:'🎵', name:'Afrobeats Workout', meta:'25 min · 260 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Shaku Shaku Steps',reps:'3 min'},{name:'Azonto Dance',reps:'3 min'},{name:'Galala Bounce',reps:'3 min'},{name:'Zanku Legwork',reps:'3 min'},{name:'Cool Down',reps:'2 min'}],
+    duration:1500, calories:260 },
+  { id:23, emoji:'🕺', name:'Dance Cardio Blast', meta:'20 min · 220 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Jump & Groove',reps:'3x30s'},{name:'Hip Hop Moves',reps:'3 min'},{name:'Kick Ball Change',reps:'3x20'},{name:'Grapevine Steps',reps:'3 min'},{name:'Power Finish',reps:'2 min'}],
+    duration:1200, calories:220 },
+
+  // ── BARRE & PILATES ──
+  { id:24, emoji:'🩰', name:'Barre Burn', meta:'30 min · 180 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Plie Squats',reps:'3x20'},{name:'Releve Calf Raises',reps:'3x25'},{name:'Arabesque Lifts',reps:'3x15 each'},{name:'Port de Bras Arms',reps:'3x15'},{name:'Barre Stretch',reps:'3 min'}],
+    duration:1800, calories:180 },
+  { id:25, emoji:'🤸', name:'Advanced Pilates', meta:'35 min · 190 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Teaser',reps:'3x10'},{name:'Corkscrew',reps:'3x8'},{name:'Boomerang',reps:'3x8'},{name:'Control Balance',reps:'3x6'},{name:'Swimming',reps:'3x30s'}],
+    duration:2100, calories:190 },
+
+  // ── RESISTANCE & STRENGTH ──
+  { id:26, emoji:'🏋️', name:'Resistance Band Full Body', meta:'30 min · 240 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Band Squats',reps:'3x20'},{name:'Band Rows',reps:'3x15'},{name:'Band Chest Press',reps:'3x15'},{name:'Band Deadlifts',reps:'3x12'},{name:'Band Bicep Curls',reps:'3x15'}],
+    duration:1800, calories:240 },
+  { id:27, emoji:'💪', name:'Bodyweight Strength', meta:'35 min · 270 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Diamond Push-ups',reps:'3x12'},{name:'Pistol Squat Assist',reps:'3x8 each'},{name:'Pike Push-ups',reps:'3x10'},{name:'Single Leg Deadlift',reps:'3x10 each'},{name:'Explosive Push-ups',reps:'3x8'}],
+    duration:2100, calories:270 },
+  { id:28, emoji:'🔩', name:'Tone & Sculpt', meta:'25 min · 200 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Sumo Squat Pulse',reps:'3x30'},{name:'Tricep Kickbacks',reps:'3x15'},{name:'Lateral Raises',reps:'3x15'},{name:'Reverse Lunges',reps:'3x12 each'},{name:'Plank Shoulder Taps',reps:'3x20'}],
+    duration:1500, calories:200 },
+
+  // ── PRENATAL & POSTPARTUM ──
+  { id:29, emoji:'🤰', name:'Prenatal Yoga', meta:'25 min · 70 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Cat-Cow for Pregnancy',reps:'2 min'},{name:'Prenatal Warrior',reps:'1 min each'},{name:'Bound Angle Pose',reps:'2 min'},{name:'Side-lying Stretch',reps:'2 min each'},{name:'Breathing Practice',reps:'4 min'}],
+    duration:1500, calories:70 },
+  { id:30, emoji:'👶', name:'Mummy Tummy Fix', meta:'20 min · 100 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Belly Breathing',reps:'3 min'},{name:'Heel Slides',reps:'3x10'},{name:'Clam Shells',reps:'3x12 each'},{name:'Glute Bridges',reps:'3x15'},{name:'Bird Dog',reps:'3x8 each'}],
+    duration:1200, calories:100 },
+
+  // ── HIIT VARIATIONS ──
+  { id:31, emoji:'⚡', name:'5-Minute HIIT Finisher', meta:'5 min · 80 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Burpees',reps:'20s on/10s off x4'},{name:'Jump Squats',reps:'20s on/10s off x4'},{name:'Mountain Climbers',reps:'20s on/10s off x4'},{name:'High Knees',reps:'20s on/10s off x4'},{name:'Plank Jacks',reps:'20s on/10s off x4'}],
+    duration:300, calories:80 },
+  { id:32, emoji:'🌪️', name:'Cardio HIIT Storm', meta:'25 min · 320 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Burpee Broad Jump',reps:'3x8'},{name:'Tuck Jump Burpees',reps:'3x8'},{name:'Lateral Bound',reps:'3x12'},{name:'Explosive Lunges',reps:'3x10 each'},{name:'Sprint Finish',reps:'3x30s'}],
+    duration:1500, calories:320 },
+
+  // ── MORNING & EVENING ──
+  { id:33, emoji:'🌅', name:'Morning Power Wake-Up', meta:'15 min · 120 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Sun Salutation',reps:'3 rounds'},{name:'Power Squats',reps:'2x20'},{name:'Push-up Burst',reps:'2x10'},{name:'Jump Rope',reps:'2 min'},{name:'Victory Stretch',reps:'2 min'}],
+    duration:900, calories:120 },
+  { id:34, emoji:'🌆', name:'After Work De-Stress', meta:'20 min · 90 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Neck & Trap Release',reps:'2 min'},{name:'Wrist & Forearm Stretch',reps:'1 min'},{name:'Hip Flexor Lunge',reps:'1 min each'},{name:'Thoracic Rotation',reps:'2 min each'},{name:'Legs Up Wall',reps:'5 min'}],
+    duration:1200, calories:90 },
+
+  // ── CORE ADVANCED ──
+  { id:35, emoji:'🎯', name:'6-Pack Shredder', meta:'20 min · 170 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Dragon Flag',reps:'3x6'},{name:'Hollow Body Hold',reps:'3x30s'},{name:'Ab Wheel Rollout',reps:'3x10'},{name:'Hanging Knee Raise',reps:'3x15'},{name:'L-Sit Hold',reps:'3x15s'}],
+    duration:1200, calories:170 },
+  { id:36, emoji:'💎', name:'Core & Oblique Burn', meta:'25 min · 160 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Oblique Crunches',reps:'3x20 each'},{name:'Side Plank Dips',reps:'3x15 each'},{name:'Windshield Wipers',reps:'3x10'},{name:'Toe Touches',reps:'3x20'},{name:'Reverse Crunch',reps:'3x15'}],
+    duration:1500, calories:160 },
+
+  // ── LOWER BODY ──
+  { id:37, emoji:'🦵', name:'Leg Day Queen', meta:'30 min · 280 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Jump Squats',reps:'4x15'},{name:'Bulgarian Split Squat',reps:'3x12 each'},{name:'Curtsy Lunges',reps:'3x15 each'},{name:'Sumo Deadlift',reps:'3x12'},{name:'Calf Raises',reps:'4x25'}],
+    duration:1800, calories:280 },
+  { id:38, emoji:'🍑', name:'Booty Builder', meta:'25 min · 220 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Hip Thrust',reps:'4x20'},{name:'Kickbacks',reps:'3x20 each'},{name:'Lateral Band Walk',reps:'3x20 each'},{name:'Single Leg Hip Thrust',reps:'3x12 each'},{name:'Glute Squeeze Hold',reps:'3x30s'}],
+    duration:1500, calories:220 },
+
+  // ── UPPER BODY ──
+  { id:39, emoji:'💪', name:'Arms & Shoulders Blast', meta:'25 min · 180 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Wide Push-ups',reps:'3x15'},{name:'Pike Push-ups',reps:'3x12'},{name:'Tricep Push-ups',reps:'3x12'},{name:'Plank to Downdog',reps:'3x10'},{name:'Shoulder Press',reps:'3x15'}],
+    duration:1500, calories:180 },
+  { id:40, emoji:'🏊', name:'Back & Posture Fix', meta:'20 min · 140 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Superman',reps:'3x15'},{name:'Reverse Snow Angels',reps:'3x15'},{name:'Bird Dog',reps:'3x10 each'},{name:'Prone Y-T-W',reps:'3x10'},{name:'Childs Pose',reps:'2 min'}],
+    duration:1200, calories:140 },
+
+  // ── SPECIAL ──
+  { id:41, emoji:'🧘', name:'Deep Meditation Flow', meta:'20 min · 50 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Body Scan',reps:'3 min'},{name:'Breath of Fire',reps:'2 min'},{name:'Alternate Nostril Breathing',reps:'3 min'},{name:'Loving Kindness Meditation',reps:'5 min'},{name:'Silent Savasana',reps:'5 min'}],
+    duration:1200, calories:50 },
+  { id:42, emoji:'🌊', name:'Aqua-Style Low Impact', meta:'25 min · 150 kcal', badge:'badge-easy', level:'Easy',
+    exercises:[{name:'Water Walk Steps',reps:'3 min'},{name:'Arm Swoops',reps:'3x20'},{name:'Knee Lifts',reps:'3x20'},{name:'Lateral Shuffles',reps:'3x20'},{name:'Cool Down Float',reps:'3 min'}],
+    duration:1500, calories:150 },
+  { id:43, emoji:'🤼', name:'Functional Fitness', meta:'30 min · 250 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Farmers Carry',reps:'3x30s'},{name:'Box Step-ups',reps:'3x15 each'},{name:'Bear Crawl',reps:'3x20s'},{name:'Turkish Get-up',reps:'3x5 each'},{name:'Loaded Carry',reps:'3x30s'}],
+    duration:1800, calories:250 },
+  { id:44, emoji:'🏃', name:'Speed & Agility', meta:'20 min · 260 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Ladder Drills',reps:'5 rounds'},{name:'Cone Shuffles',reps:'5x30s'},{name:'Sprint Bursts',reps:'8x15s'},{name:'Direction Changes',reps:'3 min'},{name:'Cool Down Jog',reps:'2 min'}],
+    duration:1200, calories:260 },
+  { id:45, emoji:'🌺', name:'Nigerian Dance Workout', meta:'25 min · 240 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Etighi Dance Steps',reps:'3 min'},{name:'Kukere Groove',reps:'3 min'},{name:'Skelewu Bounce',reps:'3 min'},{name:'Alanta Steps',reps:'3 min'},{name:'Cool Down Stretch',reps:'2 min'}],
+    duration:1500, calories:240 },
+  { id:46, emoji:'🔥', name:'Metabolic Conditioning', meta:'30 min · 350 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Thrusters',reps:'4x15'},{name:'Box Jumps',reps:'4x10'},{name:'Kettlebell Swings',reps:'4x20'},{name:'Battle Rope Waves',reps:'4x30s'},{name:'Sled Push',reps:'4x20s'}],
+    duration:1800, calories:350 },
+  { id:47, emoji:'🧗', name:'Climb & Conquer', meta:'25 min · 290 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Mountain Climber Sprints',reps:'4x30s'},{name:'Stair Climbs',reps:'4x20'},{name:'Incline Push-ups',reps:'3x15'},{name:'Decline Lunges',reps:'3x12 each'},{name:'Summit Stretch',reps:'2 min'}],
+    duration:1500, calories:290 },
+  { id:48, emoji:'🌙', name:'Yin Yoga Deep Stretch', meta:'30 min · 60 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Dragon Pose',reps:'3 min each'},{name:'Saddle Pose',reps:'3 min'},{name:'Caterpillar',reps:'3 min'},{name:'Sleeping Swan',reps:'3 min each'},{name:'Corpse Pose',reps:'5 min'}],
+    duration:1800, calories:60 },
+  { id:49, emoji:'⚓', name:'Navy SEAL Challenge', meta:'30 min · 380 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Burpee Pull-ups',reps:'3x10'},{name:'Bear Crawl Pushups',reps:'3x10'},{name:'Jumping Lunges',reps:'3x20'},{name:'Plank to Pushup',reps:'3x15'},{name:'Sprint Finish',reps:'5x30s'}],
+    duration:1800, calories:380 },
+  { id:50, emoji:'👑', name:'Queen Challenge', meta:'45 min · 450 kcal', badge:'badge-hard', level:'Intense',
+    exercises:[{name:'Warm-up Cardio',reps:'5 min'},{name:'Full Body HIIT',reps:'10 min'},{name:'Core Burnout',reps:'10 min'},{name:'Lower Body Sculpt',reps:'10 min'},{name:'Cool Down & Stretch',reps:'10 min'}],
+    duration:2700, calories:450 },
 ];
 
 let activeWorkout = null;
@@ -3610,12 +3783,20 @@ async function coachSend() {
           const curWeight = wEntries.length > 0 ? wEntries[wEntries.length-1].kg + 'kg' : 'not logged yet';
           return 'You are Coach Nova, a personal AI wellness coach inside the FitHerNova app. USER CONTEXT: Name: ' + firstName + '. Goal: ' + goal + '. Streak: ' + streak + ' days. Today: eaten ' + eaten + ' of ' + calGoal + ' kcal goal, burned ' + burned + ' kcal, ' + water + '/8 cups water, ' + todayW + ' workouts done. Current weight: ' + curWeight + '. ' + chInfo + ' Use this context naturally — address her by name occasionally and reference her real numbers when relevant. You specialize in belly fat loss, Nigerian & African nutrition, gospel-inspired motivation, and holistic wellness for African women. Keep responses concise (under 200 words), actionable, warm, and empowering. Use emojis sparingly.';
         })(),
-        messages: [{ role: 'user', content: q }]
+        messages: [
+          ..._coachHistory.slice(-10),
+          { role: 'user', content: q }
+        ]
       })
     });
     const data = await resp.json();
     if (data.content && data.content[0]) {
-      answerEl.textContent = data.content[0].text;
+      const reply = data.content[0].text;
+      answerEl.textContent = reply;
+      // Save to history
+      _coachHistory.push({ role: 'user', content: q });
+      _coachHistory.push({ role: 'assistant', content: reply });
+      saveCoachHistory();
     } else {
       throw new Error('No response');
     }
@@ -5360,6 +5541,229 @@ async function showNutritionInsight(food) {
 
   // Auto hide after 12 seconds
   setTimeout(() => { insightEl.classList.remove('show'); }, 12000);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// WORKOUT HISTORY
+// ══════════════════════════════════════════════════════════════
+let _allHistory = [];
+let _historyFilter = 'all';
+
+async function loadWorkoutHistory() {
+  if (!window.supabase || !currentUser) return;
+  try {
+    const { data, error } = await window.supabase
+      .from('user_workout_logs')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (data && !error) {
+      _allHistory = data;
+      renderHistoryPage();
+    }
+  } catch(e) { console.warn('History load failed:', e.message); }
+}
+
+function filterHistory(filter, el) {
+  _historyFilter = filter;
+  document.querySelectorAll('#page-history .chip').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderHistoryPage();
+}
+
+function renderHistoryPage() {
+  const wrap = document.getElementById('history-list');
+  if (!wrap) return;
+
+  const now   = new Date();
+  const weekAgo  = new Date(now - 7  * 24 * 60 * 60 * 1000);
+  const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+
+  let filtered = _allHistory;
+  if (_historyFilter === 'week')  filtered = _allHistory.filter(w => new Date(w.created_at) >= weekAgo);
+  if (_historyFilter === 'month') filtered = _allHistory.filter(w => new Date(w.created_at) >= monthAgo);
+
+  // Update summary stats
+  const totalKcal = filtered.reduce((a, w) => a + (w.calories_burned || 0), 0);
+  const totalSecs = filtered.reduce((a, w) => a + (w.duration_sec || 0), 0);
+  const totalHrs  = totalSecs >= 3600
+    ? (totalSecs / 3600).toFixed(1) + 'h'
+    : Math.round(totalSecs / 60) + 'm';
+
+  const setEl = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+  setEl('hist-total', filtered.length);
+  setEl('hist-kcal',  totalKcal);
+  setEl('hist-time',  totalHrs);
+
+  if (filtered.length === 0) {
+    wrap.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--grey);font-size:13px;"><div style="font-size:40px;margin-bottom:12px;">🏋️</div>No workouts in this period yet!</div>';
+    return;
+  }
+
+  // Group by date
+  const grouped = {};
+  filtered.forEach(w => {
+    const date = (w.date || w.created_at || '').slice(0, 10);
+    if (!grouped[date]) grouped[date] = [];
+    grouped[date].push(w);
+  });
+
+  wrap.innerHTML = Object.keys(grouped).sort().reverse().map(date => {
+    const workouts = grouped[date];
+    const dayKcal  = workouts.reduce((a, w) => a + (w.calories_burned || 0), 0);
+    const dayLabel = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    return `
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.8px;">${dayLabel}</div>
+          <div style="font-size:11px;color:var(--pink-light);font-weight:700;">${dayKcal} kcal</div>
+        </div>
+        ${workouts.map(w => `
+          <div style="background:var(--black2);border:1px solid var(--black4);border-radius:14px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;">
+            <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--pink-dark),#1a0810);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">💪</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:var(--font-head);font-size:13px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.workout_name || 'Workout'}</div>
+              <div style="font-size:11px;color:var(--grey);margin-top:2px;">${fmtTime(w.duration_sec || 0)} · ${w.sets || 0} sets</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-family:var(--font-head);font-size:15px;font-weight:800;color:var(--pink-light);">${w.calories_burned || 0}</div>
+              <div style="font-size:10px;color:var(--grey);">kcal</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// COACH NOVA CHAT HISTORY
+// ══════════════════════════════════════════════════════════════
+let _coachHistory = [];
+
+async function loadCoachHistory() {
+  if (!window.supabase || !currentUser) return;
+  try {
+    const { data } = await window.supabase
+      .from('profiles').select('coach_history').eq('id', currentUser.id).single();
+    if (data && data.coach_history) {
+      _coachHistory = JSON.parse(data.coach_history);
+    }
+  } catch(e) {}
+}
+
+async function saveCoachHistory() {
+  if (!window.supabase || !currentUser) return;
+  // Keep last 10 exchanges (20 messages)
+  const trimmed = _coachHistory.slice(-20);
+  try {
+    await window.supabase.from('profiles').upsert({
+      id: currentUser.id,
+      coach_history: JSON.stringify(trimmed),
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'id' });
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════
+// REFERRAL SYSTEM
+// ══════════════════════════════════════════════════════════════
+function getReferralCode() {
+  if (!currentUser) return null;
+  // Generate deterministic code from user ID
+  return 'FHN' + currentUser.id.replace(/-/g,'').slice(0,8).toUpperCase();
+}
+
+function showReferralCard() {
+  const code = getReferralCode();
+  if (!code) return;
+  const link = 'https://fither-app-one.vercel.app?ref=' + code;
+  const text = 'Join me on FitHerNova - the best womens wellness app! Use my link: ' + link;
+
+  // Show toast with copy option
+  const toastEl = document.getElementById('notif-toast');
+  document.getElementById('nt-icon').textContent = '🎁';
+  document.getElementById('nt-title').textContent = 'Your referral code: ' + code;
+  document.getElementById('nt-sub').textContent = 'Share your link — friend signs up = 7 days Pro free!';
+  const btn = document.querySelector('.nt-btn');
+  if (btn) {
+    btn.textContent = 'Share';
+    btn.onclick = function() {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Referral link copied!', 'Share it on WhatsApp or Instagram');
+      });
+      btn.textContent = 'OK';
+      btn.onclick = dismissToast;
+      dismissToast();
+    };
+  }
+  toastEl.classList.add('show');
+  setTimeout(() => {
+    toastEl.classList.remove('show');
+    if (btn) { btn.textContent = 'OK'; btn.onclick = dismissToast; }
+  }, 8000);
+}
+
+async function checkReferral() {
+  // Check if user arrived via referral link
+  const urlParams = new URLSearchParams(window.location.search);
+  const ref = urlParams.get('ref');
+  if (!ref || !currentUser || !window.supabase) return;
+  try {
+    // Save referral to profile
+    await window.supabase.from('profiles').upsert({
+      id: currentUser.id,
+      referred_by: ref,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'id' });
+    showToast('Welcome via referral!', 'You and your friend both get 7 days Pro free soon!');
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════
+// IN-APP ANNOUNCEMENTS
+// ══════════════════════════════════════════════════════════════
+async function loadAnnouncements() {
+  if (!window.supabase) return;
+  try {
+    const { data, error } = await window.supabase
+      .from('announcements')
+      .select('*')
+      .eq('active', true)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (data && data.length > 0 && !error) {
+      const ann = data[0];
+      // Check if user already dismissed this announcement
+      const dismissed = localStorage.getItem('fhn_ann_' + ann.id);
+      if (dismissed) return;
+      showAnnouncement(ann);
+    }
+  } catch(e) {}
+}
+
+function showAnnouncement(ann) {
+  const toastEl = document.getElementById('notif-toast');
+  document.getElementById('nt-icon').textContent = ann.emoji || '📢';
+  document.getElementById('nt-title').textContent = ann.title || 'FitHerNova Update';
+  document.getElementById('nt-sub').textContent = ann.message || '';
+  const btn = document.querySelector('.nt-btn');
+  if (btn) {
+    btn.textContent = 'Got it';
+    btn.onclick = function() {
+      localStorage.setItem('fhn_ann_' + ann.id, '1');
+      btn.textContent = 'OK';
+      btn.onclick = dismissToast;
+      dismissToast();
+    };
+  }
+  toastEl.classList.add('show');
+  setTimeout(() => {
+    toastEl.classList.remove('show');
+    if (btn) { btn.textContent = 'OK'; btn.onclick = dismissToast; }
+  }, 10000);
 }
 
 </script>
