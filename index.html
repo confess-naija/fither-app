@@ -2743,6 +2743,7 @@ async function bootApp() {
       loadMealLog(),
       loadWorkoutLog(),
       loadWater(),
+      loadProStatus(),  // ← CRITICAL: load Pro status before rendering
     ]);
   } catch(e) {
     console.warn('Data load partial failure:', e);
