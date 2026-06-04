@@ -646,6 +646,100 @@ select option{background:var(--black3);}
 .nutrition-insight.warning{background:rgba(255,209,102,.08);border-color:rgba(255,209,102,.25);color:rgba(255,255,255,.8);}
 .nutrition-insight.tip{background:rgba(255,45,107,.08);border-color:rgba(255,45,107,.25);color:rgba(255,255,255,.8);}
 .ni-icon{font-size:16px;margin-right:6px;}
+
+/* ── MEAL PLAN GENERATOR ── */
+.meal-plan-hero{border-radius:22px;padding:18px;margin-bottom:12px;background:radial-gradient(circle at 10% 0%,rgba(255,209,102,.28),transparent 38%),radial-gradient(circle at 95% 100%,rgba(255,45,107,.22),transparent 38%),linear-gradient(145deg,#1a1200,#0e0e0e);border:1px solid rgba(255,209,102,.35);}
+.meal-plan-hero-title{font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;margin-bottom:4px;}
+.meal-plan-hero-sub{font-size:12px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:14px;}
+.gen-btn{width:100%;height:52px;border-radius:16px;border:none;background:linear-gradient(135deg,#c8920a,var(--gold));color:#000;font-family:var(--font-head);font-size:15px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;box-shadow:0 8px 28px rgba(255,209,102,.3);}
+.gen-btn:hover{transform:translateY(-1px);box-shadow:0 12px 36px rgba(255,209,102,.4);}
+.gen-btn:active{transform:scale(.98);}
+.gen-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.gen-spinner{width:18px;height:18px;border:2.5px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+.meal-plan-prefs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.pref-card{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;padding:11px;cursor:pointer;transition:all .2s;text-align:center;}
+.pref-card.selected{border-color:var(--gold);background:rgba(255,209,102,.12);}
+.pref-card .pc-emoji{font-size:22px;margin-bottom:4px;}
+.pref-card .pc-label{font-size:12px;font-weight:700;color:#fff;}
+.pref-card .pc-sub{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;}
+.day-plan-wrap{margin-bottom:10px;}
+.day-plan-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--black2);border:1px solid var(--black4);border-radius:14px 14px 0 0;cursor:pointer;}
+.day-plan-header.open{border-bottom:1px solid var(--black4);}
+.day-plan-title{font-family:var(--font-head);font-size:14px;font-weight:800;color:#fff;}
+.day-plan-kcal{font-size:11px;color:var(--gold);font-weight:700;}
+.day-plan-body{background:var(--black2);border:1px solid var(--black4);border-top:none;border-radius:0 0 14px 14px;padding:10px 14px;display:none;}
+.day-plan-body.open{display:block;}
+.meal-slot{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--black4);}
+.meal-slot:last-child{border-bottom:none;}
+.meal-slot-time{font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--grey);width:56px;flex-shrink:0;margin-top:3px;}
+.meal-slot-info{flex:1;min-width:0;}
+.meal-slot-name{font-size:13px;font-weight:600;color:#fff;line-height:1.3;}
+.meal-slot-meta{font-size:10px;color:var(--grey);margin-top:2px;}
+.meal-slot-kcal{font-size:12px;font-weight:700;color:var(--pink-light);flex-shrink:0;}
+.log-meal-btn{background:rgba(255,45,107,.12);border:1px solid rgba(255,45,107,.28);color:var(--pink-light);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;margin-top:4px;display:inline-block;transition:all .2s;}
+.log-meal-btn:hover{background:rgba(255,45,107,.22);}
+.plan-locked-overlay{border-radius:16px;padding:20px;text-align:center;background:linear-gradient(135deg,#1a0a30,#0d0d1a);border:1px solid rgba(139,92,246,.35);margin-bottom:12px;}
+.plan-locked-title{font-family:var(--font-head);font-size:17px;font-weight:900;color:#fff;margin-bottom:6px;}
+.plan-locked-sub{font-size:12px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:14px;}
+.plan-day-preview{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;margin-bottom:8px;filter:blur(3px);pointer-events:none;}
+.plan-regenerate{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);border-radius:10px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;}
+.plan-regenerate:hover{border-color:var(--gold);color:var(--gold);}
+
+
+/* ── PERIOD TRACKER ── */
+.period-hero{border-radius:22px;padding:18px;margin-bottom:12px;background:radial-gradient(circle at 10% 0%,rgba(255,45,107,.28),transparent 38%),linear-gradient(145deg,#1a0710,#0e0e0e);border:1px solid rgba(255,45,107,.35);}
+.period-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:10px 0 14px;}
+.pc-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);border:1px solid transparent;}
+.pc-day.today{border-color:var(--pink);color:var(--pink-light);}
+.pc-day.period{background:rgba(255,45,107,.25);border-color:rgba(255,45,107,.5);color:var(--pink-light);}
+.pc-day.fertile{background:rgba(6,214,160,.15);border-color:rgba(6,214,160,.3);color:var(--green);}
+.pc-day.ovulation{background:rgba(255,209,102,.2);border-color:rgba(255,209,102,.5);color:var(--gold);}
+.pc-day.pms{background:rgba(139,92,246,.15);border-color:rgba(139,92,246,.3);color:#c4b5fd;}
+.pc-day:hover{transform:scale(1.08);}
+.period-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.pl-item{display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(255,255,255,.7);}
+.pl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.cycle-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.cs-tile{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;text-align:center;}
+.cs-val{font-family:var(--font-head);font-size:20px;font-weight:900;color:var(--pink-light);}
+.cs-label{font-size:10px;color:var(--grey);margin-top:3px;}
+.phase-card{border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.phase-card.menstrual{background:rgba(255,45,107,.1);border:1px solid rgba(255,45,107,.25);}
+.phase-card.follicular{background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.2);}
+.phase-card.ovulation-phase{background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.25);}
+.phase-card.luteal{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);}
+.phase-icon{font-size:26px;flex-shrink:0;}
+.phase-info .pi-title{font-family:var(--font-head);font-size:13px;font-weight:800;color:#fff;}
+.phase-info .pi-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;line-height:1.45;}
+.period-log-btn{width:100%;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;font-family:var(--font-head);font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px;}
+
+/* ── ANALYTICS DASHBOARD ── */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.an-card{background:var(--black2);border:1px solid var(--black4);border-radius:16px;padding:14px;}
+.an-card-full{grid-column:1/-1;}
+.an-title{font-family:var(--font-head);font-size:12px;font-weight:800;color:var(--grey);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.an-big{font-family:var(--font-head);font-size:28px;font-weight:900;color:var(--white);}
+.an-sub{font-size:11px;color:var(--grey);margin-top:3px;}
+.trend-up{color:var(--green);}
+.trend-down{color:var(--pink-light);}
+.bar-chart-row{display:flex;align-items:flex-end;gap:4px;height:80px;margin-top:8px;}
+.bc-bar{flex:1;border-radius:4px 4px 0 0;min-height:4px;transition:height .4s ease;}
+.bc-label{font-size:9px;color:var(--grey);text-align:center;margin-top:4px;}
+.donut-wrap{position:relative;width:80px;height:80px;margin:0 auto 8px;}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.donut-val{font-family:var(--font-head);font-size:14px;font-weight:900;color:#fff;}
+.donut-lbl{font-size:9px;color:var(--grey);}
+.macro-legend{display:grid;gap:4px;margin-top:8px;}
+.ml-row{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.7);}
+.ml-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.projection-banner{background:linear-gradient(135deg,#071912,#0f0f0f);border:1px solid rgba(6,214,160,.25);border-radius:16px;padding:14px;margin-bottom:12px;}
+.proj-title{font-family:var(--font-head);font-size:15px;font-weight:800;color:var(--green);margin-bottom:4px;}
+.proj-sub{font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;}
+
+/* ── PRO CROWN BADGE ── */
+.crown-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#c8920a,var(--gold));color:#000;border-radius:99px;padding:3px 8px;font-size:10px;font-weight:900;letter-spacing:.5px;}
+.lb-crown{font-size:13px;}
+
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -1353,6 +1447,208 @@ select option{background:var(--black3);}
       </div>
     </div>
 
+    <!-- ══ MEAL PLAN PAGE ══ -->
+    <div class="page" id="page-mealplan">
+      <!-- Hero -->
+      <div class="meal-plan-hero">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="font-size:32px;">🍽️</div>
+          <div>
+            <div class="meal-plan-hero-title">7-Day Meal Plan</div>
+            <div style="font-size:10px;color:var(--gold);font-weight:700;">⭐ PRO FEATURE</div>
+          </div>
+        </div>
+        <div class="meal-plan-hero-sub">Coach Nova creates a personalized 7-day Nigerian meal plan based on your goals and calorie target. Breakfast, lunch, dinner + snacks — all optimized for you.</div>
+
+        <!-- Preferences -->
+        <div class="sec-label" style="margin-bottom:8px;">Your preference</div>
+        <div class="meal-plan-prefs" id="meal-plan-prefs">
+          <div class="pref-card selected" onclick="selectMealPref('nigerian',this)">
+            <div class="pc-emoji">🇳🇬</div>
+            <div class="pc-label">Nigerian</div>
+            <div class="pc-sub">Jollof, egusi, suya</div>
+          </div>
+          <div class="pref-card" onclick="selectMealPref('african',this)">
+            <div class="pc-emoji">🌍</div>
+            <div class="pc-label">African Mix</div>
+            <div class="pc-sub">West & East African</div>
+          </div>
+          <div class="pref-card" onclick="selectMealPref('continental',this)">
+            <div class="pc-emoji">🥗</div>
+            <div class="pc-label">Continental</div>
+            <div class="pc-sub">International foods</div>
+          </div>
+          <div class="pref-card" onclick="selectMealPref('mixed',this)">
+            <div class="pc-emoji">🌐</div>
+            <div class="pc-label">Mixed</div>
+            <div class="pc-sub">Best of all worlds</div>
+          </div>
+        </div>
+
+        <button class="gen-btn" id="gen-plan-btn" onclick="generateMealPlan()">
+          <span>✨ Generate My 7-Day Plan</span>
+        </button>
+      </div>
+
+      <!-- Plan output -->
+      <div id="meal-plan-output"></div>
+    </div>
+
+    <!-- ══ PERIOD TRACKER PAGE ══ -->
+    <div class="page" id="page-period">
+      <div class="period-hero">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="font-size:32px;">🌸</div>
+          <div>
+            <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;">Period Tracker</div>
+            <div style="font-size:10px;color:var(--pink-light);font-weight:700;">⭐ PRO FEATURE</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:14px;">Track your cycle, know your phases, and let FitHerNova adjust your workouts to match your body's needs.</div>
+
+        <!-- Cycle Stats -->
+        <div class="cycle-stats" id="cycle-stats">
+          <div class="cs-tile"><div class="cs-val" id="cs-days-left">—</div><div class="cs-label">Days to Next Period</div></div>
+          <div class="cs-tile"><div class="cs-val" id="cs-cycle-day">—</div><div class="cs-label">Cycle Day</div></div>
+          <div class="cs-tile"><div class="cs-val" id="cs-phase">—</div><div class="cs-label">Current Phase</div></div>
+        </div>
+
+        <!-- Log Period button -->
+        <button class="period-log-btn" onclick="togglePeriodLog()">🔴 Log Period Start</button>
+        <div id="period-log-form" style="display:none;margin-bottom:10px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div>
+              <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Start Date</label>
+              <input type="date" id="period-start-input" style="height:40px;font-size:13px;"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Cycle Length</label>
+              <select id="cycle-length-select" style="height:40px;font-size:13px;">
+                <option value="21">21 days</option>
+                <option value="24">24 days</option>
+                <option value="26">26 days</option>
+                <option value="28" selected>28 days (avg)</option>
+                <option value="30">30 days</option>
+                <option value="32">32 days</option>
+                <option value="35">35 days</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-pink" onclick="savePeriodLog()">Save Period</button>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="sec-label" style="margin:0;" id="period-cal-month">Calendar</div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="changePeriodMonth(-1)" style="background:var(--black3);border:1px solid var(--black4);color:var(--grey);border-radius:8px;width:30px;height:30px;cursor:pointer;">‹</button>
+            <button onclick="changePeriodMonth(1)" style="background:var(--black3);border:1px solid var(--black4);color:var(--grey);border-radius:8px;width:30px;height:30px;cursor:pointer;">›</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px;">
+          <div style="text-align:center;font-size:9px;color:var(--grey);font-weight:700;padding:4px 0;">Su</div><div style="text-align:center;font-size:9px;color:var(--grey);font-weight:700;padding:4px 0;">Mo</div><div style="text-align:center;font-size:9px;color:var(--grey);font-weight:700;padding:4px 0;">Tu</div><div style="text-align:center;font-size:9px;color:var(--grey);font-weight:700;padding:4px 0;">We</div><div style="text-align:center;font-size:9px;color:var(--grey);font-weight:700;padding:4px 0;">Th</div><div style="text-align:center;font-size:9px;color:var(--grey);font-weight:700;padding:4px 0;">Fr</div><div style="text-align:center;font-size:9px;color:var(--grey);font-weight:700;padding:4px 0;">Sa</div>
+        </div>
+        <div class="period-calendar" id="period-calendar"></div>
+        <!-- Legend -->
+        <div class="period-legend">
+          <div class="pl-item"><div class="pl-dot" style="background:#ff2d6b;"></div>Period</div>
+          <div class="pl-item"><div class="pl-dot" style="background:#06d6a0;"></div>Fertile</div>
+          <div class="pl-item"><div class="pl-dot" style="background:#ffd166;"></div>Ovulation</div>
+          <div class="pl-item"><div class="pl-dot" style="background:#8b5cf6;"></div>PMS</div>
+        </div>
+      </div>
+
+      <!-- Phase Cards -->
+      <div id="phase-recommendations"></div>
+    </div>
+
+    <!-- ══ ANALYTICS PAGE ══ -->
+    <div class="page" id="page-analytics">
+      <div class="sec-label" style="margin-bottom:14px;">📊 Your Analytics</div>
+
+      <!-- Projection Banner -->
+      <div class="projection-banner" id="analytics-projection">
+        <div class="proj-title">🎯 Progress Projection</div>
+        <div class="proj-sub" id="proj-text">Log more data to see your projection!</div>
+      </div>
+
+      <div class="analytics-grid">
+        <!-- Workouts this week -->
+        <div class="an-card">
+          <div class="an-title">This Week</div>
+          <div class="an-big" id="an-workouts">0</div>
+          <div class="an-sub">workouts</div>
+          <div id="an-workout-trend" style="font-size:11px;margin-top:4px;"></div>
+        </div>
+
+        <!-- Streak -->
+        <div class="an-card">
+          <div class="an-title">Best Streak</div>
+          <div class="an-big" id="an-streak">0</div>
+          <div class="an-sub">days 🔥</div>
+        </div>
+
+        <!-- Calorie chart -->
+        <div class="an-card an-card-full">
+          <div class="an-title">Weekly Calories Burned</div>
+          <div class="bar-chart-row" id="an-cal-chart"></div>
+          <div style="display:flex;gap:0;" id="an-cal-labels"></div>
+        </div>
+
+        <!-- Macro breakdown -->
+        <div class="an-card">
+          <div class="an-title">Today Macros</div>
+          <div class="donut-wrap">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="30" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+              <circle id="donut-protein" cx="40" cy="40" r="30" fill="none" stroke="var(--pink)" stroke-width="12" stroke-dasharray="188" stroke-dashoffset="188" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+              <circle id="donut-carbs" cx="40" cy="40" r="30" fill="none" stroke="var(--gold)" stroke-width="12" stroke-dasharray="188" stroke-dashoffset="188" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+              <circle id="donut-fat" cx="40" cy="40" r="30" fill="none" stroke="var(--green)" stroke-width="12" stroke-dasharray="188" stroke-dashoffset="188" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+            </svg>
+            <div class="donut-center">
+              <div class="donut-val" id="donut-total">0</div>
+              <div class="donut-lbl">kcal</div>
+            </div>
+          </div>
+          <div class="macro-legend">
+            <div class="ml-row"><div class="ml-dot" style="background:var(--pink);"></div>Protein <span style="margin-left:auto;font-weight:700;" id="ml-protein">0g</span></div>
+            <div class="ml-row"><div class="ml-dot" style="background:var(--gold);"></div>Carbs <span style="margin-left:auto;font-weight:700;" id="ml-carbs">0g</span></div>
+            <div class="ml-row"><div class="ml-dot" style="background:var(--green);"></div>Fat <span style="margin-left:auto;font-weight:700;" id="ml-fat">0g</span></div>
+          </div>
+        </div>
+
+        <!-- Weight trend -->
+        <div class="an-card">
+          <div class="an-title">Weight Trend</div>
+          <div class="an-big" id="an-weight">—</div>
+          <div class="an-sub" id="an-weight-sub">No data yet</div>
+          <div id="an-weight-trend" style="font-size:20px;margin-top:6px;text-align:center;"></div>
+        </div>
+
+        <!-- Total stats -->
+        <div class="an-card an-card-full">
+          <div class="an-title">All-Time Stats</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;">
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:var(--pink-light);" id="an-total-workouts">0</div>
+              <div style="font-size:10px;color:var(--grey);margin-top:2px;">Total Workouts</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:var(--gold);" id="an-total-kcal">0</div>
+              <div style="font-size:10px;color:var(--grey);margin-top:2px;">kcal Burned</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:var(--green);" id="an-total-days">0</div>
+              <div style="font-size:10px;color:var(--grey);margin-top:2px;">Active Days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ COACH PAGE ══ -->
     <!-- ══ COACH PAGE ══ -->
     <div class="page" id="page-coach">
       <div class="coach-hero-clean">
@@ -1514,7 +1810,7 @@ select option{background:var(--black3);}
           <div class="pro-feature"><b>🤖 Unlimited Coach Nova</b>Unlimited AI coaching, meal plans & motivation</div>
           <div class="pro-feature"><b>🎵 Full Music Library</b>All gospel workout tracks + new drops every week</div>
           <div class="pro-feature"><b>📊 Advanced Analytics</b>Detailed charts, body metrics & weekly reports</div>
-          <div class="pro-feature"><b>🥗 Custom Meal Plans</b>7-day personalized plans based on your goals</div>
+          <div class="pro-feature" style="cursor:pointer;" onclick="navTo('mealplan')"><b>🍽️ 7-Day Meal Plans</b>Nigerian & African meals tailored to your calorie goal</div>
           <div class="pro-feature"><b>💪 Premium Workouts</b>50+ workouts including Pilates, HIIT & Yoga</div>
           <div class="pro-feature"><b>🔔 Smart Reminders</b>Custom reminders for water, meals & workouts</div>
         </div>
@@ -1666,6 +1962,18 @@ select option{background:var(--black3);}
     <button class="nav-item" id="nav-progress" onclick="navTo('progress')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <span class="nav-label">Progress</span>
+    </button>
+    <button class="nav-item" id="nav-period" onclick="navTo('period')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      <span class="nav-label">Cycle</span>
+    </button>
+    <button class="nav-item" id="nav-analytics" onclick="navTo('analytics')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span class="nav-label">Analytics</span>
+    </button>
+    <button class="nav-item" id="nav-mealplan" onclick="navTo('mealplan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      <span class="nav-label">Meal Plan</span>
     </button>
     <button class="nav-item" id="nav-coach" onclick="navTo('coach')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -2158,6 +2466,9 @@ async function bootApp() {
 
   // Load announcements
   loadAnnouncements();
+
+  // Load saved meal plan (Pro)
+  if (appState.isProUser) loadSavedMealPlan();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2515,6 +2826,15 @@ function navTo(page) {
   document.querySelector('.content').scrollTo(0, 0);
   // Refresh history page when navigated to
   if (page === 'history') loadWorkoutHistory();
+  // Load meal plan page
+  if (page === 'mealplan') {
+    if (appState.isProUser) { loadSavedMealPlan(); }
+    else { showLockedMealPlan(); }
+  }
+  // Period tracker
+  if (page === 'period') { renderPeriodPage(); }
+  // Analytics
+  if (page === 'analytics') { renderAnalytics(); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -3753,6 +4073,15 @@ async function coachSend() {
   const input = document.getElementById('coach-input');
   const q = input.value.trim();
   if (!q) return;
+  // Free limit: 5 messages/day
+  if (!appState.isProUser && getCoachMsgCount() >= FREE_COACH_LIMIT) {
+    showToast('Daily limit reached!', 'Free plan: 5 Coach messages/day. Upgrade to Pro for unlimited!');
+    const answerEl = document.getElementById('coach-answer');
+    answerEl.style.display = 'block';
+    answerEl.textContent = 'You have used your 5 free messages today. Upgrade to Pro for unlimited Coach Nova conversations! 💪';
+    return;
+  }
+  incrementCoachMsg();
   const answerEl = document.getElementById('coach-answer');
   answerEl.style.display = 'block';
   answerEl.textContent = '⏳ Coach Nova is thinking…';
@@ -5765,6 +6094,601 @@ function showAnnouncement(ann) {
     toastEl.classList.remove('show');
     if (btn) { btn.textContent = 'OK'; btn.onclick = dismissToast; }
   }, 10000);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// MEAL PLAN GENERATOR — Pro Feature
+// ══════════════════════════════════════════════════════════════
+let _mealPlanPref = 'nigerian';
+let _currentMealPlan = null;
+
+function selectMealPref(pref, el) {
+  _mealPlanPref = pref;
+  document.querySelectorAll('.pref-card').forEach(c => c.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+}
+
+async function generateMealPlan() {
+  // Gate for Pro users
+  if (!appState.isProUser) {
+    showLockedMealPlan();
+    return;
+  }
+
+  const btn = document.getElementById('gen-plan-btn');
+  const output = document.getElementById('meal-plan-output');
+  if (!btn || !output) return;
+
+  // Loading state
+  btn.disabled = true;
+  btn.innerHTML = '<div class="gen-spinner"></div><span>Coach Nova is cooking your plan…</span>';
+  output.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--grey);font-size:13px;"><div style="font-size:40px;margin-bottom:12px;">⏳</div>Generating your personalized meal plan…</div>';
+
+  const meta = currentUser ? (currentUser.user_metadata || {}) : {};
+  const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
+  const goal      = appState.activeGoal || 'weightloss';
+  const calGoal   = appState.calorieGoal || 1800;
+  const prefMap   = {
+    nigerian: 'Nigerian foods (jollof rice, egusi soup, suya, akara, pepper soup, pounded yam, efo riro, moi moi, fried plantain, groundnut soup)',
+    african:  'West and East African foods (jollof rice, fufu, egusi, ugali, sukuma wiki, suya, kelewele, ndole, injera, groundnut stew)',
+    continental: 'international foods (grilled chicken, salads, pasta, eggs, oats, Greek yogurt, salmon, quinoa, smoothies)',
+    mixed: 'a mix of Nigerian, African and international foods'
+  };
+  const foodPref = prefMap[_mealPlanPref] || prefMap.nigerian;
+
+  const prompt = `Create a detailed 7-day meal plan for ${firstName}.
+Goal: ${goal}
+Daily calorie target: ${calGoal} kcal
+Food preference: ${foodPref}
+
+Return ONLY a valid JSON array (no markdown, no explanation) with exactly 7 objects, one per day:
+[
+  {
+    "day": "Monday",
+    "totalCal": 1750,
+    "meals": [
+      {"time": "Breakfast", "name": "food name", "calories": 350, "protein": 20, "carbs": 40, "fat": 10, "note": "optional tip"},
+      {"time": "Lunch", "name": "food name", "calories": 500, "protein": 30, "carbs": 55, "fat": 15, "note": "optional tip"},
+      {"time": "Snack", "name": "food name", "calories": 200, "protein": 8, "carbs": 25, "fat": 5, "note": "optional tip"},
+      {"time": "Dinner", "name": "food name", "calories": 450, "protein": 25, "carbs": 50, "fat": 12, "note": "optional tip"},
+      {"time": "Evening Snack", "name": "food name", "calories": 150, "protein": 5, "carbs": 20, "fat": 4, "note": "optional tip"}
+    ]
+  }
+]
+Make each day different. Keep foods realistic and commonly available. Total calories per day should be close to ${calGoal}.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: 'You are a nutrition expert specializing in African and Nigerian cuisine. Always return valid JSON only — no markdown fences, no explanation text, just the raw JSON array.',
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await resp.json();
+    if (!data.content || !data.content[0]) throw new Error('No response');
+
+    let plan;
+    try {
+      const raw = data.content[0].text.replace(/```json|```/g, '').trim();
+      plan = JSON.parse(raw);
+    } catch(e) {
+      throw new Error('Could not parse meal plan');
+    }
+
+    if (!Array.isArray(plan) || plan.length === 0) throw new Error('Invalid plan format');
+
+    _currentMealPlan = plan;
+    // Save to localStorage
+    uSet('fnova_mealplan', JSON.stringify({ plan, pref: _mealPlanPref, generatedAt: todayStr() }));
+
+    renderMealPlan(plan);
+
+    btn.disabled = false;
+    btn.innerHTML = '<span>🔄 Regenerate Plan</span>';
+    showToast('Your meal plan is ready!', '7 days of personalized meals just for you 🍽️');
+
+  } catch(err) {
+    console.warn('Meal plan error:', err);
+    output.innerHTML = `
+      <div style="text-align:center;padding:30px 0;color:var(--grey);font-size:13px;">
+        <div style="font-size:40px;margin-bottom:12px;">😔</div>
+        Could not generate plan. Check your connection and try again.
+        <br/><button class="gen-btn" style="margin:14px auto 0;max-width:220px;" onclick="generateMealPlan()">Try Again</button>
+      </div>`;
+    btn.disabled = false;
+    btn.innerHTML = '<span>✨ Generate My 7-Day Plan</span>';
+  }
+}
+
+function renderMealPlan(plan) {
+  const output = document.getElementById('meal-plan-output');
+  if (!output) return;
+
+  const dayEmojis = ['🌅','🌞','🌈','⚡','🔥','💪','👑'];
+
+  output.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div class="sec-label" style="margin:0;">Your 7-Day Plan</div>
+      <button class="plan-regenerate" onclick="generateMealPlan()">↻ Regenerate</button>
+    </div>
+    ${plan.map((day, i) => `
+      <div class="day-plan-wrap">
+        <div class="day-plan-header" id="dph-${i}" onclick="toggleDayPlan(${i})">
+          <div>
+            <div class="day-plan-title">${dayEmojis[i] || '📅'} ${day.day}</div>
+            <div style="font-size:10px;color:var(--grey);margin-top:2px;">${day.meals ? day.meals.length : 0} meals planned</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="day-plan-kcal">${day.totalCal || 0} kcal</div>
+            <span style="color:var(--grey);font-size:12px;" id="dpa-${i}">▼</span>
+          </div>
+        </div>
+        <div class="day-plan-body" id="dpb-${i}">
+          ${(day.meals || []).map(meal => `
+            <div class="meal-slot">
+              <div class="meal-slot-time">${meal.time}</div>
+              <div class="meal-slot-info">
+                <div class="meal-slot-name">${meal.name}</div>
+                <div class="meal-slot-meta">${meal.protein || 0}g protein · ${meal.carbs || 0}g carbs · ${meal.fat || 0}g fat${meal.note ? ' · ' + meal.note : ''}</div>
+                <div onclick="logMealFromPlan('${meal.name.replace(/'/g,'').replace(/"/g,'')}',${meal.calories||0},${meal.protein||0},${meal.carbs||0},${meal.fat||0})" class="log-meal-btn">+ Log This Meal</div>
+              </div>
+              <div class="meal-slot-kcal">${meal.calories || 0}<br/><span style="font-size:9px;color:var(--grey);">kcal</span></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+    <div style="text-align:center;padding:12px 0 4px;font-size:11px;color:var(--grey);line-height:1.6;">
+      💡 Tap any meal to expand · Tap "+ Log" to track calories<br/>
+      Plans refresh daily — regenerate anytime for variety
+    </div>`;
+
+  // Auto-open Day 1
+  toggleDayPlan(0);
+}
+
+function toggleDayPlan(i) {
+  const body  = document.getElementById('dpb-' + i);
+  const arrow = document.getElementById('dpa-' + i);
+  const header= document.getElementById('dph-' + i);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.day-plan-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('[id^=dpa-]').forEach(a => a.textContent = '▼');
+  document.querySelectorAll('.day-plan-header').forEach(h => h.classList.remove('open'));
+  if (!isOpen) {
+    body.classList.add('open');
+    if (arrow) arrow.textContent = '▲';
+    if (header) header.classList.add('open');
+  }
+}
+
+async function logMealFromPlan(name, calories, protein, carbs, fat) {
+  await saveMealEntry({ name, calories, protein, carbs, fat, portions: 1 });
+  showToast('✅ ' + name + ' logged!', calories + ' kcal added to today');
+  showNutritionInsight({ name, calories, protein, carbs, fat });
+}
+
+function showLockedMealPlan() {
+  const output = document.getElementById('meal-plan-output');
+  if (!output) return;
+
+  output.innerHTML = `
+    <div class="plan-locked-overlay">
+      <div style="font-size:42px;margin-bottom:10px;">🔒</div>
+      <div class="plan-locked-title">Pro Feature</div>
+      <div class="plan-locked-sub">Upgrade to Pro to unlock personalized 7-day Nigerian meal plans generated by Coach Nova — tailored to your calorie goal and taste preferences.</div>
+
+      <!-- Blurred preview -->
+      <div class="plan-day-preview">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px;">🌅 Monday — 1,750 kcal</div>
+        <div style="font-size:12px;color:var(--grey);">Breakfast · Lunch · Snack · Dinner · Evening Snack</div>
+      </div>
+      <div class="plan-day-preview">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px;">🌞 Tuesday — 1,820 kcal</div>
+        <div style="font-size:12px;color:var(--grey);">Breakfast · Lunch · Snack · Dinner · Evening Snack</div>
+      </div>
+      <div class="plan-day-preview">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px;">🌈 Wednesday — 1,790 kcal</div>
+        <div style="font-size:12px;color:var(--grey);">Breakfast · Lunch · Snack · Dinner · Evening Snack</div>
+      </div>
+
+      <button class="gen-btn" style="margin-top:14px;" onclick="navTo('pro')">
+        ⭐ Upgrade to Pro — $3/mo
+      </button>
+      <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:8px;">Unlock meal plans + unlimited AI food scanning + more</div>
+    </div>`;
+}
+
+function loadSavedMealPlan() {
+  const saved = uGet('fnova_mealplan');
+  if (!saved) return;
+  try {
+    const { plan, generatedAt } = JSON.parse(saved);
+    if (plan && Array.isArray(plan) && plan.length > 0) {
+      _currentMealPlan = plan;
+      renderMealPlan(plan);
+      const btn = document.getElementById('gen-plan-btn');
+      if (btn) btn.innerHTML = '<span>🔄 Regenerate Plan</span>';
+    }
+  } catch(e) {}
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// PERIOD TRACKER
+// ══════════════════════════════════════════════════════════════
+let _periodMonth = new Date().getMonth();
+let _periodYear  = new Date().getFullYear();
+
+function getPeriodData() {
+  try { return JSON.parse(uGet('fnova_period') || 'null') || {}; } catch(e) { return {}; }
+}
+function savePeriodData(data) {
+  uSet('fnova_period', JSON.stringify(data));
+}
+
+function togglePeriodLog() {
+  if (!appState.isProUser) { navTo('pro'); return; }
+  const form = document.getElementById('period-log-form');
+  if (!form) return;
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  // Default to today
+  const inp = document.getElementById('period-start-input');
+  if (inp && !inp.value) inp.value = todayStr();
+}
+
+function savePeriodLog() {
+  const startDate   = document.getElementById('period-start-input').value;
+  const cycleLength = parseInt(document.getElementById('cycle-length-select').value) || 28;
+  if (!startDate) { showToast('Select a start date', ''); return; }
+  const data = getPeriodData();
+  data.lastPeriod  = startDate;
+  data.cycleLength = cycleLength;
+  data.periodLength = data.periodLength || 5;
+  data.history = data.history || [];
+  if (!data.history.includes(startDate)) data.history.push(startDate);
+  savePeriodData(data);
+  document.getElementById('period-log-form').style.display = 'none';
+  renderPeriodPage();
+  showToast('Period logged!', 'Your cycle has been updated');
+}
+
+function changePeriodMonth(dir) {
+  _periodMonth += dir;
+  if (_periodMonth > 11) { _periodMonth = 0; _periodYear++; }
+  if (_periodMonth < 0)  { _periodMonth = 11; _periodYear--; }
+  renderPeriodCalendar();
+}
+
+function renderPeriodPage() {
+  if (!appState.isProUser) {
+    // Show locked version
+    const stats = document.getElementById('cycle-stats');
+    if (stats) {
+      stats.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;">' +
+        '<div style="font-size:36px;margin-bottom:8px;">🔒</div>' +
+        '<div style="font-size:13px;color:var(--grey);">Upgrade to Pro to track your cycle</div>' +
+        '<button class="btn btn-pink" style="margin-top:10px;height:40px;font-size:13px;" onclick="navTo(&apos;pro&apos;)">⭐ Upgrade to Pro</button>' +
+        '</div>';
+    }
+    return;
+  }
+
+  const data = getPeriodData();
+  if (!data.lastPeriod) {
+    renderPeriodCalendar();
+    renderPhaseRecommendations(null);
+    return;
+  }
+
+  const cycleLen   = data.cycleLength || 28;
+  const periodLen  = data.periodLength || 5;
+  const lastStart  = new Date(data.lastPeriod + 'T12:00:00');
+  const today      = new Date();
+  const dayOfCycle = Math.floor((today - lastStart) / (1000*60*60*24)) + 1;
+  const nextPeriod = new Date(lastStart);
+  nextPeriod.setDate(nextPeriod.getDate() + cycleLen);
+  const daysLeft   = Math.max(0, Math.ceil((nextPeriod - today) / (1000*60*60*24)));
+
+  // Phase detection
+  let phase = 'follicular';
+  if (dayOfCycle <= periodLen)                                    phase = 'menstrual';
+  else if (dayOfCycle >= cycleLen - 5 && dayOfCycle <= cycleLen) phase = 'luteal';
+  else if (dayOfCycle >= Math.floor(cycleLen/2) - 1 && dayOfCycle <= Math.floor(cycleLen/2) + 1) phase = 'ovulation';
+  else if (dayOfCycle > periodLen)                                phase = 'follicular';
+
+  const phaseLabels = { menstrual:'🔴 Period', follicular:'🌱 Follicular', ovulation:'⭐ Ovulation', luteal:'🌙 PMS' };
+
+  const setEl = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+  setEl('cs-days-left', daysLeft === 0 ? 'Today!' : daysLeft);
+  setEl('cs-cycle-day', dayOfCycle);
+  setEl('cs-phase', phaseLabels[phase] || phase);
+
+  renderPeriodCalendar();
+  renderPhaseRecommendations(phase);
+}
+
+function renderPeriodCalendar() {
+  const cal  = document.getElementById('period-calendar');
+  const lbl  = document.getElementById('period-cal-month');
+  if (!cal) return;
+
+  const data      = getPeriodData();
+  const cycleLen  = data.cycleLength || 28;
+  const periodLen = data.periodLength || 5;
+  const lastStart = data.lastPeriod ? new Date(data.lastPeriod + 'T12:00:00') : null;
+  const today     = new Date();
+  today.setHours(0,0,0,0);
+
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  if (lbl) lbl.textContent = monthNames[_periodMonth] + ' ' + _periodYear;
+
+  const firstDay = new Date(_periodYear, _periodMonth, 1).getDay();
+  const daysInMonth = new Date(_periodYear, _periodMonth + 1, 0).getDate();
+
+  let html = '';
+  // Empty cells for start
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(_periodYear, _periodMonth, d);
+    date.setHours(0,0,0,0);
+    const isToday = date.getTime() === today.getTime();
+
+    let cls = 'pc-day';
+    if (isToday) cls += ' today';
+
+    if (lastStart) {
+      // Calculate cycle position for this date
+      const daysSince = Math.floor((date - lastStart) / (1000*60*60*24));
+      // Could be current cycle or future/past cycles
+      const cycleDay = ((daysSince % cycleLen) + cycleLen) % cycleLen + 1;
+
+      if (cycleDay <= periodLen)                                       cls += ' period';
+      else if (cycleDay >= Math.floor(cycleLen/2) - 1 && cycleDay <= Math.floor(cycleLen/2) + 1) cls += ' ovulation';
+      else if (cycleDay >= cycleLen - 5)                               cls += ' pms';
+      else if (cycleDay >= periodLen + 1 && cycleDay <= Math.floor(cycleLen/2) - 2) cls += ' fertile';
+    }
+
+    html += '<div class="' + cls + '">' + d + '</div>';
+  }
+
+  cal.innerHTML = html;
+}
+
+function renderPhaseRecommendations(phase) {
+  const wrap = document.getElementById('phase-recommendations');
+  if (!wrap) return;
+
+  const phases = {
+    menstrual: {
+      cls: 'menstrual', icon: '🔴',
+      title: 'Menstrual Phase',
+      sub: 'Rest and gentle movement. Your body is working hard.',
+      workout: 'Gentle Yoga or Full Body Stretch — avoid intense HIIT',
+      food: 'Iron-rich foods: beans, leafy greens, red meat. Stay hydrated.',
+      tip: 'Use a hot water bottle for cramps. Take it easy — this is self-care time!'
+    },
+    follicular: {
+      cls: 'follicular', icon: '🌱',
+      title: 'Follicular Phase',
+      sub: 'Energy rising! Great time for challenging workouts.',
+      workout: 'Full Body Burn or HIIT Cardio — your energy is building!',
+      food: 'Light proteins and complex carbs. Eggs, oats, quinoa.',
+      tip: 'Best time to start new fitness goals — your motivation is naturally high!'
+    },
+    ovulation: {
+      cls: 'ovulation-phase', icon: '⭐',
+      title: 'Ovulation Phase',
+      sub: 'Peak energy! Push your hardest workouts now.',
+      workout: 'Belly Fat Blast, Tabata or HIIT — you can handle it all!',
+      food: 'High protein meals. Grilled fish, chicken, legumes.',
+      tip: 'Your strength and endurance peak now. Go for your personal best!'
+    },
+    luteal: {
+      cls: 'luteal', icon: '🌙',
+      title: 'Luteal Phase (PMS)',
+      sub: 'Energy dipping. Focus on feel-good movement.',
+      workout: 'Pilates, Low Impact Cardio or Yoga Flow — be kind to yourself.',
+      food: 'Magnesium-rich foods: dark chocolate, nuts, bananas. Reduce salt.',
+      tip: 'Cravings are normal! Choose healthy versions and practice self-compassion.'
+    }
+  };
+
+  if (!phase || !phases[phase]) {
+    wrap.innerHTML = '<div class="card"><div class="sec-label">Phase Guide</div><div style="font-size:12px;color:var(--grey);line-height:1.6;">Log your period start date to see personalized workout and food recommendations for each phase of your cycle.</div></div>';
+    return;
+  }
+
+  const p = phases[phase];
+  wrap.innerHTML = `
+    <div class="phase-card ${p.cls}">
+      <div class="phase-icon">${p.icon}</div>
+      <div class="phase-info">
+        <div class="pi-title">${p.title}</div>
+        <div class="pi-sub">${p.sub}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-label">💪 Recommended Workout</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.55;margin-bottom:10px;">${p.workout}</div>
+      <button class="btn btn-ghost" style="height:38px;font-size:12px;" onclick="navTo('workout')">Browse Workouts →</button>
+    </div>
+    <div class="card">
+      <div class="sec-label">🥗 Recommended Foods</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.55;margin-bottom:10px;">${p.food}</div>
+      <button class="btn btn-ghost" style="height:38px;font-size:12px;" onclick="navTo('food')">Log Food →</button>
+    </div>
+    <div class="card" style="background:rgba(255,209,102,.06);border-color:rgba(255,209,102,.2);">
+      <div class="sec-label" style="color:var(--gold);">💡 Coach Nova Tip</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.55;">${p.tip}</div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ANALYTICS DASHBOARD
+// ══════════════════════════════════════════════════════════════
+function renderAnalytics() {
+  if (!appState.isProUser) {
+    // Show locked
+    const proj = document.getElementById('analytics-projection');
+    if (proj) {
+      proj.innerHTML = '<div style="text-align:center;padding:20px;">' +
+        '<div style="font-size:36px;margin-bottom:8px;">🔒</div>' +
+        '<div class="proj-title" style="color:var(--grey);">Pro Feature</div>' +
+        '<div class="proj-sub">Upgrade to unlock advanced analytics and progress insights.</div>' +
+        '<button class="btn btn-pink" style="margin-top:10px;height:42px;font-size:13px;" onclick="navTo(&apos;pro&apos;)">⭐ Upgrade to Pro</button>' +
+        '</div>';
+    }
+    return;
+  }
+
+  const weekActivity  = appState.weeklyActivity || [0,0,0,0,0,0,0];
+  const weekWorkouts  = weekActivity.reduce((a,b) => a + b, 0);
+  const totalWorkouts = appState.totalWorkouts || 0;
+  const totalKcal     = appState.totalCalBurned || 0;
+  const streak        = appState.streak || 0;
+  const protein       = Math.round(appState.protein || 0);
+  const carbs         = Math.round(appState.carbs || 0);
+  const fat           = Math.round(appState.fat || 0);
+  const eaten         = appState.caloriesEaten || 0;
+
+  const setEl = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+  setEl('an-workouts',       weekWorkouts);
+  setEl('an-streak',         streak);
+  setEl('an-total-workouts', totalWorkouts);
+  setEl('an-total-kcal',     totalKcal.toLocaleString());
+  setEl('an-total-days',     streak);
+  setEl('ml-protein', protein + 'g');
+  setEl('ml-carbs',   carbs + 'g');
+  setEl('ml-fat',     fat + 'g');
+  setEl('donut-total', eaten);
+
+  // Donut chart
+  const totalMacros = protein * 4 + carbs * 4 + fat * 9;
+  if (totalMacros > 0) {
+    const circ = 188;
+    const pPct = (protein * 4) / totalMacros;
+    const cPct = (carbs * 4) / totalMacros;
+    const fPct = (fat * 9) / totalMacros;
+    const pOff = circ * (1 - pPct);
+    const cOff = circ * (1 - cPct);
+    const fOff = circ * (1 - fPct);
+    const pRot = -90;
+    const cRot = pRot + pPct * 360;
+    const fRot = cRot + cPct * 360;
+    const dp = document.getElementById('donut-protein');
+    const dc = document.getElementById('donut-carbs');
+    const df = document.getElementById('donut-fat');
+    if (dp) { dp.style.strokeDashoffset = pOff; dp.setAttribute('transform', 'rotate('+pRot+' 40 40)'); }
+    if (dc) { dc.style.strokeDashoffset = cOff; dc.setAttribute('transform', 'rotate('+cRot+' 40 40)'); }
+    if (df) { df.style.strokeDashoffset = fOff; df.setAttribute('transform', 'rotate('+fRot+' 40 40)'); }
+  }
+
+  // Weekly calorie bar chart
+  const calChart  = document.getElementById('an-cal-chart');
+  const calLabels = document.getElementById('an-cal-labels');
+  if (calChart) {
+    const days = ['S','M','T','W','T','F','S'];
+    const maxCal = Math.max(1, ...weekActivity.map(w => w * 150));
+    calChart.innerHTML = weekActivity.map((w, i) => {
+      const h = Math.round((w * 150 / maxCal) * 72) + 4;
+      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="bc-bar" style="height:'+h+'px;width:100%;background:linear-gradient(180deg,var(--pink),var(--pink-dark));"></div><div class="bc-label">'+days[i]+'</div></div>';
+    }).join('');
+  }
+
+  // Weight trend
+  const wEntries = JSON.parse(uGet('fnova_weight') || '[]');
+  if (wEntries.length >= 2) {
+    const first  = wEntries[0].kg;
+    const latest = wEntries[wEntries.length-1].kg;
+    const diff   = (latest - first).toFixed(1);
+    setEl('an-weight',     latest + ' kg');
+    setEl('an-weight-sub', diff > 0 ? '+'+diff+'kg from start' : diff+'kg from start');
+    const tw = document.getElementById('an-weight-trend');
+    if (tw) tw.textContent = parseFloat(diff) < 0 ? '📉' : '📈';
+  } else if (wEntries.length === 1) {
+    setEl('an-weight',     wEntries[0].kg + ' kg');
+    setEl('an-weight-sub', 'Keep logging!');
+  }
+
+  // Projection
+  const projEl = document.getElementById('proj-text');
+  if (projEl) {
+    if (wEntries.length >= 2) {
+      const first  = wEntries[0].kg;
+      const latest = wEntries[wEntries.length-1].kg;
+      const weeklyLoss = (first - latest) / Math.max(1, wEntries.length);
+      if (weeklyLoss > 0) {
+        const projKg = Math.max(0, latest - weeklyLoss * 4).toFixed(1);
+        projEl.textContent = 'At your current pace, you could weigh around '+projKg+'kg in 4 weeks. Keep going!';
+      } else {
+        projEl.textContent = 'Stay consistent with your workouts and calorie goal to see your projection here!';
+      }
+    } else {
+      projEl.textContent = 'Log your weight and keep working out to see your 4-week projection!';
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// COACH NOVA MESSAGE LIMIT (Free: 5/day, Pro: Unlimited)
+// ══════════════════════════════════════════════════════════════
+function getCoachMsgCount() {
+  const key = 'fnova_coach_msgs_' + todayStr();
+  return parseInt(localStorage.getItem(key) || '0');
+}
+function incrementCoachMsg() {
+  const key = 'fnova_coach_msgs_' + todayStr();
+  localStorage.setItem(key, getCoachMsgCount() + 1);
+}
+const FREE_COACH_LIMIT = 5;
+
+// ══════════════════════════════════════════════════════════════
+// PRO CROWN BADGE on Leaderboard
+// ══════════════════════════════════════════════════════════════
+function renderLeaderboard() {
+  const wrap = document.getElementById('leaderboard-list');
+  if (!wrap) return;
+
+  const daySeed = parseInt(todayStr().replace(/-/g,'')) % 100;
+  const vary    = (base, range) => base + ((daySeed * 7 + base * 3) % range);
+
+  const community = [
+    { name:'Adaeze K.',   flag:'🇳🇬', streak: vary(24, 8), pro: true },
+    { name:'Blessing O.', flag:'🇳🇬', streak: vary(18, 6), pro: true },
+    { name:'Chioma N.',   flag:'🇳🇬', streak: vary(14, 5), pro: false },
+    { name:'Ama Serwaa',  flag:'🇬🇭', streak: vary(11, 7), pro: true },
+    { name:'Zinhle M.',   flag:'🇿🇦', streak: vary(9,  6), pro: false },
+    { name:'Sophie R.',   flag:'🇬🇧', streak: vary(7,  5), pro: false },
+    { name:'Fatima A.',   flag:'🇳🇬', streak: vary(5,  4), pro: false },
+  ];
+
+  const board = [
+    ...community,
+    { name:'You', flag:'', streak: appState.streak || 0, pro: appState.isProUser },
+  ].sort((a,b) => b.streak - a.streak).slice(0, 8);
+
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣'];
+
+  wrap.innerHTML = board.map((r,i) => `
+    <div class="leaderboard-row">
+      <div class="lb-rank">${medals[i] || i+1}</div>
+      <div class="lb-name" style="${r.name==='You' ? 'color:var(--pink-light);font-weight:700;' : ''}">
+        ${r.flag ? r.flag + ' ' : ''}${r.name}
+        ${r.pro ? '<span class="crown-badge">👑 PRO</span>' : ''}
+      </div>
+      <div class="lb-streak">🔥 ${r.streak} day${r.streak !== 1 ? 's' : ''}</div>
+    </div>
+  `).join('');
 }
 
 </script>
