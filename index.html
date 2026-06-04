@@ -5145,14 +5145,15 @@ function renderWeeklySummary() {
   const meta = currentUser ? (currentUser.user_metadata || {}) : {};
   const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
 
-  const shareText = `🔥 ${firstName}'s FitHerNova Week!
-💪 ${weekWorkouts} workouts done
-🔥 ${streak} day streak
-💧 ${waterAvg}/8 cups water
-⚡ ${calsBurned} kcal burned total
-
-Join me on FitHerNova 👇
-https://fither-app-one.vercel.app`;
+  const shareText = firstName + ' is on a wellness journey with FitHerNova!' +
+    '\n\nThis week:\n' +
+    '- ' + weekWorkouts + ' workouts completed\n' +
+    '- ' + streak + ' day streak\n' +
+    '- ' + waterAvg + '/8 cups water\n' +
+    '- ' + calsBurned + ' kcal burned\n\n' +
+    'Join me on FitHerNova - the fitness app built for African women ' +
+    '(gospel music + Nigerian food tracker + AI coach!)\n\n' +
+    'Download free: https://fither-app-one.vercel.app';
 
   wrap.innerHTML = `
     <div class="weekly-summary-card">
