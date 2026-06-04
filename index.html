@@ -2169,8 +2169,8 @@ select option{background:var(--black3);}
         </div>
       </div>
 
-      <!-- Free trial banner -->
-      <div style="background:linear-gradient(135deg,#071912,#0f0f0f);border:1px solid rgba(6,214,160,.25);border-radius:18px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
+      <!-- Trial banner — shown only to free users -->
+      <div id="pro-trial-banner" style="background:linear-gradient(135deg,#071912,#0f0f0f);border:1px solid rgba(6,214,160,.25);border-radius:18px;padding:14px;margin-bottom:14px;display:none;align-items:center;gap:12px;">
         <div style="font-size:28px;">🎁</div>
         <div>
           <div style="font-family:var(--font-head);font-size:14px;font-weight:800;color:#fff;margin-bottom:3px;">7-Day Free Trial Included</div>
@@ -2182,47 +2182,8 @@ select option{background:var(--black3);}
       <div class="sec-label" style="margin-bottom:12px;">Choose Your Plan</div>
       <div class="pro-plans">
 
-        <!-- FREE -->
-        <div class="pro-plan free-tier">
-          <div class="pro-plan-name" style="font-size:14px;">Free</div>
-          <div class="pro-price" style="font-size:22px;">$0<span>/forever</span></div>
-          <div class="pro-small">Basic features, always free.</div>
-          <button class="btn btn-ghost" style="height:38px;font-size:12px;width:100%;" onclick="showToast('✅ You are on Free!', 'Upgrade anytime to unlock Pro features.')">Current Plan ✓</button>
-        </div>
-
-        <!-- MONTHLY -->
-        <div class="pro-plan">
-          <div class="pro-plan-name" style="font-size:14px;">Monthly</div>
-          <div class="pro-price" style="font-size:22px;">$3<span>/mo</span></div>
-          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">USD · Cancel anytime</div>
-          <div class="pro-small">Billed monthly. Cancel anytime.</div>
-          <button class="btn btn-pink" onclick="selectPlan('monthly')" style="height:38px;font-size:12px;">Try Free →</button>
-          <div class="pro-status" id="pro-status-monthly"></div>
-        </div>
-
-        <!-- ANNUAL -->
-        <div class="pro-plan best">
-          <div class="pro-plan-tag">Save 48%</div>
-          <div class="pro-savings-badge">MOST POPULAR</div>
-          <div class="pro-plan-name" style="font-size:14px;">Annual</div>
-          <div class="pro-price" style="font-size:22px;">$22<span>/yr</span></div>
-          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">USD · Save 39% vs monthly</div>
-          <div class="pro-small">Just ₦2,917/mo. Best value.</div>
-          <button class="btn btn-pink" onclick="selectPlan('annual')" style="height:38px;font-size:12px;">Try Free →</button>
-          <div class="pro-status" id="pro-status-annual"></div>
-        </div>
-
-        <!-- LIFETIME -->
-        <div class="pro-plan lifetime">
-          <div class="pro-plan-tag" style="background:rgba(255,209,102,.18);border-color:rgba(255,209,102,.4);color:var(--gold);">⚡ Limited</div>
-          <div class="pro-plan-name" style="font-size:14px;">Lifetime</div>
-          <div class="pro-price" style="font-size:22px;">$40<span> once</span></div>
-          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">USD · Pay once, own forever</div>
-          <div class="pro-small">Pay once, own forever. Early access pricing.</div>
-          <button class="btn btn-pink" onclick="selectPlan('lifetime')" style="height:38px;font-size:12px;background:linear-gradient(135deg,#c8920a,var(--gold));color:#000;">Get Lifetime</button>
-          <div class="pro-countdown">🔥 Early access pricing</div>
-          <div class="pro-status" id="pro-status-lifetime"></div>
-        </div>
+        <!-- PLANS — rendered dynamically based on Pro status -->
+        <div id="pro-plans-wrap" style="display:contents;"></div>
 
       </div>
 
@@ -2279,7 +2240,7 @@ select option{background:var(--black3);}
         </div>
       </div>
 
-      <div style="text-align:center;padding:16px 0 8px;font-size:11px;color:var(--grey);line-height:1.8;">
+      <div id="pro-payment-note" style="text-align:center;padding:16px 0 8px;font-size:11px;color:var(--grey);line-height:1.8;display:none;">
         🔒 Secure payment via Flutterwave · USD, GBP, EUR accepted<br/>
         Cancel anytime · No hidden fees · 7-day free trial<br/>
         <span style="color:var(--pink-light);">support@fithernova.app</span>
@@ -2304,10 +2265,7 @@ select option{background:var(--black3);}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 5v14M18 5v14M2 9h4M18 9h4M2 15h4M18 15h4"/></svg>
       <span class="nav-label">Workout</span>
     </button>
-    <button class="nav-item" id="nav-history" onclick="navTo('history')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      <span class="nav-label">History</span>
-    </button>
+
     <button class="nav-item" id="nav-music" onclick="navTo('music')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
       <span class="nav-label">Music</span>
@@ -2316,30 +2274,12 @@ select option{background:var(--black3);}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <span class="nav-label">Progress</span>
     </button>
-    <button class="nav-item" id="nav-workoutplan" onclick="navTo('workoutplan')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      <span class="nav-label">My Plan</span>
-    </button>
-    <button class="nav-item" id="nav-measurements" onclick="navTo('measurements')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12h20M12 2v20"/></svg>
-      <span class="nav-label">Body</span>
-    </button>
-    <button class="nav-item" id="nav-bmi" onclick="navTo('bmi')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      <span class="nav-label">BMI</span>
-    </button>
-    <button class="nav-item" id="nav-period" onclick="navTo('period')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      <span class="nav-label">Cycle</span>
-    </button>
-    <button class="nav-item" id="nav-analytics" onclick="navTo('analytics')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span class="nav-label">Analytics</span>
-    </button>
-    <button class="nav-item" id="nav-mealplan" onclick="navTo('mealplan')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      <span class="nav-label">Meal Plan</span>
-    </button>
+
+
+
+
+
+
     <button class="nav-item" id="nav-coach" onclick="navTo('coach')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       <span class="nav-label">Coach</span>
@@ -2823,6 +2763,10 @@ async function bootApp() {
 
   // Render Pro dashboard if Pro user
   renderProDashboard();
+  // Update Pro nav tab label
+  updateProNavTab();
+  // Pre-render pro page so it shows correctly if user navigates to it
+  renderProPage();
 
   // Load workout history
   loadWorkoutHistory();
@@ -3210,6 +3154,8 @@ function navTo(page) {
   if (page === 'period') { renderPeriodPage(); }
   // Analytics
   if (page === 'analytics') { renderAnalytics(); }
+  // Pro page
+  if (page === 'pro') { renderProPage(); }
   // Workout plan
   if (page === 'workoutplan') { loadSavedWorkoutPlan(); }
   // Body measurements
@@ -4453,12 +4399,12 @@ async function coachSend() {
   const input = document.getElementById('coach-input');
   const q = input.value.trim();
   if (!q) return;
-  // Free limit: 5 messages/day
+  // Free limit: 5 messages/day (Pro = unlimited)
   if (!appState.isProUser && getCoachMsgCount() >= FREE_COACH_LIMIT) {
-    showToast('Daily limit reached!', 'Free plan: 5 Coach messages/day. Upgrade to Pro for unlimited!');
+    showToast('Daily limit reached', 'Free plan: 5 Coach messages/day. Tap Pro ⭐ to upgrade!');
     const answerEl = document.getElementById('coach-answer');
     answerEl.style.display = 'block';
-    answerEl.textContent = 'You have used your 5 free messages today. Upgrade to Pro for unlimited Coach Nova conversations! 💪';
+    answerEl.textContent = 'You have used your 5 free daily messages. Upgrade to Pro for unlimited coaching sessions!';
     return;
   }
   incrementCoachMsg();
@@ -4883,6 +4829,8 @@ async function loadProStatus() {
   updateProBadges();
 }
 function updateProBadges() {
+  // Update Pro nav tab
+  updateProNavTab();
   // Update any pro badge elements in the UI
   const badge = document.getElementById('pro-status-badge');
   if (badge) {
@@ -5968,7 +5916,8 @@ function openFoodScanner() {
 }
 
 function showScanLimitModal() {
-  // Reuse notif toast as upgrade prompt
+  // Pro users have unlimited scans — should never see this
+  if (appState.isProUser) { openFoodScannerDirect(); return; }
   const toastEl = document.getElementById('notif-toast');
   document.getElementById('nt-icon').textContent = '📷';
   document.getElementById('nt-title').textContent = 'Daily scan limit reached!';
@@ -6663,6 +6612,8 @@ async function logMealFromPlan(name, calories, protein, carbs, fat) {
 }
 
 function showLockedMealPlan() {
+  // Pro users should never see this
+  if (appState.isProUser) { loadSavedMealPlan(); return; }
   const output = document.getElementById('meal-plan-output');
   if (!output) return;
 
@@ -7587,6 +7538,137 @@ function renderProDashboard() {
     </div>`;
 }
 
+
+// ══════════════════════════════════════════════════════════════
+// PRO PAGE — Dynamic rendering based on Pro status
+// ══════════════════════════════════════════════════════════════
+function renderProPage() {
+  const plansWrap   = document.getElementById('pro-plans-wrap');
+  const trialBanner = document.getElementById('pro-trial-banner');
+  const paymentNote = document.getElementById('pro-payment-note');
+  const proHero     = document.querySelector('#page-pro .pro-hero');
+
+  if (appState.isProUser) {
+    // ── PRO USER VIEW ──
+    // Hide upgrade elements
+    if (trialBanner) trialBanner.style.display = 'none';
+    if (paymentNote) paymentNote.style.display = 'none';
+
+    // Show active membership card instead of plans
+    if (plansWrap) {
+      const plan      = appState.proPlan || 'pro';
+      const planLabel = plan === 'lifetime' ? 'Lifetime' : plan === 'annual' ? 'Annual' : 'Monthly';
+      const planEmoji = plan === 'lifetime' ? '👑' : plan === 'annual' ? '⭐' : '✅';
+      plansWrap.innerHTML = `
+        <div style="grid-column:1/-1;">
+          <div style="border-radius:22px;padding:20px;background:radial-gradient(circle at 10% 0%,rgba(255,209,102,.28),transparent 38%),linear-gradient(145deg,#1a1200,#0e0e0e);border:1px solid rgba(255,209,102,.4);text-align:center;margin-bottom:14px;">
+            <div style="font-size:48px;margin-bottom:8px;">${planEmoji}</div>
+            <div style="font-family:var(--font-head);font-size:22px;font-weight:900;color:var(--gold);margin-bottom:4px;">You are a PRO Member!</div>
+            <div style="font-size:14px;color:rgba(255,255,255,.7);margin-bottom:16px;">${planLabel} Plan · All features unlocked forever</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+              <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
+                <div style="font-size:20px;margin-bottom:4px;">🍽️</div>
+                <div style="font-size:10px;color:var(--gold);font-weight:700;">Meal Plans</div>
+              </div>
+              <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
+                <div style="font-size:20px;margin-bottom:4px;">🌸</div>
+                <div style="font-size:10px;color:var(--pink-light);font-weight:700;">Cycle Tracker</div>
+              </div>
+              <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
+                <div style="font-size:20px;margin-bottom:4px;">📊</div>
+                <div style="font-size:10px;color:var(--green);font-weight:700;">Analytics</div>
+              </div>
+              <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
+                <div style="font-size:20px;margin-bottom:4px;">🎯</div>
+                <div style="font-size:10px;color:#c4b5fd;font-weight:700;">Workout Plan</div>
+              </div>
+              <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
+                <div style="font-size:20px;margin-bottom:4px;">📷</div>
+                <div style="font-size:10px;color:var(--gold);font-weight:700;">Food Scanner</div>
+              </div>
+              <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
+                <div style="font-size:20px;margin-bottom:4px;">🧮</div>
+                <div style="font-size:10px;color:#6bbfff;font-weight:700;">BMI & Body</div>
+              </div>
+            </div>
+            <button class="btn btn-ghost" style="height:42px;font-size:13px;width:100%;max-width:280px;margin:0 auto;" onclick="navTo('home')">
+              ← Back to Dashboard
+            </button>
+          </div>
+        </div>`;
+    }
+
+    // Update hero section for pro users
+    if (proHero) {
+      const kicker = proHero.querySelector('.pro-kicker');
+      if (kicker) kicker.textContent = '👑 Your Pro Membership';
+      const heroSub = proHero.querySelector('.pro-sub');
+      if (heroSub) heroSub.textContent = 'All Pro features are active on your account. Thank you for being a FitHerNova Pro member!';
+    }
+
+  } else {
+    // ── FREE USER VIEW ── show normal upgrade options
+    if (trialBanner) trialBanner.style.display = 'flex';
+    if (paymentNote) paymentNote.style.display = 'block';
+
+    if (plansWrap) {
+      plansWrap.innerHTML = `
+        <div class="pro-plan free-tier">
+          <div class="pro-plan-name" style="font-size:14px;">Free</div>
+          <div class="pro-price" style="font-size:22px;">$0<span>/forever</span></div>
+          <div class="pro-small">Basic features, always free.</div>
+          <button class="btn btn-ghost" style="height:38px;font-size:12px;width:100%;" onclick="showToast('You are on Free!', 'Upgrade anytime to unlock Pro features.')">Current Plan ✓</button>
+        </div>
+        <div class="pro-plan">
+          <div class="pro-plan-name" style="font-size:14px;">Monthly</div>
+          <div class="pro-price" style="font-size:22px;">$3<span>/mo</span></div>
+          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">USD · Cancel anytime</div>
+          <div class="pro-small">Billed monthly. Cancel anytime.</div>
+          <button class="btn btn-pink" onclick="selectPlan('monthly')" style="height:38px;font-size:12px;">Try Free →</button>
+          <div class="pro-status" id="pro-status-monthly"></div>
+        </div>
+        <div class="pro-plan best">
+          <div class="pro-plan-tag">Save 48%</div>
+          <div class="pro-savings-badge">MOST POPULAR</div>
+          <div class="pro-plan-name" style="font-size:14px;">Annual</div>
+          <div class="pro-price" style="font-size:22px;">$22<span>/yr</span></div>
+          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:4px;">USD · Save 39% vs monthly</div>
+          <div class="pro-small">Just ₦2,917/mo. Best value.</div>
+          <button class="btn btn-pink" onclick="selectPlan('annual')" style="height:38px;font-size:12px;">Try Free →</button>
+          <div class="pro-status" id="pro-status-annual"></div>
+        </div>
+        <div class="pro-plan lifetime">
+          <div class="pro-plan-tag" style="background:rgba(255,209,102,.18);border-color:rgba(255,209,102,.4);color:var(--gold);">⚡ Limited</div>
+          <div class="pro-plan-name" style="font-size:14px;">Lifetime</div>
+          <div class="pro-price" style="font-size:22px;">$40<span> once</span></div>
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">USD · Pay once, own forever</div>
+          <div class="pro-small">Pay once, own forever. Early access pricing.</div>
+          <button class="btn btn-pink" onclick="selectPlan('lifetime')" style="height:38px;font-size:12px;background:linear-gradient(135deg,#c8920a,var(--gold));color:#000;">Get Lifetime</button>
+          <div class="pro-countdown">🔥 Early access pricing</div>
+          <div class="pro-status" id="pro-status-lifetime"></div>
+        </div>`;
+    }
+  }
+}
+
+
+function updateProNavTab() {
+  const proNav = document.getElementById('nav-pro');
+  if (!proNav) return;
+  if (appState.isProUser) {
+    proNav.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="nav-label" style="color:var(--gold);">👑 Pro</span>';
+  } else {
+    proNav.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="nav-label" style="color:var(--gold);">Pro ⭐</span>';
+  }
+}
+
+
+function openFoodScannerDirect() {
+  const input = document.getElementById('food-camera-input');
+  if (!input) return;
+  input.value = '';
+  input.click();
+}
 </script>
 </body>
 </html>
