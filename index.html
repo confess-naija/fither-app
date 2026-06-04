@@ -740,6 +740,57 @@ select option{background:var(--black3);}
 .crown-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#c8920a,var(--gold));color:#000;border-radius:99px;padding:3px 8px;font-size:10px;font-weight:900;letter-spacing:.5px;}
 .lb-crown{font-size:13px;}
 
+
+/* ── CUSTOM WORKOUT PLAN ── */
+.workout-plan-hero{border-radius:22px;padding:18px;margin-bottom:12px;background:radial-gradient(circle at 10% 0%,rgba(255,45,107,.28),transparent 38%),linear-gradient(145deg,#1a0710,#0e0e0e);border:1px solid rgba(255,45,107,.35);}
+.wplan-week{margin-bottom:10px;}
+.wplan-day-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--black2);border:1px solid var(--black4);border-radius:14px 14px 0 0;cursor:pointer;}
+.wplan-day-header.open{border-bottom:1px solid var(--black4);}
+.wplan-day-body{background:var(--black2);border:1px solid var(--black4);border-top:none;border-radius:0 0 14px 14px;padding:10px 14px;display:none;}
+.wplan-day-body.open{display:block;}
+.wplan-exercise{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--black4);}
+.wplan-exercise:last-child{border-bottom:none;}
+.wplan-ex-num{width:22px;height:22px;border-radius:50%;background:rgba(255,45,107,.15);border:1px solid rgba(255,45,107,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--pink-light);flex-shrink:0;}
+.wplan-rest-day{background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.2);border-radius:14px;padding:12px 14px;text-align:center;color:var(--green);font-size:13px;font-weight:700;}
+.plan-goal-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.pgc{padding:7px 14px;border-radius:99px;border:1px solid var(--black4);background:var(--black3);color:var(--grey);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+.pgc.active{background:var(--pink);border-color:var(--pink);color:#fff;}
+
+/* ── BODY MEASUREMENTS ── */
+.measure-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.measure-card{background:var(--black2);border:1px solid var(--black4);border-radius:16px;padding:14px;text-align:center;position:relative;}
+.measure-icon{font-size:24px;margin-bottom:6px;}
+.measure-val{font-family:var(--font-head);font-size:22px;font-weight:900;color:var(--white);}
+.measure-unit{font-size:11px;color:var(--grey);margin-left:3px;}
+.measure-label{font-size:11px;color:var(--grey);margin-top:3px;}
+.measure-change{font-size:10px;font-weight:700;margin-top:4px;}
+.measure-change.down{color:var(--green);}
+.measure-change.up{color:var(--pink-light);}
+.measure-input-wrap{background:var(--black2);border:1px solid var(--black4);border-radius:16px;padding:14px;margin-bottom:10px;}
+.measure-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.measure-row label{font-size:11px;color:var(--grey);display:block;margin-bottom:4px;}
+.measure-history{max-height:160px;overflow-y:auto;scrollbar-width:none;}
+.measure-history::-webkit-scrollbar{display:none;}
+.mh-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--black4);font-size:12px;}
+.mh-row:last-child{border-bottom:none;}
+
+/* ── BMI CALCULATOR ── */
+.bmi-card{border-radius:22px;padding:18px;margin-bottom:12px;background:linear-gradient(145deg,#0a1218,#0e0e0e);border:1px solid rgba(100,180,255,.25);}
+.bmi-result{border-radius:16px;padding:16px;margin-top:14px;text-align:center;display:none;}
+.bmi-result.show{display:block;animation:fadeUp .3s ease;}
+.bmi-number{font-family:var(--font-head);font-size:52px;font-weight:900;line-height:1;}
+.bmi-category{font-size:16px;font-weight:700;margin-top:6px;}
+.bmi-bar-wrap{height:10px;background:linear-gradient(90deg,#6bbfff 0%,#06d6a0 25%,#ffd166 50%,#ff6b6b 75%,#ff2d6b 100%);border-radius:99px;margin:14px 0 6px;position:relative;}
+.bmi-marker{position:absolute;top:-4px;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #0d0d0d;box-shadow:0 2px 8px rgba(0,0,0,.5);transform:translateX(-50%);transition:left .5s ease;}
+.bmi-scale{display:flex;justify-content:space-between;font-size:9px;color:var(--grey);}
+.bmi-detail{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.bmi-detail-tile{background:rgba(255,255,255,.05);border-radius:12px;padding:10px;text-align:center;}
+.bmi-detail-tile .bdv{font-family:var(--font-head);font-size:16px;font-weight:800;color:#fff;}
+.bmi-detail-tile .bdl{font-size:10px;color:var(--grey);margin-top:2px;}
+
+/* ── STREAK ALERT SETTING ── */
+.streak-alert-card{background:linear-gradient(135deg,#0a1218,#0e0e0e);border:1px solid rgba(255,209,102,.25);border-radius:16px;padding:14px;margin-bottom:10px;}
+
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -779,13 +830,19 @@ select option{background:var(--black3);}
     </div>
     <div class="auth-form" id="auth-form-login">
       <input type="email" id="login-email" placeholder="Email address" autocomplete="email"/>
-      <input type="password" id="login-password" placeholder="Password" autocomplete="current-password"/>
+      <div style="position:relative;">
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" style="padding-right:44px;"/>
+        <button type="button" onclick="togglePw('login-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--grey);cursor:pointer;font-size:16px;padding:4px;">👁</button>
+      </div>
       <button class="btn btn-pink" onclick="doLogin()">Sign In</button>
     </div>
     <div class="auth-form" id="auth-form-signup" style="display:none;">
       <input type="text" id="signup-name" placeholder="Your first name" autocomplete="given-name"/>
       <input type="email" id="signup-email" placeholder="Email address" autocomplete="email"/>
-      <input type="password" id="signup-password" placeholder="Create password (min 6 chars)" autocomplete="new-password"/>
+      <div style="position:relative;">
+        <input type="password" id="signup-password" placeholder="Create password (min 6 chars)" autocomplete="new-password" style="padding-right:44px;"/>
+        <button type="button" onclick="togglePw('signup-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--grey);cursor:pointer;font-size:16px;padding:4px;">👁</button>
+      </div>
       <button class="btn btn-pink" onclick="doSignup()">Create Account</button>
     </div>
     <div class="auth-message" id="auth-msg"></div>
@@ -929,6 +986,9 @@ select option{background:var(--black3);}
         </div>
       </div>
       <div style="margin-bottom:16px;"></div>
+
+      <!-- PRO DASHBOARD (shown only for Pro users) -->
+      <div id="pro-dashboard-wrap"></div>
 
       <!-- Today Plan Card -->
       <div class="today-plan-card">
@@ -1648,7 +1708,293 @@ select option{background:var(--black3);}
       </div>
     </div>
 
+    <!-- ══ WORKOUT PLAN PAGE ══ -->
+    <div class="page" id="page-workoutplan">
+      <div class="workout-plan-hero">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="font-size:32px;">🎯</div>
+          <div>
+            <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;">Custom Workout Plan</div>
+            <div style="font-size:10px;color:var(--pink-light);font-weight:700;">⭐ PRO FEATURE</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:14px;">Coach Nova builds your personal 4-week workout plan based on your goal, fitness level and available time.</div>
+
+        <div class="sec-label" style="margin-bottom:8px;">Your Goal</div>
+        <div class="plan-goal-chips" id="wplan-goal-chips">
+          <div class="pgc active" onclick="selectWplanGoal('weightloss',this)">⚡ Lose Weight</div>
+          <div class="pgc" onclick="selectWplanGoal('muscle',this)">💪 Build Muscle</div>
+          <div class="pgc" onclick="selectWplanGoal('endurance',this)">🏃 Endurance</div>
+          <div class="pgc" onclick="selectWplanGoal('wellness',this)">🧘 Wellness</div>
+        </div>
+
+        <div class="sec-label" style="margin-bottom:8px;">Days per week</div>
+        <div class="plan-goal-chips" id="wplan-days-chips">
+          <div class="pgc" onclick="selectWplanDays(3,this)">3 days</div>
+          <div class="pgc active" onclick="selectWplanDays(4,this)">4 days</div>
+          <div class="pgc" onclick="selectWplanDays(5,this)">5 days</div>
+          <div class="pgc" onclick="selectWplanDays(6,this)">6 days</div>
+        </div>
+
+        <button class="gen-btn" id="gen-wplan-btn" onclick="generateWorkoutPlan()" style="margin-top:4px;">
+          <span>🎯 Build My 4-Week Plan</span>
+        </button>
+      </div>
+      <div id="workout-plan-output"></div>
+    </div>
+
+    <!-- ══ BODY MEASUREMENTS PAGE ══ -->
+    <div class="page" id="page-measurements">
+      <div class="sec-label" style="margin-bottom:14px;">📏 Body Measurements</div>
+
+      <!-- Current measurements grid -->
+      <div class="measure-grid" id="measure-grid">
+        <div class="measure-card"><div class="measure-icon">🫀</div><div class="measure-val" id="m-waist">—</div><div class="measure-label">Waist (cm)</div><div class="measure-change" id="mc-waist"></div></div>
+        <div class="measure-card"><div class="measure-icon">🍑</div><div class="measure-val" id="m-hips">—</div><div class="measure-label">Hips (cm)</div><div class="measure-change" id="mc-hips"></div></div>
+        <div class="measure-card"><div class="measure-icon">💪</div><div class="measure-val" id="m-chest">—</div><div class="measure-label">Chest (cm)</div><div class="measure-change" id="mc-chest"></div></div>
+        <div class="measure-card"><div class="measure-icon">🦵</div><div class="measure-val" id="m-thighs">—</div><div class="measure-label">Thighs (cm)</div><div class="measure-change" id="mc-thighs"></div></div>
+      </div>
+
+      <!-- Log new measurements -->
+      <div class="measure-input-wrap">
+        <div class="sec-label" style="margin-bottom:10px;">Log Today's Measurements</div>
+        <div class="measure-row">
+          <div><label>Waist (cm)</label><input type="number" id="inp-waist" placeholder="e.g. 75" min="40" max="200" step="0.5"/></div>
+          <div><label>Hips (cm)</label><input type="number" id="inp-hips" placeholder="e.g. 95" min="40" max="200" step="0.5"/></div>
+        </div>
+        <div class="measure-row">
+          <div><label>Chest (cm)</label><input type="number" id="inp-chest" placeholder="e.g. 88" min="40" max="200" step="0.5"/></div>
+          <div><label>Thighs (cm)</label><input type="number" id="inp-thighs" placeholder="e.g. 58" min="20" max="120" step="0.5"/></div>
+        </div>
+        <div class="measure-row">
+          <div><label>Arms (cm)</label><input type="number" id="inp-arms" placeholder="e.g. 30" min="10" max="80" step="0.5"/></div>
+          <div><label>Neck (cm)</label><input type="number" id="inp-neck" placeholder="e.g. 35" min="20" max="60" step="0.5"/></div>
+        </div>
+        <button class="btn btn-pink" onclick="logMeasurements()">📏 Save Measurements</button>
+      </div>
+
+      <!-- History -->
+      <div class="card">
+        <div class="sec-label">Measurement History</div>
+        <div class="measure-history" id="measure-history">
+          <div style="font-size:12px;color:var(--grey);">No measurements logged yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BMI CALCULATOR PAGE ══ -->
+    <div class="page" id="page-bmi">
+      <div class="sec-label" style="margin-bottom:14px;">🧮 BMI & Body Calculator</div>
+
+      <div class="bmi-card">
+        <div style="font-family:var(--font-head);font-size:16px;font-weight:800;color:#6bbfff;margin-bottom:14px;">📐 Enter Your Details</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Height (cm)</label>
+            <input type="number" id="bmi-height" placeholder="e.g. 165" min="100" max="220" step="1" oninput="calcBMI()"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Weight (kg)</label>
+            <input type="number" id="bmi-weight" placeholder="e.g. 70" min="30" max="300" step="0.1" oninput="calcBMI()"/>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Age</label>
+            <input type="number" id="bmi-age" placeholder="e.g. 28" min="10" max="100" step="1" oninput="calcBMI()"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Activity Level</label>
+            <select id="bmi-activity" onchange="calcBMI()" style="height:44px;font-size:13px;">
+              <option value="1.2">Sedentary</option>
+              <option value="1.375">Light (1-3/wk)</option>
+              <option value="1.55" selected>Moderate (3-5/wk)</option>
+              <option value="1.725">Active (6-7/wk)</option>
+              <option value="1.9">Very Active</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- BMI Result -->
+        <div class="bmi-result" id="bmi-result">
+          <div class="bmi-number" id="bmi-number">0</div>
+          <div class="bmi-category" id="bmi-category">—</div>
+
+          <div class="bmi-bar-wrap">
+            <div class="bmi-marker" id="bmi-marker" style="left:0%"></div>
+          </div>
+          <div class="bmi-scale">
+            <span>Under</span><span>Normal</span><span>Over</span><span>Obese</span>
+          </div>
+
+          <div class="bmi-detail">
+            <div class="bmi-detail-tile"><div class="bdv" id="bmi-bmr">—</div><div class="bdl">BMR (kcal/day)</div></div>
+            <div class="bmi-detail-tile"><div class="bdv" id="bmi-tdee">—</div><div class="bdl">TDEE (kcal/day)</div></div>
+            <div class="bmi-detail-tile"><div class="bdv" id="bmi-ideal">—</div><div class="bdl">Ideal Weight (kg)</div></div>
+            <div class="bmi-detail-tile"><div class="bdv" id="bmi-deficit">—</div><div class="bdl">Fat Loss Target</div></div>
+          </div>
+
+          <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:12px;margin-top:12px;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6;text-align:left;" id="bmi-advice"></div>
+        </div>
+      </div>
+
+      <!-- BMI Scale Reference -->
+      <div class="card">
+        <div class="sec-label">BMI Scale Reference</div>
+        <div style="display:grid;gap:6px;margin-top:4px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(107,191,255,.1);border-radius:8px;"><span>Underweight</span><span style="color:#6bbfff;font-weight:700;">Below 18.5</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(6,214,160,.1);border-radius:8px;"><span>Normal Weight</span><span style="color:var(--green);font-weight:700;">18.5 – 24.9</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(255,209,102,.1);border-radius:8px;"><span>Overweight</span><span style="color:var(--gold);font-weight:700;">25 – 29.9</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(255,107,107,.1);border-radius:8px;"><span>Obese</span><span style="color:#ff6b6b;font-weight:700;">30 and above</span></div>
+        </div>
+        <div style="font-size:11px;color:var(--grey);margin-top:10px;line-height:1.55;">⚠️ BMI is a general guide. Consult a healthcare professional for personalized advice.</div>
+      </div>
+    </div>
+
     <!-- ══ COACH PAGE ══ -->
+    <!-- ══ WORKOUT PLAN PAGE ══ -->
+    <div class="page" id="page-workoutplan">
+      <div class="workout-plan-hero">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="font-size:32px;">🎯</div>
+          <div>
+            <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;">Custom Workout Plan</div>
+            <div style="font-size:10px;color:var(--pink-light);font-weight:700;">⭐ PRO FEATURE</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:14px;">Coach Nova builds your personal 4-week workout plan based on your goal, fitness level and available time.</div>
+
+        <div class="sec-label" style="margin-bottom:8px;">Your Goal</div>
+        <div class="plan-goal-chips" id="wplan-goal-chips">
+          <div class="pgc active" onclick="selectWplanGoal('weightloss',this)">⚡ Lose Weight</div>
+          <div class="pgc" onclick="selectWplanGoal('muscle',this)">💪 Build Muscle</div>
+          <div class="pgc" onclick="selectWplanGoal('endurance',this)">🏃 Endurance</div>
+          <div class="pgc" onclick="selectWplanGoal('wellness',this)">🧘 Wellness</div>
+        </div>
+
+        <div class="sec-label" style="margin-bottom:8px;">Days per week</div>
+        <div class="plan-goal-chips" id="wplan-days-chips">
+          <div class="pgc" onclick="selectWplanDays(3,this)">3 days</div>
+          <div class="pgc active" onclick="selectWplanDays(4,this)">4 days</div>
+          <div class="pgc" onclick="selectWplanDays(5,this)">5 days</div>
+          <div class="pgc" onclick="selectWplanDays(6,this)">6 days</div>
+        </div>
+
+        <button class="gen-btn" id="gen-wplan-btn" onclick="generateWorkoutPlan()" style="margin-top:4px;">
+          <span>🎯 Build My 4-Week Plan</span>
+        </button>
+      </div>
+      <div id="workout-plan-output"></div>
+    </div>
+
+    <!-- ══ BODY MEASUREMENTS PAGE ══ -->
+    <div class="page" id="page-measurements">
+      <div class="sec-label" style="margin-bottom:14px;">📏 Body Measurements</div>
+
+      <!-- Current measurements grid -->
+      <div class="measure-grid" id="measure-grid">
+        <div class="measure-card"><div class="measure-icon">🫀</div><div class="measure-val" id="m-waist">—</div><div class="measure-label">Waist (cm)</div><div class="measure-change" id="mc-waist"></div></div>
+        <div class="measure-card"><div class="measure-icon">🍑</div><div class="measure-val" id="m-hips">—</div><div class="measure-label">Hips (cm)</div><div class="measure-change" id="mc-hips"></div></div>
+        <div class="measure-card"><div class="measure-icon">💪</div><div class="measure-val" id="m-chest">—</div><div class="measure-label">Chest (cm)</div><div class="measure-change" id="mc-chest"></div></div>
+        <div class="measure-card"><div class="measure-icon">🦵</div><div class="measure-val" id="m-thighs">—</div><div class="measure-label">Thighs (cm)</div><div class="measure-change" id="mc-thighs"></div></div>
+      </div>
+
+      <!-- Log new measurements -->
+      <div class="measure-input-wrap">
+        <div class="sec-label" style="margin-bottom:10px;">Log Today's Measurements</div>
+        <div class="measure-row">
+          <div><label>Waist (cm)</label><input type="number" id="inp-waist" placeholder="e.g. 75" min="40" max="200" step="0.5"/></div>
+          <div><label>Hips (cm)</label><input type="number" id="inp-hips" placeholder="e.g. 95" min="40" max="200" step="0.5"/></div>
+        </div>
+        <div class="measure-row">
+          <div><label>Chest (cm)</label><input type="number" id="inp-chest" placeholder="e.g. 88" min="40" max="200" step="0.5"/></div>
+          <div><label>Thighs (cm)</label><input type="number" id="inp-thighs" placeholder="e.g. 58" min="20" max="120" step="0.5"/></div>
+        </div>
+        <div class="measure-row">
+          <div><label>Arms (cm)</label><input type="number" id="inp-arms" placeholder="e.g. 30" min="10" max="80" step="0.5"/></div>
+          <div><label>Neck (cm)</label><input type="number" id="inp-neck" placeholder="e.g. 35" min="20" max="60" step="0.5"/></div>
+        </div>
+        <button class="btn btn-pink" onclick="logMeasurements()">📏 Save Measurements</button>
+      </div>
+
+      <!-- History -->
+      <div class="card">
+        <div class="sec-label">Measurement History</div>
+        <div class="measure-history" id="measure-history">
+          <div style="font-size:12px;color:var(--grey);">No measurements logged yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BMI CALCULATOR PAGE ══ -->
+    <div class="page" id="page-bmi">
+      <div class="sec-label" style="margin-bottom:14px;">🧮 BMI & Body Calculator</div>
+
+      <div class="bmi-card">
+        <div style="font-family:var(--font-head);font-size:16px;font-weight:800;color:#6bbfff;margin-bottom:14px;">📐 Enter Your Details</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Height (cm)</label>
+            <input type="number" id="bmi-height" placeholder="e.g. 165" min="100" max="220" step="1" oninput="calcBMI()"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Weight (kg)</label>
+            <input type="number" id="bmi-weight" placeholder="e.g. 70" min="30" max="300" step="0.1" oninput="calcBMI()"/>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Age</label>
+            <input type="number" id="bmi-age" placeholder="e.g. 28" min="10" max="100" step="1" oninput="calcBMI()"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--grey);display:block;margin-bottom:4px;">Activity Level</label>
+            <select id="bmi-activity" onchange="calcBMI()" style="height:44px;font-size:13px;">
+              <option value="1.2">Sedentary</option>
+              <option value="1.375">Light (1-3/wk)</option>
+              <option value="1.55" selected>Moderate (3-5/wk)</option>
+              <option value="1.725">Active (6-7/wk)</option>
+              <option value="1.9">Very Active</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- BMI Result -->
+        <div class="bmi-result" id="bmi-result">
+          <div class="bmi-number" id="bmi-number">0</div>
+          <div class="bmi-category" id="bmi-category">—</div>
+
+          <div class="bmi-bar-wrap">
+            <div class="bmi-marker" id="bmi-marker" style="left:0%"></div>
+          </div>
+          <div class="bmi-scale">
+            <span>Under</span><span>Normal</span><span>Over</span><span>Obese</span>
+          </div>
+
+          <div class="bmi-detail">
+            <div class="bmi-detail-tile"><div class="bdv" id="bmi-bmr">—</div><div class="bdl">BMR (kcal/day)</div></div>
+            <div class="bmi-detail-tile"><div class="bdv" id="bmi-tdee">—</div><div class="bdl">TDEE (kcal/day)</div></div>
+            <div class="bmi-detail-tile"><div class="bdv" id="bmi-ideal">—</div><div class="bdl">Ideal Weight (kg)</div></div>
+            <div class="bmi-detail-tile"><div class="bdv" id="bmi-deficit">—</div><div class="bdl">Fat Loss Target</div></div>
+          </div>
+
+          <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:12px;margin-top:12px;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6;text-align:left;" id="bmi-advice"></div>
+        </div>
+      </div>
+
+      <!-- BMI Scale Reference -->
+      <div class="card">
+        <div class="sec-label">BMI Scale Reference</div>
+        <div style="display:grid;gap:6px;margin-top:4px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(107,191,255,.1);border-radius:8px;"><span>Underweight</span><span style="color:#6bbfff;font-weight:700;">Below 18.5</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(6,214,160,.1);border-radius:8px;"><span>Normal Weight</span><span style="color:var(--green);font-weight:700;">18.5 – 24.9</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(255,209,102,.1);border-radius:8px;"><span>Overweight</span><span style="color:var(--gold);font-weight:700;">25 – 29.9</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(255,107,107,.1);border-radius:8px;"><span>Obese</span><span style="color:#ff6b6b;font-weight:700;">30 and above</span></div>
+        </div>
+        <div style="font-size:11px;color:var(--grey);margin-top:10px;line-height:1.55;">⚠️ BMI is a general guide. Consult a healthcare professional for personalized advice.</div>
+      </div>
+    </div>
+
     <!-- ══ COACH PAGE ══ -->
     <div class="page" id="page-coach">
       <div class="coach-hero-clean">
@@ -1773,6 +2119,13 @@ select option{background:var(--black3);}
             <div style="font-size:11px;color:var(--grey);margin-top:2px;">Every 2 hours (8am–10pm)</div>
           </div>
           <label class="toggle"><input type="checkbox" id="remind-water" onchange="saveReminders()"/><span class="toggle-slider"></span></label>
+        </div>
+        <div class="reminder-item" style="background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.15);border-radius:10px;padding:10px 14px;margin-top:4px;">
+          <div>
+            <div style="font-size:13px;font-weight:500;">🔥 Streak Protector <span style="font-size:10px;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;">PRO</span></div>
+            <div style="font-size:11px;color:var(--grey);margin-top:2px;">8pm alert if no workout done today</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="remind-streak" onchange="saveReminders()"/><span class="toggle-slider"></span></label>
         </div>
         <div style="margin-top:10px;padding:10px;background:var(--black3);border-radius:10px;font-size:11px;color:var(--grey);line-height:1.55;">
           📱 <strong style="color:rgba(255,255,255,.6);">iPhone:</strong> Install app to home screen first, then enable.<br/>
@@ -1962,6 +2315,18 @@ select option{background:var(--black3);}
     <button class="nav-item" id="nav-progress" onclick="navTo('progress')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <span class="nav-label">Progress</span>
+    </button>
+    <button class="nav-item" id="nav-workoutplan" onclick="navTo('workoutplan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      <span class="nav-label">My Plan</span>
+    </button>
+    <button class="nav-item" id="nav-measurements" onclick="navTo('measurements')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12h20M12 2v20"/></svg>
+      <span class="nav-label">Body</span>
+    </button>
+    <button class="nav-item" id="nav-bmi" onclick="navTo('bmi')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      <span class="nav-label">BMI</span>
     </button>
     <button class="nav-item" id="nav-period" onclick="navTo('period')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
@@ -2455,6 +2820,9 @@ async function bootApp() {
   // Update scanner button label with scan count
   updateScannerBtnLabel();
 
+  // Render Pro dashboard if Pro user
+  renderProDashboard();
+
   // Load workout history
   loadWorkoutHistory();
 
@@ -2468,7 +2836,11 @@ async function bootApp() {
   loadAnnouncements();
 
   // Load saved meal plan (Pro)
-  if (appState.isProUser) loadSavedMealPlan();
+  if (appState.isProUser) {
+    loadSavedMealPlan();
+    loadMeasurements();
+    scheduleStreakAlert();
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2826,6 +3198,8 @@ function navTo(page) {
   document.querySelector('.content').scrollTo(0, 0);
   // Refresh history page when navigated to
   if (page === 'history') loadWorkoutHistory();
+  // Refresh pro dashboard when going home
+  if (page === 'home') renderProDashboard();
   // Load meal plan page
   if (page === 'mealplan') {
     if (appState.isProUser) { loadSavedMealPlan(); }
@@ -2835,6 +3209,11 @@ function navTo(page) {
   if (page === 'period') { renderPeriodPage(); }
   // Analytics
   if (page === 'analytics') { renderAnalytics(); }
+  // Workout plan
+  if (page === 'workoutplan') { loadSavedWorkoutPlan(); }
+  // Body measurements
+  if (page === 'measurements') { renderMeasurements(); }
+  // BMI — nothing to load
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -6184,8 +6563,14 @@ Make each day different. Keep foods realistic and commonly available. Total calo
     if (!Array.isArray(plan) || plan.length === 0) throw new Error('Invalid plan format');
 
     _currentMealPlan = plan;
-    // Save to localStorage
-    uSet('fnova_mealplan', JSON.stringify({ plan, pref: _mealPlanPref, generatedAt: todayStr() }));
+    // Save to localStorage + Supabase
+    const mealPayload = JSON.stringify({ plan, pref: _mealPlanPref, generatedAt: todayStr() });
+    uSet('fnova_mealplan', mealPayload);
+    if (window.supabase && currentUser) {
+      window.supabase.from('profiles').upsert({
+        id: currentUser.id, meal_plan: mealPayload, updated_at: new Date().toISOString()
+      }, { onConflict: 'id' }).catch(e => console.warn('Meal plan save:', e.message));
+    }
 
     renderMealPlan(plan);
 
@@ -6307,11 +6692,26 @@ function showLockedMealPlan() {
     </div>`;
 }
 
-function loadSavedMealPlan() {
+async function loadSavedMealPlan() {
+  // Try Supabase first
+  if (window.supabase && currentUser) {
+    try {
+      const { data } = await window.supabase
+        .from('profiles').select('meal_plan, workout_plan, period_data, bmi_data')
+        .eq('id', currentUser.id).single();
+      if (data) {
+        if (data.meal_plan)    uSet('fnova_mealplan',    data.meal_plan);
+        if (data.workout_plan) uSet('fnova_wplan',       data.workout_plan);
+        if (data.period_data)  uSet('fnova_period',      data.period_data);
+        if (data.bmi_data)     uSet('fnova_bmi',         data.bmi_data);
+      }
+    } catch(e) { console.warn('Pro data load failed:', e.message); }
+  }
+  // Load from localStorage (now synced from Supabase)
   const saved = uGet('fnova_mealplan');
   if (!saved) return;
   try {
-    const { plan, generatedAt } = JSON.parse(saved);
+    const { plan } = JSON.parse(saved);
     if (plan && Array.isArray(plan) && plan.length > 0) {
       _currentMealPlan = plan;
       renderMealPlan(plan);
@@ -6356,6 +6756,12 @@ function savePeriodLog() {
   data.history = data.history || [];
   if (!data.history.includes(startDate)) data.history.push(startDate);
   savePeriodData(data);
+  // Save to Supabase
+  if (window.supabase && currentUser) {
+    window.supabase.from('profiles').upsert({
+      id: currentUser.id, period_data: JSON.stringify(data), updated_at: new Date().toISOString()
+    }, { onConflict: 'id' }).catch(e => console.warn('Period save:', e.message));
+  }
   document.getElementById('period-log-form').style.display = 'none';
   renderPeriodPage();
   showToast('Period logged!', 'Your cycle has been updated');
@@ -6689,6 +7095,495 @@ function renderLeaderboard() {
       <div class="lb-streak">🔥 ${r.streak} day${r.streak !== 1 ? 's' : ''}</div>
     </div>
   `).join('');
+}
+
+
+function togglePw(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// CUSTOM WORKOUT PLAN GENERATOR
+// ══════════════════════════════════════════════════════════════
+let _wplanGoal = 'weightloss';
+let _wplanDays = 4;
+
+function selectWplanGoal(goal, el) {
+  _wplanGoal = goal;
+  document.querySelectorAll('#wplan-goal-chips .pgc').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function selectWplanDays(days, el) {
+  _wplanDays = days;
+  document.querySelectorAll('#wplan-days-chips .pgc').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+async function generateWorkoutPlan() {
+  if (!appState.isProUser) {
+    showToast('Pro Feature', 'Upgrade to Pro to generate your custom workout plan');
+    navTo('pro'); return;
+  }
+
+  const btn    = document.getElementById('gen-wplan-btn');
+  const output = document.getElementById('workout-plan-output');
+  if (!btn || !output) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="gen-spinner"></div><span>Coach Nova is building your plan…</span>';
+  output.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--grey);font-size:13px;"><div style="font-size:40px;margin-bottom:12px;">⏳</div>Building your personalized plan…</div>';
+
+  const meta      = currentUser ? (currentUser.user_metadata || {}) : {};
+  const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
+  const goalMap   = { weightloss:'weight loss and fat burning', muscle:'muscle toning and strength', endurance:'cardio endurance and stamina', wellness:'overall wellness and flexibility' };
+  const goalDesc  = goalMap[_wplanGoal] || 'weight loss';
+
+  const prompt = `Create a 4-week progressive workout plan for ${firstName}.
+Goal: ${goalDesc}
+Workout days per week: ${_wplanDays}
+Rest days: ${7 - _wplanDays} per week
+
+Return ONLY a valid JSON array of 4 weeks (no markdown). Each week:
+{
+  "week": 1,
+  "theme": "Foundation",
+  "days": [
+    {
+      "day": "Monday",
+      "type": "workout",
+      "name": "Full Body Burn",
+      "duration": "30 min",
+      "calories": 250,
+      "intensity": "Moderate",
+      "exercises": [
+        {"name": "Jumping Jacks", "sets": 3, "reps": "30"},
+        {"name": "Squats", "sets": 3, "reps": "15"},
+        {"name": "Push-ups", "sets": 3, "reps": "10"},
+        {"name": "Plank", "sets": 3, "reps": "30s"}
+      ],
+      "tip": "Focus on form over speed"
+    },
+    {
+      "day": "Tuesday",
+      "type": "rest",
+      "name": "Rest & Recovery",
+      "tip": "Light stretching recommended"
+    }
+  ]
+}
+Make week 2 slightly harder than week 1, week 3 harder than week 2, week 4 hardest. Mix different workout types (HIIT, strength, cardio, core). Include exactly ${_wplanDays} workout days and ${7-_wplanDays} rest days per week.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: 'You are a certified personal trainer specializing in womens fitness. Return only valid JSON — no markdown, no explanation.',
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await resp.json();
+    if (!data.content || !data.content[0]) throw new Error('No response');
+
+    let plan;
+    try {
+      const raw = data.content[0].text.replace(/```json|```/g, '').trim();
+      plan = JSON.parse(raw);
+    } catch(e) { throw new Error('Parse error'); }
+
+    if (!Array.isArray(plan)) throw new Error('Invalid format');
+
+    const wplanPayload = JSON.stringify({ plan, goal: _wplanGoal, days: _wplanDays, generatedAt: todayStr() });
+    uSet('fnova_wplan', wplanPayload);
+    // Save to Supabase
+    if (window.supabase && currentUser) {
+      window.supabase.from('profiles').upsert({
+        id: currentUser.id, workout_plan: wplanPayload, updated_at: new Date().toISOString()
+      }, { onConflict: 'id' }).catch(e => console.warn('Workout plan save:', e.message));
+    }
+    renderWorkoutPlan(plan);
+    btn.disabled = false;
+    btn.innerHTML = '<span>🔄 Regenerate Plan</span>';
+    showToast('Your 4-week plan is ready!', 'Tap each day to see your exercises 💪');
+
+  } catch(err) {
+    console.warn('Workout plan error:', err);
+    output.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--grey);">Could not generate plan. Try again.</div>';
+    btn.disabled = false;
+    btn.innerHTML = '<span>🎯 Build My 4-Week Plan</span>';
+  }
+}
+
+function renderWorkoutPlan(plan) {
+  const output = document.getElementById('workout-plan-output');
+  if (!output || !plan) return;
+
+  const intensityColor = { Easy:'var(--green)', Moderate:'var(--gold)', Hard:'var(--pink-light)', 'Very Hard':'#ff6b6b' };
+
+  output.innerHTML = plan.map((week, wi) => `
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="font-family:var(--font-head);font-size:15px;font-weight:900;color:#fff;">Week ${week.week}</div>
+        <div style="background:rgba(255,45,107,.12);border:1px solid rgba(255,45,107,.25);border-radius:99px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--pink-light);">${week.theme || 'Training'}</div>
+      </div>
+      ${(week.days || []).map((day, di) => day.type === 'rest' ? `
+        <div class="wplan-rest-day" style="margin-bottom:6px;">
+          🌿 ${day.day} — Rest & Recovery
+          <div style="font-size:11px;color:rgba(6,214,160,.7);margin-top:3px;font-weight:400;">${day.tip || 'Light stretching recommended'}</div>
+        </div>` : `
+        <div class="wplan-week" style="margin-bottom:6px;">
+          <div class="wplan-day-header" id="wpdh-${wi}-${di}" onclick="toggleWplanDay(${wi},${di})">
+            <div>
+              <div style="font-family:var(--font-head);font-size:13px;font-weight:800;color:#fff;">${day.day} — ${day.name}</div>
+              <div style="font-size:10px;color:var(--grey);margin-top:2px;">${day.duration || '30 min'} · ${day.calories || 0} kcal · <span style="color:${intensityColor[day.intensity] || 'var(--gold)'};">${day.intensity || 'Moderate'}</span></div>
+            </div>
+            <span style="color:var(--grey);font-size:12px;" id="wpda-${wi}-${di}">▼</span>
+          </div>
+          <div class="wplan-day-body" id="wpdb-${wi}-${di}">
+            ${(day.exercises || []).map((ex, ei) => `
+              <div class="wplan-exercise">
+                <div class="wplan-ex-num">${ei+1}</div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;color:#fff;">${ex.name}</div>
+                  <div style="font-size:11px;color:var(--grey);margin-top:1px;">${ex.sets} sets × ${ex.reps}</div>
+                </div>
+              </div>`).join('')}
+            ${day.tip ? '<div style="margin-top:8px;padding:8px 10px;background:rgba(255,209,102,.08);border-radius:10px;font-size:11px;color:var(--gold);">💡 '+day.tip+'</div>' : ''}
+            <button class="btn btn-pink" style="margin-top:10px;height:38px;font-size:12px;" onclick="navTo('workout')">▶ Start Workout</button>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function toggleWplanDay(wi, di) {
+  const body  = document.getElementById('wpdb-'+wi+'-'+di);
+  const arrow = document.getElementById('wpda-'+wi+'-'+di);
+  const head  = document.getElementById('wpdh-'+wi+'-'+di);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.wplan-day-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('[id^=wpda-]').forEach(a => a.textContent = '▼');
+  document.querySelectorAll('.wplan-day-header').forEach(h => h.classList.remove('open'));
+  if (!isOpen) {
+    body.classList.add('open');
+    if (arrow) arrow.textContent = '▲';
+    if (head)  head.classList.add('open');
+  }
+}
+
+function loadSavedWorkoutPlan() {
+  const saved = uGet('fnova_wplan');
+  if (!saved) return;
+  try {
+    const { plan } = JSON.parse(saved);
+    if (plan && Array.isArray(plan)) {
+      renderWorkoutPlan(plan);
+      const btn = document.getElementById('gen-wplan-btn');
+      if (btn) btn.innerHTML = '<span>🔄 Regenerate Plan</span>';
+    }
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════
+// BODY MEASUREMENTS
+// ══════════════════════════════════════════════════════════════
+function getMeasurements() {
+  try { return JSON.parse(uGet('fnova_measurements') || '[]'); } catch(e) { return []; }
+}
+
+async function logMeasurements() {
+  const fields = ['waist','hips','chest','thighs','arms','neck'];
+  const entry  = { date: todayStr() };
+  let hasAny   = false;
+
+  fields.forEach(f => {
+    const val = parseFloat(document.getElementById('inp-'+f)?.value);
+    if (val && val > 0) { entry[f] = val; hasAny = true; }
+  });
+
+  if (!hasAny) { showToast('Enter at least one measurement', ''); return; }
+
+  const history = getMeasurements();
+  const existing = history.findIndex(e => e.date === todayStr());
+  if (existing >= 0) history[existing] = { ...history[existing], ...entry };
+  else history.push(entry);
+
+  const trimmed = history.slice(-60);
+  uSet('fnova_measurements', JSON.stringify(trimmed));
+
+  // Save to Supabase
+  if (window.supabase && currentUser) {
+    try {
+      await window.supabase.from('profiles').upsert({
+        id: currentUser.id,
+        measurements: JSON.stringify(trimmed),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+    } catch(e) {}
+  }
+
+  // Clear inputs
+  fields.forEach(f => { const el = document.getElementById('inp-'+f); if(el) el.value = ''; });
+  renderMeasurements();
+  showToast('Measurements saved!', 'Your body stats have been updated');
+}
+
+function renderMeasurements() {
+  const history = getMeasurements();
+  if (history.length === 0) return;
+
+  const latest = history[history.length - 1];
+  const prev   = history.length > 1 ? history[history.length - 2] : null;
+
+  const fields = [
+    { key:'waist',  id:'m-waist',  cid:'mc-waist' },
+    { key:'hips',   id:'m-hips',   cid:'mc-hips' },
+    { key:'chest',  id:'m-chest',  cid:'mc-chest' },
+    { key:'thighs', id:'m-thighs', cid:'mc-thighs' },
+  ];
+
+  fields.forEach(f => {
+    const el  = document.getElementById(f.id);
+    const cel = document.getElementById(f.cid);
+    if (el) el.textContent = latest[f.key] ? latest[f.key] + ' cm' : '—';
+    if (cel && prev && prev[f.key] && latest[f.key]) {
+      const diff = (latest[f.key] - prev[f.key]).toFixed(1);
+      cel.textContent = (diff > 0 ? '+' : '') + diff + ' cm';
+      cel.className   = 'measure-change ' + (diff < 0 ? 'down' : 'up');
+    }
+  });
+
+  // History list
+  const histWrap = document.getElementById('measure-history');
+  if (!histWrap) return;
+  histWrap.innerHTML = [...history].reverse().slice(0, 10).map(e => `
+    <div class="mh-row">
+      <span style="color:var(--grey);">${e.date}</span>
+      <span style="color:#fff;font-size:11px;">
+        ${e.waist ? 'W:'+e.waist : ''}
+        ${e.hips  ? ' H:'+e.hips  : ''}
+        ${e.chest ? ' C:'+e.chest : ''}
+        ${e.thighs? ' T:'+e.thighs: ''}
+        cm
+      </span>
+    </div>`).join('');
+}
+
+async function loadMeasurements() {
+  // Try Supabase first
+  if (window.supabase && currentUser) {
+    try {
+      const { data } = await window.supabase
+        .from('profiles').select('measurements').eq('id', currentUser.id).single();
+      if (data?.measurements) uSet('fnova_measurements', data.measurements);
+    } catch(e) {}
+  }
+  renderMeasurements();
+}
+
+// ══════════════════════════════════════════════════════════════
+// BMI CALCULATOR
+// ══════════════════════════════════════════════════════════════
+function calcBMI() {
+  const h        = parseFloat(document.getElementById('bmi-height')?.value);
+  const w        = parseFloat(document.getElementById('bmi-weight')?.value);
+  const age      = parseFloat(document.getElementById('bmi-age')?.value) || 25;
+  const activity = parseFloat(document.getElementById('bmi-activity')?.value) || 1.55;
+
+  if (!h || !w || h < 100 || w < 30) return;
+
+  const hM  = h / 100;
+  const bmi = w / (hM * hM);
+
+  // BMR (Mifflin-St Jeor for women)
+  const bmr  = 10 * w + 6.25 * h - 5 * age - 161;
+  const tdee = Math.round(bmr * activity);
+
+  // Ideal weight (BMI 21.5 midpoint of normal)
+  const idealWeight = Math.round(21.5 * hM * hM * 10) / 10;
+  const deficit     = w > idealWeight ? Math.round((w - idealWeight) * 10) / 10 : 0;
+
+  // Category
+  let category, color, pct;
+  if      (bmi < 18.5) { category = 'Underweight'; color = '#6bbfff'; pct = Math.max(2, (bmi / 18.5) * 20); }
+  else if (bmi < 25)   { category = 'Normal Weight ✅'; color = '#06d6a0'; pct = 20 + ((bmi - 18.5) / 6.5) * 30; }
+  else if (bmi < 30)   { category = 'Overweight ⚠️'; color = '#ffd166'; pct = 50 + ((bmi - 25) / 5) * 25; }
+  else                 { category = 'Obese 🔴'; color = '#ff6b6b'; pct = Math.min(97, 75 + ((bmi - 30) / 10) * 22); }
+
+  // Advice
+  const adviceMap = {
+    'Underweight': 'Focus on nutrient-dense foods and strength training to build healthy muscle mass.',
+    'Normal Weight ✅': 'Great job! Maintain your healthy weight with consistent exercise and balanced nutrition.',
+    'Overweight ⚠️': 'A modest calorie deficit of 300-500 kcal/day combined with regular exercise will help you reach your goal.',
+    'Obese 🔴': 'Focus on sustainable lifestyle changes. Small consistent steps lead to big results. You have got this!'
+  };
+
+  // Update UI
+  const result = document.getElementById('bmi-result');
+  if (result) result.classList.add('show');
+
+  const setEl = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+  const setStyle = (id, prop, v) => { const e = document.getElementById(id); if(e) e.style[prop] = v; };
+
+  setEl('bmi-number',   bmi.toFixed(1));
+  setEl('bmi-category', category);
+  setEl('bmi-bmr',      Math.round(bmr));
+  setEl('bmi-tdee',     tdee);
+  setEl('bmi-ideal',    idealWeight + ' kg');
+  setEl('bmi-deficit',  deficit > 0 ? '-' + deficit + ' kg' : 'At goal! 🎉');
+  setEl('bmi-advice',   '💡 ' + (adviceMap[category] || adviceMap['Normal Weight ✅']));
+
+  // Save BMI data to Supabase
+  if (window.supabase && currentUser) {
+    const bmiData = JSON.stringify({ bmi: bmi.toFixed(1), category, bmr: Math.round(bmr), tdee, idealWeight, h, w, age, updatedAt: todayStr() });
+    uSet('fnova_bmi', bmiData);
+    window.supabase.from('profiles').upsert({
+      id: currentUser.id, bmi_data: bmiData, updated_at: new Date().toISOString()
+    }, { onConflict: 'id' }).catch(e => console.warn('BMI save:', e.message));
+  }
+
+  setStyle('bmi-number', 'color', color);
+  setStyle('bmi-category', 'color', color);
+  setStyle('bmi-marker', 'left', pct + '%');
+}
+
+// ══════════════════════════════════════════════════════════════
+// STREAK ALERT — 8pm notification if no workout logged today
+// ══════════════════════════════════════════════════════════════
+function scheduleStreakAlert() {
+  if (!appState.isProUser) return;
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+
+  const now    = new Date();
+  const alert8 = new Date();
+  alert8.setHours(20, 0, 0, 0);
+  if (alert8 <= now) alert8.setDate(alert8.getDate() + 1);
+
+  const msUntil = alert8 - now;
+  setTimeout(() => {
+    // Only fire if no workout done today
+    const todayWorkouts = appState.workoutLog ? appState.workoutLog.length : 0;
+    if (todayWorkouts === 0 && appState.streak > 0) {
+      sendNotification(
+        'Protect your ' + appState.streak + '-day streak! 🔥',
+        'You have not worked out yet today. Do not break your streak — even 10 minutes counts!'
+      );
+      showToast('Streak Alert!', 'Work out now to protect your ' + appState.streak + '-day streak 🔥');
+    }
+    // Reschedule for tomorrow
+    scheduleStreakAlert();
+  }, msUntil);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// PRO DASHBOARD — renders on home page for Pro users
+// ══════════════════════════════════════════════════════════════
+function renderProDashboard() {
+  const wrap = document.getElementById('pro-dashboard-wrap');
+  if (!wrap) return;
+  if (!appState.isProUser) { wrap.innerHTML = ''; return; }
+
+  const meta      = currentUser ? (currentUser.user_metadata || {}) : {};
+  const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
+  const streak    = appState.streak || 0;
+  const plan      = appState.proPlan || 'pro';
+
+  // Load BMI if available
+  let bmiSnippet = '';
+  try {
+    const bmiRaw = uGet('fnova_bmi');
+    if (bmiRaw) {
+      const b = JSON.parse(bmiRaw);
+      bmiSnippet = '<div style="font-size:11px;color:var(--grey);">BMI: <span style="color:#6bbfff;font-weight:700;">' + b.bmi + '</span> · ' + (b.category || '').replace(' ✅','').replace(' ⚠️','').replace(' 🔴','') + '</div>';
+    }
+  } catch(e) {}
+
+  // Period phase if available
+  let phaseSnippet = '';
+  try {
+    const pData = getPeriodData ? getPeriodData() : null;
+    if (pData && pData.lastPeriod) {
+      const cycleLen  = pData.cycleLength || 28;
+      const lastStart = new Date(pData.lastPeriod + 'T12:00:00');
+      const today     = new Date();
+      const dayOfCycle = Math.floor((today - lastStart) / (1000*60*60*24)) + 1;
+      let phase = 'Follicular';
+      if (dayOfCycle <= (pData.periodLength || 5)) phase = 'Period';
+      else if (dayOfCycle >= cycleLen - 5) phase = 'PMS';
+      else if (Math.abs(dayOfCycle - Math.floor(cycleLen/2)) <= 1) phase = 'Ovulation';
+      const phaseEmoji = { Period:'🔴', Follicular:'🌱', Ovulation:'⭐', PMS:'🌙' };
+      phaseSnippet = '<div style="font-size:11px;color:var(--grey);">Phase: <span style="color:var(--pink-light);font-weight:700;">' + (phaseEmoji[phase]||'') + ' ' + phase + '</span></div>';
+    }
+  } catch(e) {}
+
+  wrap.innerHTML = `
+    <div style="border-radius:22px;padding:16px;margin-bottom:12px;background:radial-gradient(circle at 5% 0%,rgba(255,209,102,.28),transparent 40%),radial-gradient(circle at 95% 100%,rgba(255,45,107,.22),transparent 40%),linear-gradient(145deg,#1a1200,#0e0e0e);border:1px solid rgba(255,209,102,.4);box-shadow:0 14px 40px rgba(255,209,102,.1);">
+
+      <!-- Pro Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div>
+          <div style="font-family:var(--font-head);font-size:13px;font-weight:900;color:var(--gold);letter-spacing:.5px;">👑 PRO MEMBER</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;">${plan.charAt(0).toUpperCase()+plan.slice(1)} Plan · All features unlocked</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:var(--font-head);font-size:22px;font-weight:900;color:var(--gold);">${streak}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.5);">day streak 🔥</div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+        <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:10px;text-align:center;">
+          <div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:var(--pink-light);">${appState.caloriesEaten||0}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">kcal eaten</div>
+        </div>
+        <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:10px;text-align:center;">
+          <div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:var(--green);">${appState.totalWorkouts||0}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">workouts</div>
+        </div>
+        <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:10px;text-align:center;">
+          <div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:#6bbfff;">${appState.waterCups||0}/8</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">cups water</div>
+        </div>
+      </div>
+
+      <!-- Phase + BMI snippets -->
+      ${phaseSnippet || bmiSnippet ? '<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">' + phaseSnippet + bmiSnippet + '</div>' : ''}
+
+      <!-- Pro Quick Links -->
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">PRO FEATURES</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+        <button onclick="navTo('mealplan')" style="background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.25);border-radius:14px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(255,209,102,.2)'" onmouseout="this.style.background='rgba(255,209,102,.1)'">
+          <div style="font-size:20px;margin-bottom:4px;">🍽️</div>
+          <div style="font-size:9px;font-weight:700;color:var(--gold);">Meal Plan</div>
+        </button>
+        <button onclick="navTo('period')" style="background:rgba(255,45,107,.1);border:1px solid rgba(255,45,107,.25);border-radius:14px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(255,45,107,.2)'" onmouseout="this.style.background='rgba(255,45,107,.1)'">
+          <div style="font-size:20px;margin-bottom:4px;">🌸</div>
+          <div style="font-size:9px;font-weight:700;color:var(--pink-light);">Cycle</div>
+        </button>
+        <button onclick="navTo('analytics')" style="background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.2);border-radius:14px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(6,214,160,.18)'" onmouseout="this.style.background='rgba(6,214,160,.08)'">
+          <div style="font-size:20px;margin-bottom:4px;">📊</div>
+          <div style="font-size:9px;font-weight:700;color:var(--green);">Analytics</div>
+        </button>
+        <button onclick="navTo('bmi')" style="background:rgba(107,191,255,.08);border:1px solid rgba(107,191,255,.2);border-radius:14px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(107,191,255,.18)'" onmouseout="this.style.background='rgba(107,191,255,.08)'">
+          <div style="font-size:20px;margin-bottom:4px;">🧮</div>
+          <div style="font-size:9px;font-weight:700;color:#6bbfff;">BMI</div>
+        </button>
+      </div>
+    </div>`;
 }
 
 </script>
