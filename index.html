@@ -791,6 +791,16 @@ select option{background:var(--black3);}
 /* ── STREAK ALERT SETTING ── */
 .streak-alert-card{background:linear-gradient(135deg,#0a1218,#0e0e0e);border:1px solid rgba(255,209,102,.25);border-radius:16px;padding:14px;margin-bottom:10px;}
 
+
+/* ── VOICE TRAINER ── */
+.voice-trainer-bar{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#1a0710,#0d0d0d);border:1px solid rgba(255,45,107,.3);border-radius:14px;padding:10px 14px;margin-bottom:12px;}
+.vt-label{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;}
+.vt-toggle{display:flex;align-items:center;gap:8px;}
+.vt-voice-btn{background:rgba(255,45,107,.12);border:1px solid rgba(255,45,107,.28);color:var(--pink-light);border-radius:99px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;}
+.vt-voice-btn.active{background:rgba(255,45,107,.3);border-color:var(--pink);}
+.voice-callout{position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);opacity:0;z-index:4000;background:linear-gradient(135deg,#1a0710,#2a0d18);border:1px solid var(--pink);border-radius:16px;padding:12px 20px;font-family:var(--font-head);font-size:15px;font-weight:800;color:#fff;text-align:center;white-space:nowrap;transition:all .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 8px 32px rgba(255,45,107,.3);}
+.voice-callout.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -1287,6 +1297,19 @@ select option{background:var(--black3);}
           <div class="ts"><div class="tv" id="ts-sets">0</div><div class="tl">Sets</div></div>
           <div class="ts"><div class="tv" id="ts-rest">0</div><div class="tl">Rest (s)</div></div>
         </div>
+        <!-- Voice Trainer Toggle -->
+        <div class="voice-trainer-bar">
+          <div>
+            <div class="vt-label">🎙️ Voice Trainer</div>
+            <div style="font-size:10px;color:var(--grey);margin-top:2px;" id="vt-status">Off — tap to enable</div>
+          </div>
+          <div class="vt-toggle">
+            <button class="vt-voice-btn" id="vt-female-btn" onclick="setVoiceTrainer('female')">👩 Female</button>
+            <button class="vt-voice-btn" id="vt-male-btn" onclick="setVoiceTrainer('male')">👨 Male</button>
+            <button class="vt-voice-btn" id="vt-off-btn" onclick="setVoiceTrainer('off')" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15);color:var(--grey);">Off</button>
+          </div>
+        </div>
+
         <div class="timer-btns">
           <button class="tbtn tbtn-go" id="btn-start-timer" onclick="startTimer()">▶ Start</button>
           <button class="tbtn tbtn-pause" id="btn-pause-timer" onclick="pauseTimer()" style="display:none;">⏸ Pause</button>
@@ -2243,7 +2266,7 @@ select option{background:var(--black3);}
       <div id="pro-payment-note" style="text-align:center;padding:16px 0 8px;font-size:11px;color:var(--grey);line-height:1.8;display:none;">
         🔒 Secure payment via Flutterwave · USD, GBP, EUR accepted<br/>
         Cancel anytime · No hidden fees · 7-day free trial<br/>
-        <span style="color:var(--pink-light);">support@fithernova.app</span>
+        <span style="color:var(--pink-light);">Promediabest7@gmail.com</span>
       </div>
 
     </div>
@@ -2332,6 +2355,9 @@ select option{background:var(--black3);}
     </div>
     <button class="nt-btn" onclick="dismissToast()">OK</button>
   </div>
+
+  <!-- Voice Callout -->
+  <div class="voice-callout" id="voice-callout">🎙️ Let's go!</div>
 
   <!-- Achievement Toast -->
   <div class="achievement-toast" id="achievement-toast">
@@ -2760,6 +2786,9 @@ async function bootApp() {
 
   // Update scanner button label with scan count
   updateScannerBtnLabel();
+
+  // Load voice trainer preference
+  loadVoicePreference();
 
   // Render Pro dashboard if Pro user
   renderProDashboard();
@@ -3721,9 +3750,12 @@ function startWorkout(id) {
 
 function startTimer() {
   timerRunning = true;
+  _lastClip = ''; // reset voice cue tracker
   document.getElementById('timer-state').textContent = 'ACTIVE';
   document.getElementById('btn-start-timer').style.display = 'none';
   document.getElementById('btn-pause-timer').style.display = 'flex';
+  // Play warmup voice clip
+  if (_voiceMode !== 'off') setTimeout(() => playVoiceClip('warmup'), 500);
   timerInterval = setInterval(() => {
     timerElapsed++;
     const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
@@ -3732,6 +3764,11 @@ function startTimer() {
     document.getElementById('timer-digits').textContent = fmtTime(timerElapsed);
     document.getElementById('ts-kcal').textContent = kcal;
     document.getElementById('ts-sets').textContent = timerSets;
+    // Voice trainer cues
+    if (_voiceMode !== 'off' && activeWorkout) {
+      const cue = getVoiceCueForTime(timerElapsed, activeWorkout.duration);
+      if (cue) playVoiceClip(cue);
+    }
     const arc = document.getElementById('timer-ring-arc');
     const dur = activeWorkout ? activeWorkout.duration : 1200;
     if (arc) arc.style.strokeDashoffset = 553 * (1 - Math.min(1, timerElapsed / dur));
@@ -3742,6 +3779,7 @@ function startTimer() {
 function pauseTimer() {
   timerRunning = false;
   clearInterval(timerInterval);
+  stopVoiceTrainer();
   document.getElementById('timer-state').textContent = 'PAUSED';
   document.getElementById('btn-start-timer').style.display = 'flex';
   document.getElementById('btn-start-timer').textContent = '▶ Resume';
@@ -3751,6 +3789,9 @@ function pauseTimer() {
 async function stopTimer() {
   clearInterval(timerInterval);
   timerRunning = false;
+  stopVoiceTrainer();
+  // Play rest clip on stop
+  if (_voiceMode !== 'off') setTimeout(() => playVoiceClip('rest'), 300);
   const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
   const kcal = Math.round(timerElapsed * kcalRate);
   document.getElementById('timer-section').style.display = 'none';
@@ -7669,6 +7710,119 @@ function openFoodScannerDirect() {
   input.value = '';
   input.click();
 }
+
+// ══════════════════════════════════════════════════════════════
+// VOICE TRAINER
+// ══════════════════════════════════════════════════════════════
+const VOICE_BASE = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/voice-trainer/';
+
+const VOICE_CLIPS = {
+  warmup:   { f: 'workout-warmup.mp3',    label: 'Warm up!' },
+  begin:    { f: 'workout-begin.mp3',     label: 'Begin!' },
+  push:     { f: 'workout-push.mp3',      label: 'Push harder!' },
+  halfway:  { f: 'workout-halfway.mp3',   label: 'Halfway there!' },
+  sec30:    { f: 'workout-30sec.mp3',     label: '30 seconds left!' },
+  sec10:    { f: 'workout-10sec.mp3',     label: '10 seconds!' },
+  rest:     { f: 'workout-rest.mp3',      label: 'Rest now!' },
+  finalpush:{ f: 'workout-finalpush.mp3', label: 'Final push!' },
+};
+
+let _voiceMode    = 'off';  // 'female' | 'male' | 'off'
+let _voiceAudio   = null;
+let _voicePlaying = false;
+let _lastClip     = '';
+
+function setVoiceTrainer(mode) {
+  _voiceMode = mode;
+
+  // Update button styles
+  ['female','male','off'].forEach(m => {
+    const btn = document.getElementById('vt-' + m + '-btn');
+    if (!btn) return;
+    if (m === mode) {
+      btn.classList.add('active');
+      btn.style.background = m === 'off' ? 'rgba(255,255,255,.1)' : 'rgba(255,45,107,.3)';
+      btn.style.borderColor = m === 'off' ? 'rgba(255,255,255,.3)' : 'var(--pink)';
+      btn.style.color = m === 'off' ? '#fff' : 'var(--pink-light)';
+    } else {
+      btn.classList.remove('active');
+      btn.style.background = m === 'off' ? 'rgba(255,255,255,.06)' : 'rgba(255,45,107,.12)';
+      btn.style.borderColor = m === 'off' ? 'rgba(255,255,255,.15)' : 'rgba(255,45,107,.28)';
+      btn.style.color = m === 'off' ? 'var(--grey)' : 'var(--pink-light)';
+    }
+  });
+
+  const statusEl = document.getElementById('vt-status');
+  if (statusEl) {
+    if (mode === 'off') statusEl.textContent = 'Off — tap to enable';
+    else statusEl.textContent = (mode === 'female' ? '👩 Female' : '👨 Male') + ' voice trainer active!';
+  }
+
+  // Save preference
+  localStorage.setItem('fnova_voice_mode', mode);
+  if (mode !== 'off') showToast('🎙️ Voice trainer ON!', 'Your trainer will guide you through the workout');
+}
+
+function playVoiceClip(clipKey) {
+  if (_voiceMode === 'off') return;
+  const clip = VOICE_CLIPS[clipKey];
+  if (!clip) return;
+  if (_lastClip === clipKey) return; // avoid repeating same clip
+
+  _lastClip = clipKey;
+
+  // Stop current audio
+  if (_voiceAudio) {
+    try { _voiceAudio.pause(); _voiceAudio.src = ''; } catch(e) {}
+  }
+
+  // Show callout text
+  showVoiceCallout(clip.label);
+
+  // Play audio
+  _voiceAudio = new Audio(VOICE_BASE + clip.f);
+  _voiceAudio.volume = 0.9;
+  _voiceAudio.play().catch(e => console.warn('Voice clip failed:', e.message));
+}
+
+function showVoiceCallout(text) {
+  const el = document.getElementById('voice-callout');
+  if (!el) return;
+  el.textContent = '🎙️ ' + text;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function stopVoiceTrainer() {
+  if (_voiceAudio) {
+    try { _voiceAudio.pause(); _voiceAudio.src = ''; } catch(e) {}
+    _voiceAudio = null;
+  }
+  _lastClip = '';
+  const el = document.getElementById('voice-callout');
+  if (el) el.classList.remove('show');
+}
+
+function getVoiceCueForTime(elapsed, totalDuration) {
+  // Trigger specific clips at specific moments
+  if (elapsed === 3)                              return 'warmup';
+  if (elapsed === 8)                              return 'begin';
+  if (elapsed === Math.floor(totalDuration * 0.25)) return 'push';
+  if (elapsed === Math.floor(totalDuration * 0.50)) return 'halfway';
+  if (elapsed === Math.floor(totalDuration * 0.75)) return 'finalpush';
+  if (elapsed === totalDuration - 30)             return 'sec30';
+  if (elapsed === totalDuration - 10)             return 'sec10';
+  // Every 60 seconds after begin — motivational push
+  if (elapsed > 10 && elapsed % 60 === 0)         return 'push';
+  return null;
+}
+
+// Load saved voice preference
+function loadVoicePreference() {
+  const saved = localStorage.getItem('fnova_voice_mode');
+  if (saved && saved !== 'off') setVoiceTrainer(saved);
+}
+
 </script>
 </body>
 </html>
