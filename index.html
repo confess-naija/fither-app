@@ -4089,9 +4089,12 @@ function pauseTimer() {
 async function stopTimer() {
   clearInterval(timerInterval);
   timerRunning = false;
+  // Play complete or rest clip on stop (Pro only)
+  if (appState.isProUser && _voiceMode !== 'off') {
+    const isComplete = timerElapsed >= (activeWorkout ? activeWorkout.duration - 5 : 9999);
+    setTimeout(() => playVoiceClip(isComplete ? 'complete' : 'rest'), 300);
+  }
   stopVoiceTrainer();
-  // Play rest clip on stop (Pro only)
-  if (appState.isProUser && _voiceMode !== 'off') setTimeout(() => playVoiceClip('rest'), 300);
   const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
   const kcal = Math.round(timerElapsed * kcalRate);
   document.getElementById('timer-section').style.display = 'none';
@@ -8104,14 +8107,22 @@ function openFoodScannerDirect() {
 const VOICE_BASE = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/voice-trainer/';
 
 const VOICE_CLIPS = {
-  warmup:   { f: 'workout-warmup.mp3',    label: 'Warm up!' },
-  begin:    { f: 'workout-begin.mp3',     label: 'Begin!' },
-  push:     { f: 'workout-push.mp3',      label: 'Push harder!' },
-  halfway:  { f: 'workout-halfway.mp3',   label: 'Halfway there!' },
-  sec30:    { f: 'workout-30sec.mp3',     label: '30 seconds left!' },
-  sec10:    { f: 'workout-10sec.mp3',     label: '10 seconds!' },
-  rest:     { f: 'workout-rest.mp3',      label: 'Rest now!' },
-  finalpush:{ f: 'workout-finalpush.mp3', label: 'Final push!' },
+  // Workout clips
+  warmup:    { f: 'workout-warmup.mp3',     label: 'Warm up!' },
+  begin:     { f: 'workout-begin.mp3',      label: 'Begin!' },
+  push:      { f: 'workout-push.mp3',       label: 'Push harder!' },
+  halfway:   { f: 'workout-halfway.mp3',    label: 'Halfway there!' },
+  sec30:     { f: 'workout-30sec.mp3',      label: '30 seconds left!' },
+  sec10:     { f: 'workout-10sec.mp3',      label: '10 seconds!' },
+  rest:      { f: 'workout-rest.mp3',       label: 'Rest now!' },
+  finalpush: { f: 'workout-finalpush.mp3',  label: 'Final push!' },
+  complete:  { f: 'workout-complete.mp3.mp3',   label: 'Workout complete!' },
+  encourage: { f: 'workout-encourage.mp3.mp3',  label: 'Keep going Queen!' },
+  // Meditation clips
+  medIntro:     { f: 'meditation-intro.mp3',        label: 'Find your peace...' },
+  medBreath:    { f: 'meditation-breathing.mp3.mp3',    label: 'Breathe together...' },
+  medBody:      { f: 'meditation-bodyscan.mp3.mp3',     label: 'Relax your body...' },
+  medAffirm:    { f: 'meditation-affirmations.mp3', label: 'You are strong...' },
 };
 
 let _voiceMode    = 'off';  // 'female' | 'male' | 'off'
@@ -8300,7 +8311,7 @@ function getVoiceCueForTime(elapsed, totalDuration) {
   if (elapsed === totalDuration - 30)             return 'sec30';
   if (elapsed === totalDuration - 10)             return 'sec10';
   // Every 60 seconds after begin — motivational push
-  if (elapsed > 10 && elapsed % 60 === 0)         return 'push';
+  if (elapsed > 10 && elapsed % 90 === 0)         return 'encourage';
   return null;
 }
 
