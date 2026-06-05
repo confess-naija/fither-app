@@ -2248,9 +2248,9 @@ select option{background:var(--black3);}
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // GLOBAL AUDIO STOP — declared first so doLogout can always call it
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 window._fhnAudio = null; // will hold audioEl reference once created
 
 window.stopAllAudio = function() {
@@ -2285,9 +2285,9 @@ window.stopAllAudio = function() {
   console.log('🔇 Audio stopped by stopAllAudio()');
 };
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // UTILITIES
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function todayStr() {
   const d = new Date();
   return d.toISOString().split('T')[0]; // YYYY-MM-DD
@@ -2345,9 +2345,9 @@ function uClear() {
   } catch(e) {}
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // STATE
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 let currentUser = null;
 let appState = {
   calorieGoal: 1800,
@@ -2369,9 +2369,9 @@ let appState = {
   proPlan: 'free',
 };
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // AUTH
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function initAuth() {
   const msgEl = document.getElementById('auth-loading-msg');
 
@@ -2537,9 +2537,9 @@ function clearAvatarUI() {
   });
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // BOOT APP
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function bootApp() {
   document.getElementById('auth-loading').style.display = 'flex';
   document.getElementById('auth-screen').style.display = 'none';
@@ -2660,9 +2660,9 @@ async function bootApp() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // SUPABASE DATA — GOALS
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function loadGoals() {
   try {
     const { data, error } = await window.supabase
@@ -2719,9 +2719,9 @@ function setGoal(goal, el) {
   el.classList.add('active');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // SUPABASE DATA — MEAL LOG
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function loadMealLog() {
   const today = todayStr();
   try {
@@ -2846,9 +2846,9 @@ function recalcMacros() {
   appState.fat = appState.mealLog.reduce((a,m) => a + (m.fat||0), 0);
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // SUPABASE DATA — WORKOUT LOG
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function loadWorkoutLog() {
   const today = todayStr();
   try {
@@ -2913,9 +2913,9 @@ async function saveGoalsQuiet() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // SUPABASE DATA — WATER TRACKER
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function loadWater() {
   const today = todayStr();
   try {
@@ -3002,9 +3002,9 @@ async function toggleCup(idx) {
   if (appState.waterCups === 8) showToast('💧 Hydration Goal Met!', 'You drank 8 cups today — amazing!');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // NAVIGATION
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function navTo(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -3032,9 +3032,9 @@ function navTo(page) {
   // BMI — nothing to load
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // CALORIE RING & STATS
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function updateCalRing() {
   const eaten = appState.caloriesEaten;
   const goal = appState.calorieGoal;
@@ -3100,9 +3100,9 @@ function updateFoodMacros() {
   setEl('f-fat', Math.round(appState.fat) + 'g');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // FOOD DATABASE & LIST
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 const FOODS = [
   // ── Everyday / International ──
   { id:1,  emoji:'🥚', name:'Boiled Eggs (2)', cal:150, protein:12, carbs:1, fat:10, tags:['healthy','highprotein'] },
@@ -3338,9 +3338,9 @@ function renderHomeMeals() {
     </div>`;
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // WORKOUT
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 const WORKOUTS = [
   // ── BEGINNER ──
   { id:1, emoji:'🌟', name:'Beginner Basics', meta:'20 min · 120 kcal', badge:'badge-easy', level:'Easy',
@@ -3663,9 +3663,9 @@ function backToWorkoutList() {
   document.getElementById('workout-list-wrap').style.display = 'block';
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // MUSIC
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 const PLAYLIST = [
   {
     id:1, emoji:'🔥', title:'Holy Fire — Elevated',
@@ -3965,9 +3965,9 @@ function toggleDJ() {
   if (djMode) showToast('🎧 DJ Mode Active', 'Auto-mixing your gospel playlist!');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PROGRESS
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function renderWeeklyChart() {
   const wrap = document.getElementById('weekly-chart');
   if (!wrap) return;
@@ -4039,9 +4039,9 @@ function renderLeaderboard() {
   `).join('');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PHOTO UPLOAD — action sheet with delete, back-safe, restore
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 
 function openPhotoSheet(slot) {
   currentPhotoSlot = slot;
@@ -4225,9 +4225,9 @@ function setAvatarEverywhere(src) {
   if (homePh) homePh.style.display = 'none';
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // COACH NOVA CHALLENGE
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 const CHALLENGES = [
   { headline:'💪 30-Minute Belly Burn', sub:'Do 3 rounds of mountain climbers, bicycle crunches, and high knees. No excuses — your belly fat doesn\'t stand a chance today!', mission:'Complete 3 rounds' },
   { headline:'🥗 Clean Eating Day', sub:'Challenge: eat only whole foods today. No processed snacks. Log every meal and hit your protein goal of 80g+. Your body will thank you!', mission:'Log 4 clean meals' },
@@ -4263,9 +4263,9 @@ function loadCoachChallenge() {
   if (pill) pill.innerHTML = `🏆 ${c.mission}`;
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // COACH NOVA AI
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 const COACH_ANSWERS = {
   'belly': 'To target belly fat:\n1️⃣ Create a 300–500 kcal daily deficit\n2️⃣ Do core-focused HIIT 3×/week\n3️⃣ Reduce refined carbs & sugar\n4️⃣ Stay hydrated — 8 cups minimum\n5️⃣ Sleep 7–9 hours nightly\n\nConsistency beats intensity every time! 💪',
   'meal': 'Sample 7-Day Nigerian Weight Loss Plan:\n🌅 Breakfast: Boiled eggs + cucumber (Mon), Oatmeal + banana (Tue), Akara + herbal tea (Wed)\n☀️ Lunch: Efo riro + grilled fish (Mon), Jollof rice small + chicken (Tue)\n🌙 Dinner: Pepper soup + boiled yam (Mon), Vegetable stir-fry + tilapia (Tue)\n\nAim for 1500–1800 kcal daily!',
@@ -4351,9 +4351,9 @@ async function coachSend() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PUSH NOTIFICATIONS + REMINDERS
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 var _reminderTimers = [];
 
 async function requestNotifPermission() {
@@ -4633,9 +4633,9 @@ async function loadReminders() {
 
 function scheduleWaterReminder() {} // legacy no-op
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PRO UPGRADE — FLUTTERWAVE
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 const FLW_PUBLIC_KEY = 'FLWPUBK-79d99d18e7250db24f911e3d4380dda1-X';
 
 // Flutterwave hosted payment links — open in new tab
@@ -4686,7 +4686,9 @@ function setLocalPro(plan, ref) {
   updateProBadges();
 }
 async function saveProToSupabase(plan, ref) {
+  // Only save Pro if we have a valid payment reference
   if (!window.supabase || !currentUser) return;
+  if (!ref || ref.length < 5) { console.warn('Pro save blocked: invalid ref'); return; }
   try {
     await window.supabase.from('profiles').upsert({
       id: currentUser.id,
@@ -4694,20 +4696,29 @@ async function saveProToSupabase(plan, ref) {
       is_pro: true,
       pro_plan: plan,
       pro_reference: ref,
-      pro_started_at: new Date().toISOString()
+      pro_started_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }, { onConflict: 'id' });
   } catch(e) { console.warn('PRO cloud save skipped:', e.message || e); }
 }
 async function loadProStatus() {
-  const local = getLocalPro();
-  if (local) { appState.isProUser = true; appState.proPlan = local.plan || 'pro'; }
+  // ONLY trust Supabase for Pro status — never local cache
+  // This prevents cross-user contamination on shared devices
+  appState.isProUser = false;
+  appState.proPlan   = null;
+
   if (window.supabase && currentUser) {
     try {
       const { data } = await window.supabase
         .from('profiles').select('is_pro,pro_plan')
         .eq('id', currentUser.id).maybeSingle();
-      if (data?.is_pro) { appState.isProUser = true; appState.proPlan = data.pro_plan || 'pro'; }
-    } catch(e) {}
+      if (data?.is_pro === true) {
+        appState.isProUser = true;
+        appState.proPlan   = data.pro_plan || 'pro';
+      }
+    } catch(e) {
+      console.warn('Pro status load failed:', e.message);
+    }
   }
   updateProBadges();
 }
@@ -4780,7 +4791,6 @@ async function selectPlan(plan) {
         if (response.status === 'successful' || response.status === 'completed') {
           const ref = response.transaction_id || response.tx_ref || reference;
           setProStatus(plan, '✅ Payment successful! Unlocking Pro…');
-          setLocalPro(plan, String(ref));
           await saveProToSupabase(plan, String(ref));
           setProStatus(plan, '');
           updateProBadges();
@@ -4813,20 +4823,8 @@ async function selectPlan(plan) {
   }
 }
 
-// Manual Pro activation — for users who paid via link
-async function activateProManually() {
-  const ref = prompt('Enter your Flutterwave transaction ID:');
-  if (!ref || ref.length < 5) return;
-  setLocalPro('manual', ref);
-  await saveProToSupabase('manual', ref);
-  updateProBadges();
-  showToast('🎉 Pro Activated!', 'Welcome to FitHerNova Pro ✨');
-  showAchievement('⭐', 'Pro Unlocked!', 'All features are now available!');
-}
-
-// ══════════════════════════════════════════════════════════════
 // DATA CLEAR
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function clearAllData() {
   if (!confirm('Are you sure? This will permanently delete all your data and cannot be undone.')) return;
   try {
@@ -4853,12 +4851,12 @@ async function clearAllData() {
   showToast('✅ Data cleared', 'Starting fresh!');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // INIT
-// ══════════════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════════════
+// ═══════════
+// ═══════════
 // DAILY STREAK — 100% Supabase, no localStorage
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function updateDailyStreak() {
   if (!currentUser || !window.supabase) return;
 
@@ -4951,9 +4949,9 @@ async function updateDailyStreak() {
 // No longer needed but kept as no-op for safety
 function restoreStreakFromStorage() {}
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // ONBOARDING
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 let onboardData = { goal: 'weightloss', level: 'beginner' };
 
 function showOnboarding() {
@@ -5084,9 +5082,9 @@ async function skipOnboarding() {
   showToast('👋 Welcome!', 'You can set your goals anytime in the Profile tab');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PWA — INSTALL PROMPT & SERVICE WORKER
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 let deferredPrompt = null;
 
 function checkInstallPrompt() {
@@ -5295,9 +5293,9 @@ window.addEventListener('load', () => {
   }
 });
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // 30-DAY CHALLENGE
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 const CHALLENGE_DAYS = [
   {day:1,  title:'Ignite', workout:'Beginner Basics', cal:120, note:'Start strong — every journey begins here.'},
   {day:2,  title:'Core Awaken', workout:'Core Sculptor', cal:150, note:'Feel your center light up.'},
@@ -5557,9 +5555,9 @@ function shufflePlaylist() {
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // WEIGHT TRACKER
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function logWeight() {
   const input = document.getElementById('weight-input');
   const kg = parseFloat(input.value);
@@ -5677,9 +5675,9 @@ function renderWeightChart() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // WEEKLY SUMMARY + SOCIAL SHARE
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function renderWeeklySummary() {
   const wrap = document.getElementById('weekly-summary-wrap');
   if (!wrap) return;
@@ -5776,9 +5774,9 @@ function copyShareText() {
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // FOOD SCANNER — Claude Vision AI
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function getScanCount() {
   const key = 'fnova_scans_' + todayStr();
   return parseInt(localStorage.getItem(key) || '0');
@@ -5991,9 +5989,9 @@ function updateScannerBtnLabel() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // CUSTOM FOOD ENTRY
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function toggleCustomFood() {
   const form = document.getElementById('custom-food-form');
   if (!form) return;
@@ -6034,9 +6032,9 @@ async function logCustomFood() {
   showNutritionInsight({ name, calories: cal * portions, protein: protein * portions, carbs: carbs * portions, fat: fat * portions });
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // NUTRITION INSIGHT — Coach Nova powered
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function showNutritionInsight(food) {
   const insightEl = document.getElementById('nutrition-insight');
   if (!insightEl) return;
@@ -6099,9 +6097,9 @@ async function showNutritionInsight(food) {
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // WORKOUT HISTORY
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 let _allHistory = [];
 let _historyFilter = 'all';
 
@@ -6192,9 +6190,9 @@ function renderHistoryPage() {
   }).join('');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // COACH NOVA CHAT HISTORY
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 let _coachHistory = [];
 
 async function loadCoachHistory() {
@@ -6221,9 +6219,9 @@ async function saveCoachHistory() {
   } catch(e) {}
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // REFERRAL SYSTEM
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function getReferralCode() {
   if (!currentUser) return null;
   // Generate deterministic code from user ID
@@ -6276,9 +6274,9 @@ async function checkReferral() {
   } catch(e) {}
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // IN-APP ANNOUNCEMENTS
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 async function loadAnnouncements() {
   if (!window.supabase) return;
   try {
@@ -6322,9 +6320,9 @@ function showAnnouncement(ann) {
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // MEAL PLAN GENERATOR — Pro Feature
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 let _mealPlanPref = 'nigerian';
 let _currentMealPlan = null;
 
@@ -6577,9 +6575,9 @@ async function loadSavedMealPlan() {
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PERIOD TRACKER
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 let _periodMonth = new Date().getMonth();
 let _periodYear  = new Date().getFullYear();
 
@@ -6794,9 +6792,9 @@ function renderPhaseRecommendations(phase) {
     </div>`;
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // ANALYTICS DASHBOARD
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function renderAnalytics() {
   if (!appState.isProUser) {
     // Show locked
@@ -6900,9 +6898,9 @@ function renderAnalytics() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // COACH NOVA MESSAGE LIMIT (Free: 5/day, Pro: Unlimited)
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function getCoachMsgCount() {
   const key = 'fnova_coach_msgs_' + todayStr();
   return parseInt(localStorage.getItem(key) || '0');
@@ -6913,9 +6911,9 @@ function incrementCoachMsg() {
 }
 const FREE_COACH_LIMIT = 5;
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PRO CROWN BADGE on Leaderboard
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function renderLeaderboard() {
   const wrap = document.getElementById('leaderboard-list');
   if (!wrap) return;
@@ -6965,9 +6963,9 @@ function togglePw(inputId, btn) {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // CUSTOM WORKOUT PLAN GENERATOR
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 let _wplanGoal = 'weightloss';
 let _wplanDays = 4;
 
@@ -7151,9 +7149,9 @@ function loadSavedWorkoutPlan() {
   } catch(e) {}
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // BODY MEASUREMENTS
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function getMeasurements() {
   try { return JSON.parse(uGet('fnova_measurements') || '[]'); } catch(e) { return []; }
 }
@@ -7248,9 +7246,9 @@ async function loadMeasurements() {
   renderMeasurements();
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // BMI CALCULATOR
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function calcBMI() {
   const h        = parseFloat(document.getElementById('bmi-height')?.value);
   const w        = parseFloat(document.getElementById('bmi-weight')?.value);
@@ -7314,9 +7312,9 @@ function calcBMI() {
   setStyle('bmi-marker', 'left', pct + '%');
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // STREAK ALERT — 8pm notification if no workout logged today
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function scheduleStreakAlert() {
   if (!appState.isProUser) return;
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
@@ -7343,9 +7341,9 @@ function scheduleStreakAlert() {
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PRO DASHBOARD — renders on home page for Pro users
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function renderProDashboard() {
   const wrap = document.getElementById('pro-dashboard-wrap');
   if (!wrap) return;
@@ -7442,9 +7440,9 @@ function renderProDashboard() {
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // PRO PAGE — Dynamic rendering based on Pro status
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 function renderProPage() {
   const plansWrap   = document.getElementById('pro-plans-wrap');
   const trialBanner = document.getElementById('pro-trial-banner');
@@ -7573,9 +7571,9 @@ function openFoodScannerDirect() {
   input.click();
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 // VOICE TRAINER
-// ══════════════════════════════════════════════════════════════
+// ═══════════
 const VOICE_BASE = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/voice-trainer/';
 
 const VOICE_CLIPS = {
