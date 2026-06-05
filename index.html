@@ -1298,12 +1298,12 @@ select option{background:var(--black3);}
           <div class="ts"><div class="tv" id="ts-rest">0</div><div class="tl">Rest (s)</div></div>
         </div>
         <!-- Voice Trainer Toggle -->
-        <div class="voice-trainer-bar">
+        <div class="voice-trainer-bar" id="voice-trainer-bar">
           <div>
-            <div class="vt-label">🎙️ Voice Trainer</div>
+            <div class="vt-label">🎙️ Voice Trainer <span id="vt-pro-badge" style="display:none;font-size:9px;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;">PRO</span></div>
             <div style="font-size:10px;color:var(--grey);margin-top:2px;" id="vt-status">Off — tap to enable</div>
           </div>
-          <div class="vt-toggle">
+          <div class="vt-toggle" id="vt-buttons">
             <button class="vt-voice-btn" id="vt-female-btn" onclick="setVoiceTrainer('female')">👩 Female</button>
             <button class="vt-voice-btn" id="vt-male-btn" onclick="setVoiceTrainer('male')">👨 Male</button>
             <button class="vt-voice-btn" id="vt-off-btn" onclick="setVoiceTrainer('off')" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15);color:var(--grey);">Off</button>
@@ -3172,6 +3172,8 @@ function navTo(page) {
   document.querySelector('.content').scrollTo(0, 0);
   // Refresh history page when navigated to
   if (page === 'history') loadWorkoutHistory();
+  // Render voice trainer UI based on Pro status
+  if (page === 'workout') renderVoiceTrainerUI();
   // Refresh pro dashboard when going home
   if (page === 'home') renderProDashboard();
   // Load meal plan page
@@ -3746,6 +3748,8 @@ function startWorkout(id) {
   document.getElementById('workout-list-wrap').style.display = 'none';
   document.getElementById('result-banner').style.display = 'none';
   navTo('workout');
+  // Render voice trainer UI
+  setTimeout(() => renderVoiceTrainerUI(), 100);
 }
 
 function startTimer() {
@@ -7733,6 +7737,12 @@ let _voicePlaying = false;
 let _lastClip     = '';
 
 function setVoiceTrainer(mode) {
+  // Pro only
+  if (!appState.isProUser) {
+    showToast('⭐ Pro Feature', 'Upgrade to Pro to unlock your Voice Trainer!');
+    navTo('pro');
+    return;
+  }
   _voiceMode = mode;
 
   // Update button styles
@@ -7821,6 +7831,35 @@ function getVoiceCueForTime(elapsed, totalDuration) {
 function loadVoicePreference() {
   const saved = localStorage.getItem('fnova_voice_mode');
   if (saved && saved !== 'off') setVoiceTrainer(saved);
+}
+
+
+function renderVoiceTrainerUI() {
+  const bar     = document.getElementById('voice-trainer-bar');
+  const buttons = document.getElementById('vt-buttons');
+  const badge   = document.getElementById('vt-pro-badge');
+  const status  = document.getElementById('vt-status');
+  if (!bar) return;
+
+  if (appState.isProUser) {
+    // Show full trainer for Pro
+    if (badge)   badge.style.display   = 'inline';
+    if (buttons) buttons.style.display = 'flex';
+    if (status)  status.textContent    = 'Off — tap to enable';
+    bar.style.opacity = '1';
+    bar.style.cursor  = 'default';
+  } else {
+    // Show locked version for free users
+    if (badge)   badge.style.display   = 'none';
+    if (buttons) buttons.innerHTML = '<button onclick="showVoiceTrainerLock()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--grey);border-radius:99px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;">🔒 Pro Only</button>';
+    if (status)  status.textContent    = 'Upgrade to Pro to unlock';
+    bar.style.opacity = '0.7';
+  }
+}
+
+function showVoiceTrainerLock() {
+  showToast('⭐ Pro Feature', 'Upgrade to Pro to unlock your Voice Trainer!');
+  setTimeout(() => navTo('pro'), 1500);
 }
 
 </script>
