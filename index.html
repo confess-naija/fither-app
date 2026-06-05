@@ -1547,7 +1547,7 @@ select option{background:var(--black3);}
         <div class="sec-label" style="margin-bottom:8px;">Your preference</div>
         <div class="meal-plan-prefs" id="meal-plan-prefs">
           <div class="pref-card selected" onclick="selectMealPref('nigerian',this)">
-            <div class="pc-emoji">🇳🇬</div>
+            <div class="pc-emoji">🍛</div>
             <div class="pc-label">Nigerian</div>
             <div class="pc-sub">Jollof, egusi, suya</div>
           </div>
@@ -4463,7 +4463,7 @@ async function coachSend() {
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 400,
@@ -6023,7 +6023,7 @@ async function handleFoodScan(e) {
       // Call Claude Vision
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 500,
@@ -6231,7 +6231,7 @@ async function showNutritionInsight(food) {
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 80,
@@ -6538,7 +6538,7 @@ Make each day different. Keep foods realistic and commonly available. Total calo
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
@@ -7185,7 +7185,7 @@ Make week 2 slightly harder than week 1, week 3 harder than week 2, week 4 harde
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
