@@ -2592,7 +2592,9 @@ async function doLogin() {
     msg.textContent = '';
     // Check if this returning user somehow never completed onboarding
     const onboardedKey = 'fnova_onboarded_' + data.user.id;
-    if (!localStorage.getItem(onboardedKey)) {
+    // Also check generic key for backwards compatibility
+    const alreadyDone = localStorage.getItem(onboardedKey) || localStorage.getItem('fnova_onboarded');
+    if (!alreadyDone) {
       document.getElementById('auth-loading').style.display = 'none';
       document.getElementById('auth-screen').style.display = 'none';
       showOnboarding();
@@ -3758,8 +3760,8 @@ function startTimer() {
   document.getElementById('timer-state').textContent = 'ACTIVE';
   document.getElementById('btn-start-timer').style.display = 'none';
   document.getElementById('btn-pause-timer').style.display = 'flex';
-  // Play warmup voice clip
-  if (_voiceMode !== 'off') setTimeout(() => playVoiceClip('warmup'), 500);
+  // Play warmup voice clip (Pro only)
+  if (appState.isProUser && _voiceMode !== 'off') setTimeout(() => playVoiceClip('warmup'), 500);
   timerInterval = setInterval(() => {
     timerElapsed++;
     const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
@@ -3768,8 +3770,8 @@ function startTimer() {
     document.getElementById('timer-digits').textContent = fmtTime(timerElapsed);
     document.getElementById('ts-kcal').textContent = kcal;
     document.getElementById('ts-sets').textContent = timerSets;
-    // Voice trainer cues
-    if (_voiceMode !== 'off' && activeWorkout) {
+    // Voice trainer cues (Pro only)
+    if (appState.isProUser && _voiceMode !== 'off' && activeWorkout) {
       const cue = getVoiceCueForTime(timerElapsed, activeWorkout.duration);
       if (cue) playVoiceClip(cue);
     }
@@ -3794,8 +3796,8 @@ async function stopTimer() {
   clearInterval(timerInterval);
   timerRunning = false;
   stopVoiceTrainer();
-  // Play rest clip on stop
-  if (_voiceMode !== 'off') setTimeout(() => playVoiceClip('rest'), 300);
+  // Play rest clip on stop (Pro only)
+  if (appState.isProUser && _voiceMode !== 'off') setTimeout(() => playVoiceClip('rest'), 300);
   const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
   const kcal = Math.round(timerElapsed * kcalRate);
   document.getElementById('timer-section').style.display = 'none';
@@ -5126,6 +5128,7 @@ function isNewUser() {
 function markOnboarded() {
   if (!currentUser) return;
   localStorage.setItem('fnova_onboarded_' + currentUser.id, '1');
+  localStorage.setItem('fnova_onboarded', '1'); // backup key
 }
 
 function selectOnboardGoal(goal, el) {
@@ -7774,6 +7777,8 @@ function setVoiceTrainer(mode) {
 }
 
 function playVoiceClip(clipKey) {
+  // Double-check Pro status — never play for free users
+  if (!appState.isProUser) return;
   if (_voiceMode === 'off') return;
   const clip = VOICE_CLIPS[clipKey];
   if (!clip) return;
