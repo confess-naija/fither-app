@@ -801,6 +801,57 @@ select option{background:var(--black3);}
 .voice-callout{position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);opacity:0;z-index:4000;background:linear-gradient(135deg,#1a0710,#2a0d18);border:1px solid var(--pink);border-radius:16px;padding:12px 20px;font-family:var(--font-head);font-size:15px;font-weight:800;color:#fff;text-align:center;white-space:nowrap;transition:all .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 8px 32px rgba(255,45,107,.3);}
 .voice-callout.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+
+/* ── BARCODE SCANNER ── */
+.barcode-btn{width:100%;height:52px;border-radius:16px;border:none;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(100,180,255,.3);color:#6bbfff;font-family:var(--font-head);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;transition:all .2s;}
+.barcode-btn:hover{background:rgba(100,180,255,.1);}
+.barcode-result{background:var(--black2);border:1px solid var(--black4);border-radius:16px;padding:14px;margin-bottom:12px;display:none;}
+.barcode-result.show{display:block;animation:fadeUp .3s ease;}
+.barcode-product{font-family:var(--font-head);font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;}
+.barcode-brand{font-size:11px;color:var(--grey);margin-bottom:10px;}
+
+/* ── NIGERIAN FOOD SEARCH ── */
+.ng-food-search{position:relative;margin-bottom:10px;}
+.ng-food-search input{padding-right:40px;}
+.ng-search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.ng-food-grid{display:grid;gap:6px;max-height:320px;overflow-y:auto;scrollbar-width:none;}
+.ng-food-grid::-webkit-scrollbar{display:none;}
+.ng-food-item{display:flex;align-items:center;justify-content:space-between;background:var(--black2);border:1px solid var(--black4);border-radius:12px;padding:10px 14px;cursor:pointer;transition:all .2s;}
+.ng-food-item:hover{border-color:var(--pink);background:rgba(255,45,107,.06);}
+.ng-food-item:active{transform:scale(.98);}
+.ng-food-name{font-size:13px;font-weight:600;color:#fff;}
+.ng-food-meta{font-size:11px;color:var(--grey);margin-top:2px;}
+.ng-food-cal{font-family:var(--font-head);font-size:15px;font-weight:800;color:var(--pink-light);}
+.ng-category-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:99px;border:1px solid var(--black4);background:var(--black3);color:var(--grey);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.ng-category-chip.active{background:var(--pink);border-color:var(--pink);color:#fff;}
+.ng-categories{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin-bottom:10px;}
+.ng-categories::-webkit-scrollbar{display:none;}
+
+
+/* ── BARCODE SCANNER ── */
+.barcode-btn{width:100%;height:52px;border-radius:16px;border:none;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(100,180,255,.3);color:#6bbfff;font-family:var(--font-head);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:all .2s;}
+.barcode-btn:hover{background:rgba(100,180,255,.1);}
+.barcode-result{background:var(--black2);border:1px solid var(--black4);border-radius:16px;padding:14px;margin-bottom:10px;display:none;}
+.barcode-result.show{display:block;}
+
+/* ── SMART NIGERIAN FOOD SEARCH ── */
+.food-search-wrap{position:relative;margin-bottom:10px;}
+.food-search-input{width:100%;height:48px;border-radius:14px;background:var(--black2);border:1.5px solid var(--black4);color:#fff;font-size:14px;padding:0 44px 0 14px;box-sizing:border-box;}
+.food-search-input:focus{border-color:var(--pink);outline:none;}
+.food-search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;}
+.food-search-results{background:var(--black2);border:1px solid var(--black4);border-radius:14px;overflow:hidden;margin-bottom:10px;display:none;max-height:320px;overflow-y:auto;}
+.food-search-results.show{display:block;}
+.fsr-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--black4);cursor:pointer;transition:background .15s;}
+.fsr-item:last-child{border-bottom:none;}
+.fsr-item:hover{background:rgba(255,255,255,.05);}
+.fsr-name{font-size:13px;font-weight:600;color:#fff;}
+.fsr-meta{font-size:11px;color:var(--grey);margin-top:2px;}
+.fsr-kcal{font-size:14px;font-weight:800;color:var(--pink-light);}
+.food-category-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none;}
+.food-category-chips::-webkit-scrollbar{display:none;}
+.fcat{padding:6px 14px;border-radius:99px;border:1px solid var(--black4);background:var(--black3);color:var(--grey);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+.fcat.active{background:var(--pink);border-color:var(--pink);color:#fff;}
+
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -1209,13 +1260,45 @@ select option{background:var(--black3);}
 
       <!-- Food Scanner -->
       <div style="margin-bottom:10px;">
-        <button class="scanner-btn" onclick="openFoodScanner()">
-          <div class="scanner-pulse"></div>
-          <span class="sb-icon">📷</span>
-          <span>Scan Food with AI Camera</span>
-          <span style="font-size:10px;background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.4);border-radius:99px;padding:2px 8px;color:#c4b5fd;">NEW</span>
+        <!-- Barcode Scanner Button -->
+        <button class="barcode-btn" onclick="startBarcodeScanner()">
+          <span style="font-size:22px;">📊</span>
+          <div style="text-align:left;">
+            <div style="font-size:13px;font-weight:800;">Scan Barcode</div>
+            <div style="font-size:10px;opacity:.7;">Packaged foods — instant nutrition lookup</div>
+          </div>
         </button>
         <input type="file" id="food-camera-input" accept="image/*" capture="environment" style="display:none;" onchange="handleFoodScan(event)"/>
+
+        <!-- Barcode Result Card -->
+        <div class="barcode-result" id="barcode-result">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-size:28px;">📦</div>
+            <div>
+              <div class="barcode-product" id="barcode-product-name">Product</div>
+              <div class="barcode-brand" id="barcode-brand-name">Brand</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;">
+            <div style="background:rgba(255,45,107,.1);border-radius:10px;padding:8px;text-align:center;">
+              <div style="font-family:var(--font-head);font-size:16px;font-weight:900;color:var(--pink-light);" id="bc-cal">0</div>
+              <div style="font-size:9px;color:var(--grey);">kcal</div>
+            </div>
+            <div style="background:rgba(255,209,102,.1);border-radius:10px;padding:8px;text-align:center;">
+              <div style="font-family:var(--font-head);font-size:16px;font-weight:900;color:var(--gold);" id="bc-protein">0g</div>
+              <div style="font-size:9px;color:var(--grey);">protein</div>
+            </div>
+            <div style="background:rgba(6,214,160,.1);border-radius:10px;padding:8px;text-align:center;">
+              <div style="font-family:var(--font-head);font-size:16px;font-weight:900;color:var(--green);" id="bc-carbs">0g</div>
+              <div style="font-size:9px;color:var(--grey);">carbs</div>
+            </div>
+            <div style="background:rgba(100,180,255,.1);border-radius:10px;padding:8px;text-align:center;">
+              <div style="font-family:var(--font-head);font-size:16px;font-weight:900;color:#6bbfff;" id="bc-fat">0g</div>
+              <div style="font-size:9px;color:var(--grey);">fat</div>
+            </div>
+          </div>
+          <button class="btn btn-pink" onclick="logBarcodeFood()" style="height:40px;font-size:13px;">+ Log This Food</button>
+        </div>
 
         <!-- Scanner Result -->
         <div class="scanner-result-card" id="scanner-result-card">
@@ -1228,7 +1311,51 @@ select option{background:var(--black3);}
         </div>
       </div>
 
+      <!-- Nigerian Food Quick Search -->
+      <div style="margin:10px 0 6px;">
+        <div class="sec-label" style="margin-bottom:8px;">🇳🇬 Nigerian & African Foods</div>
+        <div class="ng-categories" id="ng-categories">
+          <div class="ng-category-chip active" onclick="filterNgFood('all',this)">🍽️ All</div>
+          <div class="ng-category-chip" onclick="filterNgFood('rice',this)">🍚 Rice</div>
+          <div class="ng-category-chip" onclick="filterNgFood('soup',this)">🍲 Soups</div>
+          <div class="ng-category-chip" onclick="filterNgFood('snack',this)">🥟 Snacks</div>
+          <div class="ng-category-chip" onclick="filterNgFood('protein',this)">🍗 Protein</div>
+          <div class="ng-category-chip" onclick="filterNgFood('swallow',this)">🫓 Swallow</div>
+          <div class="ng-category-chip" onclick="filterNgFood('drink',this)">🥤 Drinks</div>
+          <div class="ng-category-chip" onclick="filterNgFood('fruit',this)">🍌 Fruits</div>
+        </div>
+        <div class="ng-food-search">
+          <input type="text" id="ng-food-search-input" placeholder="Search jollof rice, egusi, suya..." oninput="searchNgFood(this.value)"/>
+          <span class="ng-search-icon">🔍</span>
+        </div>
+        <div class="ng-food-grid" id="ng-food-grid"></div>
+      </div>
+
       <!-- Custom Food Entry -->
+      <!-- Smart Nigerian Food Search -->
+      <div class="food-search-wrap">
+        <input type="text" class="food-search-input" id="nigerian-food-search" 
+          placeholder="🔍 Search Nigerian foods... (e.g. jollof rice)" 
+          oninput="searchNigerianFood(this.value)"
+          autocomplete="off"/>
+        <span class="food-search-icon">🍽️</span>
+      </div>
+
+      <!-- Category chips -->
+      <div class="food-category-chips" id="food-cat-chips">
+        <div class="fcat active" onclick="filterFoodCat('all',this)">All</div>
+        <div class="fcat" onclick="filterFoodCat('rice',this)">🍚 Rice</div>
+        <div class="fcat" onclick="filterFoodCat('soup',this)">🍲 Soups</div>
+        <div class="fcat" onclick="filterFoodCat('protein',this)">🍗 Protein</div>
+        <div class="fcat" onclick="filterFoodCat('snack',this)">🍿 Snacks</div>
+        <div class="fcat" onclick="filterFoodCat('drink',this)">🥤 Drinks</div>
+        <div class="fcat" onclick="filterFoodCat('swallow',this)">🫓 Swallows</div>
+        <div class="fcat" onclick="filterFoodCat('breakfast',this)">☀️ Breakfast</div>
+      </div>
+
+      <!-- Search Results -->
+      <div class="food-search-results" id="nigerian-food-results"></div>
+
       <button class="custom-food-toggle" onclick="toggleCustomFood()">
         ✏️ Can't find your food? Add it manually
       </button>
@@ -6217,9 +6344,22 @@ async function handleFoodScan(e) {
   // Show photo preview
   const reader = new FileReader();
   reader.onload = async function(ev) {
-    const base64Full = ev.target.result;
-    const base64Data = base64Full.split(',')[1];
-    const mimeType   = file.type;
+    const img = new Image();
+    img.src = ev.target.result;
+    await new Promise(r => img.onload = r);
+
+    const canvas = document.createElement('canvas');
+    const MAX = 800;
+    const ratio = Math.min(MAX / img.width, MAX / img.height, 1);
+    canvas.width  = Math.round(img.width  * ratio);
+    canvas.height = Math.round(img.height * ratio);
+    const ctx2d = canvas.getContext('2d');
+    ctx2d.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const compressed = canvas.toDataURL('image/jpeg', 0.7);
+    const base64Full = compressed;
+    const base64Data = compressed.split(',')[1];
+    const mimeType   = 'image/jpeg';
 
     if (preview) { preview.src = base64Full; preview.style.display = 'block'; }
 
@@ -8224,6 +8364,263 @@ function renderVoiceTrainerUI() {
 function showVoiceTrainerLock() {
   showToast('⭐ Pro Feature', 'Upgrade to Pro to unlock your Voice Trainer!');
   setTimeout(() => navTo('pro'), 1500);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// NIGERIAN FOOD DATABASE — 150+ foods
+// ══════════════════════════════════════════════════════════════
+const NIGERIAN_FOODS = [
+  // RICE DISHES
+  { name:'Jollof Rice', cal:350, p:7, c:65, f:8, portion:'1 plate (300g)', cat:'rice' },
+  { name:'Fried Rice', cal:380, p:8, c:60, f:12, portion:'1 plate (300g)', cat:'rice' },
+  { name:'White Rice', cal:280, p:5, c:60, f:2, portion:'1 plate (250g)', cat:'rice' },
+  { name:'Coconut Rice', cal:400, p:7, c:68, f:14, portion:'1 plate (300g)', cat:'rice' },
+  { name:'Rice and Beans', cal:320, p:12, c:58, f:5, portion:'1 plate (300g)', cat:'rice' },
+  { name:'Ofada Rice', cal:300, p:6, c:62, f:4, portion:'1 plate (250g)', cat:'rice' },
+  { name:'Basmati Rice', cal:260, p:5, c:57, f:1, portion:'1 plate (200g)', cat:'rice' },
+
+  // SOUPS
+  { name:'Egusi Soup', cal:320, p:18, c:8, f:24, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Ogbono Soup', cal:280, p:15, c:6, f:22, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Edikang Ikong', cal:250, p:20, c:5, f:18, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Pepper Soup (Catfish)', cal:180, p:22, c:4, f:8, portion:'1 bowl (300g)', cat:'soup' },
+  { name:'Pepper Soup (Chicken)', cal:160, p:20, c:3, f:7, portion:'1 bowl (300g)', cat:'soup' },
+  { name:'Banga Soup', cal:290, p:16, c:7, f:22, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Efo Riro', cal:200, p:14, c:8, f:14, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Afang Soup', cal:260, p:18, c:6, f:19, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Okra Soup', cal:180, p:12, c:10, f:12, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Groundnut Soup', cal:350, p:20, c:10, f:26, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Miyan Kuka', cal:150, p:10, c:8, f:9, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Bitter Leaf Soup', cal:220, p:15, c:7, f:16, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Tomato Stew', cal:120, p:5, c:10, f:8, portion:'1 bowl (200g)', cat:'soup' },
+
+  // SWALLOWS
+  { name:'Pounded Yam', cal:330, p:4, c:76, f:1, portion:'1 medium wrap (300g)', cat:'swallow' },
+  { name:'Eba (Garri)', cal:280, p:2, c:68, f:1, portion:'1 medium wrap (250g)', cat:'swallow' },
+  { name:'Fufu', cal:300, p:3, c:72, f:1, portion:'1 medium wrap (280g)', cat:'swallow' },
+  { name:'Amala', cal:250, p:3, c:60, f:1, portion:'1 medium wrap (250g)', cat:'swallow' },
+  { name:'Semolina', cal:270, p:4, c:65, f:1, portion:'1 medium wrap (250g)', cat:'swallow' },
+  { name:'Wheat Swallow', cal:260, p:5, c:60, f:2, portion:'1 medium wrap (250g)', cat:'swallow' },
+  { name:'Tuwo Shinkafa', cal:290, p:4, c:68, f:1, portion:'1 medium wrap (270g)', cat:'swallow' },
+
+  // PROTEIN
+  { name:'Grilled Chicken', cal:165, p:31, c:0, f:4, portion:'1 medium piece (150g)', cat:'protein' },
+  { name:'Fried Chicken', cal:280, p:25, c:10, f:16, portion:'1 medium piece (150g)', cat:'protein' },
+  { name:'Suya (Beef)', cal:220, p:26, c:4, f:11, portion:'1 stick (120g)', cat:'protein' },
+  { name:'Kilishi', cal:350, p:40, c:12, f:16, portion:'100g', cat:'protein' },
+  { name:'Catfish (Grilled)', cal:140, p:25, c:0, f:4, portion:'1 medium piece (150g)', cat:'protein' },
+  { name:'Tilapia (Fried)', cal:200, p:28, c:5, f:8, portion:'1 medium piece (150g)', cat:'protein' },
+  { name:'Beef (Stewed)', cal:250, p:28, c:3, f:14, portion:'1 portion (150g)', cat:'protein' },
+  { name:'Goat Meat (Stewed)', cal:230, p:27, c:2, f:13, portion:'1 portion (150g)', cat:'protein' },
+  { name:'Boiled Eggs', cal:155, p:13, c:1, f:11, portion:'2 eggs', cat:'protein' },
+  { name:'Fried Eggs', cal:185, p:12, c:1, f:15, portion:'2 eggs', cat:'protein' },
+  { name:'Titus Fish (Mackerel)', cal:190, p:24, c:0, f:10, portion:'1 medium piece (150g)', cat:'protein' },
+  { name:'Stockfish', cal:120, p:26, c:0, f:2, portion:'100g', cat:'protein' },
+  { name:'Prawns (Grilled)', cal:100, p:20, c:1, f:2, portion:'100g', cat:'protein' },
+  { name:'Turkey (Stewed)', cal:200, p:28, c:2, f:9, portion:'1 portion (150g)', cat:'protein' },
+
+  // SNACKS
+  { name:'Puff Puff', cal:180, p:3, c:22, f:9, portion:'3 pieces (100g)', cat:'snack' },
+  { name:'Chin Chin', cal:420, p:7, c:58, f:18, portion:'1 cup (80g)', cat:'snack' },
+  { name:'Akara (Bean Cake)', cal:160, p:8, c:18, f:7, portion:'3 pieces (100g)', cat:'snack' },
+  { name:'Boli (Roasted Plantain)', cal:220, p:2, c:52, f:1, portion:'1 medium (200g)', cat:'snack' },
+  { name:'Fried Plantain (Dodo)', cal:240, p:2, c:50, f:7, portion:'6 slices (150g)', cat:'snack' },
+  { name:'Boiled Plantain', cal:180, p:2, c:45, f:1, portion:'1 medium (200g)', cat:'snack' },
+  { name:'Groundnut (Peanuts)', cal:280, p:13, c:8, f:24, portion:'handful (50g)', cat:'snack' },
+  { name:'Kuli Kuli', cal:380, p:18, c:20, f:26, portion:'100g', cat:'snack' },
+  { name:'Roasted Corn', cal:130, p:4, c:28, f:2, portion:'1 medium cob (150g)', cat:'snack' },
+  { name:'Biscuits (Rich Tea)', cal:130, p:2, c:22, f:4, portion:'4 biscuits (30g)', cat:'snack' },
+  { name:'Meat Pie', cal:320, p:10, c:35, f:16, portion:'1 piece (150g)', cat:'snack' },
+  { name:'Fish Roll', cal:280, p:8, c:32, f:13, portion:'1 piece (120g)', cat:'snack' },
+  { name:'Doughnuts', cal:300, p:4, c:38, f:15, portion:'1 medium (80g)', cat:'snack' },
+
+  // BREAKFAST
+  { name:'Oatmeal (Pap/Akamu)', cal:120, p:3, c:26, f:2, portion:'1 bowl (250ml)', cat:'breakfast' },
+  { name:'Ogi (Corn Pap)', cal:100, p:2, c:23, f:1, portion:'1 bowl (250ml)', cat:'breakfast' },
+  { name:'Moi Moi', cal:200, p:11, c:22, f:8, portion:'1 wrap (200g)', cat:'breakfast' },
+  { name:'Bread (White Sliced)', cal:130, p:4, c:25, f:2, portion:'2 slices (60g)', cat:'breakfast' },
+  { name:'Bread (Whole Wheat)', cal:120, p:5, c:22, f:2, portion:'2 slices (60g)', cat:'breakfast' },
+  { name:'Agege Bread', cal:160, p:4, c:30, f:3, portion:'2 slices (70g)', cat:'breakfast' },
+  { name:'Indomie Noodles', cal:330, p:8, c:52, f:11, portion:'1 pack (70g)', cat:'breakfast' },
+  { name:'Golden Morn Cereal', cal:140, p:3, c:30, f:2, portion:'1 bowl (40g)', cat:'breakfast' },
+  { name:'Cornflakes', cal:130, p:3, c:29, f:1, portion:'1 bowl (35g)', cat:'breakfast' },
+  { name:'Yam (Boiled)', cal:180, p:3, c:42, f:1, portion:'2 medium pieces (200g)', cat:'breakfast' },
+  { name:'Yam (Fried)', cal:250, p:3, c:45, f:8, portion:'2 medium pieces (200g)', cat:'breakfast' },
+  { name:'Sweet Potato (Boiled)', cal:160, p:2, c:37, f:1, portion:'1 medium (200g)', cat:'breakfast' },
+
+  // DRINKS
+  { name:'Zobo (Hibiscus Drink)', cal:60, p:1, c:14, f:0, portion:'1 glass (300ml)', cat:'drink' },
+  { name:'Kunu', cal:120, p:2, c:28, f:1, portion:'1 glass (300ml)', cat:'drink' },
+  { name:'Fura de Nono', cal:150, p:6, c:20, f:5, portion:'1 cup (250ml)', cat:'drink' },
+  { name:'Chapman', cal:180, p:1, c:44, f:0, portion:'1 glass (350ml)', cat:'drink' },
+  { name:'Malt Drink', cal:180, p:2, c:42, f:0, portion:'1 bottle (330ml)', cat:'drink' },
+  { name:'Coca Cola', cal:140, p:0, c:39, f:0, portion:'1 can (330ml)', cat:'drink' },
+  { name:'Fanta', cal:145, p:0, c:40, f:0, portion:'1 can (330ml)', cat:'drink' },
+  { name:'Lucozade Boost', cal:130, p:0, c:32, f:0, portion:'1 bottle (380ml)', cat:'drink' },
+  { name:'Peak Milk (Whole)', cal:160, p:8, c:12, f:8, portion:'1 cup (250ml)', cat:'drink' },
+  { name:'Soy Milk', cal:100, p:7, c:8, f:4, portion:'1 cup (250ml)', cat:'drink' },
+  { name:'Water', cal:0, p:0, c:0, f:0, portion:'1 glass (300ml)', cat:'drink' },
+  { name:'Green Tea', cal:5, p:0, c:1, f:0, portion:'1 cup (250ml)', cat:'drink' },
+  { name:'Bournvita', cal:120, p:3, c:24, f:2, portion:'1 cup (250ml)', cat:'drink' },
+  { name:'Lipton Tea (with milk)', cal:60, p:2, c:8, f:2, portion:'1 cup (250ml)', cat:'drink' },
+
+  // EXTRA POPULAR
+  { name:'Beans (Brown, Boiled)', cal:220, p:14, c:38, f:3, portion:'1 bowl (250g)', cat:'soup' },
+  { name:'Beans Porridge', cal:280, p:15, c:42, f:7, portion:'1 bowl (300g)', cat:'soup' },
+  { name:'Plantain Porridge', cal:320, p:8, c:60, f:8, portion:'1 bowl (300g)', cat:'soup' },
+  { name:'Yam Porridge (Asaro)', cal:300, p:6, c:62, f:7, portion:'1 bowl (300g)', cat:'soup' },
+  { name:'Nkwobi', cal:380, p:22, c:8, f:30, portion:'1 bowl (200g)', cat:'protein' },
+  { name:'Isi Ewu', cal:350, p:25, c:5, f:27, portion:'1 bowl (200g)', cat:'protein' },
+  { name:'Shawarma', cal:420, p:22, c:45, f:16, portion:'1 wrap (250g)', cat:'snack' },
+  { name:'Chicken Burger', cal:380, p:20, c:38, f:16, portion:'1 burger (200g)', cat:'snack' },
+  { name:'Chips (French Fries)', cal:320, p:4, c:42, f:15, portion:'1 portion (150g)', cat:'snack' },
+  { name:'Fried Yam', cal:280, p:4, c:52, f:8, portion:'1 portion (200g)', cat:'snack' },
+  { name:'Avocado', cal:160, p:2, c:9, f:15, portion:'1 medium (150g)', cat:'snack' },
+  { name:'Banana', cal:90, p:1, c:23, f:0, portion:'1 medium (100g)', cat:'snack' },
+  { name:'Mango', cal:100, p:1, c:25, f:1, portion:'1 medium (200g)', cat:'snack' },
+  { name:'Watermelon', cal:50, p:1, c:12, f:0, portion:'1 slice (300g)', cat:'snack' },
+  { name:'Orange', cal:60, p:1, c:15, f:0, portion:'1 medium (150g)', cat:'snack' },
+  { name:'Apple', cal:80, p:0, c:21, f:0, portion:'1 medium (150g)', cat:'snack' },
+];
+
+let _foodCatFilter = 'all';
+
+function searchNigerianFood(query) {
+  const resultsEl = document.getElementById('nigerian-food-results');
+  if (!resultsEl) return;
+
+  const q = query.trim().toLowerCase();
+  if (q.length < 1) {
+    resultsEl.classList.remove('show');
+    return;
+  }
+
+  let results = NIGERIAN_FOODS.filter(f => {
+    const matchQuery = f.name.toLowerCase().includes(q);
+    const matchCat   = _foodCatFilter === 'all' || f.cat === _foodCatFilter;
+    return matchQuery && matchCat;
+  }).slice(0, 12);
+
+  if (results.length === 0) {
+    resultsEl.innerHTML = '<div style="padding:14px;text-align:center;color:var(--grey);font-size:13px;">No results — try adding it manually below</div>';
+    resultsEl.classList.add('show');
+    return;
+  }
+
+  resultsEl.innerHTML = results.map(f => `
+    <div class="fsr-item" onclick="quickAddFood('${f.name.replace(/'/g,'')}',${f.cal},${f.p},${f.c},${f.f})">
+      <div>
+        <div class="fsr-name">${f.name}</div>
+        <div class="fsr-meta">${f.portion} · ${f.p}g protein · ${f.c}g carbs · ${f.f}g fat</div>
+      </div>
+      <div class="fsr-kcal">${f.cal}<span style="font-size:9px;color:var(--grey);"> kcal</span></div>
+    </div>`).join('');
+
+  resultsEl.classList.add('show');
+}
+
+function filterFoodCat(cat, el) {
+  _foodCatFilter = cat;
+  document.querySelectorAll('.fcat').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  const q = document.getElementById('nigerian-food-search')?.value || '';
+  if (q.length >= 1) {
+    searchNigerianFood(q);
+  } else {
+    // Show all in this category
+    showFoodCategory(cat);
+  }
+}
+
+function showFoodCategory(cat) {
+  const resultsEl = document.getElementById('nigerian-food-results');
+  if (!resultsEl) return;
+
+  let results = cat === 'all'
+    ? NIGERIAN_FOODS.slice(0, 12)
+    : NIGERIAN_FOODS.filter(f => f.cat === cat).slice(0, 15);
+
+  resultsEl.innerHTML = results.map(f => `
+    <div class="fsr-item" onclick="quickAddFood('${f.name.replace(/'/g,'')}',${f.cal},${f.p},${f.c},${f.f})">
+      <div>
+        <div class="fsr-name">${f.name}</div>
+        <div class="fsr-meta">${f.portion} · ${f.p}g protein · ${f.c}g carbs</div>
+      </div>
+      <div class="fsr-kcal">${f.cal}<span style="font-size:9px;color:var(--grey);"> kcal</span></div>
+    </div>`).join('');
+
+  resultsEl.classList.add('show');
+}
+
+async function quickAddFood(name, cal, protein, carbs, fat) {
+  // Clear search
+  const searchEl = document.getElementById('nigerian-food-search');
+  const resultsEl = document.getElementById('nigerian-food-results');
+  if (searchEl) searchEl.value = '';
+  if (resultsEl) resultsEl.classList.remove('show');
+
+  await saveMealEntry({ name, calories: cal, protein, carbs, fat, portions: 1 });
+  showToast('✅ ' + name + ' added!', cal + ' kcal logged');
+  showNutritionInsight({ name, calories: cal, protein, carbs, fat });
+}
+
+// ══════════════════════════════════════════════════════════════
+// BARCODE SCANNER — Open Food Facts API (free, no key needed)
+// ══════════════════════════════════════════════════════════════
+async function startBarcodeScanner() {
+  // Show barcode input
+  let barcode = prompt('Enter barcode number from the package:');
+  if (!barcode || barcode.trim().length < 5) return;
+  barcode = barcode.trim();
+
+  showToast('🔍 Looking up...', 'Searching Open Food Facts database');
+
+  try {
+    const resp = await fetch(
+      'https://world.openfoodfacts.org/api/v2/product/' + barcode + '.json'
+    );
+    const data = await resp.json();
+
+    if (data.status !== 1 || !data.product) {
+      showToast('Not found', 'Product not in database. Add it manually below.');
+      return;
+    }
+
+    const p    = data.product;
+    const name = p.product_name || p.product_name_en || 'Unknown Product';
+    const n    = p.nutriments || {};
+    const cal  = Math.round(n['energy-kcal_100g'] || n['energy-kcal'] || 0);
+    const prot = Math.round(n['proteins_100g'] || 0);
+    const carb = Math.round(n['carbohydrates_100g'] || 0);
+    const fat  = Math.round(n['fat_100g'] || 0);
+
+    if (cal === 0) {
+      showToast('Incomplete data', 'Nutrition info missing for this product.');
+      return;
+    }
+
+    // Show result and confirm
+    const confirmed = confirm(
+      name + '\n\n' +
+      'Per 100g:\n' +
+      '🔥 Calories: ' + cal + ' kcal\n' +
+      '💪 Protein: ' + prot + 'g\n' +
+      '🍞 Carbs: ' + carb + 'g\n' +
+      '🧈 Fat: ' + fat + 'g\n\n' +
+      'Add to food log?'
+    );
+
+    if (confirmed) {
+      await saveMealEntry({ name, calories: cal, protein: prot, carbs: carb, fat, portions: 1 });
+      showToast('✅ ' + name + ' logged!', cal + ' kcal per 100g added');
+    }
+
+  } catch(err) {
+    showToast('Error', 'Could not fetch product. Check your connection.');
+    console.warn('Barcode lookup failed:', err.message);
+  }
 }
 
 </script>
