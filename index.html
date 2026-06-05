@@ -6547,15 +6547,19 @@ Make each day different. Keep foods realistic and commonly available. Total calo
       })
     });
 
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error('API error ' + resp.status + ': ' + (errData.error?.message || resp.statusText));
+    }
     const data = await resp.json();
-    if (!data.content || !data.content[0]) throw new Error('No response');
+    if (!data.content || !data.content[0]) throw new Error('No response from API');
 
     let plan;
     try {
       const raw = data.content[0].text.replace(/```json|```/g, '').trim();
       plan = JSON.parse(raw);
     } catch(e) {
-      throw new Error('Could not parse meal plan');
+      throw new Error('Could not parse meal plan response');
     }
 
     if (!Array.isArray(plan) || plan.length === 0) throw new Error('Invalid plan format');
@@ -6577,11 +6581,14 @@ Make each day different. Keep foods realistic and commonly available. Total calo
     showToast('Your meal plan is ready!', '7 days of personalized meals just for you 🍽️');
 
   } catch(err) {
-    console.warn('Meal plan error:', err);
+    console.error('Meal plan error:', err);
+    // Show detailed error for debugging
+    const errMsg = err && err.message ? err.message : 'Unknown error';
     output.innerHTML = `
       <div style="text-align:center;padding:30px 0;color:var(--grey);font-size:13px;">
         <div style="font-size:40px;margin-bottom:12px;">😔</div>
         Could not generate plan. Check your connection and try again.
+        <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:8px;">${errMsg}</div>
         <br/><button class="gen-btn" style="margin:14px auto 0;max-width:220px;" onclick="generateMealPlan()">Try Again</button>
       </div>`;
     btn.disabled = false;
