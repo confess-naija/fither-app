@@ -1249,14 +1249,7 @@ select option{background:var(--black3);}
         </div>
       </div>
 
-      <!-- Filter -->
-      <div class="filter-scroll" id="food-filter">
-        <div class="chip active" onclick="filterFood('all',this)">All</div>
-        <div class="chip" onclick="filterFood('healthy',this)">🥦 Healthy</div>
-        <div class="chip" onclick="filterFood('highprotein',this)">💪 High Protein</div>
-        <div class="chip" onclick="filterFood('weightloss',this)">⚡ Weight Loss</div>
-        <div class="chip" onclick="filterFood('african',this)">🌍 African</div>
-      </div>
+
 
       <!-- Food Scanner -->
       <div style="margin-bottom:10px;">
@@ -1312,27 +1305,7 @@ select option{background:var(--black3);}
       </div>
 
       <!-- Nigerian Food Quick Search -->
-      <div style="margin:10px 0 6px;">
-        <div class="sec-label" style="margin-bottom:8px;">🇳🇬 Nigerian & African Foods</div>
-        <div class="ng-categories" id="ng-categories">
-          <div class="ng-category-chip active" onclick="filterNgFood('all',this)">🍽️ All</div>
-          <div class="ng-category-chip" onclick="filterNgFood('rice',this)">🍚 Rice</div>
-          <div class="ng-category-chip" onclick="filterNgFood('soup',this)">🍲 Soups</div>
-          <div class="ng-category-chip" onclick="filterNgFood('snack',this)">🥟 Snacks</div>
-          <div class="ng-category-chip" onclick="filterNgFood('protein',this)">🍗 Protein</div>
-          <div class="ng-category-chip" onclick="filterNgFood('swallow',this)">🫓 Swallow</div>
-          <div class="ng-category-chip" onclick="filterNgFood('drink',this)">🥤 Drinks</div>
-          <div class="ng-category-chip" onclick="filterNgFood('fruit',this)">🍌 Fruits</div>
-        </div>
-        <div class="ng-food-search">
-          <input type="text" id="ng-food-search-input" placeholder="Search jollof rice, egusi, suya..." oninput="searchNgFood(this.value)"/>
-          <span class="ng-search-icon">🔍</span>
-        </div>
-        <div class="ng-food-grid" id="ng-food-grid"></div>
-      </div>
-
-      <!-- Custom Food Entry -->
-      <!-- Smart Nigerian Food Search -->
+<!-- Smart Nigerian Food Search -->
       <div class="food-search-wrap">
         <input type="text" class="food-search-input" id="nigerian-food-search" 
           placeholder="🔍 Search Nigerian foods... (e.g. jollof rice)" 
