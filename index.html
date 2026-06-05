@@ -7997,6 +7997,23 @@ function getAudioCtx() {
   return _audioCtx;
 }
 
+function duckMusic(duck) {
+  // Reduce music volume when voice plays, restore after
+  if (!window._fhnAudio) return;
+  const target = duck ? 0.15 : 1.0; // duck to 15%, restore to 100%
+  const step   = duck ? -0.05 : 0.05;
+  const current = window._fhnAudio.volume;
+  // Smooth fade
+  let vol = current;
+  const interval = setInterval(() => {
+    vol = Math.max(0, Math.min(1, vol + step));
+    if (window._fhnAudio) window._fhnAudio.volume = vol;
+    if ((duck && vol <= target) || (!duck && vol >= target)) {
+      clearInterval(interval);
+    }
+  }, 30);
+}
+
 function playVoiceClip(clipKey) {
   // Double-check Pro status — never play for free users
   if (!appState.isProUser) return;
@@ -8011,6 +8028,9 @@ function playVoiceClip(clipKey) {
   if (_voiceAudio) {
     try { _voiceAudio.pause(); _voiceAudio.src = ''; } catch(e) {}
   }
+
+  // 🎵 Duck music down when voice starts
+  duckMusic(true);
 
   // Show callout text
   showVoiceCallout(clip.label);
@@ -8070,6 +8090,14 @@ function playVoiceClip(clipKey) {
     }
   }, { once: true });
 
+  // 🎵 Restore music volume when voice clip ends
+  audio.addEventListener('ended', () => {
+    duckMusic(false);
+  });
+  audio.addEventListener('error', () => {
+    duckMusic(false);
+  });
+
   audio.load();
 }
 
@@ -8087,6 +8115,8 @@ function stopVoiceTrainer() {
     _voiceAudio = null;
   }
   _lastClip = '';
+  // 🎵 Restore music volume when trainer stops
+  duckMusic(false);
   const el = document.getElementById('voice-callout');
   if (el) el.classList.remove('show');
 }
