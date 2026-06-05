@@ -6590,30 +6590,86 @@ function showReferralCard() {
   const code = getReferralCode();
   if (!code) return;
   const link = 'https://fither-app-one.vercel.app?ref=' + code;
-  const text = 'Join me on FitHerNova - the best womens wellness app! Use my link: ' + link;
+  const shareText = 'Join me on FitHerNova - the best fitness app for African women! Use my link: ' + link;
 
-  // Show toast with copy option
-  const toastEl = document.getElementById('notif-toast');
-  document.getElementById('nt-icon').textContent = '🎁';
-  document.getElementById('nt-title').textContent = 'Your referral code: ' + code;
-  document.getElementById('nt-sub').textContent = 'Share your link — friend signs up = 7 days Pro free!';
-  const btn = document.querySelector('.nt-btn');
-  if (btn) {
-    btn.textContent = 'Share';
-    btn.onclick = function() {
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('Referral link copied!', 'Share it on WhatsApp or Instagram');
-      });
-      btn.textContent = 'OK';
-      btn.onclick = dismissToast;
-      dismissToast();
-    };
+  // Show a proper modal instead of toast
+  // Remove existing modal if any
+  const existingModal = document.getElementById('referral-modal');
+  if (existingModal) existingModal.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'referral-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:#1a1a1a;border:1px solid rgba(255,209,102,.3);border-radius:22px;padding:24px;width:100%;max-width:380px;">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:40px;margin-bottom:8px;">🎁</div>
+        <div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:#fff;">Your Referral Link</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;">Share with friends — when they sign up you both get 7 days Pro free!</div>
+      </div>
+
+      <!-- Link box -->
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 14px;margin-bottom:14px;word-break:break-all;font-size:12px;color:var(--gold);" id="ref-link-display">
+        ${link}
+      </div>
+
+      <!-- Referral code -->
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:11px;color:var(--grey);margin-bottom:4px;">Your code</div>
+        <div style="font-family:var(--font-head);font-size:22px;font-weight:900;color:var(--gold);letter-spacing:3px;">${code}</div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display:grid;gap:8px;">
+        <button onclick="copyReferralLink('${link}')" style="height:46px;border-radius:14px;border:none;background:var(--pink);color:#fff;font-family:var(--font-head);font-size:14px;font-weight:800;cursor:pointer;">📋 Copy Link</button>
+        <button onclick="shareReferralLink('${shareText}')" style="height:46px;border-radius:14px;border:none;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);color:#25d366;font-family:var(--font-head);font-size:14px;font-weight:800;cursor:pointer;">💬 Share on WhatsApp</button>
+        <button onclick="document.getElementById('referral-modal').remove()" style="height:40px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:none;color:var(--grey);font-size:13px;cursor:pointer;">Close</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) modal.remove();
+  });
+}
+
+function copyReferralLink(link) {
+  // Try modern clipboard API first
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link).then(() => {
+      showToast('✅ Link copied!', 'Now paste it on WhatsApp or Instagram');
+    }).catch(() => fallbackCopy(link));
+  } else {
+    fallbackCopy(link);
   }
-  toastEl.classList.add('show');
-  setTimeout(() => {
-    toastEl.classList.remove('show');
-    if (btn) { btn.textContent = 'OK'; btn.onclick = dismissToast; }
-  }, 8000);
+}
+
+function fallbackCopy(text) {
+  // Fallback for browsers that block clipboard API
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('✅ Link copied!', 'Now paste it on WhatsApp or Instagram');
+  } catch(e) {
+    showToast('Copy failed', 'Long press the link above to copy it manually');
+  }
+  document.body.removeChild(ta);
+}
+
+function shareReferralLink(text) {
+  // Use Web Share API if available (mobile)
+  if (navigator.share) {
+    navigator.share({ text: text }).catch(() => {});
+  } else {
+    // Fallback to WhatsApp web
+    const waUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+    window.open(waUrl, '_blank');
+  }
 }
 
 async function checkReferral() {
