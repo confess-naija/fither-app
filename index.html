@@ -7776,13 +7776,23 @@ function setVoiceTrainer(mode) {
   if (mode !== 'off') showToast('🎙️ Voice trainer ON!', 'Your trainer will guide you through the workout');
 }
 
+// Web Audio context for bass boost
+let _audioCtx = null;
+
+function getAudioCtx() {
+  if (!_audioCtx) {
+    try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  return _audioCtx;
+}
+
 function playVoiceClip(clipKey) {
   // Double-check Pro status — never play for free users
   if (!appState.isProUser) return;
   if (_voiceMode === 'off') return;
   const clip = VOICE_CLIPS[clipKey];
   if (!clip) return;
-  if (_lastClip === clipKey) return; // avoid repeating same clip
+  if (_lastClip === clipKey) return;
 
   _lastClip = clipKey;
 
@@ -7794,10 +7804,62 @@ function playVoiceClip(clipKey) {
   // Show callout text
   showVoiceCallout(clip.label);
 
-  // Play audio
-  _voiceAudio = new Audio(VOICE_BASE + clip.f);
-  _voiceAudio.volume = 0.9;
-  _voiceAudio.play().catch(e => console.warn('Voice clip failed:', e.message));
+  // Play with bass boost via Web Audio API
+  const audio = new Audio(VOICE_BASE + clip.f);
+  audio.crossOrigin = 'anonymous';
+  audio.volume = 1.0;
+  _voiceAudio = audio;
+
+  audio.addEventListener('canplay', () => {
+    try {
+      const ctx = getAudioCtx();
+      if (!ctx) { audio.play(); return; }
+
+      // Resume context if suspended (browser autoplay policy)
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const source   = ctx.createMediaElementSource(audio);
+
+      // Bass boost — low shelf filter
+      const bass = ctx.createBiquadFilter();
+      bass.type      = 'lowshelf';
+      bass.frequency.value = 200;  // boost below 200Hz
+      bass.gain.value      = 10;   // +10dB bass boost
+
+      // Treble cut — reduce harshness
+      const treble = ctx.createBiquadFilter();
+      treble.type      = 'highshelf';
+      treble.frequency.value = 4000;
+      treble.gain.value      = -3;  // slight treble reduction
+
+      // Compressor — makes voice punchier and louder
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -20;
+      compressor.knee.value      = 10;
+      compressor.ratio.value     = 4;
+      compressor.attack.value    = 0.003;
+      compressor.release.value   = 0.15;
+
+      // Gain boost
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = 1.4; // 40% louder
+
+      // Chain: source → bass → treble → compressor → gain → output
+      source.connect(bass);
+      bass.connect(treble);
+      treble.connect(compressor);
+      compressor.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      audio.play().catch(e => console.warn('Voice play failed:', e.message));
+    } catch(e) {
+      // Fallback to plain audio if Web Audio fails
+      console.warn('Web Audio failed, using plain audio:', e.message);
+      audio.play().catch(err => console.warn('Fallback play failed:', err.message));
+    }
+  }, { once: true });
+
+  audio.load();
 }
 
 function showVoiceCallout(text) {
