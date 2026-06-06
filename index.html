@@ -5631,8 +5631,11 @@ window.addEventListener('appinstalled', () => {
 // Service Worker — enables offline use + PWA
 if ('serviceWorker' in navigator) {
   const swCode = `
-const CACHE = 'fithernova-v3';
+const CACHE = 'fithernova-v' + Date.now().toString().slice(-4);
 const CORE  = ['/'];
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
@@ -5676,8 +5679,22 @@ self.addEventListener('notificationclick', e => {
   try {
     const blob = new Blob([swCode], { type: 'application/javascript' });
     const url  = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(url, { scope: '/' })
-      .then(() => console.log('FitHerNova SW active'))
+    navigator.serviceWorker.register(url, { scope: '/', updateViaCache: 'none' })
+      .then(reg => {
+        console.log('FitHerNova SW active');
+        reg.update();
+        reg.addEventListener('updatefound', () => {
+          const newW = reg.installing;
+          if (newW) {
+            newW.addEventListener('statechange', () => {
+              if (newW.state === 'installed' && navigator.serviceWorker.controller) {
+                newW.postMessage({ type: 'SKIP_WAITING' });
+                setTimeout(() => window.location.reload(), 500);
+              }
+            });
+          }
+        });
+      })
       .catch(() => navigator.serviceWorker.register('/sw.js').catch(() => {}));
   } catch(e) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
