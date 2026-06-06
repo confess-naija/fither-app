@@ -2745,8 +2745,12 @@ window.stopAllAudio = function() {
 // UTILITIES
 // ═══════════
 function todayStr() {
+  // Use LOCAL date not UTC — important for Nigerian time (WAT = UTC+1)
   const d = new Date();
-  return d.toISOString().split('T')[0]; // YYYY-MM-DD
+  const year  = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day   = String(d.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day; // YYYY-MM-DD local time
 }
 
 function fmtTime(sec) {
@@ -5343,10 +5347,13 @@ async function updateDailyStreak() {
       return;
     }
 
-    // Calculate yesterday
+    // Calculate yesterday using LOCAL time
     const yDate = new Date();
     yDate.setDate(yDate.getDate() - 1);
-    const yesterday = yDate.toISOString().split('T')[0];
+    const yYear  = yDate.getFullYear();
+    const yMonth = String(yDate.getMonth() + 1).padStart(2, '0');
+    const yDay   = String(yDate.getDate()).padStart(2, '0');
+    const yesterday = yYear + '-' + yMonth + '-' + yDay;
 
     let newStreak;
     if (lastLogin === yesterday) {
