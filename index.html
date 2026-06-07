@@ -1226,6 +1226,12 @@ select option{background:var(--black3);}
     <!-- ══ FOOD PAGE ══ -->
     <div class="page" id="page-food">
       <div class="sec-label" style="margin-bottom:14px;">🥗 Calorie Tracker</div>
+      <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,#171717,#101010);border:1px solid rgba(255,45,107,.22);">
+        <div style="font-family:var(--font-head);font-size:15px;font-weight:900;margin-bottom:6px;">🌍 Global + African Food Library</div>
+        <div style="font-size:12px;color:var(--grey);line-height:1.55;">
+          Explore healthy meals from global, African, Black American, and culturally inspired options — with calorie-friendly choices to support your fitness journey.
+        </div>
+      </div>
       <div class="ring-section" style="margin-bottom:14px;">
         <div class="ring-wrap">
           <svg width="88" height="88" viewBox="0 0 100 100">
@@ -1308,11 +1314,11 @@ select option{background:var(--black3);}
         </div>
       </div>
 
-      <!-- Nigerian Food Quick Search -->
-<!-- Smart Nigerian Food Search -->
+      <!-- Global + African Food Quick Search -->
+<!-- Smart Global Food Search -->
       <div class="food-search-wrap">
         <input type="text" class="food-search-input" id="nigerian-food-search" 
-          placeholder="🔍 Search Nigerian foods... (e.g. jollof rice)" 
+          placeholder="🔍 Search global, African or Black American meals..." 
           oninput="searchNigerianFood(this.value)"
           autocomplete="off"/>
         <span class="food-search-icon">🍽️</span>
@@ -1321,13 +1327,15 @@ select option{background:var(--black3);}
       <!-- Category chips -->
       <div class="food-category-chips" id="food-cat-chips">
         <div class="fcat active" onclick="filterFoodCat('all',this)">All</div>
-        <div class="fcat" onclick="filterFoodCat('rice',this)">🍚 Rice</div>
-        <div class="fcat" onclick="filterFoodCat('soup',this)">🍲 Soups</div>
-        <div class="fcat" onclick="filterFoodCat('protein',this)">🍗 Protein</div>
-        <div class="fcat" onclick="filterFoodCat('snack',this)">🍿 Snacks</div>
-        <div class="fcat" onclick="filterFoodCat('drink',this)">🥤 Drinks</div>
-        <div class="fcat" onclick="filterFoodCat('swallow',this)">🫓 Swallows</div>
+        <div class="fcat" onclick="filterFoodCat('global',this)">🌍 Global Meals</div>
+        <div class="fcat" onclick="filterFoodCat('african',this)">🌿 African Meals</div>
+        <div class="fcat" onclick="filterFoodCat('blackamerican',this)">🖤 Black American</div>
+        <div class="fcat" onclick="filterFoodCat('cultural',this)">✨ Culturally Inspired</div>
+        <div class="fcat" onclick="filterFoodCat('lowcal',this)">🥗 Low-Calorie</div>
         <div class="fcat" onclick="filterFoodCat('breakfast',this)">☀️ Breakfast</div>
+        <div class="fcat" onclick="filterFoodCat('lunch',this)">🌞 Lunch</div>
+        <div class="fcat" onclick="filterFoodCat('dinner',this)">🌙 Dinner</div>
+        <div class="fcat" onclick="filterFoodCat('snack',this)">🍿 Snacks</div>
       </div>
 
       <!-- Search Results -->
@@ -5332,88 +5340,65 @@ async function updateDailyStreak() {
   const today = todayStr();
 
   try {
-    // Load current streak + last_login_date from Supabase
     const { data, error } = await window.supabase
       .from('user_goals')
       .select('streak, last_login_date')
       .eq('user_id', currentUser.id)
       .maybeSingle();
 
-    if (error) throw error;
+    const lastLogin = data?.last_login_date || '';
+    const savedStreak = data?.streak || 0;
 
-    const lastLogin    = data?.last_login_date || '';
-    const savedStreak  = data?.streak || 0;
-
-    // Already logged in today — no change needed
+    // Already logged in today — no change
     if (lastLogin === today) {
       appState.streak = savedStreak;
       updateHomeStats();
       return;
     }
 
-    // Calculate yesterday using LOCAL time
-    const yDate = new Date();
-    yDate.setDate(yDate.getDate() - 1);
-    const yYear  = yDate.getFullYear();
-    const yMonth = String(yDate.getMonth() + 1).padStart(2, '0');
-    const yDay   = String(yDate.getDate()).padStart(2, '0');
-    const yesterday = yYear + '-' + yMonth + '-' + yDay;
+    // Calculate yesterday
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yStr = yesterday.getFullYear() + '-' +
+      String(yesterday.getMonth() + 1).padStart(2, '0') + '-' +
+      String(yesterday.getDate()).padStart(2, '0');
 
     let newStreak;
-    if (lastLogin === yesterday) {
-      // Consecutive day — increment
-      newStreak = savedStreak + 1;
+    if (lastLogin === yStr) {
+      newStreak = savedStreak + 1; // consecutive day
     } else if (!lastLogin) {
-      // First ever login
-      newStreak = 1;
+      newStreak = 1; // first ever login
     } else {
-      // Check if they missed more than 1 day
-      const lastDate   = new Date(lastLogin);
-      const todayDate  = new Date(today);
-      const diffDays   = Math.floor((todayDate - lastDate) / (1000*60*60*24));
-      if (diffDays === 1) {
-        // Consecutive — increment
-        newStreak = savedStreak + 1;
-      } else if (diffDays === 0) {
-        // Same day — keep streak
-        newStreak = savedStreak || 1;
-      } else {
-        // Missed days — reset to 1
-        newStreak = 1;
-      }
+      newStreak = 1; // missed days — reset
     }
 
     appState.streak = newStreak;
 
-    // Save back to Supabase — user_goals AND profiles (for leaderboard)
+    // Save to both tables
     await Promise.allSettled([
       window.supabase.from('user_goals').upsert({
-        user_id:         currentUser.id,
-        streak:          newStreak,
+        user_id: currentUser.id,
+        streak: newStreak,
         last_login_date: today,
-        streak_updated_at: new Date().toISOString(),
-        updated_at:      new Date().toISOString()
+        updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' }),
 
       window.supabase.from('profiles').upsert({
-        id:              currentUser.id,
-        streak:          newStreak,
+        id: currentUser.id,
+        streak: newStreak,
         last_login_date: today
       }, { onConflict: 'id' })
     ]);
 
     updateHomeStats();
 
-    // Milestone celebrations
-    if (newStreak === 3)  showAchievement('🔥', '3-Day Streak!',    'You showed up 3 days in a row — keep going!');
-    if (newStreak === 7)  showAchievement('👑', 'Week Warrior!',     '7 days straight — you are unstoppable!');
-    if (newStreak === 14) showAchievement('💪', '2-Week Strong!',    'Two weeks of consistency. You mean business!');
-    if (newStreak === 30) showAchievement('🏆', '30-Day Champion!',  'A full month. You are the definition of discipline.');
-    if (newStreak === 100) showAchievement('💎', '100-Day Legend!',  'One hundred days. Absolutely legendary. 👑');
+    // Milestone toasts
+    if (newStreak === 3)  showAchievement('🔥', '3-Day Streak!', 'You showed up 3 days in a row!');
+    if (newStreak === 7)  showAchievement('👑', 'Week Warrior!', '7 days straight — unstoppable!');
+    if (newStreak === 30) showAchievement('🏆', '30-Day Champion!', 'A full month of consistency!');
 
   } catch(e) {
-    console.warn('Streak update failed:', e.message || e);
-    // Fallback — just show whatever is in appState
+    console.warn('Streak update failed:', e.message);
     updateHomeStats();
   }
 }
@@ -6881,7 +6866,7 @@ function showAnnouncement(ann) {
 // ═══════════
 // MEAL PLAN GENERATOR — Pro Feature
 // ═══════════
-let _mealPlanPref = 'nigerian';
+let _mealPlanPref = 'mixed';
 let _currentMealPlan = null;
 
 function selectMealPref(pref, el) {
@@ -6911,12 +6896,13 @@ async function generateMealPlan() {
   const goal      = appState.activeGoal || 'weightloss';
   const calGoal   = appState.calorieGoal || 1800;
   const prefMap   = {
-    nigerian: 'Nigerian foods (jollof rice, egusi soup, suya, akara, pepper soup, pounded yam, efo riro, moi moi, fried plantain, groundnut soup)',
-    african:  'West and East African foods (jollof rice, fufu, egusi, ugali, sukuma wiki, suya, kelewele, ndole, injera, groundnut stew)',
-    continental: 'international foods (grilled chicken, salads, pasta, eggs, oats, Greek yogurt, salmon, quinoa, smoothies)',
-    mixed: 'a mix of Nigerian, African and international foods'
+    global: 'international healthy foods (grilled chicken salads, oats, Greek yogurt bowls, salmon, quinoa, wraps, smoothies)',
+    african:  'African-friendly healthy foods (grilled fish, pepper soup, beans, plantain, vegetable soup, lean protein, portion-controlled rice)',
+    blackamerican: 'Black American and soul-inspired fitness-friendly foods (collard greens with lean protein, baked sweet potato, turkey greens bowl, jerk chicken, light comfort meals)',
+    cultural: 'culturally inspired healthy meals from African, Caribbean, Black American and global home-style food traditions',
+    mixed: 'a balanced mix of global, African, Black American, and culturally inspired calorie-friendly foods'
   };
-  const foodPref = prefMap[_mealPlanPref] || prefMap.nigerian;
+  const foodPref = prefMap[_mealPlanPref] || prefMap.mixed;
 
   const prompt = `Create a detailed 7-day meal plan for ${firstName}.
 Goal: ${goal}
@@ -8383,6 +8369,33 @@ function showVoiceTrainerLock() {
 // NIGERIAN FOOD DATABASE — 150+ foods
 // ══════════════════════════════════════════════════════════════
 const NIGERIAN_FOODS = [
+  // GLOBAL + AFRICAN + BLACK AMERICAN FITNESS-FRIENDLY FOODS
+  { name:'Grilled Chicken Salad', cal:320, p:32, c:18, f:12, portion:'1 bowl', cat:'global' },
+  { name:'Oats with Berries', cal:290, p:10, c:48, f:7, portion:'1 bowl', cat:'breakfast' },
+  { name:'Salmon with Brown Rice', cal:460, p:34, c:42, f:16, portion:'1 plate', cat:'global' },
+  { name:'Greek Yogurt Bowl', cal:240, p:20, c:28, f:5, portion:'1 bowl', cat:'snack' },
+  { name:'Turkey Avocado Wrap', cal:360, p:28, c:32, f:14, portion:'1 wrap', cat:'lunch' },
+  { name:'Smoothie Bowl', cal:330, p:18, c:52, f:8, portion:'1 bowl', cat:'global' },
+  { name:'Egg White Veggie Omelette', cal:210, p:24, c:8, f:8, portion:'1 plate', cat:'breakfast' },
+  { name:'Quinoa Chicken Bowl', cal:430, p:35, c:45, f:12, portion:'1 bowl', cat:'global' },
+  { name:'Grilled Fish with Vegetables', cal:330, p:34, c:18, f:12, portion:'1 plate', cat:'african' },
+  { name:'Chicken Pepper Soup', cal:180, p:24, c:5, f:7, portion:'1 bowl', cat:'african' },
+  { name:'Beans and Plantain — Light Oil', cal:380, p:18, c:62, f:8, portion:'1 plate', cat:'african' },
+  { name:'Vegetable Soup with Lean Protein', cal:240, p:24, c:12, f:10, portion:'1 bowl', cat:'lowcal' },
+  { name:'Moi Moi with Salad', cal:290, p:18, c:28, f:10, portion:'1 serving', cat:'lowcal' },
+  { name:'Grilled Turkey Greens Bowl', cal:350, p:34, c:20, f:13, portion:'1 bowl', cat:'blackamerican' },
+  { name:'Baked Sweet Potato with Black Beans', cal:330, p:14, c:58, f:5, portion:'1 plate', cat:'blackamerican' },
+  { name:'Light Jerk Chicken Plate', cal:410, p:36, c:38, f:12, portion:'1 plate', cat:'blackamerican' },
+  { name:'Collard Greens with Grilled Chicken', cal:280, p:30, c:16, f:10, portion:'1 plate', cat:'blackamerican' },
+  { name:'Turkey Lettuce Cups', cal:220, p:26, c:10, f:8, portion:'3 cups', cat:'snack' },
+  { name:'Air-Popped Popcorn', cal:110, p:4, c:22, f:1, portion:'3 cups', cat:'snack' },
+  { name:'Apple Slices with Peanut Butter', cal:210, p:6, c:28, f:10, portion:'1 apple + 1 tbsp', cat:'snack' },
+  { name:'Boiled Eggs with Avocado', cal:260, p:14, c:8, f:20, portion:'2 eggs + 1/2 avocado', cat:'snack' },
+  { name:'Baked Plantain Chips', cal:170, p:2, c:38, f:2, portion:'1 small bowl', cat:'snack' },
+  { name:'Shrimp and Cauliflower Rice', cal:300, p:32, c:18, f:10, portion:'1 bowl', cat:'lowcal' },
+  { name:'Chicken Suya Salad Bowl', cal:340, p:34, c:20, f:12, portion:'1 bowl', cat:'cultural' },
+  { name:'Jollof Rice with Grilled Chicken — Portion Controlled', cal:430, p:28, c:55, f:10, portion:'1 small plate', cat:'cultural' },
+
   // RICE DISHES
   { name:'Jollof Rice', cal:350, p:7, c:65, f:8, portion:'1 plate (300g)', cat:'rice' },
   { name:'Fried Rice', cal:380, p:8, c:60, f:12, portion:'1 plate (300g)', cat:'rice' },
@@ -8509,7 +8522,7 @@ function searchNigerianFood(query) {
   }
 
   let results = NIGERIAN_FOODS.filter(f => {
-    const matchQuery = f.name.toLowerCase().includes(q);
+    const matchQuery = f.name.toLowerCase().includes(q) || (f.cat || '').toLowerCase().includes(q) || (f.portion || '').toLowerCase().includes(q);
     const matchCat   = _foodCatFilter === 'all' || f.cat === _foodCatFilter;
     return matchQuery && matchCat;
   }).slice(0, 12);
