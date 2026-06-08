@@ -3057,7 +3057,7 @@ async function bootApp() {
   }
 
   // Update daily streak
-  updateDailyStreak();
+  await updateDailyStreak();
 
   // Build static UI
   renderFoodList();
@@ -3543,7 +3543,7 @@ function updateCalRing() {
 }
 
 function updateHomeStats() {
-  const streak = appState.streak || 0;
+  const streak = Math.max(1, Number(appState.streak || 1));
   const todayWorkouts = appState.workoutLog ? appState.workoutLog.length : 0;
   const remaining = Math.max(0, appState.calorieGoal - appState.caloriesEaten + appState.caloriesBurned);
   const score = Math.min(100, Math.round((appState.caloriesEaten / appState.calorieGoal) * 50 + (todayWorkouts > 0 ? 30 : 0) + (appState.waterCups / 8) * 20));
@@ -3552,14 +3552,14 @@ function updateHomeStats() {
   setEl('today-score', score);
   setEl('tp-calories', remaining);
   setEl('tp-workouts', todayWorkouts);
-  setEl('tp-streak', streak);
+  setEl('tp-streak', 'Day ' + streak);
   setEl('stat-steps', (appState.totalWorkouts * 350).toLocaleString());
   setEl('stat-protein', Math.round(appState.protein) + 'g');
   setEl('stat-water-cups', appState.waterCups);
   setEl('stat-workouts', todayWorkouts);
-  setEl('header-streak', '🔥 ' + streak + (streak === 1 ? ' day' : ' days'));
-  setEl('tp-streak-label', streak === 1 ? 'Day Streak' : 'Days Streak');
-  setEl('prog-streak', streak);
+  setEl('header-streak', '🔥 Day ' + streak);
+  setEl('tp-streak-label', 'Streak');
+  setEl('prog-streak', 'Day ' + streak);
   setEl('prog-workouts', appState.totalWorkouts);
   setEl('prog-calories', appState.totalCalBurned);
 
@@ -4511,7 +4511,7 @@ function renderLeaderboard() {
       <div class="lb-name" style="${r.name==='You' ? 'color:var(--pink-light);font-weight:700;' : ''}">
         ${r.flag ? r.flag + ' ' : ''}${r.name}
       </div>
-      <div class="lb-streak">🔥 ${r.streak} day${r.streak !== 1 ? 's' : ''}</div>
+      <div class="lb-streak">🔥 Day ${r.streak}</div>
     </div>
   `).join('');
 }
@@ -5351,7 +5351,7 @@ async function updateDailyStreak() {
 
     // Already logged in today — no change
     if (lastLogin === today) {
-      appState.streak = savedStreak;
+      appState.streak = Math.max(1, savedStreak);
       updateHomeStats();
       return;
     }
@@ -6173,11 +6173,11 @@ function renderWeeklySummary() {
   const shareText = firstName + ' is on a wellness journey with FitHerNova!' +
     '\n\nThis week:\n' +
     '- ' + weekWorkouts + ' workouts completed\n' +
-    '- ' + streak + ' day streak\n' +
+    '- Day ' + streak + ' streak\n' +
     '- ' + waterAvg + '/8 cups water\n' +
     '- ' + calsBurned + ' kcal burned\n\n' +
-    'Join me on FitHerNova - the fitness app built for African women ' +
-    '(gospel music + Nigerian food tracker + AI coach!)\n\n' +
+    'Join me on FitHerNova - the global women fitness app ' +
+    '(workouts + calorie-friendly food tracker + uplifting music + AI coach!)\n\n' +
     'Download free: https://fither-app-one.vercel.app';
 
   wrap.innerHTML = `
@@ -7489,7 +7489,7 @@ function renderLeaderboard() {
         ${r.flag ? r.flag + ' ' : ''}${r.name}
         ${r.pro ? '<span class="crown-badge">👑 PRO</span>' : ''}
       </div>
-      <div class="lb-streak">🔥 ${r.streak} day${r.streak !== 1 ? 's' : ''}</div>
+      <div class="lb-streak">🔥 Day ${r.streak}</div>
     </div>
   `).join('');
 }
@@ -7874,10 +7874,10 @@ function scheduleStreakAlert() {
     const todayWorkouts = appState.workoutLog ? appState.workoutLog.length : 0;
     if (todayWorkouts === 0 && appState.streak > 0) {
       sendNotification(
-        'Protect your ' + appState.streak + '-day streak! 🔥',
+        'Protect your Day ' + appState.streak + ' streak! 🔥',
         'You have not worked out yet today. Do not break your streak — even 10 minutes counts!'
       );
-      showToast('Streak Alert!', 'Work out now to protect your ' + appState.streak + '-day streak 🔥');
+      showToast('Streak Alert!', 'Work out now to protect your Day ' + appState.streak + ' streak 🔥');
     }
     // Reschedule for tomorrow
     scheduleStreakAlert();
