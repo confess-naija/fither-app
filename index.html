@@ -875,7 +875,8 @@ select option{background:var(--black3);}
 
 <!-- Auth Loading Screen -->
 <div class="auth-loading" id="auth-loading">
-  <div class="logo-big">FitHerNova</div>
+<svg width="56" height="56" viewBox="0 0 100 100" style="margin-bottom:2px;"><defs><linearGradient id="fhnSparkleGradSplash" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff2d6b"/><stop offset="55%" stop-color="#a855f7"/><stop offset="100%" stop-color="#ffd166"/></linearGradient></defs><path d="M50 16 Q60 40 84 50 Q60 60 50 84 Q40 60 16 50 Q40 40 50 16 Z" fill="url(#fhnSparkleGradSplash)"/></svg>
+<div class="logo-big">FitHerNova</div>
   <div class="spinner"></div>
   <p id="auth-loading-msg">Loading your account…</p>
 </div>
@@ -884,7 +885,10 @@ select option{background:var(--black3);}
 <div class="auth-screen" id="auth-screen" style="display:none;">
   <div class="auth-card">
     
-    <div class="auth-logo">FitHerNova</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+<svg width="26" height="26" viewBox="0 0 100 100" style="flex-shrink:0;"><defs><linearGradient id="fhnSparkleGradAuth" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff2d6b"/><stop offset="55%" stop-color="#a855f7"/><stop offset="100%" stop-color="#ffd166"/></linearGradient></defs><path d="M50 16 Q60 40 84 50 Q60 60 50 84 Q40 60 16 50 Q40 40 50 16 Z" fill="url(#fhnSparkleGradAuth)"/></svg>
+<div class="auth-logo">FitHerNova</div>
+</div>
     <div class="auth-sub">Your women's wellness companion 💪</div>
     <div class="auth-tabs">
       <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
@@ -1020,10 +1024,13 @@ select option{background:var(--black3);}
 <div class="app" id="main-app" style="display:none;isolation:isolate;">
   <!-- Header -->
   <div class="app-header" id="app-header">
-    <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;flex-shrink:1;">
-      <div class="logo">FitHerNova</div>
-      <div class="logo-sub">Your Wellness Journey</div>
-    </div>
+    <div style="display:flex;align-items:center;gap:9px;min-width:0;flex-shrink:1;">
+<svg width="28" height="28" viewBox="0 0 100 100" style="flex-shrink:0;"><defs><linearGradient id="fhnSparkleGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff2d6b"/><stop offset="55%" stop-color="#a855f7"/><stop offset="100%" stop-color="#ffd166"/></linearGradient></defs><path d="M50 16 Q60 40 84 50 Q60 60 50 84 Q40 60 16 50 Q40 40 50 16 Z" fill="url(#fhnSparkleGrad)"/></svg>
+<div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+<div class="logo">FitHerNova</div>
+<div class="logo-sub">Your Wellness Journey</div>
+</div>
+</div>
     <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
       <div class="header-streak" id="header-streak">🔥 Day 1</div>
       <div class="user-pill" id="user-pill">
