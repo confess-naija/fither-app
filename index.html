@@ -20,13 +20,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <title>FitHerNova</title>
 <style>
-:root{--pink:#ff2d6b;--pink-light:#ff6b9d;--pink-dark:#e0005c;--pink-glow:rgba(255,45,107,0.25);--gold:#ffd166;--black:#14080f;--black2:#161616;--black3:#271420;--black4:#362030;--white:#ffffff;--grey:#8a8a8a;--grey2:#555;--green:#06d6a0;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;--radius:16px;--radius-sm:10px;--safe-bottom:env(safe-area-inset-bottom,0px);}
+:root{--pink:#ff2d6b;--pink-light:#ff6b9d;--pink-dark:#e0005c;--pink-glow:rgba(255,45,107,0.4);--violet:#a855f7;--gold:#ffd166;--black:#14080f;--black2:#161616;--black3:#271420;--black4:#362030;--white:#ffffff;--grey:#8a8a8a;--grey2:#555;--green:#06d6a0;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;--radius:16px;--radius-sm:10px;--safe-bottom:env(safe-area-inset-bottom,0px);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;min-height:100%;overflow:hidden;background:var(--black);}
 body{font-family:var(--font-body);color:var(--white);overscroll-behavior:none;width:100vw;}
 button,input,select{font:inherit;}
 .auth-loading{position:fixed;inset:0;z-index:3000;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
-.auth-loading .logo-big{font-family:var(--font-head);font-size:38px;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.auth-loading .logo-big{font-family:var(--font-head);font-size:38px;font-weight:800;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .auth-loading .spinner{width:32px;height:32px;border:3px solid var(--black4);border-top-color:var(--pink);border-radius:50%;animation:spin 0.8s linear infinite;}
 .auth-loading p{font-size:13px;color:var(--grey);}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -37,22 +37,22 @@ button,input,select{font:inherit;}
 .page.active{display:block;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 .app-header{padding:12px 14px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-shrink:0;max-width:920px;width:100%;margin:0 auto;overflow:visible;}
-.logo{font-family:var(--font-head);font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;white-space:nowrap;flex-shrink:0;overflow:visible;}
+.logo{font-family:var(--font-head);font-size:24px;font-weight:800;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;white-space:nowrap;flex-shrink:0;overflow:visible;}
 .logo-sub{font-size:9px;color:var(--grey);letter-spacing:1px;text-transform:uppercase;margin-top:-2px;white-space:nowrap;}
-.header-streak{background:var(--black3);border:1px solid var(--black4);border-radius:99px;padding:5px 10px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;}
+.header-streak{background:linear-gradient(135deg,rgba(255,45,107,.15),rgba(255,209,102,.1));border:1px solid rgba(255,45,107,.35);border-radius:99px;padding:5px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 10px rgba(255,45,107,.15);}
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:rgba(31,15,25,.98);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--black4);display:flex!important;flex-direction:row;align-items:stretch;padding-bottom:env(safe-area-inset-bottom,0px);z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,.6);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .bottom-nav::-webkit-scrollbar{display:none;}
 .nav-item{flex:0 0 auto;min-width:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px 8px;cursor:pointer;border:none;background:none;color:var(--grey);gap:3px;transition:color 0.2s;position:relative;}
 .nav-item.active{color:var(--pink);}
-.nav-item.active::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:linear-gradient(90deg,var(--pink),var(--pink-light));border-radius:0 0 4px 4px;}
+.nav-item.active::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2.5px;background:linear-gradient(90deg,var(--pink),var(--violet),var(--gold));border-radius:0 0 4px 4px;box-shadow:0 0 8px rgba(255,45,107,.6);}
 .nav-item svg{width:22px;height:22px;stroke-width:1.8;}
 .nav-label{font-size:10px;font-weight:600;letter-spacing:0.2px;white-space:nowrap;}
 .card{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
-.card-pink{background:linear-gradient(135deg,var(--pink-dark),var(--pink));border:none;}
+.card-pink{background:linear-gradient(120deg,var(--pink-dark),var(--pink) 60%,var(--violet));border:none;box-shadow:0 8px 32px rgba(255,45,107,.28);}
 .sec-label{font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
 .btn{display:flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;font-family:var(--font-body);font-weight:500;transition:all 0.2s;border-radius:var(--radius-sm);}
-.btn-pink{background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;height:46px;font-size:14px;width:100%;box-shadow:0 4px 20px var(--pink-glow);}
-.btn-pink:hover{transform:translateY(-1px);box-shadow:0 6px 28px var(--pink-glow);}
+.btn-pink{background:linear-gradient(120deg,var(--pink-dark),var(--pink) 50%,var(--violet));color:#fff;height:46px;font-size:14px;width:100%;box-shadow:0 6px 28px var(--pink-glow),0 1px 0 rgba(255,255,255,.15) inset;}
+.btn-pink:hover{transform:translateY(-1px);box-shadow:0 10px 36px var(--pink-glow);}
 .btn-pink:active{transform:translateY(0);}
 .btn-ghost{background:var(--black3);border:1px solid var(--black4);color:var(--white);height:40px;font-size:13px;padding:0 16px;}
 .btn-ghost:hover{border-color:var(--grey2);}
@@ -61,9 +61,9 @@ input[type=text],input[type=email],input[type=password],input[type=number],input
 input:focus,select:focus{border-color:var(--pink);}
 input::placeholder{color:var(--grey2);}
 select option{background:var(--black3);}
-.auth-screen{position:fixed;inset:0;z-index:9000;background:radial-gradient(circle at top left,rgba(255,45,107,.18),transparent 32%),radial-gradient(circle at bottom right,rgba(255,209,102,.10),transparent 34%),var(--black);display:flex;align-items:center;justify-content:center;padding:16px;}
+.auth-screen{position:fixed;inset:0;z-index:9000;background:radial-gradient(circle at top left,rgba(255,45,107,.30),transparent 36%),radial-gradient(circle at bottom right,rgba(255,209,102,.18),transparent 38%),radial-gradient(circle at 60% 90%,rgba(168,85,247,.16),transparent 40%),var(--black);display:flex;align-items:center;justify-content:center;padding:16px;}
 .auth-card{width:min(440px,100%);background:rgba(31,15,25,.96);border:1px solid var(--black4);border-radius:24px;padding:22px 18px;box-shadow:0 24px 70px rgba(0,0,0,.55);overflow:visible;}
-.auth-logo{font-family:var(--font-head);font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;}
+.auth-logo{font-family:var(--font-head);font-size:28px;font-weight:800;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;}
 .auth-sub{font-size:13px;color:var(--grey);margin:4px 0 18px;line-height:1.45;}
 .auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;background:var(--black3);border:1px solid var(--black4);border-radius:14px;padding:5px;}
 .auth-tab{border:0;background:transparent;color:var(--grey);height:38px;border-radius:10px;font-weight:700;cursor:pointer;}
@@ -73,7 +73,7 @@ select option{background:var(--black3);}
 .auth-small{font-size:11px;color:var(--grey);text-align:center;margin-top:12px;line-height:1.45;}
 
 /* ── ONBOARDING ── */
-.onboard-screen{position:fixed;inset:0;z-index:8000;background:radial-gradient(circle at 15% 0%,rgba(255,45,107,.22),transparent 38%),radial-gradient(circle at 90% 100%,rgba(255,209,102,.14),transparent 38%),var(--black);display:none;align-items:center;justify-content:center;padding:20px;}
+.onboard-screen{position:fixed;inset:0;z-index:8000;background:radial-gradient(circle at 15% 0%,rgba(255,45,107,.32),transparent 40%),radial-gradient(circle at 90% 100%,rgba(255,209,102,.20),transparent 40%),radial-gradient(circle at 50% 60%,rgba(168,85,247,.14),transparent 45%),var(--black);display:none;align-items:center;justify-content:center;padding:20px;}
 .onboard-screen.show{display:flex;}
 .onboard-card{width:min(480px,100%);background:rgba(27,13,19,.98);border:1px solid rgba(255,45,107,.2);border-radius:28px;padding:28px 24px;box-shadow:0 28px 80px rgba(0,0,0,.6);}
 .onboard-step-dots{display:flex;justify-content:center;gap:8px;margin-bottom:24px;}
@@ -114,7 +114,7 @@ select option{background:var(--black3);}
 .home-greeting-row{display:flex;align-items:center;gap:12px;margin-bottom:2px;}
 .home-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--pink-dark),var(--black3));border:2px solid var(--pink-dark);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(255,45,107,.22);}
 .home-avatar img{width:100%;height:100%;object-fit:cover;display:none;border-radius:50%;}
-.greeting span{background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.greeting span{background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .sub-greeting{font-size:13px;color:var(--grey);margin-bottom:18px;}
 .ring-section{display:flex;align-items:center;gap:16px;background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
 .ring-wrap{position:relative;flex-shrink:0;}
@@ -274,7 +274,7 @@ select option{background:var(--black3);}
 .vinyl-wrap{position:relative;width:128px;height:128px;display:flex;align-items:center;justify-content:center;}
 .vinyl-disc{width:118px;height:118px;border-radius:50%;background:repeating-radial-gradient(circle at center,#111 0,#111 7px,#1c1c1c 8px,#1c1c1c 11px),linear-gradient(135deg,#000,#222);box-shadow:inset 0 0 0 8px rgba(255,255,255,.025),0 18px 35px rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;transition:transform .3s ease;}
 .vinyl-disc.spinning{animation:spin 4.5s linear infinite;}
-.vinyl-label{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 0 8px rgba(0,0,0,.35);}
+.vinyl-label{width:54px;height:54px;border-radius:50%;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 0 8px rgba(0,0,0,.35);}
 .music-info{min-width:0;}
 .music-title{font-family:var(--font-head);font-size:22px;font-weight:900;line-height:1.05;letter-spacing:-.6px;color:#fff;margin-bottom:5px;}
 .music-artist{font-size:13px;color:rgba(255,255,255,.68);margin-bottom:10px;}
@@ -407,7 +407,7 @@ select option{background:var(--black3);}
 .goal-card .gtitle{font-family:var(--font-head);font-size:13px;font-weight:800;color:var(--white);}
 .goal-card .gsub{font-size:11px;color:var(--grey);margin-top:3px;line-height:1.35;}
 .coach-hero-clean{position:relative;overflow:hidden;border-radius:26px;padding:18px;background:radial-gradient(circle at 15% 0%,rgba(255,45,107,.34),transparent 35%),radial-gradient(circle at 100% 10%,rgba(255,209,102,.18),transparent 30%),linear-gradient(145deg,#1b0710,#170a13);border:1px solid rgba(255,45,107,.26);box-shadow:0 18px 50px rgba(0,0,0,.45);margin-bottom:12px;}
-.coach-avatar{width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 12px 30px rgba(255,45,107,.28);}
+.coach-avatar{width:54px;height:54px;border-radius:18px;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 12px 30px rgba(255,45,107,.28);}
 .coach-hero-row{display:flex;gap:13px;align-items:center;}
 .coach-title-clean{font-family:var(--font-head);font-size:20px;font-weight:900;letter-spacing:-.4px;}
 .coach-sub-clean{font-size:12px;color:rgba(255,255,255,.66);line-height:1.45;margin-top:3px;}
@@ -422,7 +422,7 @@ select option{background:var(--black3);}
 .coach-input-clean input{height:48px;border-radius:16px;background:#121212;}
 .coach-send{height:48px;border:0;border-radius:16px;padding:0 18px;background:linear-gradient(135deg,var(--pink),var(--pink-light));color:white;font-weight:900;cursor:pointer;}
 .coach-answer{border-radius:20px;border:1px solid rgba(255,45,107,.24);background:linear-gradient(145deg,#16070d,#160911);font-size:13px;line-height:1.62;padding:14px;margin-top:10px;white-space:pre-wrap;}
-.pro-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;background:linear-gradient(135deg,var(--pink),var(--gold));color:#fff;font-size:10px;font-weight:900;letter-spacing:.4px;box-shadow:0 8px 24px rgba(255,45,107,.25);}
+.pro-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);color:#fff;font-size:10px;font-weight:900;letter-spacing:.4px;box-shadow:0 8px 24px rgba(255,45,107,.25);}
 .pro-badge.free{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--grey);box-shadow:none;}
 .pro-hero{position:relative;overflow:hidden;border-radius:28px;padding:20px;margin-bottom:14px;background:radial-gradient(circle at 20% 0%,rgba(255,45,107,.42),transparent 36%),radial-gradient(circle at 95% 10%,rgba(255,209,102,.28),transparent 34%),linear-gradient(145deg,#250713,#0b0b0b 62%,#16050b);border:1px solid rgba(255,45,107,.32);box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 35px rgba(255,45,107,.14);}
 .pro-kicker{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:var(--gold);font-weight:900;margin-bottom:8px;}
@@ -465,7 +465,7 @@ select option{background:var(--black3);}
 .install-pop.show{display:flex;}
 .install-card{width:min(460px,100%);border-radius:28px;padding:20px;background:radial-gradient(circle at 20% 0%,rgba(255,45,107,.28),transparent 34%),linear-gradient(145deg,#191919,#0c0c0c);border:1px solid rgba(255,45,107,.25);box-shadow:0 28px 80px rgba(0,0,0,.75),0 0 35px rgba(255,45,107,.12);}
 .install-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;}
-.install-icon{width:58px;height:58px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,var(--pink),var(--gold));box-shadow:0 12px 35px rgba(255,45,107,.3);}
+.install-icon{width:58px;height:58px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);box-shadow:0 12px 35px rgba(255,45,107,.3);}
 .install-close{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:white;cursor:pointer;}
 .install-title{font-family:var(--font-head);font-size:24px;font-weight:900;letter-spacing:-.6px;margin-bottom:4px;}
 .install-text{font-size:13px;color:rgba(255,255,255,.68);line-height:1.55;margin-bottom:14px;}
@@ -481,7 +481,7 @@ select option{background:var(--black3);}
 .mini-progress{height:3px;background:rgba(255,255,255,.08);}
 .mini-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--gold));box-shadow:0 0 14px rgba(255,45,107,.5);}
 .mini-player-inner{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;}
-.mini-art{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 10px 25px rgba(255,45,107,.25);}
+.mini-art{width:42px;height:42px;border-radius:14px;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 10px 25px rgba(255,45,107,.25);}
 .mini-art.spinning{animation:spin 4.5s linear infinite;}
 .mini-title{font-family:var(--font-head);font-size:13px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 .mini-sub{font-size:10px;color:rgba(255,255,255,.58);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -506,7 +506,7 @@ select option{background:var(--black3);}
 .fly-card.hot{background:radial-gradient(circle at 10% 0%,rgba(255,45,107,.28),transparent 35%),linear-gradient(145deg,#1c0710,#170a13);border-color:rgba(255,45,107,.28);}
 .fly-title{font-family:var(--font-head);font-size:15px;font-weight:900;color:#fff;margin-bottom:4px;letter-spacing:-.2px;}
 .fly-sub{font-size:12px;color:rgba(255,255,255,.62);line-height:1.45;}
-.fly-big{font-family:var(--font-head);font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.fly-big{font-family:var(--font-head);font-size:28px;font-weight:900;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .fly-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;}
 .fly-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,45,107,.12);border:1px solid rgba(255,45,107,.28);border-radius:999px;padding:6px 10px;color:var(--pink-light);font-size:11px;font-weight:800;white-space:nowrap;}
 .fly-progress{height:8px;background:rgba(255,255,255,.09);border-radius:999px;overflow:hidden;margin:10px 0;}
@@ -1165,7 +1165,7 @@ select option{background:var(--black3);}
           <div class="goal-remaining-val" id="goal-remaining-val">1800 kcal</div>
           <div class="goal-remaining-sub" id="goal-remaining-sub">Keep going — you've got this!</div>
         </div>
-        <div style="font-size:28px;">🎯</div>
+        <div style="font-size:28px;"><svg width="24" height="24" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/></svg></div>
       </div>
 
       <!-- Coach Nova Challenge (collapsible) -->
@@ -1202,7 +1202,7 @@ select option{background:var(--black3);}
 
       <!-- Install App Banner -->
       <div class="install-banner" id="install-banner" style="display:none;">
-        <div style="font-size:28px;">📲</div>
+        <div style="font-size:28px;"><svg width="23" height="23" viewBox="0 0 24 24" style="color:#ffd166;vertical-align:middle" ><rect x="6" y="2" width="12" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="10.5" y1="19" x2="13.5" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 9l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="ib-text">
           <strong>Install FitHerNova App</strong>
           Save to your home screen — works offline too!
@@ -1265,7 +1265,7 @@ select option{background:var(--black3);}
       <div style="margin-bottom:10px;">
         <!-- Barcode Scanner Button -->
         <button class="barcode-btn" onclick="startBarcodeScanner()">
-          <span style="font-size:22px;">📊</span>
+          <span style="font-size:22px;"><svg width="18" height="18" viewBox="0 0 24 24" style="color:#06d6a0;vertical-align:middle" ><line x1="5" y1="20" x2="5" y2="12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="19" y1="20" x2="19" y2="15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
           <div style="text-align:left;">
             <div style="font-size:13px;font-weight:800;">Scan Barcode</div>
             <div style="font-size:10px;opacity:.7;">Packaged foods — instant nutrition lookup</div>
@@ -1276,7 +1276,7 @@ select option{background:var(--black3);}
         <!-- Barcode Result Card -->
         <div class="barcode-result" id="barcode-result">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <div style="font-size:28px;">📦</div>
+            <div style="font-size:28px;"><svg width="23" height="23" viewBox="0 0 24 24" style="color:#b8bcc4;vertical-align:middle" ><path d="M3 8l9-4 9 4-9 4-9-4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 8v9l9 4 9-4V8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><line x1="12" y1="12" x2="12" y2="21" stroke="currentColor" stroke-width="1.8"/></svg></div>
             <div>
               <div class="barcode-product" id="barcode-product-name">Product</div>
               <div class="barcode-brand" id="barcode-brand-name">Brand</div>
@@ -1412,7 +1412,7 @@ select option{background:var(--black3);}
         <!-- Voice Trainer Toggle -->
         <div class="voice-trainer-bar" id="voice-trainer-bar">
           <div>
-            <div class="vt-label">🎙️ Voice Trainer <span id="vt-pro-badge" style="display:none;font-size:9px;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;">PRO</span></div>
+            <div class="vt-label">🎙️ Voice Trainer <span id="vt-pro-badge" style="display:none;font-size:9px;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;">PRO</span></div>
             <div style="font-size:10px;color:var(--grey);margin-top:2px;" id="vt-status">Off — tap to enable</div>
           </div>
           <div class="vt-toggle" id="vt-buttons">
@@ -1766,7 +1766,7 @@ select option{background:var(--black3);}
       </div>
       <div class="period-hero">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="font-size:32px;">🌸</div>
+          <div style="font-size:32px;"><svg width="26" height="26" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><circle cx="12" cy="7" r="3.2" fill="currentColor"/><circle cx="17" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="17" r="3.2" fill="currentColor"/><circle cx="7" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="#160a10"/></svg></div>
           <div>
             <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;">Period Tracker</div>
             <div style="font-size:10px;color:var(--pink-light);font-weight:700;">⭐ PRO FEATURE</div>
@@ -1991,7 +1991,7 @@ select option{background:var(--black3);}
       </div>
       <div class="period-hero">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="font-size:32px;">🌸</div>
+          <div style="font-size:32px;"><svg width="26" height="26" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><circle cx="12" cy="7" r="3.2" fill="currentColor"/><circle cx="17" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="17" r="3.2" fill="currentColor"/><circle cx="7" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="#160a10"/></svg></div>
           <div>
             <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;">Period Tracker</div>
             <div style="font-size:10px;color:var(--pink-light);font-weight:700;">⭐ PRO FEATURE</div>
@@ -2219,7 +2219,7 @@ select option{background:var(--black3);}
       </div>
       <div class="period-hero">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="font-size:32px;">🌸</div>
+          <div style="font-size:32px;"><svg width="26" height="26" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><circle cx="12" cy="7" r="3.2" fill="currentColor"/><circle cx="17" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="17" r="3.2" fill="currentColor"/><circle cx="7" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="#160a10"/></svg></div>
           <div>
             <div style="font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;">Period Tracker</div>
             <div style="font-size:10px;color:var(--pink-light);font-weight:700;">⭐ PRO FEATURE</div>
@@ -2454,7 +2454,7 @@ select option{background:var(--black3);}
         </div>
         <div class="reminder-item" style="background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.15);border-radius:10px;padding:10px 14px;margin-top:4px;">
           <div>
-            <div style="font-size:13px;font-weight:500;">🔥 Streak Protector <span style="font-size:10px;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;">PRO</span></div>
+            <div style="font-size:13px;font-weight:500;">🔥 Streak Protector <span style="font-size:10px;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 55%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;">PRO</span></div>
             <div style="font-size:11px;color:var(--grey);margin-top:2px;">8pm alert if no workout done today</div>
           </div>
           <label class="toggle"><input type="checkbox" id="remind-streak" onchange="saveReminders()"/><span class="toggle-slider"></span></label>
@@ -2503,7 +2503,7 @@ select option{background:var(--black3);}
 
       <!-- Trial banner — shown only to free users -->
       <div id="pro-trial-banner" style="background:linear-gradient(135deg,#071912,#160911);border:1px solid rgba(6,214,160,.25);border-radius:18px;padding:14px;margin-bottom:14px;display:none;align-items:center;gap:12px;">
-        <div style="font-size:28px;">🎁</div>
+        <div style="font-size:28px;"><svg width="23" height="23" viewBox="0 0 24 24" style="color:#06d6a0;vertical-align:middle" ><rect x="3" y="9" width="18" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="5" y="13" width="14" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="9" x2="12" y2="21" stroke="currentColor" stroke-width="1.8"/><path d="M12 9C12 9 9 8.5 9 6a2.2 2.2 0 0 1 4-1.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 9C12 9 15 8.5 15 6a2.2 2.2 0 0 0-4-1.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <div>
           <div style="font-family:var(--font-head);font-size:14px;font-weight:800;color:#fff;margin-bottom:3px;">7-Day Free Trial Included</div>
           <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.45;">Try any Pro plan with secure Paystack checkout. Cancel monthly anytime. Lifetime is yours forever.</div>
@@ -2687,21 +2687,21 @@ select option{background:var(--black3);}
     <div class="install-text">Add FitHerNova to your home screen for quick access — workouts, meals, gospel music and Coach Nova, all one tap away.</div>
     <div class="install-steps">
       <div class="install-step">
-        <div style="font-size:22px;">🍎</div>
+        <div style="font-size:22px;"><svg width="18" height="18" viewBox="0 0 24 24" style="color:#e8e8ea;vertical-align:middle" ><path d="M16.5 8c-1.2-1.4-3-1.6-4.3-.6-1.2-1-3-.9-4.2.4C6.3 9.6 6 12.4 8 15.5c1.1 1.7 2 2.5 3 2.5s1.6-.5 2-1c.4.5 1 1 2 1s1.9-.8 3-2.5c1.6-2.5 1.6-4.8.5-6.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.5 6.5C12.5 5 13.5 4 15 3.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
         <div>
           <b>iPhone / iPad (Safari)</b>
           <span>Tap the Share button → scroll down → tap <strong>Add to Home Screen</strong> → tap Add.</span>
         </div>
       </div>
       <div class="install-step">
-        <div style="font-size:22px;">🤖</div>
+        <div style="font-size:22px;"><svg width="18" height="18" viewBox="0 0 24 24" style="color:#06d6a0;vertical-align:middle" ><rect x="4" y="8" width="16" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="4" x2="12" y2="8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="3" r="1.1" fill="currentColor"/><circle cx="9" cy="13.2" r="1.3" fill="currentColor"/><circle cx="15" cy="13.2" r="1.3" fill="currentColor"/><line x1="9" y1="17" x2="15" y2="17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <div>
           <b>Android (Chrome)</b>
           <span>Tap the 3-dot menu → tap <strong>Add to Home Screen</strong> → tap Add.</span>
         </div>
       </div>
       <div class="install-step">
-        <div style="font-size:22px;">💻</div>
+        <div style="font-size:22px;"><svg width="18" height="18" viewBox="0 0 24 24" style="color:#e8e8ea;vertical-align:middle" ><rect x="4" y="4" width="16" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="2" y1="19" x2="22" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <div>
           <b>Desktop (Chrome / Edge)</b>
           <span>Click the install icon <strong>⊕</strong> in the address bar → click Install.</span>
@@ -3449,7 +3449,7 @@ function renderWaterCups() {
     cup.className = 'water-cup' + (filled ? ' filled' : '');
     // Use innerHTML with styled span for reliable cross-device rendering
     cup.innerHTML = filled
-      ? '<span style="font-size:20px;line-height:1;">💧</span>'
+      ? '<span style="font-size:20px;line-height:1;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#5ec8ff;vertical-align:middle" ><path d="M12 2c3 4.5 6 8.3 6 12a6 6 0 1 1-12 0c0-3.7 3-7.5 6-12z" fill="currentColor"/></svg></span>'
       : '<span style="font-size:18px;line-height:1;opacity:0.5;">○</span>';
     cup.title = filled ? 'Tap to remove' : 'Tap to add cup';
     cup.setAttribute('aria-label', (filled ? 'Filled' : 'Empty') + ' cup ' + (i+1));
@@ -3785,7 +3785,7 @@ function renderHomeMeals() {
   if (!appState.mealLog.length) {
     wrap.innerHTML = `
       <div style="text-align:center;padding:18px 0 6px;">
-        <div style="font-size:32px;margin-bottom:8px;">🍽️</div>
+        <div style="font-size:32px;margin-bottom:8px;"><svg width="26" height="26" viewBox="0 0 24 24" style="color:rgba(255,255,255,.4);vertical-align:middle" ><line x1="6" y1="2" x2="6" y2="22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="2" x2="4" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="8" y1="2" x2="8" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 9c0 1.6 1 2.2 2 2.2s2-.6 2-2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 2c-2.2 0-3.2 2.2-3.2 5.2S15.8 11 18 11v11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:4px;">No meals logged yet</div>
         <div style="font-size:11px;color:var(--grey);margin-bottom:14px;">Start tracking to see your calorie progress here</div>
         <button onclick="navTo('food')" style="background:linear-gradient(135deg,var(--pink),var(--pink-light));border:none;color:#fff;border-radius:12px;padding:9px 22px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px var(--pink-glow);">🥗 Log Your First Meal</button>
@@ -3797,7 +3797,7 @@ function renderHomeMeals() {
   wrap.innerHTML = recent.map(m => `
     <div class="meal-log-item">
       <div class="mli-left">
-        <span style="font-size:18px;">🍽️</span>
+        <span style="font-size:18px;"><svg width="15" height="15" viewBox="0 0 24 24" style="color:rgba(255,255,255,.4);vertical-align:middle" ><line x1="6" y1="2" x2="6" y2="22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="2" x2="4" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="8" y1="2" x2="8" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 9c0 1.6 1 2.2 2 2.2s2-.6 2-2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 2c-2.2 0-3.2 2.2-3.2 5.2S15.8 11 18 11v11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <div>
           <div style="font-size:13px;font-weight:500;">${m.food_name || m.name}</div>
           <div style="font-size:10px;color:var(--grey);">${m.protein||0}g protein · ${m.carbs||0}g carbs</div>
@@ -6662,7 +6662,7 @@ function renderHistoryPage() {
         </div>
         ${workouts.map(w => `
           <div style="background:var(--black2);border:1px solid var(--black4);border-radius:14px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;">
-            <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--pink-dark),#240a16);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">💪</div>
+            <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--pink-dark),#240a16);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#ffffff;vertical-align:middle" ><rect x="2" y="9" width="3" height="6" rx="1" fill="currentColor"/><rect x="19" y="9" width="3" height="6" rx="1" fill="currentColor"/><line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="2.2"/><rect x="5" y="7" width="3" height="10" rx="1" fill="currentColor"/><rect x="16" y="7" width="3" height="10" rx="1" fill="currentColor"/></svg></div>
             <div style="flex:1;min-width:0;">
               <div style="font-family:var(--font-head);font-size:13px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.workout_name || 'Workout'}</div>
               <div style="font-size:11px;color:var(--grey);margin-top:2px;">${fmtTime(w.duration_sec || 0)} · ${w.sets || 0} sets</div>
@@ -7177,7 +7177,7 @@ function renderPeriodPage() {
     const stats = document.getElementById('cycle-stats');
     if (stats) {
       stats.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;">' +
-        '<div style="font-size:36px;margin-bottom:8px;">🔒</div>' +
+        '<div style="font-size:36px;margin-bottom:8px;"><svg width="30" height="30" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><rect x="5" y="11" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>' +
         '<div style="font-size:13px;color:var(--grey);">Upgrade to Pro to track your cycle</div>' +
         '<button class="btn btn-pink" style="margin-top:10px;height:40px;font-size:13px;" onclick="navTo(&apos;pro&apos;)">⭐ Upgrade to Pro</button>' +
         '</div>';
@@ -7345,7 +7345,7 @@ function renderAnalytics() {
     const proj = document.getElementById('analytics-projection');
     if (proj) {
       proj.innerHTML = '<div style="text-align:center;padding:20px;">' +
-        '<div style="font-size:36px;margin-bottom:8px;">🔒</div>' +
+        '<div style="font-size:36px;margin-bottom:8px;"><svg width="30" height="30" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><rect x="5" y="11" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>' +
         '<div class="proj-title" style="color:var(--grey);">Pro Feature</div>' +
         '<div class="proj-sub">Upgrade to unlock advanced analytics and progress insights.</div>' +
         '<button class="btn btn-pink" style="margin-top:10px;height:42px;font-size:13px;" onclick="navTo(&apos;pro&apos;)">⭐ Upgrade to Pro</button>' +
@@ -7964,19 +7964,19 @@ function renderProDashboard() {
       <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">PRO FEATURES</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
         <button onclick="navTo('measurements')" style="background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.25);border-radius:14px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(255,209,102,.2)'" onmouseout="this.style.background='rgba(255,209,102,.1)'">
-          <div style="font-size:20px;margin-bottom:4px;">📏</div>
+          <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#ffd166;vertical-align:middle" ><rect x="2" y="8" width="20" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="6" y1="8" x2="6" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="10" y1="8" x2="10" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="14" y1="8" x2="14" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="18" y1="8" x2="18" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
           <div style="font-size:9px;font-weight:700;color:var(--gold);">Body</div>
         </button>
         <button onclick="navTo('period')" style="background:rgba(255,45,107,.1);border:1px solid rgba(255,45,107,.25);border-radius:14px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(255,45,107,.2)'" onmouseout="this.style.background='rgba(255,45,107,.1)'">
-          <div style="font-size:20px;margin-bottom:4px;">🌸</div>
+          <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><circle cx="12" cy="7" r="3.2" fill="currentColor"/><circle cx="17" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="17" r="3.2" fill="currentColor"/><circle cx="7" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="#160a10"/></svg></div>
           <div style="font-size:9px;font-weight:700;color:var(--pink-light);">Cycle</div>
         </button>
         <button onclick="navTo('analytics')" style="background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.2);border-radius:14px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(6,214,160,.18)'" onmouseout="this.style.background='rgba(6,214,160,.08)'">
-          <div style="font-size:20px;margin-bottom:4px;">📊</div>
+          <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#06d6a0;vertical-align:middle" ><line x1="5" y1="20" x2="5" y2="12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="19" y1="20" x2="19" y2="15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
           <div style="font-size:9px;font-weight:700;color:var(--green);">Analytics</div>
         </button>
         <button onclick="navTo('bmi')" style="background:rgba(107,191,255,.08);border:1px solid rgba(107,191,255,.2);border-radius:14px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(107,191,255,.18)'" onmouseout="this.style.background='rgba(107,191,255,.08)'">
-          <div style="font-size:20px;margin-bottom:4px;">🧮</div>
+          <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#6bbfff;vertical-align:middle" ><rect x="4" y="2" width="16" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="6.5" x2="17" y2="6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="7.5" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="16.5" cy="12" r="1" fill="currentColor"/><circle cx="7.5" cy="16.5" r="1" fill="currentColor"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/><circle cx="16.5" cy="16.5" r="1" fill="currentColor"/></svg></div>
           <div style="font-size:9px;font-weight:700;color:#6bbfff;">BMI</div>
         </button>
       </div>
@@ -8012,27 +8012,27 @@ function renderProPage() {
             <div style="font-size:14px;color:rgba(255,255,255,.7);margin-bottom:16px;">${planLabel} Plan · All features unlocked forever</div>
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
               <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
-                <div style="font-size:20px;margin-bottom:4px;">📏</div>
+                <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#ffd166;vertical-align:middle" ><rect x="2" y="8" width="20" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="6" y1="8" x2="6" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="10" y1="8" x2="10" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="14" y1="8" x2="14" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="18" y1="8" x2="18" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
                 <div style="font-size:10px;color:var(--gold);font-weight:700;">Body Tracking</div>
               </div>
               <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
-                <div style="font-size:20px;margin-bottom:4px;">🌸</div>
+                <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><circle cx="12" cy="7" r="3.2" fill="currentColor"/><circle cx="17" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="17" r="3.2" fill="currentColor"/><circle cx="7" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="#160a10"/></svg></div>
                 <div style="font-size:10px;color:var(--pink-light);font-weight:700;">Cycle Tracker</div>
               </div>
               <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
-                <div style="font-size:20px;margin-bottom:4px;">📊</div>
+                <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#06d6a0;vertical-align:middle" ><line x1="5" y1="20" x2="5" y2="12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="19" y1="20" x2="19" y2="15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
                 <div style="font-size:10px;color:var(--green);font-weight:700;">Analytics</div>
               </div>
               <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
-                <div style="font-size:20px;margin-bottom:4px;">🌸</div>
+                <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><circle cx="12" cy="7" r="3.2" fill="currentColor"/><circle cx="17" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="17" r="3.2" fill="currentColor"/><circle cx="7" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="#160a10"/></svg></div>
                 <div style="font-size:10px;color:#b294fd;font-weight:700;">Cycle Tracker</div>
               </div>
               <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
-                <div style="font-size:20px;margin-bottom:4px;">📷</div>
+                <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#ffd166;vertical-align:middle" ><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
                 <div style="font-size:10px;color:var(--gold);font-weight:700;">Food Scanner</div>
               </div>
               <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px;">
-                <div style="font-size:20px;margin-bottom:4px;">🧮</div>
+                <div style="font-size:20px;margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#6bbfff;vertical-align:middle" ><rect x="4" y="2" width="16" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="6.5" x2="17" y2="6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="7.5" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="16.5" cy="12" r="1" fill="currentColor"/><circle cx="7.5" cy="16.5" r="1" fill="currentColor"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/><circle cx="16.5" cy="16.5" r="1" fill="currentColor"/></svg></div>
                 <div style="font-size:10px;color:#6bbfff;font-weight:700;">BMI & Body</div>
               </div>
             </div>
