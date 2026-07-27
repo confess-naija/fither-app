@@ -3610,8 +3610,6 @@ function toggleChecklistItem(id){
   state[id] = !state[id];
   setChecklistState(state);
   renderChecklist();
-renderInsights();
-renderMotivation();
 }
 function renderChecklist(){
   var wrap = document.getElementById('checklist-items');
@@ -3681,6 +3679,8 @@ function renderMotivation(){
 function updateHomeStats() {
 renderHomeWeeklyRecap();
 renderChecklist();
+renderInsights();
+renderMotivation();
   const streak = Math.max(1, Number(appState.streak || 1));
   const todayWorkouts = appState.workoutLog ? appState.workoutLog.length : 0;
   const remaining = Math.max(0, appState.calorieGoal - appState.caloriesEaten + appState.caloriesBurned);
