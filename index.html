@@ -546,7 +546,7 @@ select option{background:var(--black3);}
 .today-plan-sub{font-size:12px;color:rgba(255,255,255,.66);line-height:1.45;margin-top:4px;}
 .today-plan-score{min-width:72px;text-align:center;border-radius:18px;padding:10px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.10);}
 .today-plan-score b{display:block;font-family:var(--font-head);font-size:22px;color:var(--gold);line-height:1;}
-.today-plan-score span{font-size:9px;color:var(--grey);text-transform:uppercase;letter-spacing:.6px;}
+.today-plan-score span{font-size:9px;color:var(--grey);text-transform:uppercase;letter-spacing:.6px;}.wellness-ring{position:relative;width:76px;height:76px;flex-shrink:0;}.wellness-ring svg{width:100%;height:100%;}.wellness-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}.wellness-ring-center b{font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;line-height:1;}.wellness-ring-center span{font-size:8px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;}
 .today-plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px;}
 .today-plan-pill{border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);padding:10px;}
 .today-plan-pill b{display:block;font-size:12px;color:#fff;margin-bottom:3px;}
@@ -1071,12 +1071,18 @@ select option{background:var(--black3);}
             <div class="today-plan-title">Today's Plan</div>
             <div class="today-plan-sub">Stay consistent — every rep counts.</div>
           </div>
-          <div class="today-plan-score">
-            <b id="today-score">0</b>
-            <span>Score</span>
-          </div>
-        </div>
-        <div class="today-plan-grid">
+          <div class="wellness-ring" id="wellness-ring">
+<svg width="76" height="76" viewBox="0 0 76 76">
+<defs><linearGradient id="wellnessRingGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7a3d"/><stop offset="55%" stop-color="#ff2d6b"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs>
+<circle cx="38" cy="38" r="30" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+<circle id="wellness-ring-progress" cx="38" cy="38" r="30" fill="none" stroke="url(#wellnessRingGrad)" stroke-width="6" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5" transform="rotate(-90 38 38)" style="transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);"/>
+</svg>
+<div class="wellness-ring-center">
+<b id="today-score">0</b>
+<span>Score</span>
+</div>
+</div>
+<div class="today-plan-grid">
           <div class="today-plan-pill"><b id="tp-calories">0</b><span>Calories Left</span></div>
           <div class="today-plan-pill"><b id="tp-workouts">0</b><span>Workouts Done</span></div>
           <div class="today-plan-pill"><b id="tp-streak">0</b><span id="tp-streak-label">Day Streak</span></div>
@@ -3590,6 +3596,7 @@ renderHomeWeeklyRecap();
 
   const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
   setEl('today-score', score);
+  (function(){ var ring = document.getElementById('wellness-ring-progress'); if (ring) { var circumference = 188.5; var offset = circumference - (Math.max(0,Math.min(100,score))/100) * circumference; ring.style.strokeDashoffset = offset; } })();
   setEl('tp-calories', remaining);
   setEl('tp-workouts', todayWorkouts);
   setEl('tp-streak', 'Day ' + streak);
