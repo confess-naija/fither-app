@@ -1054,6 +1054,7 @@ select option{background:var(--black3);}
 
       <!-- PRO DASHBOARD (shown only for Pro users) -->
       <div id="pro-dashboard-wrap"></div>
+<div id="home-weekly-recap"></div>
 
       <!-- Today Plan Card -->
       <div class="today-plan-card">
@@ -3542,7 +3543,38 @@ function updateCalRing() {
   if (grs) grs.textContent = remaining > 0 ? `${goal} goal − ${eaten} eaten + ${burned} burned` : 'Calorie goal reached! 🎉';
 }
 
+function renderHomeWeeklyRecap() {
+const wrap = document.getElementById('home-weekly-recap');
+if (!wrap) return;
+const days = ['S','M','T','W','T','F','S'];
+const data = appState.weeklyActivity || [0,0,0,0,0,0,0];
+const max = Math.max(1, ...data);
+const total = data.reduce((a,b)=>a+b,0);
+const todayIdx = new Date().getDay();
+wrap.innerHTML = '<div style="background:linear-gradient(145deg,#1f0f18,#150910);border:1px solid rgba(255,45,107,.16);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:0 10px 28px rgba(0,0,0,.22);">' +
+'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+'<div style="font-family:var(--font-head);font-size:13px;font-weight:800;color:#fff;">This Week</div>' +
+'<span style="font-size:11px;font-weight:700;color:var(--pink-light);">' + total + ' sessions</span>' +
+'</div>' +
+'<div style="display:flex;align-items:flex-end;gap:7px;height:64px;">' +
+days.map(function(d,i){
+var val = data[i] || 0;
+var h = Math.max(4, Math.round((val/max)*46));
+var isToday = i === todayIdx;
+var barBg = val>0 ? (isToday ? 'linear-gradient(180deg,var(--pink),var(--pink-dark))' : 'rgba(255,107,157,.35)') : 'rgba(255,255,255,.08)';
+var glow = (isToday && val>0) ? '0 0 10px rgba(255,45,107,.5)' : 'none';
+var labelColor = isToday ? 'var(--pink-light)' : 'rgba(255,255,255,.4)';
+var labelWeight = isToday ? 800 : 600;
+return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">' +
+'<div style="width:100%;max-width:22px;height:' + h + 'px;border-radius:7px;background:' + barBg + ';box-shadow:' + glow + ';transition:height .4s ease;"></div>' +
+'<span style="font-size:10px;font-weight:' + labelWeight + ';color:' + labelColor + ';">' + d + '</span>' +
+'</div>';
+}).join('') +
+'</div></div>';
+}
+
 function updateHomeStats() {
+renderHomeWeeklyRecap();
   const streak = Math.max(1, Number(appState.streak || 1));
   const todayWorkouts = appState.workoutLog ? appState.workoutLog.length : 0;
   const remaining = Math.max(0, appState.calorieGoal - appState.caloriesEaten + appState.caloriesBurned);
@@ -4129,7 +4161,7 @@ async function stopTimer() {
   appState.caloriesBurned += kcal;
   updateCalRing();
   updateHomeStats();
-  showAchievement('💪', 'Workout Complete!', `${kcal} kcal burned in ${fmtTime(timerElapsed)}`);
+  (function(){var _r=Math.random();if(_r<0.15){showAchievement('🎁','Bonus Round!','That one counted extra — '+kcal+' kcal burned!');}else if(_r<0.3){showAchievement('⭐','Incredible!',kcal+' kcal burned in '+fmtTime(timerElapsed)+'. You are on fire.');}else{showAchievement('💪','Workout Complete!',kcal+' kcal burned in '+fmtTime(timerElapsed));}})();
   timerElapsed = 0;
   timerSets = 0;
 }
@@ -5342,17 +5374,19 @@ async function updateDailyStreak() {
   try {
     const { data, error } = await window.supabase
       .from('user_goals')
-      .select('streak, last_login_date')
+      .select('streak, last_login_date, freeze_count')
       .eq('user_id', currentUser.id)
       .maybeSingle();
 
     const lastLogin = data?.last_login_date || '';
     const savedStreak = data?.streak || 0;
+const freezeCount = data?.freeze_count ?? 1;
 
     // Already logged in today — no change
     if (lastLogin === today) {
       appState.streak = Math.max(1, savedStreak);
-      updateHomeStats();
+      appState.freezeCount = freezeCount;
+updateHomeStats();
       return;
     }
 
@@ -5364,15 +5398,28 @@ async function updateDailyStreak() {
       String(yesterday.getDate()).padStart(2, '0');
 
     let newStreak;
-    if (lastLogin === yStr) {
-      newStreak = savedStreak + 1; // consecutive day
-    } else if (!lastLogin) {
-      newStreak = 1; // first ever login
-    } else {
-      newStreak = 1; // missed days — reset
-    }
+let newFreezeCount = freezeCount;
+let freezeUsed = false;
+if (lastLogin === yStr) {
+newStreak = savedStreak + 1;
+if (newStreak % 7 === 0) newFreezeCount += 1;
+} else if (!lastLogin) {
+newStreak = 1;
+} else {
+const twoAgo = new Date();
+twoAgo.setDate(twoAgo.getDate() - 2);
+const twoAgoStr = twoAgo.getFullYear() + '-' + String(twoAgo.getMonth() + 1).padStart(2, '0') + '-' + String(twoAgo.getDate()).padStart(2, '0');
+if (lastLogin === twoAgoStr && freezeCount > 0) {
+newStreak = savedStreak + 1;
+newFreezeCount = freezeCount - 1;
+freezeUsed = true;
+} else {
+newStreak = 1;
+}
+}
 
-    appState.streak = newStreak;
+appState.streak = newStreak;
+appState.freezeCount = newFreezeCount;
 
     // Save to both tables
     await Promise.allSettled([
@@ -5380,6 +5427,7 @@ async function updateDailyStreak() {
         user_id: currentUser.id,
         streak: newStreak,
         last_login_date: today,
+freeze_count: newFreezeCount,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' }),
 
@@ -5393,9 +5441,13 @@ async function updateDailyStreak() {
     updateHomeStats();
 
     // Milestone toasts
-    if (newStreak === 3)  showAchievement('🔥', '3-Day Streak!', 'You showed up 3 days in a row!');
-    if (newStreak === 7)  showAchievement('👑', 'Week Warrior!', '7 days straight — unstoppable!');
-    if (newStreak === 30) showAchievement('🏆', '30-Day Champion!', 'A full month of consistency!');
+    if (freezeUsed) showAchievement('🧊', 'Streak Freeze Used!', 'Missed a day, but your streak lives on.');
+else if (newStreak === 3) showAchievement('🔥', '3-Day Streak!', 'You showed up 3 days in a row!');
+else if (newStreak === 7) showAchievement('👑', 'Week Warrior!', '7 days straight — +1 streak freeze earned.');
+else if (newStreak === 14) showAchievement('⚡', '14-Day Streak!', 'Two weeks strong. Keep going!');
+else if (newStreak === 30) showAchievement('🏆', '30-Day Champion!', 'A full month of consistency!');
+else if (newStreak === 60) showAchievement('💎', '60-Day Legend!', 'Two months of pure discipline!');
+else if (newStreak === 100) showAchievement('🌟', '100-Day Icon!', 'You are in a league of your own.');
 
   } catch(e) {
     console.warn('Streak update failed:', e.message);
@@ -7938,6 +7990,7 @@ function renderProDashboard() {
         <div style="text-align:right;">
           <div style="font-family:var(--font-head);font-size:22px;font-weight:900;color:var(--gold);">${streak}</div>
           <div style="font-size:10px;color:rgba(255,255,255,.5);">day streak 🔥</div>
+${appState.freezeCount > 0 ? '<div style="font-size:9px;color:#6bbfff;margin-top:3px;font-weight:700;">🧊 '+appState.freezeCount+' freeze</div>' : ''}
         </div>
       </div>
 
@@ -8611,7 +8664,7 @@ async function quickAddFood(name, cal, protein, carbs, fat) {
   if (resultsEl) resultsEl.classList.remove('show');
 
   await saveMealEntry({ name, calories: cal, protein, carbs, fat, portions: 1 });
-  showToast('✅ ' + name + ' added!', cal + ' kcal logged');
+  (function(){var _r=Math.random();if(_r<0.12){showToast('🎉 Nice pick!', name+' logged — '+cal+' kcal. Keep the momentum!');}else{showToast('✅ ' + name + ' added!', cal + ' kcal logged');}})();
   showNutritionInsight({ name, calories: cal, protein, carbs, fat });
 }
 
