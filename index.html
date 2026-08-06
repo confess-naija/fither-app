@@ -819,54 +819,45 @@ select option{background:var(--black3);}
 
 
 /* ── BARCODE SCANNER ── */
-.barcode-btn{width:100%;height:52px;border-radius:16px;border:none;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(100,180,255,.3);color:#6bbfff;font-family:var(--font-head);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;transition:all .2s;}
-.barcode-btn:hover{background:rgba(100,180,255,.1);}
-.barcode-result{background:var(--black2);border:1px solid var(--black4);border-radius:16px;padding:14px;margin-bottom:12px;display:none;}
+.barcode-btn{width:100%;height:56px;border-radius:18px;border:1px solid rgba(255,209,102,.3);background:linear-gradient(135deg,rgba(255,122,61,.16),rgba(255,45,107,.14));color:var(--gold);font-family:var(--font-head);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;transition:all .2s;}
+.barcode-btn:hover{background:linear-gradient(135deg,rgba(255,122,61,.26),rgba(255,45,107,.22));transform:translateY(-1px);}
+.barcode-result{background:linear-gradient(160deg,var(--black2),var(--black3));border:1px solid var(--black4);border-radius:18px;padding:16px;margin-bottom:12px;display:none;}
 .barcode-result.show{display:block;animation:fadeUp .3s ease;}
 .barcode-product{font-family:var(--font-head);font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;}
 .barcode-brand{font-size:11px;color:var(--grey);margin-bottom:10px;}
-
-/* ── NIGERIAN FOOD SEARCH ── */
-.ng-food-search{position:relative;margin-bottom:10px;}
-.ng-food-search input{padding-right:40px;}
-.ng-search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
-.ng-food-grid{display:grid;gap:6px;max-height:320px;overflow-y:auto;scrollbar-width:none;}
-.ng-food-grid::-webkit-scrollbar{display:none;}
-.ng-food-item{display:flex;align-items:center;justify-content:space-between;background:var(--black2);border:1px solid var(--black4);border-radius:12px;padding:10px 14px;cursor:pointer;transition:all .2s;}
-.ng-food-item:hover{border-color:var(--pink);background:rgba(255,45,107,.06);}
-.ng-food-item:active{transform:scale(.98);}
-.ng-food-name{font-size:13px;font-weight:600;color:#fff;}
-.ng-food-meta{font-size:11px;color:var(--grey);margin-top:2px;}
-.ng-food-cal{font-family:var(--font-head);font-size:15px;font-weight:800;color:var(--pink-light);}
-.ng-category-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:99px;border:1px solid var(--black4);background:var(--black3);color:var(--grey);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.ng-category-chip.active{background:var(--pink);border-color:var(--pink);color:#fff;}
-.ng-categories{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin-bottom:10px;}
-.ng-categories::-webkit-scrollbar{display:none;}
+.barcode-input-modal{position:fixed;inset:0;z-index:4500;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:20px;}
+.barcode-input-modal.show{display:flex;}
+.barcode-input-card{width:100%;max-width:360px;background:linear-gradient(160deg,var(--black2),var(--black3));border:1px solid rgba(255,209,102,.25);border-radius:20px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.barcode-input-title{font-family:var(--font-head);font-size:17px;font-weight:900;color:#fff;margin-bottom:6px;}
+.barcode-input-sub{font-size:12px;color:var(--grey);margin-bottom:16px;line-height:1.5;}
+.barcode-input-field{width:100%;height:48px;border-radius:14px;background:var(--black3);border:1.5px solid var(--black4);color:#fff;font-size:15px;padding:0 14px;box-sizing:border-box;margin-bottom:16px;}
+.barcode-input-field:focus{border-color:var(--gold);outline:none;}
+.barcode-input-btns{display:flex;gap:10px;}
+.barcode-input-btns .btn{flex:1;height:44px;font-size:13px;}
 
 
-/* ── BARCODE SCANNER ── */
-.barcode-btn{width:100%;height:52px;border-radius:16px;border:none;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(100,180,255,.3);color:#6bbfff;font-family:var(--font-head);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:all .2s;}
-.barcode-btn:hover{background:rgba(100,180,255,.1);}
-.barcode-result{background:var(--black2);border:1px solid var(--black4);border-radius:16px;padding:14px;margin-bottom:10px;display:none;}
-.barcode-result.show{display:block;}
-
-/* ── SMART NIGERIAN FOOD SEARCH ── */
-.food-search-wrap{position:relative;margin-bottom:10px;}
-.food-search-input{width:100%;height:48px;border-radius:14px;background:var(--black2);border:1.5px solid var(--black4);color:#fff;font-size:14px;padding:0 44px 0 14px;box-sizing:border-box;}
-.food-search-input:focus{border-color:var(--pink);outline:none;}
-.food-search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;}
-.food-search-results{background:var(--black2);border:1px solid var(--black4);border-radius:14px;overflow:hidden;margin-bottom:10px;display:none;max-height:320px;overflow-y:auto;}
-.food-search-results.show{display:block;}
-.fsr-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--black4);cursor:pointer;transition:background .15s;}
-.fsr-item:last-child{border-bottom:none;}
-.fsr-item:hover{background:rgba(255,255,255,.05);}
-.fsr-name{font-size:13px;font-weight:600;color:#fff;}
+/* ── SMART FOOD SEARCH ── */
+.food-search-wrap{position:relative;margin-bottom:12px;}
+.food-search-input{width:100%;height:50px;border-radius:16px;background:var(--black2);border:1.5px solid var(--black4);color:#fff;font-size:14px;padding:0 44px 0 16px;box-sizing:border-box;transition:border-color .2s,background .2s;}
+.food-search-input:focus{border-color:var(--pink);outline:none;background:var(--black3);}
+.food-search-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:17px;pointer-events:none;opacity:.7;}
+.food-search-results{background:transparent;margin-bottom:12px;display:none;max-height:400px;overflow-y:auto;scrollbar-width:none;}
+.food-search-results::-webkit-scrollbar{display:none;}
+.food-search-results.show{display:flex;flex-direction:column;gap:7px;}
+.fsr-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:16px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);}
+.fsr-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);transform:translateY(-1px);}
+.fsr-item:active{transform:scale(.98);}
+.fsr-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.fsr-info{flex:1;min-width:0;}
+.fsr-name{font-size:13.5px;font-weight:700;color:#fff;}
 .fsr-meta{font-size:11px;color:var(--grey);margin-top:2px;}
-.fsr-kcal{font-size:14px;font-weight:800;color:var(--pink-light);}
-.food-category-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none;}
+.fsr-kcal{font-family:var(--font-head);font-size:16px;font-weight:900;color:var(--pink-light);text-align:right;flex-shrink:0;line-height:1.1;}
+.fsr-kcal-unit{display:block;font-family:var(--font-body);font-size:9px;color:var(--grey);font-weight:600;margin-top:1px;}
+.food-category-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin-bottom:12px;scrollbar-width:none;}
 .food-category-chips::-webkit-scrollbar{display:none;}
-.fcat{padding:6px 14px;border-radius:99px;border:1px solid var(--black4);background:var(--black3);color:var(--grey);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
-.fcat.active{background:var(--pink);border-color:var(--pink);color:#fff;}
+.fcat{padding:8px 16px;border-radius:99px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--grey);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+.fcat:hover{background:rgba(255,255,255,.07);}
+.fcat.active{background:linear-gradient(135deg,var(--pink),var(--violet));border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(255,45,107,.3);}
 
 </style>
 
@@ -1207,12 +1198,9 @@ select option{background:var(--black3);}
 
     <!-- ══ FOOD PAGE ══ -->
     <div class="page" id="page-food">
-      <div class="sec-label" style="margin-bottom:14px;">🥗 Calorie Tracker</div>
-      <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,#1f0f19,#170a13);border:1px solid rgba(255,45,107,.22);">
-        <div style="font-family:var(--font-head);font-size:15px;font-weight:900;margin-bottom:6px;">🌍 Global + African + Western Food Library</div>
-        <div style="font-size:12px;color:var(--grey);line-height:1.55;">
-          Explore healthy meals from global, African, Black American, and culturally inspired options — with calorie-friendly choices to support your fitness journey.
-        </div>
+      <div style="margin-bottom:16px;">
+        <div class="sec-label" style="margin-bottom:4px;">🥗 Calorie Tracker</div>
+        <div style="font-size:12px;color:var(--grey);">Global, African &amp; Western meals — search or scan to log in seconds.</div>
       </div>
       <div class="ring-section" style="margin-bottom:14px;">
         <div class="ring-wrap">
@@ -1247,10 +1235,10 @@ select option{background:var(--black3);}
       <div style="margin-bottom:10px;">
         <!-- Barcode Scanner Button -->
         <button class="barcode-btn" onclick="startBarcodeScanner()">
-          <span style="font-size:22px;"><svg width="18" height="18" viewBox="0 0 24 24" style="color:#06d6a0;vertical-align:middle" ><line x1="5" y1="20" x2="5" y2="12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="19" y1="20" x2="19" y2="15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+          <span style="font-size:22px;"><svg width="18" height="18" viewBox="0 0 24 24" style="color:var(--gold);vertical-align:middle" ><line x1="5" y1="20" x2="5" y2="12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="19" y1="20" x2="19" y2="15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
           <div style="text-align:left;">
             <div style="font-size:13px;font-weight:800;">Scan Barcode</div>
-            <div style="font-size:10px;opacity:.7;">Packaged foods — instant nutrition lookup</div>
+            <div style="font-size:10px;opacity:.75;">Packaged foods — instant nutrition lookup</div>
           </div>
         </button>
         <input type="file" id="food-camera-input" accept="image/*" capture="environment" style="display:none;" onchange="handleFoodScan(event)"/>
@@ -1283,6 +1271,19 @@ select option{background:var(--black3);}
             </div>
           </div>
           <button class="btn btn-pink" onclick="logBarcodeFood()" style="height:40px;font-size:13px;">+ Log This Food</button>
+        </div>
+
+        <!-- Barcode Entry Modal (replaces the old native browser prompt) -->
+        <div class="barcode-input-modal" id="barcode-input-modal">
+          <div class="barcode-input-card">
+            <div class="barcode-input-title">📷 Scan Barcode</div>
+            <div class="barcode-input-sub">Enter the barcode number printed on the package</div>
+            <input type="text" inputmode="numeric" id="barcode-input-field" class="barcode-input-field" placeholder="e.g. 5000159484695" autocomplete="off"/>
+            <div class="barcode-input-btns">
+              <button class="btn btn-ghost" onclick="closeBarcodeInput()">Cancel</button>
+              <button class="btn btn-pink" onclick="submitBarcodeInput()">Look Up</button>
+            </div>
+          </div>
         </div>
 
         <!-- Scanner Result -->
@@ -8614,6 +8615,32 @@ const NIGERIAN_FOODS = [
 
 let _foodCatFilter = 'all';
 
+// Visual identity per food category — gives each result row a colored icon
+// avatar instead of a flat text row, so the list actually looks appetizing.
+const FOOD_CAT_META = {
+  global:        { icon: '🌍', color: '#6bbfff' },
+  african:       { icon: '🌿', color: '#06d6a0' },
+  blackamerican: { icon: '🖤', color: '#a855f7' },
+  cultural:      { icon: '✨', color: '#ffd166' },
+  lowcal:        { icon: '🥗', color: '#06d6a0' },
+  breakfast:     { icon: '☀️', color: '#ffd166' },
+  lunch:         { icon: '🌞', color: '#ff7a3d' },
+  dinner:        { icon: '🌙', color: '#a855f7' },
+  snack:         { icon: '🍿', color: '#ff2d6b' },
+};
+function getFoodMeta(cat) { return FOOD_CAT_META[cat] || { icon: '🍽️', color: '#ff6b9d' }; }
+function renderFoodRow(f) {
+  const meta = getFoodMeta(f.cat);
+  return '<div class="fsr-item" onclick="quickAddFood(\'' + f.name.replace(/'/g,'') + '\',' + f.cal + ',' + f.p + ',' + f.c + ',' + f.f + ')">' +
+    '<div class="fsr-icon" style="background:' + meta.color + '22;color:' + meta.color + ';">' + meta.icon + '</div>' +
+    '<div class="fsr-info">' +
+      '<div class="fsr-name">' + f.name + '</div>' +
+      '<div class="fsr-meta">' + f.portion + ' \u00b7 ' + f.p + 'g protein \u00b7 ' + f.c + 'g carbs \u00b7 ' + f.f + 'g fat</div>' +
+    '</div>' +
+    '<div class="fsr-kcal">' + f.cal + '<span class="fsr-kcal-unit">kcal</span></div>' +
+  '</div>';
+}
+
 function searchNigerianFood(query) {
   const resultsEl = document.getElementById('nigerian-food-results');
   if (!resultsEl) return;
@@ -8636,14 +8663,7 @@ function searchNigerianFood(query) {
     return;
   }
 
-  resultsEl.innerHTML = results.map(f => `
-    <div class="fsr-item" onclick="quickAddFood('${f.name.replace(/'/g,'')}',${f.cal},${f.p},${f.c},${f.f})">
-      <div>
-        <div class="fsr-name">${f.name}</div>
-        <div class="fsr-meta">${f.portion} · ${f.p}g protein · ${f.c}g carbs · ${f.f}g fat</div>
-      </div>
-      <div class="fsr-kcal">${f.cal}<span style="font-size:9px;color:var(--grey);"> kcal</span></div>
-    </div>`).join('');
+  resultsEl.innerHTML = results.map(renderFoodRow).join('');
 
   resultsEl.classList.add('show');
 }
@@ -8670,14 +8690,7 @@ function showFoodCategory(cat) {
     ? NIGERIAN_FOODS.slice(0, 12)
     : NIGERIAN_FOODS.filter(f => f.cat === cat).slice(0, 15);
 
-  resultsEl.innerHTML = results.map(f => `
-    <div class="fsr-item" onclick="quickAddFood('${f.name.replace(/'/g,'')}',${f.cal},${f.p},${f.c},${f.f})">
-      <div>
-        <div class="fsr-name">${f.name}</div>
-        <div class="fsr-meta">${f.portion} · ${f.p}g protein · ${f.c}g carbs</div>
-      </div>
-      <div class="fsr-kcal">${f.cal}<span style="font-size:9px;color:var(--grey);"> kcal</span></div>
-    </div>`).join('');
+  resultsEl.innerHTML = results.map(renderFoodRow).join('');
 
   resultsEl.classList.add('show');
 }
@@ -8697,12 +8710,33 @@ async function quickAddFood(name, cal, protein, carbs, fat) {
 // ══════════════════════════════════════════════════════════════
 // BARCODE SCANNER — Open Food Facts API (free, no key needed)
 // ══════════════════════════════════════════════════════════════
-async function startBarcodeScanner() {
-  // Show barcode input
-  let barcode = prompt('Enter barcode number from the package:');
-  if (!barcode || barcode.trim().length < 5) return;
-  barcode = barcode.trim();
+function startBarcodeScanner() {
+  const modal = document.getElementById('barcode-input-modal');
+  const field = document.getElementById('barcode-input-field');
+  if (field) field.value = '';
+  if (modal) modal.classList.add('show');
+  setTimeout(() => field && field.focus(), 150);
+}
 
+function closeBarcodeInput() {
+  const modal = document.getElementById('barcode-input-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+async function submitBarcodeInput() {
+  const field = document.getElementById('barcode-input-field');
+  const barcode = (field && field.value || '').trim();
+  if (!barcode || barcode.length < 5) {
+    showToast('Enter a valid barcode', 'Barcode numbers are usually 8-13 digits');
+    return;
+  }
+  closeBarcodeInput();
+  await lookupBarcode(barcode);
+}
+
+let _pendingBarcodeFood = null;
+
+async function lookupBarcode(barcode) {
   showToast('🔍 Looking up...', 'Searching Open Food Facts database');
 
   try {
@@ -8716,39 +8750,42 @@ async function startBarcodeScanner() {
       return;
     }
 
-    const p    = data.product;
-    const name = p.product_name || p.product_name_en || 'Unknown Product';
-    const n    = p.nutriments || {};
-    const cal  = Math.round(n['energy-kcal_100g'] || n['energy-kcal'] || 0);
-    const prot = Math.round(n['proteins_100g'] || 0);
-    const carb = Math.round(n['carbohydrates_100g'] || 0);
-    const fat  = Math.round(n['fat_100g'] || 0);
+    const p     = data.product;
+    const name  = p.product_name || p.product_name_en || 'Unknown Product';
+    const brand = p.brands || '';
+    const n     = p.nutriments || {};
+    const cal   = Math.round(n['energy-kcal_100g'] || n['energy-kcal'] || 0);
+    const prot  = Math.round(n['proteins_100g'] || 0);
+    const carb  = Math.round(n['carbohydrates_100g'] || 0);
+    const fat   = Math.round(n['fat_100g'] || 0);
 
     if (cal === 0) {
       showToast('Incomplete data', 'Nutrition info missing for this product.');
       return;
     }
 
-    // Show result and confirm
-    const confirmed = confirm(
-      name + '\n\n' +
-      'Per 100g:\n' +
-      '🔥 Calories: ' + cal + ' kcal\n' +
-      '💪 Protein: ' + prot + 'g\n' +
-      '🍞 Carbs: ' + carb + 'g\n' +
-      '🧈 Fat: ' + fat + 'g\n\n' +
-      'Add to food log?'
-    );
+    _pendingBarcodeFood = { name, calories: cal, protein: prot, carbs: carb, fat, portions: 1 };
 
-    if (confirmed) {
-      await saveMealEntry({ name, calories: cal, protein: prot, carbs: carb, fat, portions: 1 });
-      showToast('✅ ' + name + ' logged!', cal + ' kcal per 100g added');
-    }
+    const nameEl  = document.getElementById('barcode-product-name'); if (nameEl)  nameEl.textContent  = name;
+    const brandEl = document.getElementById('barcode-brand-name');   if (brandEl) brandEl.textContent = brand || 'Per 100g';
+    const calEl   = document.getElementById('bc-cal');      if (calEl)   calEl.textContent   = cal;
+    const protEl  = document.getElementById('bc-protein');  if (protEl)  protEl.textContent  = prot + 'g';
+    const carbEl  = document.getElementById('bc-carbs');    if (carbEl)  carbEl.textContent  = carb + 'g';
+    const fatEl   = document.getElementById('bc-fat');      if (fatEl)   fatEl.textContent   = fat + 'g';
+    const resultEl = document.getElementById('barcode-result'); if (resultEl) resultEl.classList.add('show');
 
   } catch(err) {
     showToast('Error', 'Could not fetch product. Check your connection.');
     console.warn('Barcode lookup failed:', err.message);
   }
+}
+
+async function logBarcodeFood() {
+  if (!_pendingBarcodeFood) return;
+  await saveMealEntry(_pendingBarcodeFood);
+  showToast('✅ ' + _pendingBarcodeFood.name + ' logged!', _pendingBarcodeFood.calories + ' kcal per 100g added');
+  const resultEl = document.getElementById('barcode-result'); if (resultEl) resultEl.classList.remove('show');
+  _pendingBarcodeFood = null;
 }
 
 </script>
