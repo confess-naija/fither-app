@@ -2566,6 +2566,52 @@ async function doSignup() {
   }
 }
 
+// Best-effort: if anything only ever made it into this device's local
+// fallback (because a Supabase write failed earlier), give it one more
+// chance to actually reach the cloud before uClear() wipes local storage
+// on logout. Without this, a failed save could look fine for the rest of
+// the session (thanks to the local fallback) and then vanish for good the
+// moment the user signs out — which is exactly what "it didn't save my
+// workout" turned out to be in cases where the cloud write had failed.
+async function flushPendingLocalSync() {
+  if (!currentUser || !window.supabase) return;
+  const today = todayStr();
+  try {
+    const savedWorkouts = uGet('fnova_workouts_' + today);
+    if (savedWorkouts) {
+      const list = JSON.parse(savedWorkouts);
+      for (const w of list) {
+        await window.supabase.from('user_workout_logs').insert({
+          user_id: currentUser.id, date: today,
+          workout_name: w.workout_name, duration_sec: w.duration_sec,
+          calories_burned: w.calories_burned, sets: w.sets,
+          created_at: w.created_at || new Date().toISOString(),
+        });
+      }
+    }
+  } catch(e) {}
+  try {
+    const savedMeals = uGet('fnova_meals_' + today);
+    if (savedMeals) {
+      const list = JSON.parse(savedMeals);
+      for (const m of list) {
+        await window.supabase.from('user_meal_logs').insert({
+          user_id: currentUser.id, date: today,
+          food_name: m.food_name, calories: m.calories, protein: m.protein,
+          carbs: m.carbs, fat: m.fat, portions: m.portions || 1,
+          created_at: m.created_at || new Date().toISOString(),
+        });
+      }
+    }
+  } catch(e) {}
+  try {
+    const savedGoals = uGet('fnova_goals');
+    if (savedGoals) {
+      await window.supabase.from('user_goals').upsert(JSON.parse(savedGoals), { onConflict: 'user_id' });
+    }
+  } catch(e) {}
+}
+
 async function doLogout() {
   // 1. Stop music immediately
   window.stopAllAudio && window.stopAllAudio();
@@ -2573,7 +2619,11 @@ async function doLogout() {
   // 2. Clear avatar from UI immediately
   clearAvatarUI();
 
-  // 3. Reset ALL app state to defaults
+  // 3. Give any locally-stranded data one last chance to sync before we
+  // wipe this device's local cache below.
+  try { await flushPendingLocalSync(); } catch(e) {}
+
+  // 4. Reset ALL app state to defaults
   Object.assign(appState, {
     calorieGoal: 1800, caloriesEaten: 0, caloriesBurned: 0,
     protein: 0, carbs: 0, fat: 0, waterCups: 0, streak: 0,
@@ -2583,14 +2633,14 @@ async function doLogout() {
     isProUser: false, proPlan: 'free'
   });
 
-  // 4. Clear this user's localStorage
+  // 5. Clear this user's localStorage
   uClear();
 
-  // 5. Sign out from Supabase
+  // 6. Sign out from Supabase
   try { await window.supabase.auth.signOut(); } catch(e) {}
   currentUser = null;
 
-  // 6. Reload page completely — guarantees clean slate for next user
+  // 7. Reload page completely — guarantees clean slate for next user
   window.location.href = window.location.origin + window.location.pathname;
 }
 
@@ -4354,6 +4404,15 @@ async function stopTimer() {
 }
 
 function backToWorkoutList() {
+  // If real progress was made (timer was actually running/elapsed), treat
+  // this the same as pressing Stop so the workout still gets recorded —
+  // previously this button just discarded the session silently, which
+  // looked like "the app didn't save my workout" even though nothing was
+  // ever broken about saving itself.
+  if (activeWorkout && timerElapsed > 0) {
+    stopTimer();
+    return;
+  }
   clearInterval(timerInterval);
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   document.getElementById('timer-section').style.display = 'none';
