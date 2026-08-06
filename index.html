@@ -579,7 +579,9 @@ select option{background:var(--black3);}
 .today-plan-sub{font-size:12px;color:rgba(255,255,255,.66);line-height:1.45;margin-top:4px;}
 .today-plan-score{min-width:72px;text-align:center;border-radius:18px;padding:10px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.10);}
 .today-plan-score b{display:block;font-family:var(--font-head);font-size:22px;color:var(--gold);line-height:1;}
-.today-plan-score span{font-size:9px;color:var(--grey);text-transform:uppercase;letter-spacing:.6px;}.wellness-ring{position:relative;width:76px;height:76px;flex-shrink:0;}.wellness-ring svg{width:100%;height:100%;}.wellness-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}.wellness-ring-center b{font-family:var(--font-head);font-size:20px;font-weight:900;color:#fff;line-height:1;}.wellness-ring-center span{font-size:8px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;}
+.today-plan-score span{font-size:9px;color:var(--grey);text-transform:uppercase;letter-spacing:.6px;}.wellness-ring{position:relative;width:92px;height:92px;flex-shrink:0;filter:drop-shadow(0 0 12px rgba(255,45,107,.25));}.wellness-ring svg{width:100%;height:100%;}.wellness-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}.wellness-ring-center b{font-family:var(--font-head);font-size:24px;font-weight:900;color:#fff;line-height:1;}.wellness-ring-center span{font-size:8px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;}
+.today-score-verdict{font-size:12.5px;font-weight:700;color:var(--pink-light);margin:2px 0 14px;line-height:1.4;}
+.today-score-verdict .tsv-sub{display:block;font-size:11px;font-weight:500;color:var(--grey);margin-top:2px;}
 .today-plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px;}
 .today-plan-pill{border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);padding:10px;}
 .today-plan-pill b{display:block;font-size:12px;color:#fff;margin-bottom:3px;}
@@ -1092,10 +1094,10 @@ select option{background:var(--black3);}
             <div class="today-plan-sub">Stay consistent — every rep counts.</div>
           </div>
           <div class="wellness-ring" id="wellness-ring">
-<svg width="76" height="76" viewBox="0 0 76 76">
+<svg width="92" height="92" viewBox="0 0 92 92">
 <defs><linearGradient id="wellnessRingGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7a3d"/><stop offset="55%" stop-color="#ff2d6b"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs>
-<circle cx="38" cy="38" r="30" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
-<circle id="wellness-ring-progress" cx="38" cy="38" r="30" fill="none" stroke="url(#wellnessRingGrad)" stroke-width="6" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5" transform="rotate(-90 38 38)" style="transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);"/>
+<circle cx="46" cy="46" r="36" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/>
+<circle id="wellness-ring-progress" cx="46" cy="46" r="36" fill="none" stroke="url(#wellnessRingGrad)" stroke-width="7" stroke-linecap="round" stroke-dasharray="226.2" stroke-dashoffset="226.2" transform="rotate(-90 46 46)" style="transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);"/>
 </svg>
 <div class="wellness-ring-center">
 <b id="today-score">0</b>
@@ -1104,6 +1106,7 @@ select option{background:var(--black3);}
 </div>
       <!-- FIX: close .today-plan-top (was missing, caused entire app to nest inside Home) -->
       </div>
+      <div class="today-score-verdict" id="today-score-verdict">Log something to get your score started</div>
 <div class="today-plan-grid">
           <div class="today-plan-pill"><b id="tp-calories">0</b><span>Calories Left</span></div>
           <div class="today-plan-pill"><b id="tp-workouts">0</b><span>Workouts Done</span></div>
@@ -2354,6 +2357,14 @@ function todayStr() {
   const day   = String(d.getDate()).padStart(2, '0');
   return year + '-' + month + '-' + day; // YYYY-MM-DD local time
 }
+function yesterdayStr() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const year  = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day   = String(d.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
 
 function fmtTime(sec) {
   const m = Math.floor(sec / 60).toString().padStart(2, '0');
@@ -3264,6 +3275,25 @@ function renderInsights(){
     '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;font-style:italic;color:var(--pink-light);">"' + quote.q + '"</div>' +
     '</div>';
 }
+const SCORE_VERDICTS = [
+  { min: 0,  text: "Let's get moving" },
+  { min: 20, text: 'Building momentum' },
+  { min: 40, text: 'Solid effort today' },
+  { min: 60, text: 'Strong day — keep it up!' },
+  { min: 80, text: "Incredible! You're unstoppable!" },
+];
+const GOAL_FLAVOR = {
+  weightloss: 'your weight loss goal',
+  muscle:     'building strength',
+  endurance:  'your endurance goal',
+  wellness:   'your wellness goal',
+};
+function getScoreVerdict(score) {
+  let v = SCORE_VERDICTS[0];
+  for (const tier of SCORE_VERDICTS) { if (score >= tier.min) v = tier; }
+  return v.text;
+}
+
 function updateHomeStats() {
 renderHomeWeeklyRecap();
 renderChecklist();
@@ -3275,7 +3305,30 @@ renderInsights();
 
   const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
   setEl('today-score', score);
-  (function(){ var ring = document.getElementById('wellness-ring-progress'); if (ring) { var circumference = 188.5; var offset = circumference - (Math.max(0,Math.min(100,score))/100) * circumference; ring.style.strokeDashoffset = offset; } })();
+  (function(){ var ring = document.getElementById('wellness-ring-progress'); if (ring) { var circumference = 226.2; var offset = circumference - (Math.max(0,Math.min(100,score))/100) * circumference; ring.style.strokeDashoffset = offset; } })();
+
+  // Tie the score to something that actually means something: a verdict,
+  // the user's stated goal, and how today compares to yesterday.
+  (function(){
+    const verdictEl = document.getElementById('today-score-verdict');
+    if (!verdictEl) return;
+    const hasActivity = appState.caloriesEaten > 0 || todayWorkouts > 0 || appState.waterCups > 0;
+    if (!hasActivity) { verdictEl.textContent = 'Log something to get your score started'; return; }
+    const verdict = getScoreVerdict(score);
+    const goalText = GOAL_FLAVOR[appState.activeGoal] || 'your goal';
+    const yKey = 'score_' + yesterdayStr();
+    const yesterday = parseInt(uGet(yKey) || '', 10);
+    let compareText = '';
+    if (!isNaN(yesterday)) {
+      const diff = score - yesterday;
+      if (diff > 3) compareText = '▲ ' + diff + ' pts better than yesterday';
+      else if (diff < -3) compareText = '▼ ' + Math.abs(diff) + ' pts below yesterday — you can turn it around';
+      else compareText = 'Steady with yesterday';
+    }
+    verdictEl.innerHTML = verdict + ' — you\'re showing up for ' + goalText + '.' +
+      (compareText ? '<span class="tsv-sub">' + compareText + '</span>' : '');
+    uSet('score_' + todayStr(), String(score));
+  })();
   setEl('tp-calories', remaining);
   setEl('tp-workouts', todayWorkouts);
   setEl('tp-streak', 'Day ' + streak);
