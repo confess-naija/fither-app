@@ -4524,46 +4524,49 @@ async function coachSend() {
   input.value = '';
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const systemPrompt = (function() {
+      const meta = currentUser ? (currentUser.user_metadata || {}) : {};
+      const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
+      const streak    = appState.streak || 0;
+      const goal      = appState.activeGoal || 'weightloss';
+      const calGoal   = appState.calorieGoal || 1800;
+      const eaten     = appState.caloriesEaten || 0;
+      const burned    = appState.caloriesBurned || 0;
+      const water     = appState.waterCups || 0;
+      const todayW    = appState.workoutLog ? appState.workoutLog.length : 0;
+      const ch        = getChallengeState();
+      const chInfo    = ch && ch.active
+        ? 'She is on Day ' + (ch.completedDays ? ch.completedDays.length : 0) + ' of her 30-Day Challenge.'
+        : 'She has not started the 30-Day Challenge yet.';
+      const wEntries  = JSON.parse(uGet('fnova_weight') || '[]');
+      const curWeight = wEntries.length > 0 ? wEntries[wEntries.length-1].kg + 'kg' : 'not logged yet';
+      return 'You are Coach Nova, a personal AI wellness coach inside the FitHerNova app. USER CONTEXT: Name: ' + firstName + '. Goal: ' + goal + '. Streak: ' + streak + ' days. Today: eaten ' + eaten + ' of ' + calGoal + ' kcal goal, burned ' + burned + ' kcal, ' + water + '/8 cups water, ' + todayW + ' workouts done. Current weight: ' + curWeight + '. ' + chInfo + ' Use this context naturally — address her by name occasionally and reference her real numbers when relevant. You specialize in belly fat loss, Nigerian & African nutrition, gospel-inspired motivation, and holistic wellness for African women. Keep responses concise (under 200 words), actionable, warm, and empowering. Use emojis sparingly.';
+    })();
+
+    // Coach Nova now runs through /api/coach — a small serverless proxy that
+    // holds the AI provider's key server-side. The app used to call
+    // Anthropic's API directly from the browser with no key attached at all,
+    // which silently failed on every message and always fell back to the
+    // canned answers below.
+    const resp = await fetch('/api/coach', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
-        system: (function() {
-          const meta = currentUser ? (currentUser.user_metadata || {}) : {};
-          const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
-          const streak    = appState.streak || 0;
-          const goal      = appState.activeGoal || 'weightloss';
-          const calGoal   = appState.calorieGoal || 1800;
-          const eaten     = appState.caloriesEaten || 0;
-          const burned    = appState.caloriesBurned || 0;
-          const water     = appState.waterCups || 0;
-          const todayW    = appState.workoutLog ? appState.workoutLog.length : 0;
-          const ch        = getChallengeState();
-          const chInfo    = ch && ch.active
-            ? 'She is on Day ' + (ch.completedDays ? ch.completedDays.length : 0) + ' of her 30-Day Challenge.'
-            : 'She has not started the 30-Day Challenge yet.';
-          const wEntries  = JSON.parse(uGet('fnova_weight') || '[]');
-          const curWeight = wEntries.length > 0 ? wEntries[wEntries.length-1].kg + 'kg' : 'not logged yet';
-          return 'You are Coach Nova, a personal AI wellness coach inside the FitHerNova app. USER CONTEXT: Name: ' + firstName + '. Goal: ' + goal + '. Streak: ' + streak + ' days. Today: eaten ' + eaten + ' of ' + calGoal + ' kcal goal, burned ' + burned + ' kcal, ' + water + '/8 cups water, ' + todayW + ' workouts done. Current weight: ' + curWeight + '. ' + chInfo + ' Use this context naturally — address her by name occasionally and reference her real numbers when relevant. You specialize in belly fat loss, Nigerian & African nutrition, gospel-inspired motivation, and holistic wellness for African women. Keep responses concise (under 200 words), actionable, warm, and empowering. Use emojis sparingly.';
-        })(),
-        messages: [
-          ..._coachHistory.slice(-10),
-          { role: 'user', content: q }
-        ]
+        systemPrompt,
+        history: _coachHistory.slice(-10),
+        question: q
       })
     });
     const data = await resp.json();
-    if (data.content && data.content[0]) {
-      const reply = data.content[0].text;
+    if (resp.ok && data.reply) {
+      const reply = data.reply;
       answerEl.textContent = reply;
       // Save to history
       _coachHistory.push({ role: 'user', content: q });
       _coachHistory.push({ role: 'assistant', content: reply });
       saveCoachHistory();
     } else {
-      throw new Error('No response');
+      throw new Error(data.error || 'No response');
     }
   } catch(e) {
     // Fallback local answers
@@ -5017,12 +5020,37 @@ async function selectPlan(plan) {
       callback: async function(response) {
         if (response.status === 'successful' || response.status === 'completed') {
           const ref = response.transaction_id || response.tx_ref || reference;
-          setProStatus(plan, '✅ Payment successful! Unlocking Pro…');
-          await saveProToSupabase(plan, String(ref));
-          setProStatus(plan, '');
-          updateProBadges();
-          showToast('🎉 Welcome to FitHerNova Pro!', 'All features are now unlocked ✨');
-          showAchievement('⭐', 'Pro Unlocked!', 'Welcome to FitHerNova Pro — enjoy all features!');
+          setProStatus(plan, '⏳ Confirming payment…');
+          try {
+            // Pro status is now granted by /api/verify-payment, which re-checks
+            // this transaction directly with Flutterwave server-side before
+            // writing anything to Supabase. The app used to trust the browser's
+            // own "payment succeeded" callback and write is_pro=true itself —
+            // which meant anyone could fake that write from dev tools without
+            // paying. This closes that gap.
+            const { data: { session } } = await window.supabase.auth.getSession();
+            const verifyResp = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + (session ? session.access_token : '')
+              },
+              body: JSON.stringify({ transactionId: String(ref), plan })
+            });
+            const verifyData = await verifyResp.json();
+            if (verifyResp.ok && verifyData.verified) {
+              await loadProStatus();
+              setProStatus(plan, '');
+              showToast('🎉 Welcome to FitHerNova Pro!', 'All features are now unlocked ✨');
+              showAchievement('⭐', 'Pro Unlocked!', 'Welcome to FitHerNova Pro — enjoy all features!');
+            } else {
+              setProStatus(plan, '');
+              showToast('Could not confirm payment', verifyData.reason || 'Please contact support with your payment reference: ' + ref);
+            }
+          } catch (verifyErr) {
+            setProStatus(plan, '');
+            showToast('Could not confirm payment', 'Please contact support with your payment reference: ' + ref);
+          }
         } else {
           setProStatus(plan, '');
           showToast('Payment incomplete', 'Please try again or use the payment link below');
