@@ -3170,9 +3170,9 @@ var CHECKLIST_ITEMS = [
   {id:'meditation', label:'Meditation', icon:'🧘'},
   {id:'evening-walk', label:'Evening Walk', icon:'🚶'}
 ];
-function getChecklistKey(){ var d = new Date(); return 'fhn_checklist_' + d.toISOString().slice(0,10); }
-function getChecklistState(){ try { return JSON.parse(localStorage.getItem(getChecklistKey())||'{}'); } catch(e){ return {}; } }
-function setChecklistState(state){ try { localStorage.setItem(getChecklistKey(), JSON.stringify(state)); } catch(e){} }
+function getChecklistKey(){ var d = new Date(); return 'checklist_' + d.toISOString().slice(0,10); }
+function getChecklistState(){ try { return JSON.parse(uGet(getChecklistKey())||'{}'); } catch(e){ return {}; } }
+function setChecklistState(state){ try { uSet(getChecklistKey(), JSON.stringify(state)); } catch(e){} }
 function toggleChecklistItem(id){
   var state = getChecklistState();
   state[id] = !state[id];
@@ -3709,7 +3709,7 @@ let phaseIdx = 0;
 let activeRealDuration = 0;
 let activeRounds = 1;
 let currentRound = 0;
-let _exerciseVoiceOn = (typeof localStorage !== 'undefined' && localStorage.getItem('fnova_ex_voice') === 'off') ? false : true;
+let _exerciseVoiceOn = true; // synced per-user in startWorkout() once currentUser is known
 const REST_BETWEEN_EXERCISES = 15; // seconds
 let _hypeTick = 0;
 
@@ -3950,7 +3950,7 @@ function enterPhase(idx) {
 
 function toggleExerciseVoice() {
   _exerciseVoiceOn = !_exerciseVoiceOn;
-  localStorage.setItem('fnova_ex_voice', _exerciseVoiceOn ? 'on' : 'off');
+  uSet('ex_voice', _exerciseVoiceOn ? 'on' : 'off');
   var btn = document.getElementById('ex-voice-toggle');
   if (btn) btn.textContent = _exerciseVoiceOn ? '\ud83d\udd0a' : '\ud83d\udd07';
   if (!_exerciseVoiceOn && 'speechSynthesis' in window) speechSynthesis.cancel();
@@ -3961,6 +3961,7 @@ function toggleExerciseVoice() {
 // sounding voice the device already has installed, rather than the OS
 // default robotic one, and tunes rate/pitch so it doesn't sound flat.
 var _cachedVoice = null;
+var _voicesReady = false;
 function pickBestVoice() {
   if (!('speechSynthesis' in window)) return null;
   var voices = speechSynthesis.getVoices();
@@ -3972,12 +3973,30 @@ function pickBestVoice() {
   var local = pool.find(function(v){ return v.localService; });
   return local || pool[0];
 }
-if ('speechSynthesis' in window) {
-  _cachedVoice = pickBestVoice();
-  speechSynthesis.onvoiceschanged = function() { _cachedVoice = pickBestVoice(); };
+// Mobile browsers often return an empty voice list on the very first call —
+// the list loads asynchronously. Poll briefly so the FIRST announcement
+// already has a good voice instead of falling back to the OS default
+// (the 'robotic' voice) for a couple of seconds.
+function pollForVoices(triesLeft) {
+  var v = pickBestVoice();
+  if (v) { _cachedVoice = v; _voicesReady = true; return; }
+  if (triesLeft <= 0) return;
+  setTimeout(function(){ pollForVoices(triesLeft - 1); }, 150);
 }
-function announceExercise(ex) {
+if ('speechSynthesis' in window) {
+  pollForVoices(20);
+  speechSynthesis.onvoiceschanged = function() { _cachedVoice = pickBestVoice(); _voicesReady = true; };
+}
+function announceExercise(ex, attempt) {
+  attempt = attempt || 0;
   if (!_exerciseVoiceOn || !('speechSynthesis' in window) || !ex) return;
+  // If voices haven't loaded yet, wait a beat instead of speaking with
+  // whatever default (often robotic) voice the browser falls back to.
+  // Give up and speak anyway after ~2s so it never goes silent.
+  if (!_voicesReady && !_cachedVoice && attempt < 10) {
+    setTimeout(function(){ announceExercise(ex, attempt + 1); }, 200);
+    return;
+  }
   try {
     speechSynthesis.cancel();
     var text = ex.name + (ex.reps ? '. ' + ex.reps : '');
@@ -4044,6 +4063,7 @@ function startWorkout(id) {
   exerciseIndex = 0;
   phaseIdx = 0;
   currentRound = 0;
+  _exerciseVoiceOn = uGet('ex_voice') !== 'off';
   var tl = buildWorkoutTimeline(activeWorkout);
   activePhases = tl.phases;
   activeRealDuration = tl.total;
@@ -4064,6 +4084,8 @@ function startWorkout(id) {
   renderExDots();
   updateExerciseDisplay(false);
   setTimerMood('work');
+  // Hide the floating mini player so it can't sit on top of the Stop button
+  var mpHide = document.getElementById('mini-player'); if (mpHide) mpHide.classList.remove('show');
   navTo('workout');
   // Render voice trainer UI
   setTimeout(() => renderVoiceTrainerUI(), 100);
@@ -4162,6 +4184,8 @@ function backToWorkoutList() {
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   document.getElementById('timer-section').style.display = 'none';
   document.getElementById('workout-list-wrap').style.display = 'block';
+  // Bring the mini player back if music is still going
+  var mpShow = document.getElementById('mini-player'); if (mpShow && musicPlaying) mpShow.classList.add('show');
 }
 
 // ═══════════
@@ -6340,13 +6364,13 @@ function copyShareText() {
 // FOOD SCANNER — Claude Vision AI
 // ═══════════
 function getScanCount() {
-  const key = 'fnova_scans_' + todayStr();
-  return parseInt(localStorage.getItem(key) || '0');
+  const key = 'scans_' + todayStr();
+  return parseInt(uGet(key) || '0');
 }
 
 function incrementScanCount() {
-  const key = 'fnova_scans_' + todayStr();
-  localStorage.setItem(key, getScanCount() + 1);
+  const key = 'scans_' + todayStr();
+  uSet(key, getScanCount() + 1);
 }
 
 const FREE_SCAN_LIMIT = 5;
@@ -6943,7 +6967,7 @@ async function loadAnnouncements() {
     if (data && data.length > 0 && !error) {
       const ann = data[0];
       // Check if user already dismissed this announcement
-      const dismissed = localStorage.getItem('fhn_ann_' + ann.id);
+      const dismissed = uGet('ann_' + ann.id);
       if (dismissed) return;
       showAnnouncement(ann);
     }
@@ -6959,7 +6983,7 @@ function showAnnouncement(ann) {
   if (btn) {
     btn.textContent = 'Got it';
     btn.onclick = function() {
-      localStorage.setItem('fhn_ann_' + ann.id, '1');
+      uSet('ann_' + ann.id, '1');
       btn.textContent = 'OK';
       btn.onclick = dismissToast;
       dismissToast();
@@ -7556,12 +7580,12 @@ function renderAnalytics() {
 // COACH NOVA MESSAGE LIMIT (Free: 5/day, Pro: Unlimited)
 // ═══════════
 function getCoachMsgCount() {
-  const key = 'fnova_coach_msgs_' + todayStr();
-  return parseInt(localStorage.getItem(key) || '0');
+  const key = 'coach_msgs_' + todayStr();
+  return parseInt(uGet(key) || '0');
 }
 function incrementCoachMsg() {
-  const key = 'fnova_coach_msgs_' + todayStr();
-  localStorage.setItem(key, getCoachMsgCount() + 1);
+  const key = 'coach_msgs_' + todayStr();
+  uSet(key, getCoachMsgCount() + 1);
 }
 const FREE_COACH_LIMIT = 5;
 
@@ -8235,7 +8259,7 @@ function setVoiceTrainer(mode) {
   }
 
   // Save preference
-  localStorage.setItem('fnova_voice_mode', mode);
+  uSet('voice_mode', mode);
   if (mode !== 'off') showToast('🎙️ Voice trainer ON!', 'Your trainer will guide you through the workout');
 }
 
@@ -8389,7 +8413,7 @@ function getVoiceCueForTime(elapsed, totalDuration) {
 
 // Load saved voice preference
 function loadVoicePreference() {
-  const saved = localStorage.getItem('fnova_voice_mode');
+  const saved = uGet('voice_mode');
   if (saved && saved !== 'off') setVoiceTrainer(saved);
 }
 
