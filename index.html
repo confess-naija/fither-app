@@ -3958,14 +3958,36 @@ function toggleExerciseVoice() {
 }
 
 // Free, browser-native spoken exercise names (no API cost) — separate from
-// the Pro Voice Trainer's produced audio clips.
+// the Pro Voice Trainer's produced audio clips. Picks the most natural-
+// sounding voice the device already has installed, rather than the OS
+// default robotic one, and tunes rate/pitch so it doesn't sound flat.
+var _cachedVoice = null;
+function pickBestVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  var voices = speechSynthesis.getVoices();
+  if (!voices || !voices.length) return null;
+  var enVoices = voices.filter(function(v){ return /^en/i.test(v.lang); });
+  var pool = enVoices.length ? enVoices : voices;
+  var byQuality = pool.find(function(v){ return /(Natural|Neural|Enhanced|Premium|Google US English|Samantha|Aria|Jenny|Zira)/i.test(v.name); });
+  if (byQuality) return byQuality;
+  var local = pool.find(function(v){ return v.localService; });
+  return local || pool[0];
+}
+if ('speechSynthesis' in window) {
+  _cachedVoice = pickBestVoice();
+  speechSynthesis.onvoiceschanged = function() { _cachedVoice = pickBestVoice(); };
+}
 function announceExercise(ex) {
   if (!_exerciseVoiceOn || !('speechSynthesis' in window) || !ex) return;
   try {
     speechSynthesis.cancel();
-    var msg = new SpeechSynthesisUtterance('Next: ' + ex.name + (ex.reps ? ', ' + ex.reps : ''));
-    msg.rate = 1.0;
-    msg.volume = 0.9;
+    var text = ex.name + (ex.reps ? '. ' + ex.reps : '');
+    var msg = new SpeechSynthesisUtterance(text);
+    var voice = _cachedVoice || pickBestVoice();
+    if (voice) msg.voice = voice;
+    msg.rate = 0.96;
+    msg.pitch = 1.03;
+    msg.volume = 0.95;
     speechSynthesis.speak(msg);
   } catch (e) {}
 }
