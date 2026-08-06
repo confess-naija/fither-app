@@ -1412,8 +1412,7 @@ select option{background:var(--black3);}
             <div style="font-size:10px;color:var(--grey);margin-top:2px;" id="vt-status">Off — tap to enable</div>
           </div>
           <div class="vt-toggle" id="vt-buttons">
-            <button class="vt-voice-btn" id="vt-female-btn" onclick="setVoiceTrainer('female')">👩 Female</button>
-            <button class="vt-voice-btn" id="vt-male-btn" onclick="setVoiceTrainer('male')">👨 Male</button>
+            <button class="vt-voice-btn" id="vt-female-btn" onclick="setVoiceTrainer('female')">👩 Voice Trainer</button>
             <button class="vt-voice-btn" id="vt-off-btn" onclick="setVoiceTrainer('off')" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15);color:var(--grey);">Off</button>
           </div>
         </div>
@@ -8197,7 +8196,7 @@ const VOICE_CLIPS = {
   medAffirm:    { f: 'meditation-affirmations.mp3', label: 'You are strong...' },
 };
 
-let _voiceMode    = 'off';  // 'female' | 'male' | 'off'
+let _voiceMode    = 'off';  // 'female' | 'off' — the trainer is a single voice now
 let _voiceAudio   = null;
 let _voicePlaying = false;
 let _lastClip     = '';
@@ -8209,10 +8208,12 @@ function setVoiceTrainer(mode) {
     navTo('pro');
     return;
   }
+  // Only two real states now — collapse any legacy 'male' value to 'female'
+  mode = mode === 'off' ? 'off' : 'female';
   _voiceMode = mode;
 
   // Update button styles
-  ['female','male','off'].forEach(m => {
+  ['female','off'].forEach(m => {
     const btn = document.getElementById('vt-' + m + '-btn');
     if (!btn) return;
     if (m === mode) {
@@ -8230,8 +8231,7 @@ function setVoiceTrainer(mode) {
 
   const statusEl = document.getElementById('vt-status');
   if (statusEl) {
-    if (mode === 'off') statusEl.textContent = 'Off — tap to enable';
-    else statusEl.textContent = (mode === 'female' ? '👩 Female' : '👨 Male') + ' voice trainer active!';
+    statusEl.textContent = mode === 'off' ? 'Off — tap to enable' : '👩 Voice trainer active!';
   }
 
   // Save preference
