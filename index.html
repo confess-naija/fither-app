@@ -2752,11 +2752,16 @@ async function loadGoals() {
       appState.weeklyActivity = data.weekly_activity || [0,0,0,0,0,0,0];
       if (document.getElementById('calorie-goal-input'))
         document.getElementById('calorie-goal-input').value = appState.calorieGoal;
+      return;
     }
-  } catch(e) {
-    // Fallback localStorage
-    const saved = uGet('fnova_goals');
-    if (saved) Object.assign(appState, JSON.parse(saved));
+    console.warn('Goals load failed:', error);
+  } catch(e) {}
+  // Fallback localStorage (no row yet, RLS/table issue, or thrown error)
+  const saved = uGet('fnova_goals');
+  if (saved) {
+    try { Object.assign(appState, JSON.parse(saved)); } catch(e) {}
+    if (document.getElementById('calorie-goal-input'))
+      document.getElementById('calorie-goal-input').value = appState.calorieGoal;
   }
 }
 
@@ -2776,7 +2781,8 @@ async function saveGoals() {
     updated_at: new Date().toISOString(),
   };
   try {
-    await window.supabase.from('user_goals').upsert(payload, { onConflict: 'user_id' });
+    const { error } = await window.supabase.from('user_goals').upsert(payload, { onConflict: 'user_id' });
+    if (error) { console.warn('Goals save failed:', error); uSet('fnova_goals', JSON.stringify(payload)); }
   } catch(e) {
     uSet('fnova_goals', JSON.stringify(payload));
   }
@@ -2806,13 +2812,13 @@ async function loadMealLog() {
     if (data && !error) {
       appState.mealLog = data;
       recalcMacros();
+      return;
     }
-  } catch(e) {
-    const saved = uGet('fnova_meals_' + today);
-    if (saved) {
-      appState.mealLog = JSON.parse(saved);
-      recalcMacros();
-    }
+    console.warn('Meal load failed:', error);
+  } catch(e) {}
+  const saved = uGet('fnova_meals_' + today);
+  if (saved) {
+    try { appState.mealLog = JSON.parse(saved); recalcMacros(); } catch(e) {}
   }
 }
 
@@ -2834,12 +2840,16 @@ async function saveMealEntry(entry) {
     if (data && !error) {
       appState.mealLog.push(data);
     } else {
+      // Supabase reported a failure (e.g. table/policy issue) without
+      // throwing — still keep the meal for this session AND persist it
+      // locally so a reload doesn't lose it outright.
+      console.warn('Meal save failed:', error);
       appState.mealLog.push({ ...payload, id: Date.now() });
+      uSet('fnova_meals_' + today, JSON.stringify(appState.mealLog));
     }
   } catch(e) {
     appState.mealLog.push({ ...payload, id: Date.now() });
-    const today2 = todayStr();
-    uSet('fnova_meals_' + today2, JSON.stringify(appState.mealLog));
+    uSet('fnova_meals_' + today, JSON.stringify(appState.mealLog));
   }
   recalcMacros();
   renderHomeMeals();
@@ -2932,10 +2942,13 @@ async function loadWorkoutLog() {
       .eq('date', today);
     if (data && !error) {
       appState.workoutLog = data;
+      return;
     }
-  } catch(e) {
-    const saved = uGet('fnova_workouts_' + today);
-    if (saved) appState.workoutLog = JSON.parse(saved);
+    console.warn('Workout log load failed:', error);
+  } catch(e) {}
+  const saved = uGet('fnova_workouts_' + today);
+  if (saved) {
+    try { appState.workoutLog = JSON.parse(saved); } catch(e) {}
   }
 }
 
@@ -2955,7 +2968,8 @@ async function saveWorkoutEntry(entry) {
   // Score see it right away.
   appState.workoutLog.push({ ...payload, id: Date.now() });
   try {
-    await window.supabase.from('user_workout_logs').insert(payload);
+    const { error } = await window.supabase.from('user_workout_logs').insert(payload);
+    if (error) { console.warn('Workout save failed:', error); uSet('fnova_workouts_' + today, JSON.stringify(appState.workoutLog)); }
   } catch(e) {
     uSet('fnova_workouts_' + today, JSON.stringify(appState.workoutLog));
   }
@@ -2983,7 +2997,8 @@ async function saveGoalsQuiet() {
     updated_at: new Date().toISOString(),
   };
   try {
-    await window.supabase.from('user_goals').upsert(payload, { onConflict: 'user_id' });
+    const { error } = await window.supabase.from('user_goals').upsert(payload, { onConflict: 'user_id' });
+    if (error) { console.warn('Goals save failed:', error); uSet('fnova_goals', JSON.stringify(payload)); }
   } catch(e) {
     uSet('fnova_goals', JSON.stringify(payload));
   }
@@ -3023,7 +3038,8 @@ async function saveWater() {
     updated_at: new Date().toISOString(),
   };
   try {
-    await window.supabase.from('user_water_tracker').upsert(payload, { onConflict: ['user_id','date'] });
+    const { error } = await window.supabase.from('user_water_tracker').upsert(payload, { onConflict: ['user_id','date'] });
+    if (error) { console.warn('Water save failed:', error); uSet('fnova_water_' + today, String(appState.waterCups)); }
   } catch(e) {
     uSet('fnova_water_' + today, String(appState.waterCups));
   }
@@ -4451,7 +4467,12 @@ function updateMusicUI() {
     ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
     : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
   renderPlaylist();
-  const mp2 = document.getElementById('mini-player'); if(mp2) mp2.classList.toggle('show', true);
+  // Don't force the mini player back over the workout controls if a
+  // workout is actively running (e.g. a track auto-advancing mid-session).
+  const timerSectionEl = document.getElementById('timer-section');
+  const workoutActive = timerSectionEl && timerSectionEl.style.display !== 'none';
+  const mp2 = document.getElementById('mini-player');
+  if (mp2 && !workoutActive) mp2.classList.toggle('show', true);
 }
 
 // ── AUDIO ENGINE ─────────────────────────────────────────────
@@ -4533,7 +4554,11 @@ function playCurrentTrack() {
     _loadedSrc   = src;
     musicProgress = 0;
   }
-  audioEl.volume = 1.0;
+  // If a voice cue is mid-duck when a new track starts (e.g. the previous
+  // song ends right as the trainer is speaking), start at the ducked
+  // volume instead of blasting back to full — duckMusic(false) will
+  // restore it properly once the voice clip finishes.
+  audioEl.volume = _duckActive ? 0.15 : 1.0;
   audioEl.play().then(function() {
     musicPlaying = true;
     updateMusicUI();
@@ -8445,19 +8470,25 @@ function getAudioCtx() {
   return _audioCtx;
 }
 
+let _duckActive = false;
+let _duckInterval = null;
+
 function duckMusic(duck) {
   // Reduce music volume when voice plays, restore after
   if (!window._fhnAudio) return;
+  _duckActive = duck;
+  // Cancel any fade already in progress so two ducks/restores in quick
+  // succession can't race each other and leave the volume in a weird spot.
+  if (_duckInterval) { clearInterval(_duckInterval); _duckInterval = null; }
   const target = duck ? 0.15 : 1.0; // duck to 15%, restore to 100%
   const step   = duck ? -0.05 : 0.05;
-  const current = window._fhnAudio.volume;
-  // Smooth fade
-  let vol = current;
-  const interval = setInterval(() => {
+  let vol = window._fhnAudio.volume;
+  _duckInterval = setInterval(() => {
     vol = Math.max(0, Math.min(1, vol + step));
     if (window._fhnAudio) window._fhnAudio.volume = vol;
     if ((duck && vol <= target) || (!duck && vol >= target)) {
-      clearInterval(interval);
+      clearInterval(_duckInterval);
+      _duckInterval = null;
     }
   }, 30);
 }
