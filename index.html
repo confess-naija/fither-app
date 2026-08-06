@@ -2664,7 +2664,7 @@ async function bootApp() {
   renderFoodList();
   renderWorkoutList();
   renderPlaylist();
-  renderMilestones();
+  checkMilestoneUnlocks();
   renderWeeklyChart();
   renderWaterCups();
   renderHomeMeals();
@@ -2847,6 +2847,7 @@ async function saveMealEntry(entry) {
   updateCalRing();
   updateHomeStats();
   updateFoodMacros();
+  checkMilestoneUnlocks();
 }
 
 // confirmDeleteMeal — uses array index (reliable) + Supabase ID (for DB sync)
@@ -3072,6 +3073,7 @@ async function toggleCup(idx) {
   renderWaterCups();
   await saveWater();
   if (appState.waterCups === 8) showToast('💧 Hydration Goal Met!', 'You drank 8 cups today — amazing!');
+  checkMilestoneUnlocks();
 }
 
 // ═══════════
@@ -4294,6 +4296,7 @@ async function stopTimer() {
   updateCalRing();
   updateHomeStats();
   (function(){var _r=Math.random();if(_r<0.15){showAchievement('🎁','Bonus Round!','That one counted extra — '+kcal+' kcal burned!');}else if(_r<0.3){showAchievement('⭐','Incredible!',kcal+' kcal burned in '+fmtTime(timerElapsed)+'. You are on fire.');}else{showAchievement('💪','Workout Complete!',kcal+' kcal burned in '+fmtTime(timerElapsed));}})();
+  setTimeout(() => checkMilestoneUnlocks(), 1300); // let the workout-complete toast show first
   timerElapsed = 0;
   timerSets = 0;
 }
@@ -4619,17 +4622,21 @@ function renderWeeklyChart() {
   }).join('');
 }
 
+function getMilestoneDefs() {
+  return [
+    { id:'first_workout', icon:'🏅', name:'First Workout', sub:'Complete your first session', earned: appState.totalWorkouts >= 1 },
+    { id:'streak3',       icon:'🔥', name:'3-Day Streak',  sub:'Work out 3 days in a row',     earned: appState.streak >= 3 },
+    { id:'workouts10',    icon:'💪', name:'10 Workouts',   sub:'Complete 10 total workouts',   earned: appState.totalWorkouts >= 10 },
+    { id:'healthy_eater', icon:'🥗', name:'Healthy Eater', sub:'Log 5 meals in a day',         earned: appState.mealLog.length >= 5 },
+    { id:'hydration_hero',icon:'💧', name:'Hydration Hero',sub:'Drink 8 cups of water',        earned: appState.waterCups >= 8 },
+    { id:'week_warrior',  icon:'🌟', name:'Week Warrior',  sub:'Complete a full week streak',  earned: appState.streak >= 7 },
+  ];
+}
+
 function renderMilestones() {
   const wrap = document.getElementById('milestones-list');
   if (!wrap) return;
-  const milestones = [
-    { icon:'🏅', name:'First Workout', sub:'Complete your first session', earned: appState.totalWorkouts >= 1 },
-    { icon:'🔥', name:'3-Day Streak', sub:'Work out 3 days in a row', earned: appState.streak >= 3 },
-    { icon:'💪', name:'10 Workouts', sub:'Complete 10 total workouts', earned: appState.totalWorkouts >= 10 },
-    { icon:'🥗', name:'Healthy Eater', sub:'Log 5 meals in a day', earned: appState.mealLog.length >= 5 },
-    { icon:'💧', name:'Hydration Hero', sub:'Drink 8 cups of water', earned: appState.waterCups >= 8 },
-    { icon:'🌟', name:'Week Warrior', sub:'Complete a full week streak', earned: appState.streak >= 7 },
-  ];
+  const milestones = getMilestoneDefs();
   wrap.innerHTML = milestones.map(m => `
     <div class="milestone-item">
       <div class="mi-icon">${m.icon}</div>
@@ -4637,6 +4644,34 @@ function renderMilestones() {
       <span class="mi-badge ${m.earned ? 'earned' : 'locked'}">${m.earned ? '✓ Earned' : 'Locked'}</span>
     </div>
   `).join('');
+}
+
+// Fire a real celebration the moment a milestone is newly crossed — not just
+// a passive checkmark you stumble across later on the Progress page.
+function checkMilestoneUnlocks() {
+  const milestones = getMilestoneDefs();
+  const raw = uGet('milestones_celebrated');
+  if (raw === null) {
+    // First time this device has tracked milestone unlocks — silently
+    // record whatever's already earned instead of ambushing existing
+    // users with a pile of toasts for progress made before this shipped.
+    const alreadyEarned = milestones.filter(m => m.earned).map(m => m.id);
+    uSet('milestones_celebrated', JSON.stringify(alreadyEarned));
+    renderMilestones();
+    return;
+  }
+  let celebrated = [];
+  try { celebrated = JSON.parse(raw || '[]'); } catch(e) { celebrated = []; }
+  const newlyEarned = milestones.filter(m => m.earned && !celebrated.includes(m.id));
+  if (!newlyEarned.length) { renderMilestones(); return; }
+  newlyEarned.forEach((m, i) => {
+    setTimeout(() => {
+      showAchievement(m.icon, 'Milestone Unlocked!', m.name + ' — ' + m.sub);
+    }, i * 3800);
+    celebrated.push(m.id);
+  });
+  uSet('milestones_celebrated', JSON.stringify(celebrated));
+  renderMilestones();
 }
 
 // ═══════════
@@ -5535,7 +5570,7 @@ async function clearAllData() {
   renderHomeMeals();
   renderFoodLog();
   renderWeeklyChart();
-  renderMilestones();
+  checkMilestoneUnlocks();
   showToast('✅ Data cleared', 'Starting fresh!');
 }
 
