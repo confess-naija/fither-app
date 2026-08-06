@@ -238,6 +238,13 @@ select option{background:var(--black3);}
 .timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
 .timer-digits{font-family:var(--font-head);font-size:44px;font-weight:800;letter-spacing:2px;color:var(--white);}
 .timer-state{font-size:11px;color:var(--grey);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.timer-exercise-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;}
+.timer-exercise-name{font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--white);text-align:center;transition:opacity .2s;}
+.timer-exercise-name.pulse{animation:exPulse .5s ease;}
+@keyframes exPulse{0%{opacity:0;transform:scale(.96);}100%{opacity:1;transform:scale(1);}}
+.ex-voice-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--pink-light);border-radius:99px;width:28px;height:28px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.timer-exercise-progress{font-size:12px;color:var(--grey);text-align:center;margin-bottom:16px;}
+
 .timer-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
 .ts{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px;text-align:center;}
 .ts .tv{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--white);}
@@ -1349,13 +1356,18 @@ select option{background:var(--black3);}
         <div class="rb-grid">
           <div class="rb-stat"><div class="rb-val" id="rb-time">0:00</div><div class="rb-lbl">Time</div></div>
           <div class="rb-stat"><div class="rb-val" id="rb-cal">0</div><div class="rb-lbl">Kcal Burned</div></div>
-          <div class="rb-stat"><div class="rb-val" id="rb-sets">0</div><div class="rb-lbl">Sets</div></div>
+          <div class="rb-stat"><div class="rb-val" id="rb-sets">0</div><div class="rb-lbl">Exercises</div></div>
         </div>
         <div class="rb-msg" id="rb-msg">Amazing work! Keep it up! 🔥</div>
       </div>
 
       <div class="timer-page" id="timer-section" style="display:none;">
         <div class="timer-workout-name" id="timer-wname">Workout</div>
+        <div class="timer-exercise-row">
+          <div class="timer-exercise-name" id="timer-exercise-name">Get Ready</div>
+          <button class="ex-voice-btn" id="ex-voice-toggle" onclick="toggleExerciseVoice()" title="Toggle spoken exercise names">🔊</button>
+        </div>
+        <div class="timer-exercise-progress" id="timer-exercise-progress">Exercise 1 of 1</div>
         <div class="timer-ring-wrap">
           <svg width="200" height="200" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="88" fill="none" stroke="#362030" stroke-width="12"/>
@@ -1375,8 +1387,8 @@ select option{background:var(--black3);}
         </div>
         <div class="timer-stats">
           <div class="ts"><div class="tv" id="ts-kcal">0</div><div class="tl">Kcal</div></div>
-          <div class="ts"><div class="tv" id="ts-sets">0</div><div class="tl">Sets</div></div>
-          <div class="ts"><div class="tv" id="ts-rest">0</div><div class="tl">Rest (s)</div></div>
+          <div class="ts"><div class="tv" id="ts-sets">0</div><div class="tl">Done</div></div>
+          <div class="ts"><div class="tv" id="ts-rest">0</div><div class="tl">Left</div></div>
         </div>
         <!-- Voice Trainer Toggle -->
         <div class="voice-trainer-bar" id="voice-trainer-bar">
@@ -3677,6 +3689,73 @@ let timerInterval = null;
 let timerRunning = false;
 let timerElapsed = 0;
 let timerSets = 0;
+let exerciseIndex = 0;
+let exercisePlan = [];
+let exerciseCumulative = [];
+let _exerciseVoiceOn = (typeof localStorage !== 'undefined' && localStorage.getItem('fnova_ex_voice') === 'off') ? false : true;
+
+// Estimate a time weight (seconds) for one exercise entry based on its reps text.
+function getExerciseWeight(reps) {
+  if (!reps) return 60;
+  var m = reps.match(/(\d+)\s*min/i);
+  if (m) return parseInt(m[1], 10) * 60;
+  m = reps.match(/(\d+)\s*(?:s\b|sec)/i);
+  if (m) return parseInt(m[1], 10);
+  return 60; // default baseline for rep-based moves (e.g. "3x15", "2x10 each")
+}
+
+// Split a workout's total duration across its exercises, proportional to each
+// exercise's estimated weight, so the timer can walk through them in order.
+function computeExercisePlan(workout) {
+  var exs = workout.exercises || [];
+  if (!exs.length) return [workout.duration];
+  var weights = exs.map(function(e){ return getExerciseWeight(e.reps); });
+  var totalWeight = weights.reduce(function(a,b){ return a+b; }, 0) || 1;
+  var totalDur = workout.duration;
+  var durations = weights.map(function(w){ return Math.max(15, Math.round(totalDur * w / totalWeight)); });
+  var sum = durations.reduce(function(a,b){ return a+b; }, 0);
+  var diff = totalDur - sum;
+  durations[durations.length - 1] += diff;
+  if (durations[durations.length - 1] < 10) durations[durations.length - 1] = 10;
+  return durations;
+}
+
+function updateExerciseDisplay(pulse) {
+  if (!activeWorkout || !activeWorkout.exercises || !activeWorkout.exercises.length) return;
+  var ex = activeWorkout.exercises[exerciseIndex];
+  var nameEl = document.getElementById('timer-exercise-name');
+  var progEl = document.getElementById('timer-exercise-progress');
+  if (nameEl) {
+    nameEl.textContent = ex.name;
+    if (pulse) {
+      nameEl.classList.remove('pulse');
+      void nameEl.offsetWidth; // restart animation
+      nameEl.classList.add('pulse');
+    }
+  }
+  if (progEl) progEl.textContent = 'Exercise ' + (exerciseIndex + 1) + ' of ' + activeWorkout.exercises.length + ' \u00b7 ' + ex.reps;
+}
+
+function toggleExerciseVoice() {
+  _exerciseVoiceOn = !_exerciseVoiceOn;
+  localStorage.setItem('fnova_ex_voice', _exerciseVoiceOn ? 'on' : 'off');
+  var btn = document.getElementById('ex-voice-toggle');
+  if (btn) btn.textContent = _exerciseVoiceOn ? '\ud83d\udd0a' : '\ud83d\udd07';
+  if (!_exerciseVoiceOn && 'speechSynthesis' in window) speechSynthesis.cancel();
+}
+
+// Free, browser-native spoken exercise names (no API cost) — separate from
+// the Pro Voice Trainer's produced audio clips.
+function announceExercise(ex) {
+  if (!_exerciseVoiceOn || !('speechSynthesis' in window) || !ex) return;
+  try {
+    speechSynthesis.cancel();
+    var msg = new SpeechSynthesisUtterance('Next: ' + ex.name + (ex.reps ? ', ' + ex.reps : ''));
+    msg.rate = 1.0;
+    msg.volume = 0.9;
+    speechSynthesis.speak(msg);
+  } catch (e) {}
+}
 
 function renderWorkoutList() {
   const wrap = document.getElementById('workout-list-wrap');
@@ -3728,17 +3807,24 @@ function startWorkout(id) {
   timerElapsed = 0;
   timerSets = 0;
   timerRunning = false;
+  exerciseIndex = 0;
+  exercisePlan = computeExercisePlan(activeWorkout);
+  exerciseCumulative = [];
+  (function(){ var run = 0; for (var i = 0; i < exercisePlan.length; i++) { run += exercisePlan[i]; exerciseCumulative.push(run); } })();
   document.getElementById('timer-wname').textContent = activeWorkout.name;
   document.getElementById('timer-digits').textContent = '00:00';
   document.getElementById('timer-state').textContent = 'READY';
   document.getElementById('ts-kcal').textContent = '0';
   document.getElementById('ts-sets').textContent = '0';
-  document.getElementById('ts-rest').textContent = '30';
+  document.getElementById('ts-rest').textContent = activeWorkout.exercises ? activeWorkout.exercises.length : 0;
   document.getElementById('btn-start-timer').style.display = 'flex';
   document.getElementById('btn-pause-timer').style.display = 'none';
   document.getElementById('timer-section').style.display = 'block';
   document.getElementById('workout-list-wrap').style.display = 'none';
   document.getElementById('result-banner').style.display = 'none';
+  var exVoiceBtn = document.getElementById('ex-voice-toggle');
+  if (exVoiceBtn) exVoiceBtn.textContent = _exerciseVoiceOn ? '\ud83d\udd0a' : '\ud83d\udd07';
+  updateExerciseDisplay(false);
   navTo('workout');
   // Render voice trainer UI
   setTimeout(() => renderVoiceTrainerUI(), 100);
@@ -3752,14 +3838,25 @@ function startTimer() {
   document.getElementById('btn-pause-timer').style.display = 'flex';
   // Play warmup voice clip (Pro only)
   if (appState.isProUser && _voiceMode !== 'off') setTimeout(() => playVoiceClip('warmup'), 500);
+  // Announce first exercise (free, browser voice)
+  if (activeWorkout && activeWorkout.exercises && activeWorkout.exercises.length) {
+    setTimeout(() => announceExercise(activeWorkout.exercises[exerciseIndex]), 700);
+  }
   timerInterval = setInterval(() => {
     timerElapsed++;
     const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
     const kcal = Math.round(timerElapsed * kcalRate);
-    timerSets = Math.floor(timerElapsed / 60);
     document.getElementById('timer-digits').textContent = fmtTime(timerElapsed);
     document.getElementById('ts-kcal').textContent = kcal;
-    document.getElementById('ts-sets').textContent = timerSets;
+    // Advance to the next exercise once its time slice is up
+    if (activeWorkout && activeWorkout.exercises && exerciseIndex < exerciseCumulative.length - 1 && timerElapsed >= exerciseCumulative[exerciseIndex]) {
+      exerciseIndex++;
+      timerSets = exerciseIndex;
+      document.getElementById('ts-sets').textContent = timerSets;
+      document.getElementById('ts-rest').textContent = activeWorkout.exercises.length - exerciseIndex;
+      updateExerciseDisplay(true);
+      announceExercise(activeWorkout.exercises[exerciseIndex]);
+    }
     // Voice trainer cues (Pro only)
     if (appState.isProUser && _voiceMode !== 'off' && activeWorkout) {
       const cue = getVoiceCueForTime(timerElapsed, activeWorkout.duration);
@@ -3776,6 +3873,7 @@ function pauseTimer() {
   timerRunning = false;
   clearInterval(timerInterval);
   stopVoiceTrainer();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
   document.getElementById('timer-state').textContent = 'PAUSED';
   document.getElementById('btn-start-timer').style.display = 'flex';
   document.getElementById('btn-start-timer').textContent = '▶ Resume';
@@ -3785,12 +3883,17 @@ function pauseTimer() {
 async function stopTimer() {
   clearInterval(timerInterval);
   timerRunning = false;
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
   // Play complete or rest clip on stop (Pro only)
   if (appState.isProUser && _voiceMode !== 'off') {
     const isComplete = timerElapsed >= (activeWorkout ? activeWorkout.duration - 5 : 9999);
     setTimeout(() => playVoiceClip(isComplete ? 'complete' : 'rest'), 300);
   }
   stopVoiceTrainer();
+  // If the workout finished naturally, credit all exercises as done
+  if (activeWorkout && activeWorkout.exercises && timerElapsed >= activeWorkout.duration - 1) {
+    timerSets = activeWorkout.exercises.length;
+  }
   const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
   const kcal = Math.round(timerElapsed * kcalRate);
   document.getElementById('timer-section').style.display = 'none';
@@ -3816,6 +3919,7 @@ async function stopTimer() {
 
 function backToWorkoutList() {
   clearInterval(timerInterval);
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
   document.getElementById('timer-section').style.display = 'none';
   document.getElementById('workout-list-wrap').style.display = 'block';
 }
