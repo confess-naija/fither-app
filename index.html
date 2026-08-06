@@ -1096,7 +1096,6 @@ select option{background:var(--black3);}
 
       <!-- PRO DASHBOARD (shown only for Pro users) -->
       <div id="pro-dashboard-wrap"></div>
-<div id="home-weekly-recap"></div>
 
       <!-- 30-Day Challenge Card -->
       <div id="challenge-card-wrap"></div>
@@ -1134,62 +1133,6 @@ select option{background:var(--black3);}
         <div class="water-tracker-title">💧 Water Tracker</div>
         <div class="water-cups" id="water-cups"></div>
         <div class="water-meta" id="water-meta">0 / 8 cups today</div>
-      </div>
-
-      <!-- Calorie Ring -->
-      <div class="ring-section">
-        <div class="ring-wrap">
-          <svg width="100" height="100" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="#362030" stroke-width="10"/>
-            <circle id="cal-ring" cx="50" cy="50" r="42" fill="none" stroke="url(#ringGrad)" stroke-width="10"
-              stroke-dasharray="264" stroke-dashoffset="264" stroke-linecap="round"/>
-            <defs>
-              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#ff2d6b"/>
-                <stop offset="100%" stop-color="#ffd166"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <div class="ring-center">
-            <div class="ring-cal" id="ring-cal-num">0</div>
-            <div class="ring-sub">kcal left</div>
-          </div>
-        </div>
-        <div class="ring-info">
-          <div class="ring-info-row">
-            <span class="rir-label">Goal</span>
-            <span class="rir-val" id="ring-goal">1800 kcal</span>
-          </div>
-          <div class="ring-info-row">
-            <span class="rir-label">Eaten</span>
-            <span class="rir-val" id="ring-eaten">0 kcal</span>
-          </div>
-          <div class="ring-info-row">
-            <span class="rir-label">Burned</span>
-            <span class="rir-val" id="ring-burned">0 kcal</span>
-          </div>
-          <div class="mini-prog">
-            <div class="mini-fill" id="cal-mini-fill" style="width:0%;background:linear-gradient(90deg,var(--pink),var(--gold));"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stats Row -->
-      <div class="stats-row">
-        <div class="stat-tile"><div class="sv" id="stat-steps">0</div><div class="sl">Steps</div></div>
-        <div class="stat-tile"><div class="sv" id="stat-protein">0g</div><div class="sl">Protein</div></div>
-        <div class="stat-tile"><div class="sv" id="stat-water-cups">0</div><div class="sl">Cups H₂O</div></div>
-        <div class="stat-tile"><div class="sv" id="stat-workouts">0</div><div class="sl">Workouts</div></div>
-      </div>
-
-      <!-- GOAL REMAINING (above Coach Nova) -->
-      <div class="goal-remaining-card">
-        <div>
-          <div class="goal-remaining-label">Goal Remaining Today</div>
-          <div class="goal-remaining-val" id="goal-remaining-val">1800 kcal</div>
-          <div class="goal-remaining-sub" id="goal-remaining-sub">Keep going — you've got this!</div>
-        </div>
-        <div style="font-size:28px;"><svg width="24" height="24" viewBox="0 0 24 24" style="color:#ff6b9d;vertical-align:middle" ><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/></svg></div>
       </div>
 
       <!-- Coach Nova Challenge (collapsible) -->
@@ -7797,29 +7740,8 @@ ${appState.freezeCount > 0 ? '<div style="font-size:9px;color:#6bbfff;margin-top
         </div>
       </div>
 
-      ${((appState.caloriesEaten||0) === 0 && (appState.totalWorkouts||0) === 0 && (appState.waterCups||0) === 0) ? '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,209,102,.25);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--gold);font-weight:600;">✨ Nothing logged yet today — log a meal, sip some water, or start a workout to fill these in!</div>' : ''}
-
-      <!-- Quick Stats -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
-        <div style="background:linear-gradient(160deg,rgba(255,107,157,.16),rgba(255,255,255,.03));border:1px solid rgba(255,107,157,.2);border-radius:18px;padding:12px 8px;text-align:center;box-shadow:0 4px 16px rgba(255,107,157,.1);">
-<div style="width:30px;height:30px;border-radius:50%;background:rgba(255,107,157,.18);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;box-shadow:0 0 0 1px #ff6b9d30 inset;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#ff6b9d"><path d="M12 2c1.2 3.2-2 4.4-2 7.4a4 4 0 0 0 8 0c0-1.1-.4-2.2-1-3.1.6 3.1-1.1 4.3-2.1 4.3-1.7 0-2.1-1.4-1.6-3.2.3-1.3-.3-2.8-1.6-3.4C13 6 12.6 3.4 12 2z" fill="currentColor" stroke="none"/></svg></div>
-<div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:var(--pink-light);">${appState.caloriesEaten||0}</div>
-<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">kcal eaten</div><div style="width:100%;height:4px;border-radius:99px;background:rgba(255,255,255,.1);margin-top:7px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:#ff6b9d;width:${Math.min(100, Math.round((appState.caloriesEaten||0)/(appState.calorieGoal||1800)*100))}%;transition:width .6s ease;"></div></div>
-</div>
-        <div style="background:linear-gradient(160deg,rgba(6,214,160,.16),rgba(255,255,255,.03));border:1px solid rgba(6,214,160,.2);border-radius:18px;padding:12px 8px;text-align:center;box-shadow:0 4px 16px rgba(6,214,160,.1);">
-<div style="width:30px;height:30px;border-radius:50%;background:rgba(6,214,160,.18);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;box-shadow:0 0 0 1px #06d6a030 inset;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#06d6a0"><rect x="2" y="9" width="3" height="6" rx="1" fill="currentColor"/><rect x="19" y="9" width="3" height="6" rx="1" fill="currentColor"/><line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="2.2"/><rect x="5" y="7" width="3" height="10" rx="1" fill="currentColor"/><rect x="16" y="7" width="3" height="10" rx="1" fill="currentColor"/></svg></div>
-<div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:var(--green);">${appState.totalWorkouts||0}</div>
-<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">workouts</div><div style="width:100%;height:4px;border-radius:99px;background:rgba(255,255,255,.1);margin-top:7px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:#06d6a0;width:${Math.min(100, Math.round((appState.totalWorkouts||0)/5*100))}%;transition:width .6s ease;"></div></div>
-</div>
-        <div style="background:linear-gradient(160deg,rgba(107,191,255,.16),rgba(255,255,255,.03));border:1px solid rgba(107,191,255,.2);border-radius:18px;padding:12px 8px;text-align:center;box-shadow:0 4px 16px rgba(107,191,255,.1);">
-<div style="width:30px;height:30px;border-radius:50%;background:rgba(107,191,255,.18);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;box-shadow:0 0 0 1px #6bbfff30 inset;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#6bbfff"><path d="M12 2c3 4.5 6 8.3 6 12a6 6 0 1 1-12 0c0-3.7 3-7.5 6-12z" fill="currentColor"/></svg></div>
-<div style="font-family:var(--font-head);font-size:18px;font-weight:900;color:#6bbfff;">${appState.waterCups||0}/8</div>
-<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">cups water</div><div style="width:100%;height:4px;border-radius:99px;background:rgba(255,255,255,.1);margin-top:7px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:#6bbfff;width:${Math.min(100, Math.round((appState.waterCups||0)/8*100))}%;transition:width .6s ease;"></div></div>
-</div>
-      </div>
-
       <!-- Phase + BMI snippets -->
-      ${phaseSnippet || bmiSnippet ? '<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">' + phaseSnippet + bmiSnippet + '</div>' : ''}
+      ${phaseSnippet || bmiSnippet ? '<div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">' + phaseSnippet + bmiSnippet + '</div>' : ''}
 
       <!-- Pro Quick Links -->
       <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">PRO FEATURES</div>
