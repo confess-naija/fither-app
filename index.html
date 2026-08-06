@@ -4494,11 +4494,110 @@ function loadCoachChallenge() {
 // COACH NOVA AI
 // ═══════════
 const COACH_ANSWERS = {
-  'belly': 'To target belly fat:\n1️⃣ Create a 300–500 kcal daily deficit\n2️⃣ Do core-focused HIIT 3×/week\n3️⃣ Reduce refined carbs & sugar\n4️⃣ Stay hydrated — 8 cups minimum\n5️⃣ Sleep 7–9 hours nightly\n\nConsistency beats intensity every time! 💪',
-  'meal': 'Sample 7-Day Nigerian Weight Loss Plan:\n🌅 Breakfast: Boiled eggs + cucumber (Mon), Oatmeal + banana (Tue), Akara + herbal tea (Wed)\n☀️ Lunch: Efo riro + grilled fish (Mon), Jollof rice small + chicken (Tue)\n🌙 Dinner: Pepper soup + boiled yam (Mon), Vegetable stir-fry + tilapia (Tue)\n\nAim for 1500–1800 kcal daily!',
-  'motiv': 'You were built for this! 🔥\n\nRemember:\n• Progress > Perfection\n• Every workout is a vote for the person you want to become\n• You\'ve already won by showing up today\n• Your future self is counting on you RIGHT NOW\n\nNow close this app and MOVE! 💃',
-  'recov': 'Post-workout recovery for women:\n🥤 Hydrate within 30 minutes\n🍗 Eat protein within 1 hour (20–30g)\n💤 Sleep 7–9 hours — this is where you grow!\n🧘 Light stretching 10 min daily\n🛁 Contrast showers boost circulation\n❤️ Rest days are growth days — schedule them!',
+  belly: [
+    'To target belly fat:\n1️⃣ Create a 300–500 kcal daily deficit\n2️⃣ Do core-focused HIIT 3×/week\n3️⃣ Reduce refined carbs & sugar\n4️⃣ Stay hydrated — 8 cups minimum\n5️⃣ Sleep 7–9 hours nightly\n\nConsistency beats intensity every time! 💪',
+    'Real talk: you can\'t out-crunch a bad diet. Belly fat responds best to an overall calorie deficit + full-body strength training + walking. Add core work as a finisher, not the main event. Give it 4–6 consistent weeks before judging results. 🔥'
+  ],
+  meal: [
+    'Sample 7-Day Nigerian Weight Loss Plan:\n🌅 Breakfast: Boiled eggs + cucumber (Mon), Oatmeal + banana (Tue), Akara + herbal tea (Wed)\n☀️ Lunch: Efo riro + grilled fish (Mon), Jollof rice small + chicken (Tue)\n🌙 Dinner: Pepper soup + boiled yam (Mon), Vegetable stir-fry + tilapia (Tue)\n\nAim for 1500–1800 kcal daily!',
+    'Simple rule for any Nigerian or African meal: fill half your plate with vegetables, a quarter with lean protein (fish, chicken, beans), and a quarter with a smaller portion of your usual swallow or rice. Cook with less oil, and you barely have to change what you love eating. 🍲'
+  ],
+  protein: [
+    'Aim for roughly 1.6–2g of protein per kg of your bodyweight daily if you\'re strength training — that supports muscle repair and keeps you fuller for longer. Good sources: eggs, fish, chicken, beans, moin moin, Greek yogurt, and groundnuts. Spread it across your meals rather than one big serving. 🍗'
+  ],
+  cravings: [
+    'Cravings usually hit hardest when meals are too low in protein/fiber or when you\'re under-slept. Try: a protein-rich meal first, a big glass of water, and a 10-minute walk before giving in. And if you do have the treat — no guilt, just get back to your normal plan at the next meal. 🍫'
+  ],
+  water: [
+    'Aim for 8 cups (about 2 liters) a day as a baseline, more if you\'re working out or it\'s hot. A trick that works for a lot of people: drink a full glass first thing in the morning and one before each meal — that alone gets you halfway there. Use the Water Tracker on your Home tab to stay on top of it! 💧'
+  ],
+  sleep: [
+    'Sleep is when your body actually recovers and burns fat — skimping on it undoes a lot of your hard work. Aim for 7–9 hours. Try: no phone screen 30 min before bed, keep your room cool and dark, and go to bed at a consistent time even on weekends. 😴'
+  ],
+  frequency: [
+    'For most goals, 3–5 workout sessions a week is the sweet spot — enough to build momentum, not so much you burn out. Beginners: start with 3x/week and build from there. Mix strength and cardio, and always leave at least one full rest day. 📅'
+  ],
+  weightloss: [
+    'Sustainable weight loss really comes down to three things: a modest calorie deficit (300–500 kcal/day), consistent movement (walking counts!), and enough protein and sleep to protect your muscle. Aim for 0.5–1kg per week — faster than that usually doesn\'t stick. 📉'
+  ],
+  tone: [
+    'To tone and build lean muscle: lift with resistance (bands, dumbbells, or bodyweight) 3x/week, focus on progressive overload (a little more reps or weight over time), and eat enough protein to support it. Toning isn\'t a special kind of exercise — it\'s strength training + fat loss happening together. 💪'
+  ],
+  home: [
+    'No gym, no problem. Bodyweight moves like squats, lunges, push-ups, glute bridges, and planks build real strength with zero equipment. Check the Workout tab — several routines here are designed to be done at home with no gear at all. 🏠'
+  ],
+  cardio: [
+    'Cardio is great for heart health and burning extra calories, but don\'t neglect strength training — the combo works far better than cardio alone for fat loss and shape. If you enjoy it, 2–3 sessions a week (brisk walking, dancing, skipping rope) is a solid amount. 🏃‍♀️'
+  ],
+  cycle: [
+    'Your energy naturally shifts across your cycle — it\'s normal, not a flaw. Around your period, gentler movement (walking, yoga, light strength) often feels better than high-intensity work; energy usually rebounds in the days after. Track your cycle in the Period tab so FitHerNova can help you plan around it. 🌸'
+  ],
+  postpartum: [
+    'Please get clearance from your doctor before restarting exercise after childbirth — usually around 6 weeks for vaginal birth, longer for a C-section. Start gentle: walking and pelvic floor work first, then ease back into strength training. Your body did something incredible — be patient with it. 🤱'
+  ],
+  plateau: [
+    'A plateau usually means your body has adapted — totally normal, not a failure. Try: reassessing your portions (weight loss slows as you get lighter, so the same calories that worked before may now be maintenance), switching up your workout routine, and double-checking your sleep and stress levels. Give any change 2–3 weeks before judging it. 📊'
+  ],
+  injury: [
+    'I\'m not able to diagnose pain or injuries — please see a doctor or physiotherapist if something hurts, especially joint pain that doesn\'t go away. In general: never push through sharp pain, and swap high-impact moves for low-impact versions (like step-ups instead of jump squats) while you recover. 🩹'
+  ],
+  beginner: [
+    'Welcome! Best way to start: pick 2–3 days a week you can realistically commit to, choose a Beginner workout from the Workout tab, and focus on just showing up — not perfect form or big results yet. Consistency for the first month matters far more than intensity. You\'ve got this! 🌟'
+  ],
+  consistency: [
+    'The habit that changes everything: make it easier to start than to skip. Lay out your workout clothes the night before, schedule workouts like appointments, and aim for "good enough" over "perfect" — a 10-minute workout you actually do beats a 60-minute one you keep postponing. 🔁'
+  ],
+  motiv: [
+    'You were built for this! 🔥\n\nRemember:\n• Progress > Perfection\n• Every workout is a vote for the person you want to become\n• You\'ve already won by showing up today\n• Your future self is counting on you RIGHT NOW\n\nNow close this app and MOVE! 💃',
+    'Some days motivation just won\'t show up — that\'s what discipline is for. You don\'t need to feel ready, you just need to start. Even 5 minutes counts. Once you\'re moving, momentum usually takes over. 🙌'
+  ],
+  recov: [
+    'Post-workout recovery for women:\n🥤 Hydrate within 30 minutes\n🍗 Eat protein within 1 hour (20–30g)\n💤 Sleep 7–9 hours — this is where you grow!\n🧘 Light stretching 10 min daily\n🛁 Contrast showers boost circulation\n❤️ Rest days are growth days — schedule them!'
+  ],
+  greeting: [
+    'Hey there! 👋 I\'m here to help with workouts, nutrition, motivation, and general wellness questions. What\'s on your mind today?'
+  ],
+  default: [
+    'Great question! Focus on consistency: log your meals daily, hit your water goal, and complete at least one workout session. Small wins compound into massive transformation. You\'ve got this! 💪🔥',
+    'I\'d love to help more specifically — try asking about things like meal plans, belly fat, workout frequency, motivation, sleep, or your cycle, and I\'ll give you a more targeted answer. 😊'
+  ],
 };
+
+// Simple keyword-based matcher — ordered from most specific to most general
+// so a question like "period cramps" matches 'cycle' before the more generic
+// 'injury' bucket would catch "cramps".
+const COACH_MATCH_RULES = [
+  [['period', 'menstrua', 'cycle', 'pms', 'cramp'], 'cycle'],
+  [['pregnan', 'postpartum', 'post-partum', 'after birth', 'c-section', 'csection', 'newborn', 'breastfeed'], 'postpartum'],
+  [['plateau', 'stuck', 'not losing', 'stopped losing', 'no progress'], 'plateau'],
+  [['injur', 'hurt', 'pain', 'knee', 'joint', 'sprain'], 'injury'],
+  [['belly', 'tummy', 'stomach fat', 'waist fat', 'love handles'], 'belly'],
+  [['protein'], 'protein'],
+  [['crav', 'sugar', 'snack', 'sweet tooth', 'junk food'], 'cravings'],
+  [['water', 'hydrat'], 'water'],
+  [['sleep', 'insomnia', 'tired all the time'], 'sleep'],
+  [['nigerian', 'meal', 'food', 'diet', 'what should i eat', 'what to eat'], 'meal'],
+  [['how many', 'how often', 'times a week', 'times per week', 'frequency'], 'frequency'],
+  [['muscle', 'tone', 'toning', 'build strength', 'strength train'], 'tone'],
+  [['home workout', 'no equipment', 'no gym', 'apartment', 'without equipment'], 'home'],
+  [['cardio', 'running', 'treadmill', 'jog'], 'cardio'],
+  [['motiv', 'lazy', 'unmotiv', 'don\'t feel like', 'give up', 'want to quit'], 'motiv'],
+  [['recov', 'rest day', 'sore', 'stretch'], 'recov'],
+  [['beginner', 'just starting', 'new to working out', 'first time', 'where do i start'], 'beginner'],
+  [['consisten', 'habit', 'stick to', 'routine'], 'consistency'],
+  [['lose weight', 'weight loss', 'burn fat', 'slim down'], 'weightloss'],
+  [['hello', 'hi coach', 'hey coach', 'how are you', 'good morning', 'good afternoon'], 'greeting'],
+];
+
+function pickCoachAnswer(question) {
+  const lower = question.toLowerCase();
+  let category = 'default';
+  for (const [keywords, cat] of COACH_MATCH_RULES) {
+    if (keywords.some(k => lower.includes(k))) { category = cat; break; }
+  }
+  const variants = COACH_ANSWERS[category] || COACH_ANSWERS.default;
+  return variants[Math.floor(Math.random() * variants.length)];
+}
 
 async function coachAsk(question) {
   document.getElementById('coach-input').value = question;
@@ -4523,62 +4622,20 @@ async function coachSend() {
   answerEl.textContent = '⏳ Coach Nova is thinking…';
   input.value = '';
 
-  try {
-    const systemPrompt = (function() {
-      const meta = currentUser ? (currentUser.user_metadata || {}) : {};
-      const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
-      const streak    = appState.streak || 0;
-      const goal      = appState.activeGoal || 'weightloss';
-      const calGoal   = appState.calorieGoal || 1800;
-      const eaten     = appState.caloriesEaten || 0;
-      const burned    = appState.caloriesBurned || 0;
-      const water     = appState.waterCups || 0;
-      const todayW    = appState.workoutLog ? appState.workoutLog.length : 0;
-      const ch        = getChallengeState();
-      const chInfo    = ch && ch.active
-        ? 'She is on Day ' + (ch.completedDays ? ch.completedDays.length : 0) + ' of her 30-Day Challenge.'
-        : 'She has not started the 30-Day Challenge yet.';
-      const wEntries  = JSON.parse(uGet('fnova_weight') || '[]');
-      const curWeight = wEntries.length > 0 ? wEntries[wEntries.length-1].kg + 'kg' : 'not logged yet';
-      return 'You are Coach Nova, a personal AI wellness coach inside the FitHerNova app. USER CONTEXT: Name: ' + firstName + '. Goal: ' + goal + '. Streak: ' + streak + ' days. Today: eaten ' + eaten + ' of ' + calGoal + ' kcal goal, burned ' + burned + ' kcal, ' + water + '/8 cups water, ' + todayW + ' workouts done. Current weight: ' + curWeight + '. ' + chInfo + ' Use this context naturally — address her by name occasionally and reference her real numbers when relevant. You specialize in belly fat loss, Nigerian & African nutrition, gospel-inspired motivation, and holistic wellness for African women. Keep responses concise (under 200 words), actionable, warm, and empowering. Use emojis sparingly.';
-    })();
+  // Coach Nova runs entirely on a local, built-in knowledge base — no
+  // external AI API, no API key, no ongoing cost. It matches your question
+  // against ~20 common fitness/wellness topics (belly fat, meal plans,
+  // motivation, cycle-friendly workouts, plateaus, recovery, and more) and
+  // gives a genuinely useful, specific answer. A brief pause here just
+  // keeps the "thinking" feel consistent with the rest of the app.
+  await new Promise(r => setTimeout(r, 500 + Math.random() * 400));
 
-    // Coach Nova now runs through /api/coach — a small serverless proxy that
-    // holds the AI provider's key server-side. The app used to call
-    // Anthropic's API directly from the browser with no key attached at all,
-    // which silently failed on every message and always fell back to the
-    // canned answers below.
-    const resp = await fetch('/api/coach', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemPrompt,
-        history: _coachHistory.slice(-10),
-        question: q
-      })
-    });
-    const data = await resp.json();
-    if (resp.ok && data.reply) {
-      const reply = data.reply;
-      answerEl.textContent = reply;
-      // Save to history
-      _coachHistory.push({ role: 'user', content: q });
-      _coachHistory.push({ role: 'assistant', content: reply });
-      saveCoachHistory();
-    } else {
-      throw new Error(data.error || 'No response');
-    }
-  } catch(e) {
-    // Fallback local answers
-    const lower = q.toLowerCase();
-    let answer = '🤖 Coach Nova says: ';
-    if (lower.includes('belly') || lower.includes('fat')) answer += COACH_ANSWERS['belly'];
-    else if (lower.includes('meal') || lower.includes('food') || lower.includes('eat') || lower.includes('nigerian')) answer += COACH_ANSWERS['meal'];
-    else if (lower.includes('motiv') || lower.includes('lazy') || lower.includes('unmotiv') || lower.includes('push')) answer += COACH_ANSWERS['motiv'];
-    else if (lower.includes('recov') || lower.includes('rest') || lower.includes('sore')) answer += COACH_ANSWERS['recov'];
-    else answer += `Great question! Focus on consistency: log your meals daily, hit your water goal, and complete at least one workout session. Small wins compound into massive transformation. You've got this! 💪🔥`;
-    answerEl.textContent = answer;
-  }
+  const reply = pickCoachAnswer(q);
+  answerEl.textContent = '🤖 Coach Nova says: ' + reply;
+
+  _coachHistory.push({ role: 'user', content: q });
+  _coachHistory.push({ role: 'assistant', content: reply });
+  saveCoachHistory();
 }
 
 // ═══════════
