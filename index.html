@@ -32,6 +32,13 @@ button,input,select{font:inherit;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .app{display:flex;flex-direction:column;height:100vh;height:100dvh;width:100vw;max-width:100vw;margin:0 auto;position:relative;background:linear-gradient(180deg,#130A16 0%,#0E0E10 50%,#050505 100%);overflow:hidden;}.app::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 15% 0%,rgba(255,122,61,.08),transparent 40%),radial-gradient(circle at 85% 100%,rgba(255,45,107,.06),transparent 45%);}.content{position:relative;z-index:1;}.app-header{position:relative;z-index:1;}.bottom-nav{z-index:9999;}
 .content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 calc(80px + env(safe-area-inset-bottom,0px));scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+@media (pointer:fine){
+  .content{scrollbar-width:thin;scrollbar-color:rgba(255,45,107,.4) transparent;}
+  .content::-webkit-scrollbar{display:block;width:8px;}
+  .content::-webkit-scrollbar-track{background:transparent;}
+  .content::-webkit-scrollbar-thumb{background:rgba(255,45,107,.35);border-radius:99px;}
+  .content::-webkit-scrollbar-thumb:hover{background:rgba(255,45,107,.55);}
+}
 .content::-webkit-scrollbar{display:none;}
 .page{display:none;padding:16px 18px 90px 18px;animation:fadeUp 0.3s ease;max-width:920px;width:100%;margin:0 auto;}
 .page.active{display:block;}
@@ -237,6 +244,14 @@ select option{background:var(--black3);}
 .timer-ring-wrap svg{transform:rotate(-90deg);}
 .timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
 .timer-digits{font-family:var(--font-head);font-size:44px;font-weight:800;letter-spacing:2px;color:var(--white);}
+.timer-digits.tick{animation:digitPop .35s ease;}
+@keyframes digitPop{0%{transform:scale(1);}35%{transform:scale(1.06);}100%{transform:scale(1);}}
+.timer-page{position:relative;}
+.timer-mood-wash{position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:340px;height:340px;border-radius:50%;pointer-events:none;z-index:-1;opacity:.5;filter:blur(50px);background:radial-gradient(circle,rgba(255,45,107,.35),transparent 70%);transition:background 1s ease;}
+.timer-page.rest-mode .timer-mood-wash{background:radial-gradient(circle,rgba(6,214,160,.3),transparent 70%);}
+.confetti-piece{position:fixed;top:40%;left:50%;width:8px;height:14px;border-radius:2px;pointer-events:none;z-index:5000;opacity:0;}
+@keyframes confettiFall{0%{opacity:1;transform:translate(0,0) rotate(0deg);}100%{opacity:0;transform:var(--cf-end) rotate(var(--cf-rot));}}
+.confetti-piece.go{animation:confettiFall 1.1s cubic-bezier(.2,.7,.4,1) forwards;}
 .timer-state{font-size:11px;color:var(--grey);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
 .timer-exercise-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;}
 .timer-exercise-name{font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--white);text-align:center;transition:opacity .2s;}
@@ -1374,6 +1389,7 @@ select option{background:var(--black3);}
       </div>
 
       <div class="timer-page" id="timer-section" style="display:none;">
+        <div class="timer-mood-wash"></div>
         <div class="timer-workout-name" id="timer-wname">Workout</div>
         <div class="timer-exercise-row">
           <div class="timer-exercise-name" id="timer-exercise-name">Get Ready</div>
@@ -1387,6 +1403,7 @@ select option{background:var(--black3);}
             <circle cx="100" cy="100" r="88" fill="none" stroke="#362030" stroke-width="12"/>
             <circle id="timer-ring-arc" cx="100" cy="100" r="88" fill="none" stroke="url(#timerGrad)" stroke-width="12"
               stroke-dasharray="553" stroke-dashoffset="553" stroke-linecap="round"/>
+            <circle id="timer-ring-dot" cx="188" cy="100" r="7" fill="#fff" style="filter:drop-shadow(0 0 7px rgba(255,255,255,.85));opacity:0;transition:opacity .3s;"/>
             <defs>
               <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#ff2d6b"/>
@@ -3871,6 +3888,29 @@ function playChime(rising) {
   } catch (e) {}
 }
 
+// Lightweight CSS-only confetti burst — no libraries, no assets.
+function confettiBurst() {
+  var colors = ['#ff2d6b', '#ffd166', '#a855f7', '#06d6a0', '#ff7a3d', '#4dd6ff'];
+  var count = 28;
+  for (var i = 0; i < count; i++) {
+    var el = document.createElement('div');
+    el.className = 'confetti-piece';
+    var angle = Math.random() * Math.PI * 2;
+    var dist = 120 + Math.random() * 180;
+    var x = Math.cos(angle) * dist;
+    var y = Math.sin(angle) * dist - 60; // bias upward
+    var rot = (Math.random() * 720 - 360).toFixed(0) + 'deg';
+    el.style.setProperty('--cf-end', 'translate(' + x.toFixed(0) + 'px,' + y.toFixed(0) + 'px)');
+    el.style.setProperty('--cf-rot', rot);
+    el.style.background = colors[i % colors.length];
+    el.style.left = (48 + Math.random() * 4) + 'vw';
+    document.body.appendChild(el);
+    void el.offsetWidth;
+    el.classList.add('go');
+    (function(node){ setTimeout(function(){ node.remove(); }, 1300); })(el);
+  }
+}
+
 function setTimerMood(mode) {
   var section = document.getElementById('timer-section');
   var hype = document.getElementById('timer-hype');
@@ -4080,6 +4120,7 @@ function startWorkout(id) {
   activeRounds = tl.rounds || 1;
   document.getElementById('timer-wname').textContent = activeWorkout.name;
   document.getElementById('timer-digits').textContent = '00:00';
+  var ringDot = document.getElementById('timer-ring-dot'); if (ringDot) { ringDot.style.opacity = '0'; ringDot.setAttribute('cx','188'); ringDot.setAttribute('cy','100'); }
   document.getElementById('timer-state').textContent = 'READY';
   document.getElementById('ts-kcal').textContent = '0';
   document.getElementById('ts-sets').textContent = '0';
@@ -4114,7 +4155,13 @@ function startTimer() {
     const realDur = activeRealDuration || (activeWorkout ? activeWorkout.duration : 1200);
     const kcalRate = activeWorkout ? activeWorkout.calories / realDur : 0.15;
     const kcal = Math.round(timerElapsed * kcalRate);
-    document.getElementById('timer-digits').textContent = fmtTime(timerElapsed);
+    const digitsEl = document.getElementById('timer-digits');
+    if (digitsEl) {
+      digitsEl.textContent = fmtTime(timerElapsed);
+      digitsEl.classList.remove('tick');
+      void digitsEl.offsetWidth;
+      digitsEl.classList.add('tick');
+    }
     document.getElementById('ts-kcal').textContent = kcal;
     // Advance through the real timeline (work + rest phases)
     while (phaseIdx < activePhases.length - 1 && timerElapsed >= activePhases[phaseIdx].end) {
@@ -4133,7 +4180,15 @@ function startTimer() {
       if (cue) playVoiceClip(cue);
     }
     const arc = document.getElementById('timer-ring-arc');
-    if (arc) arc.style.strokeDashoffset = 553 * (1 - Math.min(1, timerElapsed / realDur));
+    const progress = Math.min(1, timerElapsed / realDur);
+    if (arc) arc.style.strokeDashoffset = 553 * (1 - progress);
+    const dot = document.getElementById('timer-ring-dot');
+    if (dot) {
+      const angle = progress * 2 * Math.PI;
+      dot.setAttribute('cx', (100 + 88 * Math.cos(angle)).toFixed(2));
+      dot.setAttribute('cy', (100 + 88 * Math.sin(angle)).toFixed(2));
+      dot.style.opacity = progress > 0.005 ? '1' : '0';
+    }
     if (timerElapsed >= realDur) stopTimer();
   }, 1000);
 }
@@ -4161,8 +4216,10 @@ async function stopTimer() {
   }
   stopVoiceTrainer();
   // If the workout finished naturally, credit every exercise across every round
-  if (activeWorkout && activeWorkout.exercises && timerElapsed >= realDur - 1) {
+  const finishedNaturally = activeWorkout && activeWorkout.exercises && timerElapsed >= realDur - 1;
+  if (finishedNaturally) {
     timerSets = activeWorkout.exercises.length * activeRounds;
+    confettiBurst();
   }
   const kcalRate = activeWorkout ? activeWorkout.calories / realDur : 0.15;
   const kcal = Math.round(timerElapsed * kcalRate);
