@@ -244,6 +244,15 @@ select option{background:var(--black3);}
 @keyframes exPulse{0%{opacity:0;transform:scale(.96);}100%{opacity:1;transform:scale(1);}}
 .ex-voice-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--pink-light);border-radius:99px;width:28px;height:28px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .timer-exercise-progress{font-size:12px;color:var(--grey);text-align:center;margin-bottom:16px;}
+.ex-dots{display:flex;justify-content:center;gap:8px;margin:0 0 16px;}
+.ex-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .25s;}
+.ex-dot.done{background:var(--pink);}
+.ex-dot.current{background:var(--gold);width:13px;height:13px;box-shadow:0 0 0 4px rgba(255,209,102,.22);}
+.timer-hype{min-height:16px;text-align:center;font-size:12px;color:var(--pink-light);font-weight:600;margin:-8px 0 16px;transition:opacity .3s;}
+.timer-page.rest-mode .timer-ring-wrap svg circle#timer-ring-arc{stroke:url(#timerGradRest);}
+.timer-page.rest-mode .timer-exercise-name{color:var(--green);}
+.timer-page.rest-mode .timer-state{color:var(--green);}
+
 
 .timer-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
 .ts{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius-sm);padding:10px;text-align:center;}
@@ -1368,6 +1377,7 @@ select option{background:var(--black3);}
           <button class="ex-voice-btn" id="ex-voice-toggle" onclick="toggleExerciseVoice()" title="Toggle spoken exercise names">🔊</button>
         </div>
         <div class="timer-exercise-progress" id="timer-exercise-progress">Exercise 1 of 1</div>
+        <div class="ex-dots" id="ex-dots"></div>
         <div class="timer-ring-wrap">
           <svg width="200" height="200" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="88" fill="none" stroke="#362030" stroke-width="12"/>
@@ -1377,6 +1387,10 @@ select option{background:var(--black3);}
               <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#ff2d6b"/>
                 <stop offset="100%" stop-color="#ffd166"/>
+              </linearGradient>
+              <linearGradient id="timerGradRest" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#06d6a0"/>
+                <stop offset="100%" stop-color="#4dd6ff"/>
               </linearGradient>
             </defs>
           </svg>
@@ -1390,6 +1404,7 @@ select option{background:var(--black3);}
           <div class="ts"><div class="tv" id="ts-sets">0</div><div class="tl">Done</div></div>
           <div class="ts"><div class="tv" id="ts-rest">0</div><div class="tl">Left</div></div>
         </div>
+        <div class="timer-hype" id="timer-hype"></div>
         <!-- Voice Trainer Toggle -->
         <div class="voice-trainer-bar" id="voice-trainer-bar">
           <div>
@@ -3690,34 +3705,174 @@ let timerRunning = false;
 let timerElapsed = 0;
 let timerSets = 0;
 let exerciseIndex = 0;
-let exercisePlan = [];
-let exerciseCumulative = [];
+let activePhases = [];
+let phaseIdx = 0;
+let activeRealDuration = 0;
+let activeRounds = 1;
+let currentRound = 0;
 let _exerciseVoiceOn = (typeof localStorage !== 'undefined' && localStorage.getItem('fnova_ex_voice') === 'off') ? false : true;
+const REST_BETWEEN_EXERCISES = 15; // seconds
+let _hypeTick = 0;
 
-// Estimate a time weight (seconds) for one exercise entry based on its reps text.
-function getExerciseWeight(reps) {
-  if (!reps) return 60;
-  var m = reps.match(/(\d+)\s*min/i);
-  if (m) return parseInt(m[1], 10) * 60;
-  m = reps.match(/(\d+)\s*(?:s\b|sec)/i);
-  if (m) return parseInt(m[1], 10);
-  return 60; // default baseline for rep-based moves (e.g. "3x15", "2x10 each")
+// Real-world estimate (seconds) for how long one exercise entry actually takes,
+// based on its reps text — not padded/stretched to hit a marketing time.
+function getExerciseWorkSeconds(reps) {
+  if (!reps) return 45;
+  var s = String(reps).trim();
+  var m;
+
+  // Explicit interval formats: "8x20s on/10s off" or "20s on/10s off x4"
+  m = s.match(/^(\d+)x(\d+)s on\/(\d+)s off$/i);
+  if (m) return (+m[1]) * ((+m[2]) + (+m[3]));
+  m = s.match(/^(\d+)s on\/(\d+)s off x(\d+)$/i);
+  if (m) return (+m[3]) * ((+m[1]) + (+m[2]));
+
+  var each = /each/i.test(s);
+
+  // "N min" / "N min each"
+  m = s.match(/^(\d+)\s*min(?:\s*each)?$/i);
+  if (m) { var sec = (+m[1]) * 60; return each ? sec * 2 : sec; }
+
+  // "Ns each" (e.g. "30s each")
+  m = s.match(/^(\d+)s\s*each$/i);
+  if (m) return (+m[1]) * 2;
+
+  // plain seconds "45s"
+  m = s.match(/^(\d+)s$/i);
+  if (m) return +m[1];
+
+  // "N pumps"
+  m = s.match(/^(\d+)\s*pumps$/i);
+  if (m) return Math.round((+m[1]) * 1.2);
+
+  // "N rounds"
+  m = s.match(/^(\d+)\s*rounds$/i);
+  if (m) { var n3 = +m[1]; return Math.max(20, n3 * 40 - 10); }
+
+  // "AxBs" / "AxBs each" -> sets x seconds-per-set + rest between sets
+  m = s.match(/^(\d+)x(\d+)s(\s*each)?$/i);
+  if (m) { var a = +m[1], b = +m[2]; var tot = a * b + (a - 1) * 10; return m[3] ? tot * 2 : tot; }
+
+  // "AxB" / "AxB each" -> sets x reps, ~3s per rep + rest between sets
+  m = s.match(/^(\d+)x(\d+)(\s*each)?$/i);
+  if (m) { var a2 = +m[1], b2 = +m[2]; var tot2 = a2 * b2 * 3 + (a2 - 1) * 10; return m[3] ? tot2 * 2 : tot2; }
+
+  return 45; // fallback
 }
 
-// Split a workout's total duration across its exercises, proportional to each
-// exercise's estimated weight, so the timer can walk through them in order.
-function computeExercisePlan(workout) {
+// Build a real timeline for a workout: work phase for each exercise, with a
+// genuine rest phase between them. No artificial stretching.
+// One pass through every exercise once, each followed by a short rest.
+function buildOnePass(workout) {
+  var phases = [];
+  var t = 0;
   var exs = workout.exercises || [];
-  if (!exs.length) return [workout.duration];
-  var weights = exs.map(function(e){ return getExerciseWeight(e.reps); });
-  var totalWeight = weights.reduce(function(a,b){ return a+b; }, 0) || 1;
-  var totalDur = workout.duration;
-  var durations = weights.map(function(w){ return Math.max(15, Math.round(totalDur * w / totalWeight)); });
-  var sum = durations.reduce(function(a,b){ return a+b; }, 0);
-  var diff = totalDur - sum;
-  durations[durations.length - 1] += diff;
-  if (durations[durations.length - 1] < 10) durations[durations.length - 1] = 10;
-  return durations;
+  exs.forEach(function(ex, i) {
+    var w = getExerciseWorkSeconds(ex.reps);
+    phases.push({ type: 'work', exIndex: i, dur: w, start: t, end: t + w });
+    t += w;
+    if (i < exs.length - 1) {
+      phases.push({ type: 'rest', dur: REST_BETWEEN_EXERCISES, start: t, end: t + REST_BETWEEN_EXERCISES, nextExIndex: i + 1 });
+      t += REST_BETWEEN_EXERCISES;
+    }
+  });
+  return { phases: phases, total: t };
+}
+
+const ROUND_REST = 20; // seconds between full rounds of a circuit
+
+// Build the real timeline for a workout. Routines built from timed holds/
+// flows (any exercise labelled in minutes — yoga, pilates, stretch) run
+// once through, honestly, at their own pace. Routines built from short
+// bursts (reps or seconds, e.g. "45s", "3x15") are true circuits — real
+// circuit training is done for multiple rounds, so we repeat the sequence
+// enough times to fill a real session, with a breather between rounds.
+function buildWorkoutTimeline(workout) {
+  var onePass = buildOnePass(workout);
+  var exs = workout.exercises || [];
+  var isCircuit = exs.length > 0 && !exs.some(function(ex){ return /min/i.test(ex.reps); });
+  var rounds = 1;
+  if (isCircuit && onePass.total > 0) {
+    var metaMatch = (workout.meta || '').match(/(\d+)\s*min/i);
+    var targetSec = (metaMatch ? parseInt(metaMatch[1], 10) : 20) * 60;
+    rounds = Math.max(1, Math.min(6, Math.round(targetSec / onePass.total)));
+  }
+  if (rounds <= 1) return { phases: onePass.phases, total: onePass.total, rounds: 1 };
+
+  var phases = [];
+  var t = 0;
+  for (var r = 0; r < rounds; r++) {
+    onePass.phases.forEach(function(p) {
+      var np = { type: p.type, exIndex: p.exIndex, nextExIndex: p.nextExIndex, dur: p.dur, start: t, end: t + p.dur, round: r };
+      phases.push(np);
+      t += p.dur;
+    });
+    if (r < rounds - 1) {
+      phases.push({ type: 'roundrest', dur: ROUND_REST, start: t, end: t + ROUND_REST, round: r });
+      t += ROUND_REST;
+    }
+  }
+  return { phases: phases, total: t, rounds: rounds };
+}
+
+// Cached real (honest) duration + display minutes for a workout, so the
+// workout list card shows the truth instead of a padded marketing number.
+function getWorkoutRealSeconds(workout) {
+  if (workout._realSeconds != null) return workout._realSeconds;
+  var tl = buildWorkoutTimeline(workout);
+  workout._realSeconds = tl.total;
+  return tl.total;
+}
+function getWorkoutRealMeta(workout) {
+  var real = getWorkoutRealSeconds(workout);
+  var mins = Math.max(1, Math.round(real / 60));
+  var kcalPart = (workout.meta || '').split('\u00b7')[1];
+  return mins + ' min' + (kcalPart ? ' \u00b7' + kcalPart : ' \u00b7 ' + workout.calories + ' kcal');
+}
+
+const HYPE_LINES = ["You've got this!", "Stay strong!", "Keep that form tight!", "Almost through this one!", "Breathe — you're doing great!", "Push a little more!", "One rep at a time!"];
+
+function renderExDots() {
+  var wrap = document.getElementById('ex-dots');
+  if (!wrap || !activeWorkout || !activeWorkout.exercises) return;
+  wrap.innerHTML = activeWorkout.exercises.map(function(e, i) {
+    return '<span class="ex-dot" id="ex-dot-' + i + '"></span>';
+  }).join('');
+}
+
+function updateExDots() {
+  if (!activeWorkout || !activeWorkout.exercises) return;
+  activeWorkout.exercises.forEach(function(e, i) {
+    var dot = document.getElementById('ex-dot-' + i);
+    if (!dot) return;
+    dot.classList.remove('done', 'current');
+    if (i < exerciseIndex) dot.classList.add('done');
+    else if (i === exerciseIndex) dot.classList.add('current');
+  });
+}
+
+// Short two-tone beep via Web Audio — free, no audio files, works for every user.
+function playChime(rising) {
+  try {
+    var ctx = getAudioCtx();
+    if (!ctx) return;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = rising ? 660 : 520;
+    g.gain.value = 0.16;
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    o.frequency.exponentialRampToValueAtTime(rising ? 990 : 340, ctx.currentTime + 0.16);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.32);
+    o.stop(ctx.currentTime + 0.34);
+  } catch (e) {}
+}
+
+function setTimerMood(mode) {
+  var section = document.getElementById('timer-section');
+  var hype = document.getElementById('timer-hype');
+  if (section) section.classList.toggle('rest-mode', mode === 'rest');
+  if (hype) hype.style.display = mode === 'rest' ? 'none' : 'block';
 }
 
 function updateExerciseDisplay(pulse) {
@@ -3733,7 +3888,65 @@ function updateExerciseDisplay(pulse) {
       nameEl.classList.add('pulse');
     }
   }
-  if (progEl) progEl.textContent = 'Exercise ' + (exerciseIndex + 1) + ' of ' + activeWorkout.exercises.length + ' \u00b7 ' + ex.reps;
+  var roundTxt = activeRounds > 1 ? ' \u00b7 Round ' + (currentRound + 1) + ' of ' + activeRounds : '';
+  if (progEl) progEl.textContent = 'Exercise ' + (exerciseIndex + 1) + ' of ' + activeWorkout.exercises.length + roundTxt + ' \u00b7 ' + ex.reps;
+  updateExDots();
+  setTimerMood('work');
+}
+
+function showRestDisplay(nextEx) {
+  var nameEl = document.getElementById('timer-exercise-name');
+  var progEl = document.getElementById('timer-exercise-progress');
+  if (nameEl) {
+    nameEl.textContent = '\ud83d\ude2e\u200d\ud83d\udca8 Rest';
+    nameEl.classList.remove('pulse');
+    void nameEl.offsetWidth;
+    nameEl.classList.add('pulse');
+  }
+  if (progEl) progEl.textContent = nextEx ? 'Up next: ' + nextEx.name : 'Almost done!';
+  setTimerMood('rest');
+}
+
+function showRoundRestDisplay(finishedRound) {
+  var nameEl = document.getElementById('timer-exercise-name');
+  var progEl = document.getElementById('timer-exercise-progress');
+  if (nameEl) {
+    nameEl.textContent = '\ud83d\udd04 Round Complete!';
+    nameEl.classList.remove('pulse');
+    void nameEl.offsetWidth;
+    nameEl.classList.add('pulse');
+  }
+  if (progEl) progEl.textContent = 'Round ' + (finishedRound + 2) + ' of ' + activeRounds + ' starting soon \u2014 catch your breath';
+  setTimerMood('rest');
+}
+
+// Enter a phase (work, rest, or roundrest) at the given index in
+// activePhases: updates the UI, speaks/chimes, and vibrates (mobile) so
+// the transition is felt.
+function enterPhase(idx) {
+  var phase = activePhases[idx];
+  if (!phase) return;
+  if (phase.type === 'work') {
+    exerciseIndex = phase.exIndex;
+    currentRound = phase.round || 0;
+    var totalDone = currentRound * activeWorkout.exercises.length + exerciseIndex;
+    timerSets = totalDone;
+    var tsSets = document.getElementById('ts-sets'); if (tsSets) tsSets.textContent = timerSets;
+    var tsLeft = document.getElementById('ts-rest'); if (tsLeft) tsLeft.textContent = activeWorkout.exercises.length - exerciseIndex;
+    var stateEl = document.getElementById('timer-state'); if (stateEl) stateEl.textContent = 'ACTIVE';
+    updateExerciseDisplay(true);
+    announceExercise(activeWorkout.exercises[exerciseIndex]);
+    playChime(true);
+  } else if (phase.type === 'roundrest') {
+    var stateEl3 = document.getElementById('timer-state'); if (stateEl3) stateEl3.textContent = 'REST';
+    showRoundRestDisplay(phase.round);
+    playChime(false);
+  } else {
+    var stateEl2 = document.getElementById('timer-state'); if (stateEl2) stateEl2.textContent = 'REST';
+    showRestDisplay(activeWorkout.exercises[phase.nextExIndex]);
+    playChime(false);
+  }
+  if (navigator.vibrate) navigator.vibrate(phase.type === 'work' ? 120 : 60);
 }
 
 function toggleExerciseVoice() {
@@ -3767,7 +3980,7 @@ function renderWorkoutList() {
           <div class="wc-icon">${w.emoji}</div>
           <div>
             <div class="wc-title">${w.name}</div>
-            <div class="wc-meta">${w.meta} · <span class="badge ${w.badge}">${w.level}</span></div>
+            <div class="wc-meta">${getWorkoutRealMeta(w)} · <span class="badge ${w.badge}">${w.level}</span></div>
           </div>
         </div>
         <span style="color:var(--grey);font-size:12px;" id="wcard-arrow-${w.id}">▼</span>
@@ -3808,9 +4021,12 @@ function startWorkout(id) {
   timerSets = 0;
   timerRunning = false;
   exerciseIndex = 0;
-  exercisePlan = computeExercisePlan(activeWorkout);
-  exerciseCumulative = [];
-  (function(){ var run = 0; for (var i = 0; i < exercisePlan.length; i++) { run += exercisePlan[i]; exerciseCumulative.push(run); } })();
+  phaseIdx = 0;
+  currentRound = 0;
+  var tl = buildWorkoutTimeline(activeWorkout);
+  activePhases = tl.phases;
+  activeRealDuration = tl.total;
+  activeRounds = tl.rounds || 1;
   document.getElementById('timer-wname').textContent = activeWorkout.name;
   document.getElementById('timer-digits').textContent = '00:00';
   document.getElementById('timer-state').textContent = 'READY';
@@ -3824,7 +4040,9 @@ function startWorkout(id) {
   document.getElementById('result-banner').style.display = 'none';
   var exVoiceBtn = document.getElementById('ex-voice-toggle');
   if (exVoiceBtn) exVoiceBtn.textContent = _exerciseVoiceOn ? '\ud83d\udd0a' : '\ud83d\udd07';
+  renderExDots();
   updateExerciseDisplay(false);
+  setTimerMood('work');
   navTo('workout');
   // Render voice trainer UI
   setTimeout(() => renderVoiceTrainerUI(), 100);
@@ -3833,39 +4051,38 @@ function startWorkout(id) {
 function startTimer() {
   timerRunning = true;
   _lastClip = ''; // reset voice cue tracker
-  document.getElementById('timer-state').textContent = 'ACTIVE';
   document.getElementById('btn-start-timer').style.display = 'none';
   document.getElementById('btn-pause-timer').style.display = 'flex';
   // Play warmup voice clip (Pro only)
   if (appState.isProUser && _voiceMode !== 'off') setTimeout(() => playVoiceClip('warmup'), 500);
-  // Announce first exercise (free, browser voice)
-  if (activeWorkout && activeWorkout.exercises && activeWorkout.exercises.length) {
-    setTimeout(() => announceExercise(activeWorkout.exercises[exerciseIndex]), 700);
-  }
+  // Kick off phase 0 (first exercise) — sets state, dots, chime, free voice
+  setTimeout(() => enterPhase(0), 400);
   timerInterval = setInterval(() => {
     timerElapsed++;
-    const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
+    const realDur = activeRealDuration || (activeWorkout ? activeWorkout.duration : 1200);
+    const kcalRate = activeWorkout ? activeWorkout.calories / realDur : 0.15;
     const kcal = Math.round(timerElapsed * kcalRate);
     document.getElementById('timer-digits').textContent = fmtTime(timerElapsed);
     document.getElementById('ts-kcal').textContent = kcal;
-    // Advance to the next exercise once its time slice is up
-    if (activeWorkout && activeWorkout.exercises && exerciseIndex < exerciseCumulative.length - 1 && timerElapsed >= exerciseCumulative[exerciseIndex]) {
-      exerciseIndex++;
-      timerSets = exerciseIndex;
-      document.getElementById('ts-sets').textContent = timerSets;
-      document.getElementById('ts-rest').textContent = activeWorkout.exercises.length - exerciseIndex;
-      updateExerciseDisplay(true);
-      announceExercise(activeWorkout.exercises[exerciseIndex]);
+    // Advance through the real timeline (work + rest phases)
+    while (phaseIdx < activePhases.length - 1 && timerElapsed >= activePhases[phaseIdx].end) {
+      phaseIdx++;
+      enterPhase(phaseIdx);
     }
-    // Voice trainer cues (Pro only)
+    // Rotate a hype caption every few seconds during work phases
+    const curPhase = activePhases[phaseIdx];
+    if (curPhase && curPhase.type === 'work' && timerElapsed % 5 === 0) {
+      const hypeEl = document.getElementById('timer-hype');
+      if (hypeEl) hypeEl.textContent = HYPE_LINES[Math.floor(Math.random() * HYPE_LINES.length)];
+    }
+    // Voice trainer cues (Pro only) — still keyed off overall elapsed time
     if (appState.isProUser && _voiceMode !== 'off' && activeWorkout) {
-      const cue = getVoiceCueForTime(timerElapsed, activeWorkout.duration);
+      const cue = getVoiceCueForTime(timerElapsed, realDur);
       if (cue) playVoiceClip(cue);
     }
     const arc = document.getElementById('timer-ring-arc');
-    const dur = activeWorkout ? activeWorkout.duration : 1200;
-    if (arc) arc.style.strokeDashoffset = 553 * (1 - Math.min(1, timerElapsed / dur));
-    if (activeWorkout && timerElapsed >= activeWorkout.duration) stopTimer();
+    if (arc) arc.style.strokeDashoffset = 553 * (1 - Math.min(1, timerElapsed / realDur));
+    if (timerElapsed >= realDur) stopTimer();
   }, 1000);
 }
 
@@ -3884,18 +4101,20 @@ async function stopTimer() {
   clearInterval(timerInterval);
   timerRunning = false;
   if ('speechSynthesis' in window) speechSynthesis.cancel();
+  const realDur = activeRealDuration || (activeWorkout ? activeWorkout.duration : 1200);
   // Play complete or rest clip on stop (Pro only)
   if (appState.isProUser && _voiceMode !== 'off') {
-    const isComplete = timerElapsed >= (activeWorkout ? activeWorkout.duration - 5 : 9999);
+    const isComplete = timerElapsed >= realDur - 5;
     setTimeout(() => playVoiceClip(isComplete ? 'complete' : 'rest'), 300);
   }
   stopVoiceTrainer();
-  // If the workout finished naturally, credit all exercises as done
-  if (activeWorkout && activeWorkout.exercises && timerElapsed >= activeWorkout.duration - 1) {
-    timerSets = activeWorkout.exercises.length;
+  // If the workout finished naturally, credit every exercise across every round
+  if (activeWorkout && activeWorkout.exercises && timerElapsed >= realDur - 1) {
+    timerSets = activeWorkout.exercises.length * activeRounds;
   }
-  const kcalRate = activeWorkout ? activeWorkout.calories / activeWorkout.duration : 0.15;
+  const kcalRate = activeWorkout ? activeWorkout.calories / realDur : 0.15;
   const kcal = Math.round(timerElapsed * kcalRate);
+  setTimerMood('work');
   document.getElementById('timer-section').style.display = 'none';
   document.getElementById('workout-list-wrap').style.display = 'block';
   const rb = document.getElementById('result-banner');
