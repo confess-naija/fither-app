@@ -1102,7 +1102,6 @@ select option{background:var(--black3);}
 
 <!-- Insights + Motivation -->
 <div id="insights-wrap"></div>
-<div id="motivation-wrap"></div>
 
       <!-- Quick Hub -->
       <div class="quick-hub">
@@ -1408,10 +1407,6 @@ select option{background:var(--black3);}
       <div class="music-hero">
         <div class="music-topline">
           <div class="music-badge">🎵 Gospel Fitness</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div class="music-live">🔴 LIVE</div>
-            <button class="dj-toggle" id="dj-toggle" onclick="toggleDJ()">DJ Mode</button>
-          </div>
         </div>
         <div class="music-stage">
           <div class="vinyl-wrap">
@@ -1569,11 +1564,6 @@ select option{background:var(--black3);}
         <div id="milestones-list"></div>
       </div>
 
-      <!-- Leaderboard -->
-      <div class="card">
-        <div class="sec-label">Community Board</div>
-        <div id="leaderboard-list"></div>
-      </div>
     </div>
 
     <!-- ══ HISTORY PAGE ══ -->
@@ -2617,7 +2607,6 @@ async function bootApp() {
   renderWorkoutList();
   renderPlaylist();
   renderMilestones();
-  renderLeaderboard();
   renderWeeklyChart();
   renderWaterCups();
   renderHomeMeals();
@@ -3181,6 +3170,18 @@ function renderChecklist(){
   var label = document.getElementById('checklist-progress-label');
   if(label) label.textContent = doneCount + ' of ' + CHECKLIST_ITEMS.length + ' Completed';
 }
+var MOTIVATION_QUOTES = [
+  {q:'Progress, not perfection.'},
+  {q:'Your only competition is who you were yesterday.'},
+  {q:'Small steps every day lead to big changes.'},
+  {q:'Discipline is choosing between what you want now and what you want most.'},
+  {q:"You didn't come this far to only come this far."},
+  {q:'Strong is the new beautiful.'},
+  {q:"Take care of your body. It's the only place you have to live."},
+  {q:'Consistency beats intensity.'},
+  {q:'Every workout counts, even the short ones.'},
+  {q:"Believe you can, and you're halfway there."}
+];
 function renderInsights(){
   var wrap = document.getElementById('insights-wrap');
   if(!wrap) return;
@@ -3206,34 +3207,20 @@ function renderInsights(){
     {icon:'💧', text: waterMsg},
     {icon:'✨', text: streakMsg}
   ];
+  // Daily motivational quote — folded into this same card instead of its
+  // own separate one, so Home isn't showing two small text cards in a row
+  // for basically the same "here's a little encouragement" purpose.
+  var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  var quote = MOTIVATION_QUOTES[dayOfYear % MOTIVATION_QUOTES.length];
   wrap.innerHTML = '<div class="insights-card"><div class="insights-card-title">Insights</div>' +
     rows.map(function(r){ return '<div class="insight-row"><span class="insight-icon">'+r.icon+'</span><span class="insight-text">'+r.text+'</span></div>'; }).join('') +
+    '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;font-style:italic;color:var(--pink-light);">"' + quote.q + '"</div>' +
     '</div>';
-}
-var MOTIVATION_QUOTES = [
-  {q:'Progress, not perfection.'},
-  {q:'Your only competition is who you were yesterday.'},
-  {q:'Small steps every day lead to big changes.'},
-  {q:'Discipline is choosing between what you want now and what you want most.'},
-  {q:"You didn't come this far to only come this far."},
-  {q:'Strong is the new beautiful.'},
-  {q:"Take care of your body. It's the only place you have to live."},
-  {q:'Consistency beats intensity.'},
-  {q:'Every workout counts, even the short ones.'},
-  {q:"Believe you can, and you're halfway there."}
-];
-function renderMotivation(){
-  var wrap = document.getElementById('motivation-wrap');
-  if(!wrap) return;
-  var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
-  var q = MOTIVATION_QUOTES[dayOfYear % MOTIVATION_QUOTES.length];
-  wrap.innerHTML = '<div class="motivation-card"><div class="motivation-quote">"'+q.q+'"</div><div class="motivation-author">Daily Reminder</div></div>';
 }
 function updateHomeStats() {
 renderHomeWeeklyRecap();
 renderChecklist();
 renderInsights();
-renderMotivation();
   const streak = Math.max(1, Number(appState.streak || 1));
   const todayWorkouts = appState.workoutLog ? appState.workoutLog.length : 0;
   const remaining = Math.max(0, appState.calorieGoal - appState.caloriesEaten + appState.caloriesBurned);
@@ -3902,7 +3889,6 @@ const PLAYLIST = [
 let currentTrackIdx = 0;
 let musicProgress = 0;
 let musicInterval = null;
-let djMode = false;
 
 function renderPlaylist() {
   const wrap = document.getElementById('playlist-wrap');
@@ -4128,13 +4114,6 @@ function seekTrack(e) {
   const mp = document.getElementById('music-progress'); if(mp) mp.style.width = (pct*100) + '%';
 }
 
-function toggleDJ() {
-  djMode = !djMode;
-  const btn = document.getElementById('dj-toggle');
-  if (btn) { btn.classList.toggle('on', djMode); btn.textContent = djMode ? '✨ DJ ON' : 'DJ Mode'; }
-  if (djMode) showToast('🎧 DJ Mode Active', 'Auto-mixing your gospel playlist!');
-}
-
 // ═══════════
 // PROGRESS
 // ═══════════
@@ -4169,42 +4148,6 @@ function renderMilestones() {
       <div class="mi-icon">${m.icon}</div>
       <div><div class="mi-name">${m.name}</div><div class="mi-sub">${m.sub}</div></div>
       <span class="mi-badge ${m.earned ? 'earned' : 'locked'}">${m.earned ? '✓ Earned' : 'Locked'}</span>
-    </div>
-  `).join('');
-}
-
-function renderLeaderboard() {
-  const wrap = document.getElementById('leaderboard-list');
-  if (!wrap) return;
-
-  // Seed daily variation so numbers shift each day but stay consistent within a day
-  const daySeed = parseInt(todayStr().replace(/-/g,'')) % 100;
-  const vary = (base, range) => base + ((daySeed * 7 + base * 3) % range);
-
-  const community = [
-    { name:'Adaeze K.',    flag:'🇳🇬', streak: vary(24, 8) },   // Nigerian
-    { name:'Blessing O.',  flag:'🇳🇬', streak: vary(18, 6) },   // Nigerian
-    { name:'Chioma N.',    flag:'🇳🇬', streak: vary(14, 5) },   // Nigerian
-    { name:'Ama Serwaa',   flag:'🇬🇭', streak: vary(11, 7) },   // Ghanaian
-    { name:'Zinhle M.',    flag:'🇿🇦', streak: vary(9,  6) },   // South African
-    { name:'Sophie R.',    flag:'🇬🇧', streak: vary(7,  5) },   // English
-    { name:'Fatima A.',    flag:'🇳🇬', streak: vary(5,  4) },   // Nigerian
-  ];
-
-  const board = [
-    ...community,
-    { name:'You', flag:'', streak: appState.streak || 0 },
-  ].sort((a,b) => b.streak - a.streak).slice(0, 8);
-
-  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣'];
-
-  wrap.innerHTML = board.map((r,i) => `
-    <div class="leaderboard-row">
-      <div class="lb-rank">${medals[i] || i+1}</div>
-      <div class="lb-name" style="${r.name==='You' ? 'color:var(--pink-light);font-weight:700;' : ''}">
-        ${r.flag ? r.flag + ' ' : ''}${r.name}
-      </div>
-      <div class="lb-streak">🔥 Day ${r.streak}</div>
     </div>
   `).join('');
 }
@@ -7279,44 +7222,6 @@ function incrementCoachMsg() {
 const FREE_COACH_LIMIT = 5;
 
 // ═══════════
-// PRO CROWN BADGE on Leaderboard
-// ═══════════
-function renderLeaderboard() {
-  const wrap = document.getElementById('leaderboard-list');
-  if (!wrap) return;
-
-  const daySeed = parseInt(todayStr().replace(/-/g,'')) % 100;
-  const vary    = (base, range) => base + ((daySeed * 7 + base * 3) % range);
-
-  const community = [
-    { name:'Adaeze K.',   flag:'🇳🇬', streak: vary(24, 8), pro: true },
-    { name:'Blessing O.', flag:'🇳🇬', streak: vary(18, 6), pro: true },
-    { name:'Chioma N.',   flag:'🇳🇬', streak: vary(14, 5), pro: false },
-    { name:'Ama Serwaa',  flag:'🇬🇭', streak: vary(11, 7), pro: true },
-    { name:'Zinhle M.',   flag:'🇿🇦', streak: vary(9,  6), pro: false },
-    { name:'Sophie R.',   flag:'🇬🇧', streak: vary(7,  5), pro: false },
-    { name:'Fatima A.',   flag:'🇳🇬', streak: vary(5,  4), pro: false },
-  ];
-
-  const board = [
-    ...community,
-    { name:'You', flag:'', streak: appState.streak || 0, pro: appState.isProUser },
-  ].sort((a,b) => b.streak - a.streak).slice(0, 8);
-
-  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣'];
-
-  wrap.innerHTML = board.map((r,i) => `
-    <div class="leaderboard-row">
-      <div class="lb-rank">${medals[i] || i+1}</div>
-      <div class="lb-name" style="${r.name==='You' ? 'color:var(--pink-light);font-weight:700;' : ''}">
-        ${r.flag ? r.flag + ' ' : ''}${r.name}
-        ${r.pro ? '<span class="crown-badge">👑 PRO</span>' : ''}
-      </div>
-      <div class="lb-streak">🔥 Day ${r.streak}</div>
-    </div>
-  `).join('');
-}
-
 
 function togglePw(inputId, btn) {
   const input = document.getElementById(inputId);
