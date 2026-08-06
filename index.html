@@ -276,7 +276,7 @@ select option{background:var(--black3);}
 .ts .tl{font-size:10px;color:var(--grey);margin-top:2px;}
 .timer-btns{display:flex;gap:8px;justify-content:center;position:fixed;left:16px;right:16px;bottom:calc(70px + var(--safe-bottom));max-width:500px;margin:0 auto;z-index:500;background:rgba(20,8,14,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.45);}
 .timer-page{padding-bottom:100px;}
-.tbtn{height:48px;padding:0 24px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:var(--font-body);display:flex;align-items:center;gap:6px;}
+.tbtn{height:48px;padding:0 24px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:var(--font-body);display:flex;align-items:center;gap:6px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;position:relative;z-index:1;}
 .tbtn-go{background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;box-shadow:0 4px 20px var(--pink-glow);}
 .tbtn-pause{background:var(--black3);border:1px solid var(--black4);color:var(--white);}
 .tbtn-stop{background:#34101c;border:1px solid #5c1a25;color:#ff6b6b;}
@@ -4294,43 +4294,61 @@ function pauseTimer() {
 }
 
 async function stopTimer() {
+  // Everything the user actually SEES must happen first and cannot be
+  // blocked by anything below. Voice clips, Web Audio bass-boost, and the
+  // Supabase save are all side effects — on some mobile browsers a Web
+  // Audio / speechSynthesis call can throw, and previously that exception
+  // happened before the screen ever changed, so Stop looked "dead" on
+  // mobile even though Pause (which touches none of that) worked fine.
   clearInterval(timerInterval);
   timerRunning = false;
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
   const realDur = activeRealDuration || (activeWorkout ? activeWorkout.duration : 1200);
-  // Play complete or rest clip on stop (Pro only)
-  if (appState.isProUser && _voiceMode !== 'off') {
-    const isComplete = timerElapsed >= realDur - 5;
-    setTimeout(() => playVoiceClip(isComplete ? 'complete' : 'rest'), 300);
-  }
-  stopVoiceTrainer();
-  // If the workout finished naturally, credit every exercise across every round
   const finishedNaturally = activeWorkout && activeWorkout.exercises && timerElapsed >= realDur - 1;
   if (finishedNaturally) {
     timerSets = activeWorkout.exercises.length * activeRounds;
-    confettiBurst();
   }
   const kcalRate = activeWorkout ? activeWorkout.calories / realDur : 0.15;
   const kcal = Math.round(timerElapsed * kcalRate);
+  const finalElapsed = timerElapsed;
+  const finalSets = timerSets;
+  const workoutForSave = activeWorkout;
+
   setTimerMood('work');
   document.getElementById('timer-section').style.display = 'none';
   document.getElementById('workout-list-wrap').style.display = 'block';
   const rb = document.getElementById('result-banner');
   rb.style.display = 'block';
-  document.getElementById('rb-time').textContent = fmtTime(timerElapsed);
+  document.getElementById('rb-time').textContent = fmtTime(finalElapsed);
   document.getElementById('rb-cal').textContent = kcal;
-  document.getElementById('rb-sets').textContent = timerSets;
-  document.getElementById('rb-msg').textContent = timerElapsed > 300
+  document.getElementById('rb-sets').textContent = finalSets;
+  document.getElementById('rb-msg').textContent = finalElapsed > 300
     ? '🔥 Incredible work! You are unstoppable!'
     : 'Every rep counts! Keep building momentum!';
-  if (activeWorkout) {
-    await saveWorkoutEntry({ name: activeWorkout.name, duration: timerElapsed, calories: kcal, sets: timerSets });
+
+  // From here down: nice-to-haves only, each isolated so none of them can
+  // ever leave the workout screen stuck open again.
+  try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch(e) {}
+  try {
+    if (appState.isProUser && _voiceMode !== 'off') {
+      const isComplete = finalElapsed >= realDur - 5;
+      setTimeout(() => { try { playVoiceClip(isComplete ? 'complete' : 'rest'); } catch(e) {} }, 300);
+    }
+  } catch(e) {}
+  try { stopVoiceTrainer(); } catch(e) {}
+  if (finishedNaturally) { try { confettiBurst(); } catch(e) {} }
+
+  if (workoutForSave) {
+    try {
+      await saveWorkoutEntry({ name: workoutForSave.name, duration: finalElapsed, calories: kcal, sets: finalSets });
+    } catch(e) { console.warn('saveWorkoutEntry failed:', e); }
   }
   appState.caloriesBurned += kcal;
   updateCalRing();
   updateHomeStats();
-  (function(){var _r=Math.random();if(_r<0.15){showAchievement('🎁','Bonus Round!','That one counted extra — '+kcal+' kcal burned!');}else if(_r<0.3){showAchievement('⭐','Incredible!',kcal+' kcal burned in '+fmtTime(timerElapsed)+'. You are on fire.');}else{showAchievement('💪','Workout Complete!',kcal+' kcal burned in '+fmtTime(timerElapsed));}})();
-  setTimeout(() => checkMilestoneUnlocks(), 1300); // let the workout-complete toast show first
+  try {
+    (function(){var _r=Math.random();if(_r<0.15){showAchievement('🎁','Bonus Round!','That one counted extra — '+kcal+' kcal burned!');}else if(_r<0.3){showAchievement('⭐','Incredible!',kcal+' kcal burned in '+fmtTime(finalElapsed)+'. You are on fire.');}else{showAchievement('💪','Workout Complete!',kcal+' kcal burned in '+fmtTime(finalElapsed));}})();
+  } catch(e) {}
+  setTimeout(() => { try { checkMilestoneUnlocks(); } catch(e) {} }, 1300); // let the workout-complete toast show first
   timerElapsed = 0;
   timerSets = 0;
 }
