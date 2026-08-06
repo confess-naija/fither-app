@@ -4940,9 +4940,12 @@ async function loadProStatus() {
   if (window.supabase && currentUser) {
     try {
       const { data } = await window.supabase
-        .from('profiles').select('is_pro,pro_plan')
+        .from('profiles').select('is_pro,pro_plan,pro_expires_at')
         .eq('id', currentUser.id).maybeSingle();
-      if (data?.is_pro === true) {
+      // pro_expires_at lets trial Pro (e.g. from a referral) actually run out.
+      // No expiry date at all (lifetime/paid plans) means it never expires.
+      const notExpired = !data?.pro_expires_at || new Date(data.pro_expires_at) > new Date();
+      if (data?.is_pro === true && notExpired) {
         appState.isProUser = true;
         appState.proPlan   = data.pro_plan || 'pro';
       }
@@ -6507,16 +6510,27 @@ async function saveCoachHistory() {
 // ═══════════
 // REFERRAL SYSTEM
 // ═══════════
-function getReferralCode() {
+async function getReferralCode() {
   if (!currentUser) return null;
-  // Generate deterministic code from user ID
-  return 'FHN' + currentUser.id.replace(/-/g,'').slice(0,8).toUpperCase();
+  const fallbackCode = 'FHN' + currentUser.id.replace(/-/g,'').slice(0,8).toUpperCase();
+  if (!window.supabase) return fallbackCode;
+  try {
+    const { data } = await window.supabase.from('profiles').select('referral_code').eq('id', currentUser.id).maybeSingle();
+    if (data && data.referral_code) return data.referral_code;
+    // First time this user has opened their referral card — store a
+    // permanent code so /api/apply-referral can reliably look them up
+    // later when someone signs up through their link.
+    await window.supabase.from('profiles').upsert({ id: currentUser.id, email: currentUser.email, referral_code: fallbackCode }, { onConflict: 'id' });
+    return fallbackCode;
+  } catch(e) {
+    return fallbackCode;
+  }
 }
 
-function showReferralCard() {
-  const code = getReferralCode();
+async function showReferralCard() {
+  const code = await getReferralCode();
   if (!code) return;
-  const link = 'https://fither-app-one.vercel.app?ref=' + code;
+  const link = 'https://fithernova.com?ref=' + code;
   const shareText = 'Join me on FitHerNova - the best fitness app for African women! Use my link: ' + link;
 
   // Show a proper modal instead of toast
@@ -6605,13 +6619,24 @@ async function checkReferral() {
   const ref = urlParams.get('ref');
   if (!ref || !currentUser || !window.supabase) return;
   try {
-    // Save referral to profile
-    await window.supabase.from('profiles').upsert({
-      id: currentUser.id,
-      referred_by: ref,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'id' });
-    showToast('Welcome via referral!', 'You and your friend both get 7 days Pro free soon!');
+    // Actually grants the trial (server-side, via /api/apply-referral) —
+    // this used to just save who referred the user and promise free days
+    // "soon," which nothing ever followed through on.
+    const { data: { session } } = await window.supabase.auth.getSession();
+    const resp = await fetch('/api/apply-referral', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (session ? session.access_token : '')
+      },
+      body: JSON.stringify({ referralCode: ref })
+    });
+    const data = await resp.json();
+    if (resp.ok && data.granted) {
+      await loadProStatus();
+      showToast('🎉 Welcome bonus unlocked!', 'You\'ve got 7 days of FitHerNova Pro, on us!');
+      showAchievement('🎁', 'Referral Bonus!', '7 days of Pro — enjoy every feature!');
+    }
   } catch(e) {}
 }
 
