@@ -896,7 +896,7 @@ select option{background:var(--black3);}
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="https://checkout.flutterwave.com/v3.js"></script>
+<script src="https://checkout.flutterwave.com/v3.js" defer></script>
 <script>
 (function() {
   var SUPABASE_URL = 'https://norgzcztduoxkshtthkm.supabase.co';
@@ -4246,7 +4246,7 @@ function renderWorkoutList() {
     <div class="workout-card${w.photo ? ' has-photo' : ''}" id="wcard-${w.id}" onclick="toggleWorkoutCard(${w.id})">
       ${w.photo ? `
       <div class="wc-photo-wrap">
-        <img src="${w.photo}" alt="${w.name}">
+        <img src="${w.photo}" alt="${w.name}" loading="lazy" decoding="async">
         <div class="wc-photo-fade"></div>
         <div class="wc-photo-badge">${w.emoji} ${w.level}</div>
         <span class="wc-photo-arrow" id="wcard-arrow-${w.id}">▼</span>
@@ -4326,8 +4326,9 @@ function startWorkout(id) {
   renderExDots();
   updateExerciseDisplay(false);
   setTimerMood('work');
-  // Hide the floating mini player so it can't sit on top of the Stop button
+  // Hide the floating mini player AND the quick-add FAB so neither can sit on top of the Stop/Pause buttons
   var mpHide = document.getElementById('mini-player'); if (mpHide) mpHide.classList.remove('show');
+  var fabHide = document.getElementById('fab-wrap'); if (fabHide) fabHide.style.display = 'none';
   navTo('workout');
   // Render voice trainer UI
   setTimeout(() => renderVoiceTrainerUI(), 100);
@@ -4452,6 +4453,7 @@ async function stopTimer() {
     (function(){var _r=Math.random();if(_r<0.15){showAchievement('🎁','Bonus Round!','That one counted extra — '+kcal+' kcal burned!');}else if(_r<0.3){showAchievement('⭐','Incredible!',kcal+' kcal burned in '+fmtTime(finalElapsed)+'. You are on fire.');}else{showAchievement('💪','Workout Complete!',kcal+' kcal burned in '+fmtTime(finalElapsed));}})();
   } catch(e) {}
   setTimeout(() => { try { checkMilestoneUnlocks(); } catch(e) {} }, 1300); // let the workout-complete toast show first
+  var fabShow = document.getElementById('fab-wrap'); if (fabShow) fabShow.style.display = 'flex';
   timerElapsed = 0;
   timerSets = 0;
 }
@@ -4472,6 +4474,7 @@ function backToWorkoutList() {
   document.getElementById('workout-list-wrap').style.display = 'block';
   // Bring the mini player back if music is still going
   var mpShow = document.getElementById('mini-player'); if (mpShow && musicPlaying) mpShow.classList.add('show');
+  var fabShow2 = document.getElementById('fab-wrap'); if (fabShow2) fabShow2.style.display = 'flex';
 }
 
 // ═══════════
