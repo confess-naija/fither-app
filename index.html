@@ -173,6 +173,15 @@ select option{background:var(--black3);}
 .pro-card-body{overflow:hidden;transition:max-height .35s ease,opacity .35s ease;max-height:700px;opacity:1;}
 .pro-card-body.collapsed{max-height:0;opacity:0;}
 .pro-card-toggle-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;cursor:pointer;user-select:none;}
+.verify-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(255,209,102,.14),rgba(255,45,107,.08));border:1px solid rgba(255,209,102,.3);border-radius:16px;padding:12px 14px;margin-bottom:14px;}
+.verify-banner-icon{font-size:20px;flex-shrink:0;}
+.verify-banner-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.verify-banner-text strong{font-size:12.5px;color:#fff;}
+.verify-banner-text span{font-size:11px;color:rgba(255,255,255,.6);line-height:1.4;}
+.verify-banner-btn{flex-shrink:0;background:rgba(255,209,102,.16);border:1px solid rgba(255,209,102,.4);color:#ffd166;font-size:11.5px;font-weight:800;padding:8px 12px;border-radius:10px;cursor:pointer;white-space:nowrap;}
+.verify-banner-btn:active{transform:scale(.96);}
+.verify-banner-btn.sent{background:rgba(6,214,160,.14);border-color:rgba(6,214,160,.4);color:#06d6a0;}
+
 .coach-challenge-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 .coach-mission-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.28);color:var(--gold);border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;}
 .coach-refresh-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(255,255,255,.72);border-radius:999px;padding:6px 11px;font-size:11px;font-weight:800;cursor:pointer;}
@@ -1098,7 +1107,15 @@ select option{background:var(--black3);}
 </div>
 </div><div style="margin-bottom:16px;"></div>
 
-      
+      <!-- Verify Email Banner (soft — never blocks app use) -->
+      <div class="verify-banner" id="verify-banner" style="display:none;">
+        <div class="verify-banner-icon">📧</div>
+        <div class="verify-banner-text">
+          <strong>Verify your email</strong>
+          <span>So you never lose your progress, receipts, or password reset access.</span>
+        </div>
+        <button class="verify-banner-btn" onclick="resendVerificationEmail()" id="verify-banner-btn">Resend</button>
+      </div>
 
       <!-- Today Plan Card -->
       <div class="today-plan-card">
@@ -2547,7 +2564,7 @@ async function doSignup() {
       email, password,
       options: {
         data: { full_name: name },
-        emailRedirectTo: 'https://fither-app-one.vercel.app'
+        emailRedirectTo: 'https://www.fithernova.com'
       }
     });
     if (error) { msg.textContent = error.message; return; }
@@ -2725,6 +2742,7 @@ async function bootApp() {
   await updateDailyStreak();
 
   // Build static UI
+  renderVerifyBanner();
   renderFoodList();
   renderWorkoutList();
   renderPlaylist();
@@ -5786,6 +5804,37 @@ async function clearAllData() {
 // ═══════════
 // DAILY STREAK — 100% Supabase, no localStorage
 // ═══════════
+// ── Soft email verification banner ──────────────────────────────────
+// Never blocks app use — the account works fully either way. This just
+// nudges unverified users so they don't lose access to Pro receipts,
+// password reset, and referral payouts because of a bad/mistyped email.
+function renderVerifyBanner() {
+  const el = document.getElementById('verify-banner');
+  if (!el) return;
+  const verified = !currentUser || !!currentUser.email_confirmed_at;
+  el.style.display = verified ? 'none' : 'flex';
+}
+
+async function resendVerificationEmail() {
+  const btn = document.getElementById('verify-banner-btn');
+  if (!currentUser || !currentUser.email || !window.supabase) return;
+  if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
+  try {
+    const { error } = await window.supabase.auth.resend({
+      type: 'signup',
+      email: currentUser.email,
+      options: { emailRedirectTo: 'https://www.fithernova.com' }
+    });
+    if (btn) {
+      btn.disabled = false;
+      if (error) { btn.textContent = 'Resend'; showToast('Could not resend', error.message); }
+      else { btn.textContent = '✓ Sent'; btn.classList.add('sent'); setTimeout(() => { btn.textContent = 'Resend'; btn.classList.remove('sent'); }, 8000); }
+    }
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Resend'; }
+  }
+}
+
 async function updateDailyStreak() {
   if (!currentUser || !window.supabase) return;
 
@@ -6224,6 +6273,10 @@ window.addEventListener('load', () => {
         const loadingVisible = authLoading && authLoading.style.display !== 'none';
         if (!currentUser && !alreadyBooted && !loadingVisible) {
           currentUser = session.user;
+          // This fires when the user clicks the email confirmation link —
+          // now that a real session exists, push up anything that was only
+          // saved locally during the unverified window.
+          try { await flushPendingLocalSync(); } catch(e) {}
           // Only show onboarding if genuinely new (never completed it)
           const onboardedKey = 'fnova_onboarded_' + session.user.id;
           if (!localStorage.getItem(onboardedKey)) {
