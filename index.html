@@ -5098,6 +5098,16 @@ function toggleCoachChallenge() {
   if (icon) icon.textContent = challengeCollapsed ? '▼' : '▲';
 }
 
+let challengeCardCollapsed = true; // starts hidden until tapped open
+
+function toggleChallengeCard() {
+  challengeCardCollapsed = !challengeCardCollapsed;
+  const body = document.getElementById('challenge-card-body');
+  const icon = document.getElementById('challenge-toggle-icon');
+  if (body) body.classList.toggle('collapsed', challengeCardCollapsed);
+  if (icon) icon.textContent = challengeCardCollapsed ? '▼' : '▲';
+}
+
 let proCardCollapsed = true; // starts hidden until tapped open
 
 function toggleProCard() {
@@ -6445,10 +6455,14 @@ function renderChallengeCard() {
 
   wrap.innerHTML = `
     <div class="challenge-card">
-      <div class="challenge-kicker">
-        <span>🔥 30-Day Challenge</span>
-        <span style="color:var(--gold);">Day ${done}/${30}</span>
+      <div class="pro-card-toggle-bar" onclick="toggleChallengeCard()">
+        <span class="challenge-kicker" style="margin-bottom:0;">
+          <span>🔥 30-Day Challenge</span>
+          <span style="color:var(--gold);">Day ${done}/${30}</span>
+        </span>
+        <span id="challenge-toggle-icon" style="color:var(--gold);font-size:13px;">${challengeCardCollapsed ? '▼' : '▲'}</span>
       </div>
+      <div class="pro-card-body${challengeCardCollapsed ? ' collapsed' : ''}" id="challenge-card-body">
       <div class="challenge-title">${todayDone ? '✅ Today Complete!' : todayChallenge.title}</div>
       <div class="challenge-sub">${todayDone ? 'Amazing work! Come back tomorrow for Day ' + (done+1) + '.' : todayChallenge.note}</div>
       <div class="challenge-progress-row">
@@ -6480,6 +6494,7 @@ function renderChallengeCard() {
         <button onclick="abandonChallenge()" style="background:none;border:none;color:rgba(255,255,255,.25);font-size:10px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all .2s;" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='rgba(255,255,255,.25)'">
           ✕ Abandon Challenge
         </button>
+      </div>
       </div>
     </div>`;
 }
