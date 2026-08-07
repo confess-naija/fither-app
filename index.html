@@ -1168,9 +1168,9 @@ select option{background:var(--black3);}
       <div class="daily-quote-card" id="coach-challenge-card">
         <div class="coach-challenge-kicker" id="coach-kicker-toggle" onclick="toggleCoachChallenge()">
           <span>⚡ Coach Nova Challenge</span>
-          <span id="coach-toggle-icon">▲</span>
+          <span id="coach-toggle-icon">▼</span>
         </div>
-        <div class="coach-challenge-body" id="coach-challenge-body">
+        <div class="coach-challenge-body collapsed" id="coach-challenge-body">
           <div id="coach-challenge-content">
             <div class="daily-quote-loading">
               <div class="daily-quote-spinner"></div>
@@ -4996,7 +4996,7 @@ const CHALLENGES = [
   { headline:'🍳 Protein-First Breakfast', sub:'Start your day with a protein-rich breakfast: eggs, Greek yogurt, or a shake. Research shows it reduces cravings all day. Log it in the Food tab!', mission:'Log high-protein breakfast' },
 ];
 
-let challengeCollapsed = false;
+let challengeCollapsed = true; // starts hidden until tapped open
 
 function toggleCoachChallenge() {
   challengeCollapsed = !challengeCollapsed;
@@ -5006,7 +5006,7 @@ function toggleCoachChallenge() {
   if (icon) icon.textContent = challengeCollapsed ? '▼' : '▲';
 }
 
-let proCardCollapsed = false;
+let proCardCollapsed = true; // starts hidden until tapped open
 
 function toggleProCard() {
   proCardCollapsed = !proCardCollapsed;
@@ -5014,6 +5014,16 @@ function toggleProCard() {
   const icon = document.getElementById('pro-toggle-icon');
   if (body) body.classList.toggle('collapsed', proCardCollapsed);
   if (icon) icon.textContent = proCardCollapsed ? '▼' : '▲';
+}
+
+let weekReviewCollapsed = true; // starts hidden until tapped open
+
+function toggleWeekReview() {
+  weekReviewCollapsed = !weekReviewCollapsed;
+  const body = document.getElementById('week-review-body');
+  const icon = document.getElementById('week-review-toggle-icon');
+  if (body) body.classList.toggle('collapsed', weekReviewCollapsed);
+  if (icon) icon.textContent = weekReviewCollapsed ? '▼' : '▲';
 }
 
 function loadCoachChallenge() {
@@ -6581,9 +6591,15 @@ function renderWeeklySummary() {
 
   wrap.innerHTML = `
     <div class="weekly-summary-card">
-      <div class="weekly-summary-title">📊 Your Week in Review</div>
-      <div class="weekly-summary-sub">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
-      <div class="weekly-summary-grid">
+      <div class="pro-card-toggle-bar" onclick="toggleWeekReview()">
+        <div>
+          <div class="weekly-summary-title" style="margin-bottom:0;">📊 Your Week in Review</div>
+          <div class="weekly-summary-sub" style="margin-bottom:0;">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+        </div>
+        <span id="week-review-toggle-icon" style="color:#06d6a0;font-size:13px;">${weekReviewCollapsed ? '▼' : '▲'}</span>
+      </div>
+      <div class="pro-card-body${weekReviewCollapsed ? ' collapsed' : ''}" id="week-review-body">
+      <div class="weekly-summary-grid" style="margin-top:14px;">
         <div class="ws-tile">
           <div class="wst-val" style="color:var(--pink-light);">${weekWorkouts}</div>
           <div class="wst-label">Workouts This Week</div>
@@ -6612,6 +6628,7 @@ function renderWeeklySummary() {
           Instagram
         </button>
         <button class="share-btn share-btn-copy" onclick="copyShareText()">📋 Copy</button>
+      </div>
       </div>
     </div>`;
 
