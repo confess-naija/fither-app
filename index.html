@@ -170,6 +170,9 @@ select option{background:var(--black3);}
 .coach-challenge-sub{font-size:12px;color:rgba(255,255,255,.68);line-height:1.55;margin-bottom:12px;}
 .coach-challenge-body{overflow:hidden;transition:max-height .35s ease,opacity .35s ease;max-height:400px;opacity:1;}
 .coach-challenge-body.collapsed{max-height:0;opacity:0;}
+.pro-card-body{overflow:hidden;transition:max-height .35s ease,opacity .35s ease;max-height:700px;opacity:1;}
+.pro-card-body.collapsed{max-height:0;opacity:0;}
+.pro-card-toggle-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;cursor:pointer;user-select:none;}
 .coach-challenge-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 .coach-mission-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.28);color:var(--gold);border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;}
 .coach-refresh-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(255,255,255,.72);border-radius:999px;padding:6px 11px;font-size:11px;font-weight:800;cursor:pointer;}
@@ -5003,6 +5006,16 @@ function toggleCoachChallenge() {
   if (icon) icon.textContent = challengeCollapsed ? '▼' : '▲';
 }
 
+let proCardCollapsed = false;
+
+function toggleProCard() {
+  proCardCollapsed = !proCardCollapsed;
+  const body = document.getElementById('pro-card-body');
+  const icon = document.getElementById('pro-toggle-icon');
+  if (body) body.classList.toggle('collapsed', proCardCollapsed);
+  if (icon) icon.textContent = proCardCollapsed ? '▼' : '▲';
+}
+
 function loadCoachChallenge() {
   const idx = new Date().getDay() + Math.floor(Math.random() * CHALLENGES.length);
   const c = CHALLENGES[idx % CHALLENGES.length];
@@ -8299,19 +8312,23 @@ function renderProDashboard() {
   wrap.innerHTML = `
     <div style="border-radius:22px;padding:16px;margin-bottom:12px;background:radial-gradient(circle at 5% 0%,rgba(255,209,102,.28),transparent 40%),radial-gradient(circle at 95% 100%,rgba(255,45,107,.22),transparent 40%),linear-gradient(145deg,#241900,#150910);border:1px solid rgba(255,209,102,.4);box-shadow:0 14px 40px rgba(255,209,102,.1);">
 
-      <!-- Pro Header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <!-- Pro Header (tap to collapse/expand, same pattern as Coach Nova Challenge) -->
+      <div class="pro-card-toggle-bar" onclick="toggleProCard()">
         <div>
           <div style="font-family:var(--font-head);font-size:13px;font-weight:900;color:var(--gold);letter-spacing:.5px;">👑 PRO MEMBER</div>
           <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;">${plan.charAt(0).toUpperCase()+plan.slice(1)} Plan · All features unlocked</div>
         </div>
-        <div style="text-align:right;">
-          <div style="font-family:var(--font-head);font-size:22px;font-weight:900;color:var(--gold);">${streak}</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.5);">day streak 🔥</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="text-align:right;">
+            <div style="font-family:var(--font-head);font-size:22px;font-weight:900;color:var(--gold);">${streak}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.5);">day streak 🔥</div>
 ${appState.freezeCount > 0 ? '<div style="font-size:9px;color:#6bbfff;margin-top:3px;font-weight:700;">🧊 '+appState.freezeCount+' freeze</div>' : ''}
+          </div>
+          <span id="pro-toggle-icon" style="color:var(--gold);font-size:13px;">${proCardCollapsed ? '▼' : '▲'}</span>
         </div>
       </div>
 
+      <div class="pro-card-body${proCardCollapsed ? ' collapsed' : ''}" id="pro-card-body">
       <!-- Phase + BMI snippets -->
       ${phaseSnippet || bmiSnippet ? '<div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">' + phaseSnippet + bmiSnippet + '</div>' : ''}
 
@@ -8334,6 +8351,7 @@ ${appState.freezeCount > 0 ? '<div style="font-size:9px;color:#6bbfff;margin-top
 <div style="width:34px;height:34px;border-radius:50%;background:rgba(107,191,255,.18);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;box-shadow:0 0 0 1px rgba(107,191,255,.25) inset;"><svg width="16" height="16" viewBox="0 0 24 24" style="color:#6bbfff;vertical-align:middle" ><rect x="4" y="2" width="16" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="6.5" x2="17" y2="6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="7.5" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="16.5" cy="12" r="1" fill="currentColor"/><circle cx="7.5" cy="16.5" r="1" fill="currentColor"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/><circle cx="16.5" cy="16.5" r="1" fill="currentColor"/></svg></div>
 <div style="font-size:9px;font-weight:700;color:#6bbfff;">BMI</div>
 </button>
+      </div>
       </div>
     </div>`;
 }
