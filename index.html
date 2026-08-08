@@ -6131,6 +6131,7 @@ function renderWorkoutList() {
             <div class="ex-num">${i+1}</div>
             <div class="ex-name">${e.name}</div>
             <div class="ex-reps">${e.reps}</div>
+            <button class="ex-ask-btn" title="Ask Coach Nova how to do this" onclick="event.stopPropagation();askCoachAboutExercise('${e.name.replace(/'/g,"\\'")}')">?</button>
           </div>
         `).join('')}
         <button class="btn btn-pink" style="margin-top:12px;" onclick="event.stopPropagation();startWorkout(${w.id})">▶ Start ${w.name}</button>
