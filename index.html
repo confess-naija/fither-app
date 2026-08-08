@@ -181,6 +181,14 @@ select option{background:var(--black3);}
 .verify-banner-btn{flex-shrink:0;background:rgba(255,209,102,.16);border:1px solid rgba(255,209,102,.4);color:#ffd166;font-size:11.5px;font-weight:800;padding:8px 12px;border-radius:10px;cursor:pointer;white-space:nowrap;}
 .verify-banner-btn:active{transform:scale(.96);}
 .verify-banner-btn.sent{background:rgba(6,214,160,.14);border-color:rgba(6,214,160,.4);color:#06d6a0;}
+.pro-moment-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(255,45,107,.10));border:1px solid rgba(168,85,247,.35);border-radius:16px;padding:12px 14px;margin-bottom:14px;position:relative;}
+.pro-moment-icon{font-size:20px;flex-shrink:0;}
+.pro-moment-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.pro-moment-text strong{font-size:12.5px;color:#fff;}
+.pro-moment-text span{font-size:11px;color:rgba(255,255,255,.6);line-height:1.4;}
+.pro-moment-btn{flex-shrink:0;background:linear-gradient(120deg,var(--pink) 0%,var(--violet) 100%);border:none;color:#fff;font-size:11.5px;font-weight:800;padding:8px 14px;border-radius:10px;cursor:pointer;white-space:nowrap;}
+.pro-moment-btn:active{transform:scale(.96);}
+.pro-moment-close{position:absolute;top:5px;right:7px;background:none;border:none;color:rgba(255,255,255,.35);font-size:15px;cursor:pointer;padding:3px 7px;line-height:1;}
 
 .coach-challenge-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 .coach-mission-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.28);color:var(--gold);border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;}
@@ -317,6 +325,9 @@ select option{background:var(--black3);}
 .rb-val{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--pink-light);}
 .rb-lbl{font-size:10px;color:var(--grey);margin-top:2px;}
 .rb-msg{font-size:13px;color:var(--green);}
+.rb-referral{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);}
+.rb-referral-text{font-size:11.5px;color:rgba(255,255,255,.65);margin-bottom:8px;}
+.rb-referral-btn{background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.35);color:var(--gold);border-radius:99px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;}
 .music-hero{position:relative;overflow:hidden;border-radius:24px;padding:20px;margin-bottom:14px;background:radial-gradient(circle at 20% 10%,rgba(255,45,107,.42),transparent 32%),radial-gradient(circle at 85% 15%,rgba(255,209,102,.26),transparent 28%),linear-gradient(145deg,#230715,#080808 58%,#14040b);border:1px solid rgba(255,45,107,.28);box-shadow:0 22px 70px rgba(0,0,0,.55),0 0 35px rgba(255,45,107,.12);}
 .music-hero:before{content:'';position:absolute;inset:-2px;background:linear-gradient(120deg,transparent,rgba(255,255,255,.06),transparent);transform:translateX(-100%);animation:shineNova 6s infinite;pointer-events:none;}
 @keyframes shineNova{0%,65%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
@@ -1117,6 +1128,17 @@ select option{background:var(--black3);}
         <button class="verify-banner-btn" onclick="resendVerificationEmail()" id="verify-banner-btn">Resend</button>
       </div>
 
+      <!-- Pro Moment Banner (proactive upsell after big streak milestones) -->
+      <div class="pro-moment-banner" id="pro-moment-banner" style="display:none;">
+        <div class="pro-moment-icon">🔥</div>
+        <div class="pro-moment-text">
+          <strong id="pro-moment-title">You're on fire!</strong>
+          <span id="pro-moment-sub">Unlock unlimited coaching, custom plans &amp; more.</span>
+        </div>
+        <button class="pro-moment-btn" onclick="handleProMomentUpgrade()">Upgrade</button>
+        <button class="pro-moment-close" onclick="dismissProMomentBanner()" aria-label="Dismiss">&times;</button>
+      </div>
+
       <!-- Today Plan Card -->
       <div class="today-plan-card">
         <div class="today-plan-top">
@@ -1242,6 +1264,7 @@ select option{background:var(--black3);}
           Sign Out
         </button>
         <div style="margin-top:14px;font-size:10px;color:rgba(255,255,255,.15);">FitHerNova v1.0 · Your Wellness Journey</div>
+        <div style="margin-top:6px;font-size:9.5px;color:rgba(255,255,255,.12);">Built by Pro Media Creators · Need help? <a href="mailto:info@promediacreators.com" style="color:rgba(255,255,255,.22);text-decoration:underline;">info@promediacreators.com</a></div>
       </div>
 
     </div>
@@ -1420,6 +1443,10 @@ select option{background:var(--black3);}
           <div class="rb-stat"><div class="rb-val" id="rb-sets">0</div><div class="rb-lbl">Exercises</div></div>
         </div>
         <div class="rb-msg" id="rb-msg">Amazing work! Keep it up! 🔥</div>
+        <div class="rb-referral" id="rb-referral" style="display:none;">
+          <div class="rb-referral-text">💛 Loving your progress? Invite a friend — you both get 7 days Pro free.</div>
+          <button class="rb-referral-btn" onclick="showReferralCard()">🔗 Invite a Friend</button>
+        </div>
       </div>
 
       <div class="timer-page" id="timer-section" style="display:none;">
@@ -2743,6 +2770,7 @@ async function bootApp() {
 
   // Build static UI
   renderVerifyBanner();
+  renderProMomentBanner();
   renderFoodList();
   renderWorkoutList();
   renderPlaylist();
@@ -3036,6 +3064,7 @@ async function loadWorkoutLog() {
 
 async function saveWorkoutEntry(entry) {
   const today = todayStr();
+  uSet('fnova_last_workout_date', today);
   const payload = {
     user_id: currentUser.id,
     date: today,
@@ -4468,6 +4497,10 @@ async function stopTimer() {
   updateCalRing();
   updateHomeStats();
   try {
+    const rbRef = document.getElementById('rb-referral');
+    if (rbRef) rbRef.style.display = (appState.totalWorkouts > 0 && appState.totalWorkouts % 3 === 0) ? 'block' : 'none';
+  } catch(e) {}
+  try {
     (function(){var _r=Math.random();if(_r<0.15){showAchievement('🎁','Bonus Round!','That one counted extra — '+kcal+' kcal burned!');}else if(_r<0.3){showAchievement('⭐','Incredible!',kcal+' kcal burned in '+fmtTime(finalElapsed)+'. You are on fire.');}else{showAchievement('💪','Workout Complete!',kcal+' kcal burned in '+fmtTime(finalElapsed));}})();
   } catch(e) {}
   setTimeout(() => { try { checkMilestoneUnlocks(); } catch(e) {} }, 1300); // let the workout-complete toast show first
@@ -5394,6 +5427,18 @@ function scheduleAllReminders() {
     _reminderTimers.push(t2);
   }
   if (prefs.workout && prefs.workoutTime) scheduleWorkoutReminder(prefs.workoutTime);
+  if (prefs.streak && appState.isProUser) {
+    var t3 = setInterval(function() {
+      var h = new Date().getHours();
+      var today = todayStr();
+      var loggedToday = uGet('fnova_last_workout_date') === today;
+      if (h === 20 && !loggedToday && appState.streak > 0) {
+        sendNotification("\ud83d\udd25 Don't lose your streak!", 'Day ' + appState.streak + ' streak \u2014 squeeze in a quick workout before midnight.');
+        showToast('Streak Protector', 'No workout logged today \u2014 keep your streak alive!');
+      }
+    }, 60 * 60 * 1000);
+    _reminderTimers.push(t3);
+  }
 }
 
 function scheduleWorkoutReminder(timeStr) {
@@ -5458,20 +5503,31 @@ async function saveReminders() {
   const workoutChecked = document.getElementById('remind-workout').checked;
   const mealChecked    = document.getElementById('remind-meal').checked;
   const waterChecked   = document.getElementById('remind-water').checked;
+  const streakEl       = document.getElementById('remind-streak');
+  let   streakChecked  = streakEl ? streakEl.checked : false;
   const timeInput      = document.getElementById('workout-time-input');
   const workoutTime    = timeInput ? timeInput.value : '08:00';
 
-  if (workoutChecked || mealChecked || waterChecked) {
+  // Streak Protector is a Pro perk — block free users and route them to upgrade
+  if (streakChecked && !appState.isProUser) {
+    if (streakEl) streakEl.checked = false;
+    streakChecked = false;
+    showToast('⭐ Pro Feature', 'Streak Protector alerts are a Pro perk — upgrade to never lose a streak.');
+    setTimeout(() => navTo('pro'), 1200);
+  }
+
+  if (workoutChecked || mealChecked || waterChecked || streakChecked) {
     const granted = await requestNotifPermission();
     if (!granted) {
       document.getElementById('remind-workout').checked = false;
       document.getElementById('remind-meal').checked    = false;
       document.getElementById('remind-water').checked   = false;
+      if (streakEl) streakEl.checked = false;
       return;
     }
   }
 
-  const prefs = { workout: workoutChecked, meal: mealChecked, water: waterChecked, workoutTime: workoutTime };
+  const prefs = { workout: workoutChecked, meal: mealChecked, water: waterChecked, streak: streakChecked, workoutTime: workoutTime };
 
   // Save to localStorage as fast cache
   uSet('fnova_reminders', JSON.stringify(prefs));
@@ -5484,6 +5540,7 @@ async function saveReminders() {
         remind_workout:  workoutChecked,
         remind_meal:     mealChecked,
         remind_water:    waterChecked,
+        remind_streak:   streakChecked,
         workout_time:    workoutTime,
         updated_at:      new Date().toISOString()
       }, { onConflict: 'id' });
@@ -5493,7 +5550,7 @@ async function saveReminders() {
   }
 
   scheduleAllReminders();
-  const active = [workoutChecked && 'workout', mealChecked && 'meals', waterChecked && 'water'].filter(Boolean);
+  const active = [workoutChecked && 'workout', mealChecked && 'meals', waterChecked && 'water', streakChecked && 'streak protector'].filter(Boolean);
   showToast('Reminders saved!', active.length ? 'Active: ' + active.join(', ') : 'All reminders off');
 }
 
@@ -5505,7 +5562,7 @@ async function loadReminders() {
     try {
       const { data, error } = await window.supabase
         .from('profiles')
-        .select('remind_workout, remind_meal, remind_water, workout_time')
+        .select('remind_workout, remind_meal, remind_water, remind_streak, workout_time')
         .eq('id', currentUser.id)
         .single();
       if (data && !error) {
@@ -5513,6 +5570,7 @@ async function loadReminders() {
           workout:     data.remind_workout  || false,
           meal:        data.remind_meal     || false,
           water:       data.remind_water    || false,
+          streak:      data.remind_streak   || false,
           workoutTime: data.workout_time    || '08:00'
         };
         // Sync back to localStorage
@@ -5537,15 +5595,17 @@ async function loadReminders() {
   const rw  = document.getElementById('remind-workout');
   const rm  = document.getElementById('remind-meal');
   const rwt = document.getElementById('remind-water');
+  const rst = document.getElementById('remind-streak');
   const rt  = document.getElementById('workout-time-input');
   if (rw)  rw.checked  = prefs.workout || false;
   if (rm)  rm.checked  = prefs.meal    || false;
   if (rwt) rwt.checked = prefs.water   || false;
+  if (rst) rst.checked = !!(prefs.streak && appState.isProUser);
   if (rt && prefs.workoutTime) rt.value = prefs.workoutTime;
 
   // Restart reminders if permission already granted
   if (typeof Notification !== 'undefined' && Notification.permission === 'granted'
-      && (prefs.workout || prefs.meal || prefs.water)) {
+      && (prefs.workout || prefs.meal || prefs.water || (prefs.streak && appState.isProUser))) {
     scheduleAllReminders();
   }
 }
@@ -5815,6 +5875,46 @@ function renderVerifyBanner() {
   el.style.display = verified ? 'none' : 'flex';
 }
 
+// ── Pro-moment banner: proactive upsell fired right after emotionally
+// high moments (streak milestones) instead of only when a free user hits
+// a locked-feature wall. Persists until dismissed or upgraded.
+function renderProMomentBanner() {
+  const el = document.getElementById('pro-moment-banner');
+  if (!el) return;
+  if (!currentUser || appState.isProUser) { el.style.display = 'none'; return; }
+  let saved;
+  try { saved = JSON.parse(uGet('fnova_pro_moment') || 'null'); } catch(e) { saved = null; }
+  if (!saved || !saved.reason) { el.style.display = 'none'; return; }
+  const copy = {
+    streak3: { icon: '🔥', title: '3 days strong!', sub: 'Unlock unlimited coaching, custom plans & voice cues.' },
+    streak7: { icon: '👑', title: 'Week Warrior!', sub: 'Lock in your streak with Pro — plus unlimited AI coaching.' }
+  }[saved.reason] || { icon: '⭐', title: "You're building a habit!", sub: 'Upgrade to Pro to unlock everything.' };
+  const titleEl = document.getElementById('pro-moment-title');
+  const subEl = document.getElementById('pro-moment-sub');
+  const iconEl = el.querySelector('.pro-moment-icon');
+  if (titleEl) titleEl.textContent = copy.title;
+  if (subEl) subEl.textContent = copy.sub;
+  if (iconEl) iconEl.textContent = copy.icon;
+  el.style.display = 'flex';
+}
+
+function dismissProMomentBanner() {
+  uRemove('fnova_pro_moment');
+  const el = document.getElementById('pro-moment-banner');
+  if (el) el.style.display = 'none';
+}
+
+function handleProMomentUpgrade() {
+  uRemove('fnova_pro_moment');
+  navTo('pro');
+}
+
+function triggerProMoment(reason) {
+  if (!currentUser || appState.isProUser) return;
+  uSet('fnova_pro_moment', JSON.stringify({ reason: reason, ts: Date.now() }));
+  renderProMomentBanner();
+}
+
 async function resendVerificationEmail() {
   const btn = document.getElementById('verify-banner-btn');
   if (!currentUser || !currentUser.email || !window.supabase) return;
@@ -5911,8 +6011,8 @@ freeze_count: newFreezeCount,
 
     // Milestone toasts
     if (freezeUsed) showAchievement('🧊', 'Streak Freeze Used!', 'Missed a day, but your streak lives on.');
-else if (newStreak === 3) showAchievement('🔥', '3-Day Streak!', 'You showed up 3 days in a row!');
-else if (newStreak === 7) showAchievement('👑', 'Week Warrior!', '7 days straight — +1 streak freeze earned.');
+else if (newStreak === 3) { showAchievement('🔥', '3-Day Streak!', 'You showed up 3 days in a row!'); setTimeout(() => triggerProMoment('streak3'), 3800); }
+else if (newStreak === 7) { showAchievement('👑', 'Week Warrior!', '7 days straight — +1 streak freeze earned.'); setTimeout(() => triggerProMoment('streak7'), 3800); }
 else if (newStreak === 14) showAchievement('⚡', '14-Day Streak!', 'Two weeks strong. Keep going!');
 else if (newStreak === 30) showAchievement('🏆', '30-Day Champion!', 'A full month of consistency!');
 else if (newStreak === 60) showAchievement('💎', '60-Day Legend!', 'Two months of pure discipline!');
@@ -6699,6 +6799,19 @@ function renderWeeklySummary() {
   const waterAvg     = appState.waterCups || 0;
   const meta = currentUser ? (currentUser.user_metadata || {}) : {};
   const firstName = (meta.full_name || meta.name || 'Queen').split(' ')[0];
+
+  // Nudge: on Sundays, once per week, let her know her weekly review is
+  // ready — same "come back and look" pull as the streak nudge, just
+  // timed to the review card instead of a missed workout.
+  try {
+    if (dayOfWeek === 0 && (weekWorkouts > 0 || streak > 0)) {
+      const todayKey = todayStr();
+      if (uGet('fnova_weekly_review_notif_date') !== todayKey) {
+        uSet('fnova_weekly_review_notif_date', todayKey);
+        sendNotification('📊 Your Week in Review is ready', weekWorkouts + ' workouts, Day ' + streak + ' streak, ' + calsBurned + ' kcal burned. Tap to see your full week, ' + firstName + '!');
+      }
+    }
+  } catch(e) {}
 
   const shareText = firstName + ' is on a wellness journey with FitHerNova!' +
     '\n\nThis week:\n' +
