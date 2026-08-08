@@ -269,6 +269,8 @@ select option{background:var(--black3);}
 .ex-num{width:20px;height:20px;border-radius:50%;background:var(--black4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--grey);flex-shrink:0;}
 .ex-name{font-size:13px;color:var(--white);flex:1;}
 .ex-reps{font-size:11px;color:var(--pink-light);font-weight:500;}
+.ex-ask-btn{flex-shrink:0;width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);font-size:11px;font-weight:700;cursor:pointer;line-height:1;padding:0;}
+.ex-ask-btn:hover{border-color:var(--pink-light);color:var(--pink-light);}
 .timer-page{text-align:center;}
 .timer-workout-name{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--pink);background:#240a16;border:1px solid var(--pink-dark);border-radius:99px;display:inline-block;padding:6px 18px;margin-bottom:20px;}
 .timer-ring-wrap{position:relative;width:200px;height:200px;margin:0 auto 20px;}
@@ -3945,6 +3947,1815 @@ const WORKOUTS = [
     duration:1800, calories:380 }
 ];
 
+// ═══════════
+// COACH NOVA — EXERCISE GLOSSARY
+// How-to steps + a form/benefit cue for every exercise across all 50
+// workouts, so Coach Nova can explain any move (or any whole workout) by
+// name instead of only answering generic topic questions.
+// ═══════════
+const EXERCISE_GLOSSARY = {
+ "Belly Breathing": {
+  "how": [
+   "Lie on your back, knees bent, one hand on chest, one on belly.",
+   "Inhale slowly through your nose so your belly rises (chest stays still).",
+   "Exhale slowly through pursed lips, feeling your belly fall."
+  ],
+  "cue": "This gently re-activates your deep core (transverse abdominis) — the safest place to start rebuilding ab strength postpartum or after a break."
+ },
+ "Heel Slides": {
+  "how": [
+   "Lie on your back, knees bent, feet flat.",
+   "Slowly slide one heel along the floor until the leg is straight, keeping your low back pressed down.",
+   "Slide it back to start. Alternate sides."
+  ],
+  "cue": "Move slowly — the goal is control, not speed. Stop sliding the moment your back arches off the floor."
+ },
+ "Clam Shells": {
+  "how": [
+   "Lie on your side, knees bent ~45°, feet stacked together.",
+   "Keeping feet touching, open your top knee like a clamshell.",
+   "Lower with control. Complete reps, then switch sides."
+  ],
+  "cue": "Keep your hips stacked — don't let your top hip roll backward. Squeeze the outer glute at the top."
+ },
+ "Glute Bridges": {
+  "how": [
+   "Lie on your back, knees bent, feet flat hip-width apart.",
+   "Push through your heels to lift your hips until body forms a straight line knee-to-shoulder.",
+   "Squeeze your glutes at the top, then lower with control."
+  ],
+  "cue": "Drive through your heels, not your toes — that's what fires the glutes instead of the hamstrings."
+ },
+ "Bird Dog": {
+  "how": [
+   "Start on hands and knees, wrists under shoulders, knees under hips.",
+   "Extend one arm forward and the opposite leg back until both are straight and level with your spine.",
+   "Hold briefly, return to start, and switch sides."
+  ],
+  "cue": "Move slowly and keep your hips square to the floor — don't let them twist as your leg lifts."
+ },
+ "March in Place": {
+  "how": [
+   "Stand tall, engage your core.",
+   "Lift one knee toward hip height while swinging the opposite arm.",
+   "Lower and repeat on the other side at a steady march pace."
+  ],
+  "cue": "A gentle way to raise your heart rate before harder moves — keep your posture upright throughout."
+ },
+ "Wall Push-ups": {
+  "how": [
+   "Stand facing a wall, arms extended, palms flat on the wall at shoulder height.",
+   "Bend your elbows to bring your chest toward the wall.",
+   "Push back to start, keeping your body in a straight line."
+  ],
+  "cue": "A beginner-friendly way to build push-up strength — the more upright your body, the easier the move."
+ },
+ "Seated Squats": {
+  "how": [
+   "Stand in front of a sturdy chair, feet shoulder-width apart.",
+   "Lower down with control until you lightly touch the seat.",
+   "Push through your heels to stand back up."
+  ],
+  "cue": "Great for building squat confidence and protecting your knees — the chair is your depth guide, not a full rest."
+ },
+ "Arm Circles": {
+  "how": [
+   "Extend both arms out to the sides at shoulder height.",
+   "Make small, controlled circles forward for the set count.",
+   "Reverse direction and circle backward."
+  ],
+  "cue": "Keep circles small and controlled — this warms up the shoulders without straining them."
+ },
+ "Brisk Walk in Place": {
+  "how": [
+   "Stand tall and start marching briskly, driving your knees a little higher than a normal walk.",
+   "Pump your arms in rhythm with your steps.",
+   "Keep a steady, energetic pace for the full time."
+  ],
+  "cue": "A low-impact way to get your heart rate up — great warm-up or active-recovery move."
+ },
+ "Side Steps": {
+  "how": [
+   "Stand with feet together, knees slightly bent.",
+   "Step one foot out to the side, then bring the other foot in to meet it.",
+   "Continue in one direction, then switch."
+  ],
+  "cue": "Stay low and controlled — this works your inner and outer thighs more than a forward step does."
+ },
+ "Calf Raises": {
+  "how": [
+   "Stand tall, feet hip-width apart (hold a wall or chair for balance if needed).",
+   "Rise up onto your toes as high as you can.",
+   "Lower back down with control, just short of your heels touching."
+  ],
+  "cue": "Pause briefly at the top for an extra calf squeeze."
+ },
+ "Hip Circles": {
+  "how": [
+   "Stand with feet shoulder-width apart, hands on hips.",
+   "Rotate your hips in a smooth circle, like using a hula hoop.",
+   "Complete the reps in one direction, then reverse."
+  ],
+  "cue": "Keep your upper body relatively still — the movement should come from your hips, not your shoulders."
+ },
+ "Cool Down Stretch": {
+  "how": [
+   "Move through a few gentle full-body stretches — reaching overhead, side bends, and a forward fold.",
+   "Hold each stretch for a few slow breaths without bouncing.",
+   "Breathe deeply throughout to help your heart rate come back down."
+  ],
+  "cue": "Never stretch a cold muscle hard — ease in gently, especially right after a workout."
+ },
+ "Neck Rolls": {
+  "how": [
+   "Sit or stand tall, shoulders relaxed.",
+   "Slowly drop your chin toward your chest, then roll your head gently in a half-circle from shoulder to shoulder.",
+   "Reverse direction after a few reps."
+  ],
+  "cue": "Keep it slow and gentle — never roll your head all the way back, which can strain the neck."
+ },
+ "Shoulder Shrugs": {
+  "how": [
+   "Stand tall, arms relaxed at your sides.",
+   "Lift both shoulders straight up toward your ears.",
+   "Hold briefly, then let them drop and relax fully."
+  ],
+  "cue": "Let the drop be a real release each time — that's what relieves shoulder tension."
+ },
+ "Cat-Cow Stretch": {
+  "how": [
+   "Start on hands and knees, wrists under shoulders, knees under hips.",
+   "Inhale, drop your belly, lift your chest and tailbone (Cow).",
+   "Exhale, round your spine toward the ceiling, tucking chin and tailbone (Cat)."
+  ],
+  "cue": "Move with your breath — this is one of the best resets for a stiff lower back."
+ },
+ "Side Stretch": {
+  "how": [
+   "Stand tall, feet hip-width apart.",
+   "Reach one arm overhead and lean gently to the opposite side.",
+   "Hold, feeling the stretch along your side body, then switch sides."
+  ],
+  "cue": "Keep your hips facing forward — the stretch should come from your waist, not a twist."
+ },
+ "Deep Breathing": {
+  "how": [
+   "Sit or lie comfortably, shoulders relaxed.",
+   "Inhale slowly and fully through your nose for a count of 4.",
+   "Exhale slowly through your mouth for a count of 6-8."
+  ],
+  "cue": "A longer exhale than inhale signals your nervous system to relax — great for winding down."
+ },
+ "Jumping Jacks": {
+  "how": [
+   "Start standing, feet together, arms at your sides.",
+   "Jump your feet out wide while raising your arms overhead.",
+   "Jump back to start and repeat at a steady rhythm."
+  ],
+  "cue": "Land softly on the balls of your feet to protect your knees and ankles."
+ },
+ "Squats": {
+  "how": [
+   "Stand with feet shoulder-width apart, toes slightly out.",
+   "Push your hips back and bend your knees like sitting into a chair, chest up.",
+   "Lower until thighs are about parallel to the floor, then drive back up through your heels."
+  ],
+  "cue": "Keep your knees tracking over your toes — don't let them cave inward."
+ },
+ "Push-ups": {
+  "how": [
+   "Start in a plank, hands slightly wider than shoulders, body in a straight line.",
+   "Bend your elbows to lower your chest toward the floor.",
+   "Push back up to start, keeping your core tight throughout."
+  ],
+  "cue": "Drop to your knees if needed — a controlled knee push-up beats a sloppy full one."
+ },
+ "Lunges": {
+  "how": [
+   "Stand tall, step one foot forward.",
+   "Lower until both knees are bent about 90°, front knee over the ankle.",
+   "Push through your front heel to return to standing, then switch legs."
+  ],
+  "cue": "Keep your torso upright — don't let it lean forward over the front knee."
+ },
+ "Plank": {
+  "how": [
+   "Start face down, forearms on the floor, elbows under shoulders.",
+   "Lift your body into a straight line from head to heels, core and glutes engaged.",
+   "Hold, breathing steadily, without letting your hips sag or pike up."
+  ],
+  "cue": "Squeeze your glutes and think 'push the floor away' to keep a flat, strong line."
+ },
+ "Burpees": {
+  "how": [
+   "Start standing, then squat down and place hands on the floor.",
+   "Jump or step your feet back into a plank, then immediately back to your hands.",
+   "Explode up into a jump, arms overhead."
+  ],
+  "cue": "Slow the tempo down if your form breaks down — a controlled burpee is worth more than a fast sloppy one."
+ },
+ "Jump Squats": {
+  "how": [
+   "Start in a regular squat stance.",
+   "Lower into a squat, then explode upward into a jump.",
+   "Land softly back into the squat position, absorbing the impact with bent knees."
+  ],
+  "cue": "Always land quietly on soft knees — that's how you protect your joints doing this move."
+ },
+ "Mountain Climbers": {
+  "how": [
+   "Start in a plank position, hands under shoulders.",
+   "Drive one knee toward your chest, then quickly switch legs.",
+   "Keep alternating at a fast but controlled pace."
+  ],
+  "cue": "Keep your hips low and level — don't let them pike up as you speed up."
+ },
+ "High Knees": {
+  "how": [
+   "Stand tall and run in place, driving your knees up toward hip height.",
+   "Pump your arms in rhythm.",
+   "Keep your core braced and land lightly on the balls of your feet."
+  ],
+  "cue": "Focus on knee height and quick turnover over raw speed."
+ },
+ "Plank Jacks": {
+  "how": [
+   "Start in a plank position, feet together.",
+   "Jump your feet out wide, like a jumping jack, then jump them back together.",
+   "Keep your core tight and hips steady throughout."
+  ],
+  "cue": "Your upper body should stay still — all the movement happens from the hips down."
+ },
+ "Crunches": {
+  "how": [
+   "Lie on your back, knees bent, feet flat, hands lightly behind your head.",
+   "Exhale and curl your shoulder blades up off the floor using your abs.",
+   "Lower back down with control."
+  ],
+  "cue": "Don't pull on your neck — lead with your chest, not your chin."
+ },
+ "Side Planks": {
+  "how": [
+   "Lie on your side, prop up on your forearm, elbow under shoulder.",
+   "Lift your hips so your body forms a straight line, stacking your feet.",
+   "Hold, keeping your hips lifted, then switch sides."
+  ],
+  "cue": "Keep your top hip stacked directly over the bottom one — don't let it roll forward or back."
+ },
+ "Dead Bug": {
+  "how": [
+   "Lie on your back, arms reaching to the ceiling, knees bent 90° above your hips.",
+   "Slowly lower one arm overhead and the opposite leg toward the floor.",
+   "Return to start and switch sides, keeping your low back pressed down."
+  ],
+  "cue": "If your back arches off the floor, only lower as far as you can control."
+ },
+ "Hip Bridges": {
+  "how": [
+   "Lie on your back, knees bent, feet flat.",
+   "Press through your heels to lift your hips into a straight line.",
+   "Squeeze at the top, then lower with control."
+  ],
+  "cue": "Same move as a glute bridge — drive through your heels, not your toes."
+ },
+ "V-Ups": {
+  "how": [
+   "Lie flat on your back, arms extended overhead, legs straight.",
+   "Simultaneously lift your legs and upper body, reaching hands toward toes to form a 'V'.",
+   "Lower back down with control."
+  ],
+  "cue": "Bend your knees slightly if it's too hard on your low back — full range isn't required to make it work."
+ },
+ "Sumo Squats": {
+  "how": [
+   "Stand with feet wider than shoulder-width, toes turned out.",
+   "Lower straight down, tracking knees over toes.",
+   "Push back up to standing, squeezing your inner thighs and glutes."
+  ],
+  "cue": "Keep your chest lifted and don't let your knees collapse inward."
+ },
+ "Donkey Kicks": {
+  "how": [
+   "Start on hands and knees, wrists under shoulders.",
+   "Keeping your knee bent at 90°, kick one heel up toward the ceiling.",
+   "Lower with control without letting your knee touch down, then repeat."
+  ],
+  "cue": "Squeeze your glute at the top of every rep rather than swinging for momentum."
+ },
+ "Fire Hydrants": {
+  "how": [
+   "Start on hands and knees.",
+   "Keeping your knee bent, lift one leg out to the side to hip height.",
+   "Lower with control and repeat, then switch sides."
+  ],
+  "cue": "Keep your hips square to the floor — don't lean or rotate to get the leg higher."
+ },
+ "Hip Thrusts": {
+  "how": [
+   "Sit on the floor with upper back against a bench or sofa edge, knees bent, feet flat.",
+   "Drive through your heels to lift your hips until your torso is parallel to the floor.",
+   "Squeeze your glutes hard at the top, then lower with control."
+  ],
+  "cue": "This is one of the single best glute-builders — full hip extension and a hard squeeze at the top is what makes it work."
+ },
+ "Wall Sit": {
+  "how": [
+   "Stand with your back against a wall, feet shoulder-width, walk feet out slightly.",
+   "Slide down until your knees are bent about 90°, like sitting in an invisible chair.",
+   "Hold, keeping your back flat against the wall."
+  ],
+  "cue": "Keep your knees at 90° directly over your ankles, not pushed forward past your toes."
+ },
+ "Tricep Dips": {
+  "how": [
+   "Sit on the edge of a sturdy chair or step, hands beside your hips.",
+   "Slide your hips off the edge and bend your elbows to lower your body.",
+   "Push back up through your palms until arms are straight."
+  ],
+  "cue": "Keep your elbows pointing straight back, not flaring out to the sides."
+ },
+ "Superman Hold": {
+  "how": [
+   "Lie face down, arms extended overhead, legs straight.",
+   "Simultaneously lift your arms, chest, and legs a few inches off the floor.",
+   "Hold, squeezing your lower back and glutes, then lower with control."
+  ],
+  "cue": "Lift to a comfortable height, not as high as possible — this protects your lower back."
+ },
+ "Shoulder Taps": {
+  "how": [
+   "Start in a plank position, feet a little wider than usual for stability.",
+   "Lift one hand to tap the opposite shoulder.",
+   "Return it to the floor and repeat on the other side."
+  ],
+  "cue": "Keep your hips as still as possible — resisting the urge to rock is what builds core stability."
+ },
+ "Sun Salutation": {
+  "how": [
+   "Start standing tall, inhale and reach arms overhead.",
+   "Exhale and fold forward, then step back into a plank and lower down.",
+   "Flow through Cobra or Upward Dog, then Downward Dog, and step back to standing."
+  ],
+  "cue": "Move slowly and match each movement to a breath — this is a flow, not a race."
+ },
+ "Power Squats": {
+  "how": [
+   "Stand with feet shoulder-width apart.",
+   "Squat down with control, then drive up explosively (adding a small hop if you're comfortable).",
+   "Land softly and reset before the next rep."
+  ],
+  "cue": "Prioritize a strong, deep squat over how high or fast you go."
+ },
+ "Push-up Burst": {
+  "how": [
+   "Set up in a standard push-up position.",
+   "Perform push-ups at a quick, controlled tempo for short bursts.",
+   "Rest briefly between bursts to keep form solid."
+  ],
+  "cue": "Drop to your knees the moment your lower back starts to sag."
+ },
+ "Jump Rope": {
+  "how": [
+   "Hold the rope handles at hip height, wrists doing most of the work.",
+   "Jump just high enough to clear the rope, landing softly on the balls of your feet.",
+   "Keep a steady rhythm; no rope needed — just mimic the motion."
+  ],
+  "cue": "Small, quick jumps beat big ones — it's easier on your knees and keeps your rhythm steady."
+ },
+ "Victory Stretch": {
+  "how": [
+   "Stand tall, feet hip-width apart.",
+   "Reach both arms overhead in a big 'V', taking a deep breath in.",
+   "Exhale and lower your arms slowly, relaxing your shoulders."
+  ],
+  "cue": "A feel-good finisher — let this be the moment you acknowledge you just showed up for yourself."
+ },
+ "The Hundred": {
+  "how": [
+   "Lie on your back, legs in tabletop or extended to your ability, head and shoulders lifted.",
+   "Pump your arms up and down at your sides in small, quick beats.",
+   "Inhale for 5 pumps, exhale for 5 pumps, working up to 100 total."
+  ],
+  "cue": "A classic Pilates move — keep your low back pressed into the floor the whole time."
+ },
+ "Single Leg Stretch": {
+  "how": [
+   "Lie on your back, head and shoulders lifted, one knee pulled to your chest, other leg extended.",
+   "Switch legs, pulling the opposite knee in as the other extends.",
+   "Keep alternating with control."
+  ],
+  "cue": "Keep your low back flat on the mat — extend the straight leg only as low as you can control."
+ },
+ "Roll Up": {
+  "how": [
+   "Lie flat on your back, arms extended overhead, legs straight.",
+   "Slowly curl up one vertebra at a time, reaching toward your toes.",
+   "Reverse the motion just as slowly to roll back down."
+  ],
+  "cue": "Move slowly and with control — this is about spinal articulation, not speed."
+ },
+ "Scissors": {
+  "how": [
+   "Lie on your back, legs extended toward the ceiling, head and shoulders lifted.",
+   "Lower one leg toward the floor while the other stays up, then switch in a scissor motion.",
+   "Keep your low back pressed into the mat throughout."
+  ],
+  "cue": "Only lower your legs as far as you can go without your back arching."
+ },
+ "Swan Dive": {
+  "how": [
+   "Lie face down, arms extended forward, legs straight.",
+   "Lift your chest and legs off the floor at the same time, rocking forward and back with control.",
+   "Keep the motion smooth rather than forceful."
+  ],
+  "cue": "A more advanced Pilates move — go slow and keep it small if you're new to it."
+ },
+ "Step Touch": {
+  "how": [
+   "Stand tall, step one foot out to the side.",
+   "Bring the other foot in to touch/tap beside it.",
+   "Repeat, alternating direction, adding an arm swing if you like."
+  ],
+  "cue": "A simple low-impact dance-cardio move — great for warming up or active recovery."
+ },
+ "Knee Lifts": {
+  "how": [
+   "Stand tall, hands on hips or swinging naturally.",
+   "Lift one knee up toward your chest.",
+   "Lower and repeat on the other side at a steady pace."
+  ],
+  "cue": "Keep your standing leg slightly bent for balance and stability."
+ },
+ "Low Kicks": {
+  "how": [
+   "Stand tall, weight balanced.",
+   "Kick one leg forward and low, no higher than hip height, with control.",
+   "Return to standing and repeat, alternating legs."
+  ],
+  "cue": "Keep kicks controlled, not swung — this protects your hip flexors and hamstrings."
+ },
+ "Heel Digs": {
+  "how": [
+   "Stand tall, feet together.",
+   "Step one heel forward, tapping it into the floor while pumping opposite arm.",
+   "Return and repeat, alternating sides."
+  ],
+  "cue": "A fun, low-impact cardio move — let your arms move with the rhythm."
+ },
+ "March & Swing": {
+  "how": [
+   "March in place, driving your knees up.",
+   "Add an arm swing across your body with each knee lift.",
+   "Keep a steady rhythm throughout."
+  ],
+  "cue": "Great active warm-up — focus on rhythm and posture over speed."
+ },
+ "Bicycle Crunches": {
+  "how": [
+   "Lie on your back, hands lightly behind your head, knees pulled toward your chest.",
+   "Rotate to bring one elbow toward the opposite knee while extending the other leg.",
+   "Alternate sides in a smooth pedaling motion."
+  ],
+  "cue": "Focus on rotating from your ribcage, not yanking on your neck with your hands."
+ },
+ "Russian Twists": {
+  "how": [
+   "Sit with knees bent, lean back slightly to engage your core, feet lifted or grounded.",
+   "Rotate your torso to tap the floor on one side.",
+   "Rotate to the other side, keeping your chest lifted."
+  ],
+  "cue": "Move slower for more control and core burn — speed isn't the goal here."
+ },
+ "Leg Raises": {
+  "how": [
+   "Lie on your back, legs extended, hands at your sides or under your hips for support.",
+   "Keeping legs straight, lift them toward the ceiling.",
+   "Lower with control, stopping before your low back arches."
+  ],
+  "cue": "The lowering phase is where most of the work happens — resist gravity on the way down."
+ },
+ "Neck & Trap Release": {
+  "how": [
+   "Sit or stand tall, drop one ear toward your shoulder gently.",
+   "Hold, breathing deeply, feeling the stretch along the opposite side of your neck.",
+   "Switch sides."
+  ],
+  "cue": "No pulling needed — gravity and gentle relaxation do the work here."
+ },
+ "Wrist & Forearm Stretch": {
+  "how": [
+   "Extend one arm forward, palm up.",
+   "Use your other hand to gently pull the fingers back toward you.",
+   "Hold, then repeat with palm facing down."
+  ],
+  "cue": "Great after workouts involving planks or push-ups where wrists take a lot of load."
+ },
+ "Hip Flexor Lunge": {
+  "how": [
+   "Step into a deep lunge, back knee lowered toward the floor.",
+   "Shift your weight forward gently, keeping your torso upright.",
+   "Hold, feeling the stretch in the front of your back hip, then switch sides."
+  ],
+  "cue": "A must-stretch if you sit a lot during the day — tight hip flexors are common and this counters it."
+ },
+ "Thoracic Rotation": {
+  "how": [
+   "Start on hands and knees, one hand behind your head.",
+   "Rotate your elbow down toward the opposite wrist, then open it up toward the ceiling.",
+   "Follow the movement with your eyes, then switch sides."
+  ],
+  "cue": "This loosens your mid-back — especially helpful if you spend a lot of time hunched over a phone or desk."
+ },
+ "Legs Up Wall": {
+  "how": [
+   "Lie on your back close to a wall, swing your legs up so they rest against it.",
+   "Let your arms relax at your sides, palms up.",
+   "Breathe deeply and stay for a few minutes."
+  ],
+  "cue": "A restorative pose that helps circulation and calms the nervous system — perfect to end a session."
+ },
+ "Sprint in Place": {
+  "how": [
+   "Stand tall and run in place as fast as you can with good form.",
+   "Pump your arms hard and drive your knees.",
+   "Keep your core braced throughout."
+  ],
+  "cue": "Short bursts of max effort — this is meant to feel hard for the interval, then you rest."
+ },
+ "Box Steps": {
+  "how": [
+   "Stand facing a sturdy step or platform.",
+   "Step one foot up onto it, then bring the other foot up to stand tall.",
+   "Step back down one foot at a time and repeat, alternating your lead leg."
+  ],
+  "cue": "Drive through the heel of the foot on the step, not the trailing leg, to work your glutes and quads."
+ },
+ "Skaters": {
+  "how": [
+   "Stand on one leg, then leap sideways onto the other leg, swinging the trailing leg behind you.",
+   "Land softly and immediately push off into the next leap.",
+   "Keep alternating side to side."
+  ],
+  "cue": "Lower your stance for more stability and less impact if you're newer to this move."
+ },
+ "Sprint Intervals": {
+  "how": [
+   "Run or run-in-place at maximum effort for the interval.",
+   "Recover at an easy pace for the rest period.",
+   "Repeat the on/off pattern for the set."
+  ],
+  "cue": "The recovery matters as much as the sprint — don't skip it, that's what lets you go hard again."
+ },
+ "Speed Skaters": {
+  "how": [
+   "Same motion as Skaters, but performed at a faster tempo.",
+   "Leap side to side, swinging the trailing leg behind you for balance.",
+   "Keep landings soft and controlled even as speed increases."
+  ],
+  "cue": "Never let speed sacrifice a soft landing — slow down slightly if your knees feel it."
+ },
+ "Tuck Jumps": {
+  "how": [
+   "Start standing, feet shoulder-width apart.",
+   "Jump up explosively, pulling both knees toward your chest.",
+   "Land softly with bent knees and reset before the next rep."
+  ],
+  "cue": "A high-impact move — land quietly and only do as many reps as you can land well."
+ },
+ "Dragon Flag": {
+  "how": [
+   "Lie on a bench or mat, hands gripping something stable behind your head.",
+   "Lift your entire body in a straight line from shoulders to feet, pivoting at the shoulders.",
+   "Lower with control, keeping your body rigid, not letting your hips sag."
+  ],
+  "cue": "An advanced move — if your low back can't stay flat, bend your knees to reduce the lever length."
+ },
+ "Hollow Body Hold": {
+  "how": [
+   "Lie on your back, arms extended overhead, legs straight.",
+   "Press your low back into the floor and lift your shoulders and legs slightly off the ground.",
+   "Hold the 'banana' shape, breathing steadily."
+  ],
+  "cue": "The lower your back stays pressed down, the more your core is doing the work — don't let it arch."
+ },
+ "Ab Wheel Rollout": {
+  "how": [
+   "Kneel holding the wheel (or a substitute) in front of you, hands on the handles.",
+   "Slowly roll it forward, extending your body as far as you can control.",
+   "Engage your core to pull yourself back to start."
+  ],
+  "cue": "Only roll out as far as you can pull back with control — going too far strains the lower back."
+ },
+ "Hanging Knee Raise": {
+  "how": [
+   "Hang from a bar with arms straight, core engaged.",
+   "Lift your knees toward your chest without swinging.",
+   "Lower with control and repeat."
+  ],
+  "cue": "Avoid using momentum — a slow, controlled lift works your abs far more than a swing."
+ },
+ "L-Sit Hold": {
+  "how": [
+   "Sit with hands beside your hips, palms down.",
+   "Press through your hands to lift your entire body off the floor, legs extended forward.",
+   "Hold, keeping legs as straight and lifted as you can."
+  ],
+  "cue": "An advanced hold — bend your knees toward your chest as a beginner version if a full L-sit is too hard."
+ },
+ "Oblique Crunches": {
+  "how": [
+   "Lie on your back, knees bent, hands lightly behind your head.",
+   "Crunch up and slightly across, bringing one shoulder toward the opposite hip.",
+   "Lower with control and repeat, alternating sides."
+  ],
+  "cue": "Exactly what today's Core & Oblique Burn opens with — the twist is what targets the side waist muscles a normal crunch misses."
+ },
+ "Side Plank Dips": {
+  "how": [
+   "Start in a side plank, propped on your forearm, hips lifted in a straight line.",
+   "Lower your hips slowly toward the floor without touching down.",
+   "Lift back up to the starting side plank position."
+  ],
+  "cue": "The small controlled dip adds extra oblique work on top of a regular side plank hold."
+ },
+ "Windshield Wipers": {
+  "how": [
+   "Lie on your back, arms out to the sides for stability, knees bent and lifted (tabletop).",
+   "Slowly rotate your knees to one side, keeping shoulders flat on the floor.",
+   "Bring them back through center and over to the other side, like windshield wipers."
+  ],
+  "cue": "Only go as far as you can control without your shoulders lifting off the floor — range comes with practice."
+ },
+ "Toe Touches": {
+  "how": [
+   "Lie on your back, legs extended straight up toward the ceiling.",
+   "Lift your shoulders off the floor and reach both hands toward your toes.",
+   "Lower with control and repeat."
+  ],
+  "cue": "A small crunch range is fine — you don't need to actually touch your toes for this to work your abs."
+ },
+ "Reverse Crunch": {
+  "how": [
+   "Lie on your back, knees bent toward your chest, hands at your sides for support.",
+   "Curl your hips up off the floor, bringing your knees further toward your chest.",
+   "Lower with control, without letting your feet slam down."
+  ],
+  "cue": "This flips the usual crunch — instead of lifting your shoulders, you lift your hips, hitting the lower abs harder."
+ },
+ "Bulgarian Split Squat": {
+  "how": [
+   "Stand a couple feet in front of a bench, rest one foot behind you on it.",
+   "Lower your back knee toward the floor, front knee bending to about 90°.",
+   "Push through your front heel to rise back up."
+  ],
+  "cue": "Most of your weight should stay on the front leg — the back foot is just for balance."
+ },
+ "Curtsy Lunges": {
+  "how": [
+   "Stand tall, step one leg diagonally behind the other, like a curtsy.",
+   "Bend both knees, lowering your back knee toward the floor.",
+   "Push back to standing and repeat, then switch sides."
+  ],
+  "cue": "Keep your hips facing forward the whole time — this targets the outer glutes especially well."
+ },
+ "Decline Lunges": {
+  "how": [
+   "Stand tall, step one foot back and slightly down onto a lower surface or step.",
+   "Bend both knees to lower into the lunge.",
+   "Push through your front leg to return to standing."
+  ],
+  "cue": "Move slowly here — the added step down increases the range of motion and challenge."
+ },
+ "Reverse Lunges": {
+  "how": [
+   "Stand tall, step one foot backward into a lunge.",
+   "Lower until both knees are bent near 90°.",
+   "Push through your front heel to return to standing, then switch legs."
+  ],
+  "cue": "Often gentler on the knees than a forward lunge, since there's less forward momentum to control."
+ },
+ "Jumping Lunges": {
+  "how": [
+   "Start in a lunge position, one foot forward, one back.",
+   "Jump up and switch legs in the air, landing in a lunge with the opposite leg forward.",
+   "Keep alternating with soft, controlled landings."
+  ],
+  "cue": "Land with bent knees every time — that's what keeps this move joint-friendly despite the impact."
+ },
+ "Explosive Lunges": {
+  "how": [
+   "Start in a lunge stance.",
+   "Push off powerfully to jump upward (or drive up fast if staying low-impact).",
+   "Land with control and reset before the next rep."
+  ],
+  "cue": "Focus on power on the way up and softness on the way down."
+ },
+ "Single Leg Deadlift": {
+  "how": [
+   "Stand on one leg, slight bend in the knee.",
+   "Hinge at your hips, extending the other leg straight back as your torso lowers toward parallel.",
+   "Squeeze your glute to return to standing, then repeat or switch sides."
+  ],
+  "cue": "Keep your hips square to the floor — think of your body as a straight line tipping like a seesaw."
+ },
+ "Single Leg Hip Thrust": {
+  "how": [
+   "Lie on your back, upper back on a bench, one foot flat on the floor, other leg extended.",
+   "Drive through the grounded heel to lift your hips.",
+   "Squeeze your glute at the top, then lower with control."
+  ],
+  "cue": "A more advanced glute bridge variation — expect to feel it more intensely on one side than the double-leg version."
+ },
+ "Sumo Deadlift": {
+  "how": [
+   "Stand with feet wide, toes turned out, holding a weight (or imagining one) between your legs.",
+   "Hinge and bend your knees to lower down, keeping your chest up and back flat.",
+   "Drive through your heels to stand back up, squeezing your glutes at the top."
+  ],
+  "cue": "Keep the weight close to your body throughout — this protects your lower back."
+ },
+ "Sumo Squat Pulse": {
+  "how": [
+   "Get into a wide sumo squat stance, thighs parallel to the floor.",
+   "Pulse up and down in a small range at the bottom of the squat.",
+   "Keep your core braced and knees tracking over your toes."
+  ],
+  "cue": "Small, controlled pulses — the burn comes from staying under tension, not from big movements."
+ },
+ "Kettlebell Swings": {
+  "how": [
+   "Stand with feet shoulder-width apart, holding a weight (or miming one) with both hands.",
+   "Hinge at your hips to swing it back between your legs.",
+   "Snap your hips forward powerfully to swing it up to chest height."
+  ],
+  "cue": "This is a hip-hinge move, not a squat or an arm lift — the power comes from your glutes and hips snapping forward."
+ },
+ "Thrusters": {
+  "how": [
+   "Start in a squat with hands at shoulder height (holding weights or fists up).",
+   "Squat down, then explode up, pressing your arms overhead as you stand.",
+   "Lower the arms as you descend into the next squat."
+  ],
+  "cue": "A full-body move — let the leg drive help power the arms overhead rather than pressing with arms alone."
+ },
+ "Farmers Carry": {
+  "how": [
+   "Stand tall holding a weight (or imagining one) in each hand at your sides.",
+   "Walk forward with steady, controlled steps, shoulders back and core braced.",
+   "Keep your posture tall the entire way."
+  ],
+  "cue": "Resist leaning to either side — an even, upright posture is what builds real total-body strength here."
+ },
+ "Loaded Carry": {
+  "how": [
+   "Hold weight at your side or chest, whichever the workout calls for.",
+   "Walk with control, keeping your core braced and posture tall.",
+   "Set the weight down with control at the end, don't drop it."
+  ],
+  "cue": "Same principle as the Farmers Carry — posture over speed."
+ },
+ "Sled Push": {
+  "how": [
+   "Get into a low, athletic stance with hands extended forward (against a wall or sled).",
+   "Drive through your legs to push forward in controlled steps.",
+   "Keep your back flat and core braced throughout."
+  ],
+  "cue": "Power comes from your legs pushing the ground away, not your arms."
+ },
+ "Turkish Get-up": {
+  "how": [
+   "Lie on your back, one arm extended straight up, same-side knee bent.",
+   "Roll to your opposite elbow, then hand, and bridge your hips up.",
+   "Sweep your back leg through to kneel, then stand up, keeping the arm extended overhead throughout."
+  ],
+  "cue": "An advanced, multi-step move — go slowly and it's fine to break it into pieces while you learn it."
+ },
+ "Battle Rope Waves": {
+  "how": [
+   "Hold one end of a rope (or mime the motion) in each hand, knees slightly bent.",
+   "Alternate slamming your arms up and down quickly to create waves.",
+   "Keep your core braced and stay low in your stance."
+  ],
+  "cue": "Power comes from your shoulders and core, not just your arms — keep your knees soft to absorb the effort."
+ },
+ "Box Jumps": {
+  "how": [
+   "Stand facing a sturdy box or step, feet shoulder-width apart.",
+   "Bend your knees and swing your arms back, then jump up onto the box.",
+   "Land softly with bent knees, then step back down (don't jump down)."
+  ],
+  "cue": "Always step down rather than jumping down — that's where most box jump injuries happen."
+ },
+ "Box Step-ups": {
+  "how": [
+   "Stand facing a step or box.",
+   "Step one foot up and press through that heel to lift your body onto the box.",
+   "Step back down with control and repeat, alternating your lead leg."
+  ],
+  "cue": "Drive through the heel of your working leg to really engage your glutes and quads."
+ },
+ "Bear Crawl": {
+  "how": [
+   "Start on hands and knees, lift your knees an inch off the floor.",
+   "Crawl forward by moving opposite hand and foot together (right hand + left foot, then left hand + right foot).",
+   "Keep your back flat and hips low throughout."
+  ],
+  "cue": "Keep your knees hovering just above the ground the whole time — that's what makes it a core challenge, not just walking."
+ },
+ "Bear Crawl Pushups": {
+  "how": [
+   "Start in the bear crawl position, knees hovering just off the floor.",
+   "Lower into a push-up, keeping knees hovering.",
+   "Push back up and continue crawling or holding the position."
+  ],
+  "cue": "A tough combo move — slow down and hold the bear crawl position steady before adding the push-up."
+ },
+ "Cone Shuffles": {
+  "how": [
+   "Set up two points a few feet apart (real cones or imagined markers).",
+   "Shuffle sideways between them, staying low with knees bent.",
+   "Touch the ground or line at each point before shuffling back."
+  ],
+  "cue": "Stay in an athletic low stance the whole time — don't let your hips rise up as you shuffle."
+ },
+ "Ladder Drills": {
+  "how": [
+   "Imagine or use a footwork ladder on the floor.",
+   "Move quickly through it with light, precise foot placements (in-in-out, high knees, etc.).",
+   "Keep your steps quick but controlled."
+  ],
+  "cue": "Focus on foot precision over raw speed at first — speed comes naturally once the pattern feels easy."
+ },
+ "Direction Changes": {
+  "how": [
+   "Jog or shuffle in one direction.",
+   "On the cue, plant your foot and quickly change direction.",
+   "Stay low and athletic through each transition."
+  ],
+  "cue": "Bend your knees before you cut — a low center of gravity makes direction changes faster and safer."
+ },
+ "Lateral Shuffles": {
+  "how": [
+   "Get into a low athletic stance, feet wider than hip-width.",
+   "Shuffle sideways quickly, keeping your feet from crossing.",
+   "Stay low and controlled the whole way."
+  ],
+  "cue": "Keep your chest up and knees bent — don't let your feet click together."
+ },
+ "Lateral Bound": {
+  "how": [
+   "Stand on one leg.",
+   "Push off explosively to leap sideways, landing on the opposite leg.",
+   "Stick the landing with a soft, bent knee before bounding back the other way."
+  ],
+  "cue": "Focus on 'sticking' a stable landing before you bound again — control first, speed later."
+ },
+ "Mountain Climber Sprints": {
+  "how": [
+   "Start in a plank, hands under shoulders.",
+   "Drive your knees toward your chest as fast as you can while staying controlled.",
+   "Keep hips low and level throughout."
+  ],
+  "cue": "Same move as regular Mountain Climbers, just at a faster, sprint-style tempo."
+ },
+ "Sprint Bursts": {
+  "how": [
+   "From a standing or light jog, accelerate to a fast sprint (or sprint-in-place) for the interval.",
+   "Pump your arms hard and drive your knees.",
+   "Slow back down at the end of the burst."
+  ],
+  "cue": "Give it your real effort for the short interval — that's what makes a burst effective."
+ },
+ "Sprint Finish": {
+  "how": [
+   "In the last stretch of your cardio interval, push your pace to near-max effort.",
+   "Keep good posture even as fatigue sets in.",
+   "Finish strong and then ease into your cool-down."
+  ],
+  "cue": "Save a little extra for the finish — it's a great mental win to end a HIIT block on your fastest effort."
+ },
+ "Burpee Broad Jump": {
+  "how": [
+   "Perform a burpee, then instead of a vertical jump, jump forward as far as you can.",
+   "Land softly with bent knees.",
+   "Turn around or continue in that direction for the next rep."
+  ],
+  "cue": "A tougher variation — give yourself room and land with control before your next rep."
+ },
+ "Burpee Pull-ups": {
+  "how": [
+   "Perform a regular burpee.",
+   "At the top, jump up and pull yourself up on a bar if available (or mime the pull-up motion).",
+   "Lower with control and go into your next burpee."
+  ],
+  "cue": "An advanced combo — it's fine to do the burpee and a regular jump if you don't have a pull-up bar."
+ },
+ "Tuck Jump Burpees": {
+  "how": [
+   "Perform a burpee, but instead of a regular jump at the top, pull both knees to your chest.",
+   "Land softly with bent knees.",
+   "Reset and repeat."
+  ],
+  "cue": "Land quietly every time — this variation adds extra impact so soft landings matter even more."
+ },
+ "Explosive Push-ups": {
+  "how": [
+   "Start in a push-up position.",
+   "Lower with control, then push up explosively so your hands leave the floor briefly.",
+   "Land softly and reset before the next rep."
+  ],
+  "cue": "Master a strict push-up first — the explosive version needs solid strength as a base."
+ },
+ "Diamond Push-ups": {
+  "how": [
+   "Start in a push-up position, hands close together under your chest forming a diamond shape with your fingers.",
+   "Lower your chest toward your hands, elbows tracking close to your body.",
+   "Push back up to start."
+  ],
+  "cue": "This narrower hand position shifts more work to your triceps — expect it to feel harder than a regular push-up."
+ },
+ "Wide Push-ups": {
+  "how": [
+   "Start in a push-up position with hands set wider than shoulder-width.",
+   "Lower your chest toward the floor.",
+   "Push back up to start."
+  ],
+  "cue": "The wider hand placement emphasizes your chest more than a standard push-up."
+ },
+ "Incline Push-ups": {
+  "how": [
+   "Place your hands on a raised, stable surface like a step or sturdy table.",
+   "Lower your chest toward your hands.",
+   "Push back up to start."
+  ],
+  "cue": "The higher the surface, the easier the push-up — a great way to build strength toward a full floor push-up."
+ },
+ "Pike Push-ups": {
+  "how": [
+   "Start in a downward-dog-like position, hips high, hands and feet on the floor.",
+   "Bend your elbows to lower the top of your head toward the floor.",
+   "Push back up to start."
+  ],
+  "cue": "This angles the push-up to target your shoulders more, similar to an overhead press."
+ },
+ "Push-up Jacks": {
+  "how": [
+   "Start in a push-up position, feet together.",
+   "As you push up, jump your feet out wide, then back together as you lower.",
+   "Keep the push-up and foot movement in rhythm."
+  ],
+  "cue": "Slow it down if your form breaks — a controlled combo beats a fast sloppy one."
+ },
+ "Tricep Push-ups": {
+  "how": [
+   "Start in a push-up position with hands close together, elbows tucked tight to your ribs.",
+   "Lower straight down, elbows brushing your sides.",
+   "Push back up, keeping elbows close throughout."
+  ],
+  "cue": "Keeping your elbows tucked (not flared) is what shifts the work to your triceps."
+ },
+ "Shoulder Press": {
+  "how": [
+   "Stand or sit tall, holding weights (or fists) at shoulder height.",
+   "Press both arms straight up overhead.",
+   "Lower with control back to shoulder height."
+  ],
+  "cue": "Keep your core braced so you press straight up, not arching your lower back."
+ },
+ "Lateral Raises": {
+  "how": [
+   "Stand tall, holding weights (or hands) at your sides.",
+   "Raise both arms out to the sides until they reach shoulder height.",
+   "Lower with control back to your sides."
+  ],
+  "cue": "Lead with your elbows slightly higher than your wrists, and avoid swinging the weight up with momentum."
+ },
+ "Band Bicep Curls": {
+  "how": [
+   "Stand on a resistance band, holding the handles at your sides, palms facing forward.",
+   "Curl your hands up toward your shoulders, keeping elbows pinned to your sides.",
+   "Lower with control back to start."
+  ],
+  "cue": "Keep your elbows still throughout — the movement should come only from your forearms bending."
+ },
+ "Band Chest Press": {
+  "how": [
+   "Anchor a band behind you (or around your back), holding a handle in each hand at chest height.",
+   "Press both hands forward until arms are extended.",
+   "Return with control back to start."
+  ],
+  "cue": "Keep a slight bend in your elbows at full extension to avoid locking out hard."
+ },
+ "Band Deadlifts": {
+  "how": [
+   "Stand on a resistance band, feet hip-width, holding the handles.",
+   "Hinge at your hips to lower down, keeping your back flat.",
+   "Drive through your heels and squeeze your glutes to stand back up."
+  ],
+  "cue": "This is a hip hinge, not a squat — keep the movement coming from bending at your hips."
+ },
+ "Band Rows": {
+  "how": [
+   "Anchor a band in front of you, hold a handle in each hand, arms extended.",
+   "Pull your elbows back, squeezing your shoulder blades together.",
+   "Extend back out with control."
+  ],
+  "cue": "Squeeze your shoulder blades together at the end of every pull — that's what activates your back muscles."
+ },
+ "Band Squats": {
+  "how": [
+   "Stand on a resistance band with feet shoulder-width, holding the handles at shoulder height.",
+   "Squat down, keeping tension on the band throughout.",
+   "Drive back up through your heels to standing."
+  ],
+  "cue": "Keep steady tension on the band the entire time — don't let it go slack at the top."
+ },
+ "Lateral Band Walk": {
+  "how": [
+   "Place a resistance band around your legs (above the knees or ankles), feet hip-width, knees slightly bent.",
+   "Step sideways, keeping tension on the band.",
+   "Continue several steps in one direction, then reverse."
+  ],
+  "cue": "Keep your knees tracking over your toes and avoid standing fully upright between steps — that keeps tension on the glutes."
+ },
+ "Tricep Kickbacks": {
+  "how": [
+   "Hinge forward slightly at the hips, elbow bent at your side holding a weight (or fist).",
+   "Extend your forearm straight back until your arm is fully straight.",
+   "Bend back to start with control."
+  ],
+  "cue": "Keep your upper arm still and close to your body — only your forearm should move."
+ },
+ "Kickbacks": {
+  "how": [
+   "Start on hands and knees.",
+   "Extend one leg straight back and up, squeezing your glute at the top.",
+   "Lower with control and repeat, then switch sides."
+  ],
+  "cue": "Squeeze the glute hard at the top rather than swinging your leg for height."
+ },
+ "Prone Y-T-W": {
+  "how": [
+   "Lie face down, arms extended forming a 'Y' shape, thumbs up.",
+   "Lift your arms slightly, squeezing your shoulder blades, then lower.",
+   "Repeat forming a 'T' shape, then a 'W' shape (elbows bent, close to your sides)."
+  ],
+  "cue": "Small lifts are enough — this is about activating your upper back muscles, not lifting high."
+ },
+ "Reverse Snow Angels": {
+  "how": [
+   "Lie face down, arms at your sides, palms down.",
+   "Sweep your arms up along the floor toward overhead, like making a snow angel, then back down.",
+   "Keep your chest lifted slightly throughout."
+  ],
+  "cue": "Great for posture — this strengthens the muscles that pull your shoulders back and down."
+ },
+ "Uppercuts": {
+  "how": [
+   "Stand in a boxing stance, fists near your chin.",
+   "Drive one fist upward in an uppercut motion, rotating your hips and torso into it.",
+   "Return to guard and repeat with the other arm."
+  ],
+  "cue": "Power comes from rotating your hips and core, not just your arm."
+ },
+ "Jab-Cross Combo": {
+  "how": [
+   "Stand in a boxing stance, hands up near your face.",
+   "Throw a quick jab (straight punch) with your lead hand, then a cross with your back hand, rotating your hips.",
+   "Return to guard after each combo."
+  ],
+  "cue": "Snap your punches back to guard quickly — that's what makes it feel like real boxing cardio."
+ },
+ "Bob & Weave": {
+  "how": [
+   "Stand in a boxing stance.",
+   "Bend your knees to duck slightly to one side, then sweep under to the other side.",
+   "Keep your hands up near your face the entire time."
+  ],
+  "cue": "Move from your knees and hips, not just bending at the waist — that protects your lower back."
+ },
+ "Knee Strikes": {
+  "how": [
+   "Stand tall, hands up in guard position.",
+   "Drive one knee up and slightly forward with power.",
+   "Lower and repeat, alternating legs."
+  ],
+  "cue": "Pull your hands down slightly as your knee comes up — mimicking pulling an opponent in adds realism and core engagement."
+ },
+ "Front Kicks": {
+  "how": [
+   "Stand tall, hands up in guard.",
+   "Lift one knee, then extend your leg forward in a controlled kick.",
+   "Return your foot to the ground and repeat, alternating legs."
+  ],
+  "cue": "Control the kick rather than snapping it hard — form matters more than power here."
+ },
+ "Full Body HIIT": {
+  "how": [
+   "This is a mixed interval — expect a rotation of squats, push-ups, and cardio bursts.",
+   "Go hard during the work interval, recover fully during the rest.",
+   "Keep your form solid even as fatigue builds."
+  ],
+  "cue": "When in doubt, slow down rather than let form break — a controlled rep still counts."
+ },
+ "Core Burnout": {
+  "how": [
+   "This is a finisher round — expect a mix of planks, crunches, and holds back to back.",
+   "Push through with good form, resting only in the built-in breaks.",
+   "Breathe steadily rather than holding your breath."
+  ],
+  "cue": "It's meant to burn — that's your abs working hard, not a sign something's wrong (unless it's sharp pain, then stop)."
+ },
+ "Power Finish": {
+  "how": [
+   "This is your last push of the workout — expect fast-paced compound moves.",
+   "Give it your best remaining effort while keeping form intact.",
+   "Finish, then move straight into your cool-down."
+  ],
+  "cue": "It's the home stretch — dig in, you're almost done."
+ },
+ "Lower Body Sculpt": {
+  "how": [
+   "Expect a rotation of squats, lunges, and glute-focused moves.",
+   "Focus on full range of motion over speed.",
+   "Rest briefly between moves as needed."
+  ],
+  "cue": "Slow, controlled reps build more muscle definition than fast, sloppy ones."
+ },
+ "Control Balance": {
+  "how": [
+   "Stand on one leg, arms out for balance.",
+   "Slowly lift the other leg and hold, or move through a controlled reach.",
+   "Keep your core braced and gaze fixed on a point ahead."
+  ],
+  "cue": "Focusing your eyes on one still point is the easiest way to improve your balance instantly."
+ },
+ "Alanta Steps": {
+  "how": [
+   "A fun Afrobeats-style footwork move — step side to side with a slight bounce.",
+   "Add a shoulder or hip roll to the rhythm as you get comfortable.",
+   "Keep your knees soft and let your body flow with the beat."
+  ],
+  "cue": "Don't worry about getting it 'right' — Afrobeats dance cardio is about having fun and moving, and the calories still count."
+ },
+ "Azonto Dance": {
+  "how": [
+   "A popular Ghanaian dance style — alternate tapping one foot while miming an action with your hands.",
+   "Keep your knees bent and hips loose, moving with the beat.",
+   "Switch sides and let your arms tell a story as you move."
+  ],
+  "cue": "Energy and rhythm matter more than precision — just keep moving to the beat."
+ },
+ "Cumbia Bounce": {
+  "how": [
+   "Step side to side with a gentle bounce in your knees.",
+   "Sway your hips and shoulders naturally with the rhythm.",
+   "Keep your feet light and your movement continuous."
+  ],
+  "cue": "A joyful, low-impact dance-cardio move — let your whole body get involved, not just your feet."
+ },
+ "Etighi Dance Steps": {
+  "how": [
+   "A Nigerian dance move — bend your knees and shift your weight side to side with a shoulder shimmy.",
+   "Keep your feet moving lightly under you.",
+   "Let your arms and shoulders add flavor to the rhythm."
+  ],
+  "cue": "This is meant to feel joyful — the more you relax into the rhythm, the better the cardio benefit."
+ },
+ "Galala Bounce": {
+  "how": [
+   "A Nigerian street-dance bounce — bend your knees and bounce rhythmically while moving your arms.",
+   "Add small footwork steps side to side.",
+   "Keep the bounce low and springy, driven from your knees."
+  ],
+  "cue": "Let your knees absorb the bounce — that's what makes it a great low-impact cardio move."
+ },
+ "Grapevine Steps": {
+  "how": [
+   "Step one foot to the side, cross the other foot behind it, step out again, then tap or bring feet together.",
+   "Repeat in the same direction, then reverse.",
+   "Keep your steps light and rhythmic."
+  ],
+  "cue": "A classic dance-cardio footwork pattern — go slow at first until the pattern feels natural."
+ },
+ "Hip Hop Moves": {
+  "how": [
+   "Follow a mix of bounces, arm pumps, and footwork in rhythm with the beat.",
+   "Keep your knees bent and stay light on your feet.",
+   "Let your whole body move, not just your arms."
+  ],
+  "cue": "Confidence over perfection — the calorie burn comes from continuous movement, not exact choreography."
+ },
+ "Jump & Groove": {
+  "how": [
+   "Add small hops into your step pattern, moving with the beat.",
+   "Keep landings soft, bending your knees to absorb impact.",
+   "Let your arms move freely to add energy."
+  ],
+  "cue": "Keep the jumps small and springy rather than big — that keeps it sustainable for a full song."
+ },
+ "Kick Ball Change": {
+  "how": [
+   "Kick one foot forward lightly.",
+   "Quickly shift your weight, tapping that foot down and shifting weight onto it, then stepping the other foot in place.",
+   "Repeat, alternating sides in rhythm."
+  ],
+  "cue": "A classic dance-cardio footwork step — keep it light and quick rather than forceful."
+ },
+ "Kukere Groove": {
+  "how": [
+   "A Nigerian dance move — bounce on the balls of your feet while shifting your hips side to side.",
+   "Add arm movement in rhythm with your hip sway.",
+   "Keep your knees soft throughout."
+  ],
+  "cue": "Let your hips lead the movement — the bounce should feel springy, not stiff."
+ },
+ "Merengue March": {
+  "how": [
+   "March in place with a slight hip sway on each step, following a merengue rhythm.",
+   "Keep your steps quick and light.",
+   "Add arm movement for extra energy."
+  ],
+  "cue": "Merengue is all about the hip movement — let your hips sway naturally with each step."
+ },
+ "Reggaeton Groove": {
+  "how": [
+   "Bounce gently in place, shifting your weight from foot to foot with the beat.",
+   "Add hip and shoulder movement in rhythm.",
+   "Keep your knees soft and stay low and grounded."
+  ],
+  "cue": "Reggaeton cardio is about groove over precision — stay relaxed and let the bounce feel natural."
+ },
+ "Salsa Steps": {
+  "how": [
+   "Step forward with one foot, shift weight back to the other, then step that foot back — a basic quick-quick-slow pattern.",
+   "Add hip movement naturally with each weight shift.",
+   "Keep your steps small and controlled at first."
+  ],
+  "cue": "Start slow to learn the weight-shift pattern before speeding up to the music."
+ },
+ "Shaku Shaku Steps": {
+  "how": [
+   "A viral Nigerian dance step — cross one arm and the opposite leg forward together in a shaking motion.",
+   "Alternate sides in rhythm with the beat.",
+   "Keep your knees bent and stay bouncy."
+  ],
+  "cue": "It's meant to look playful and loose — the more relaxed your joints, the better it looks and feels."
+ },
+ "Skelewu Bounce": {
+  "how": [
+   "A Nigerian dance move — bounce your shoulders up and down while stepping side to side.",
+   "Keep your knees soft to absorb the bounce.",
+   "Let your arms swing naturally with the rhythm."
+  ],
+  "cue": "The bounce comes from your knees and shoulders together — keep it loose, not stiff."
+ },
+ "Zanku Legwork": {
+  "how": [
+   "A fast-footwork Nigerian dance style (Zanku/Gwara Gwara-adjacent) — alternate quick foot taps and slides.",
+   "Keep your upper body relatively relaxed while your feet do the work.",
+   "Build up speed gradually as the pattern feels natural."
+  ],
+  "cue": "Footwork-heavy moves like this are a great sneaky cardio burn — don't worry about matching a video exactly."
+ },
+ "Arabesque Lifts": {
+  "how": [
+   "Stand tall, one hand resting on a chair or wall for balance if needed.",
+   "Hinge forward slightly while lifting one leg straight back behind you.",
+   "Lower with control and repeat, then switch legs."
+  ],
+  "cue": "A ballet-inspired move — keep your standing leg slightly soft, not locked out."
+ },
+ "Arm Swoops": {
+  "how": [
+   "Stand tall, arms relaxed at your sides.",
+   "Sweep both arms out and up in a wide arc overhead, like a ballet port de bras.",
+   "Lower them back down slowly and with control."
+  ],
+  "cue": "Move slowly and with grace — the control is the workout here, not speed."
+ },
+ "Boomerang": {
+  "how": [
+   "Stand tall, one leg extended out to the side.",
+   "Sweep that leg in a smooth arc from front to back (or back to front), staying balanced.",
+   "Repeat several times, then switch legs."
+  ],
+  "cue": "A barre-style move — keep your core braced to stay balanced through the sweeping motion."
+ },
+ "Plie Squats": {
+  "how": [
+   "Stand with feet wider than hip-width, toes turned out (a ballet 'plie' stance).",
+   "Bend your knees, lowering straight down while keeping your torso upright.",
+   "Push through your heels to rise back up."
+  ],
+  "cue": "Keep your knees tracking directly over your toes throughout the movement."
+ },
+ "Port de Bras Arms": {
+  "how": [
+   "Stand tall in a relaxed stance.",
+   "Move your arms slowly and gracefully through a sequence — out to the side, overhead, and back down.",
+   "Keep your movements smooth and controlled, like a ballet arm sequence."
+  ],
+  "cue": "Think 'slow and elegant' — the tempo is the point of this move, not power."
+ },
+ "Releve Calf Raises": {
+  "how": [
+   "Stand tall, feet in a narrow stance, heels together if comfortable.",
+   "Rise up onto the balls of your feet as high as you can (a ballet 'releve').",
+   "Lower with control, resisting gravity on the way down."
+  ],
+  "cue": "Same muscle as a regular calf raise, with a ballet-style narrow stance and slower tempo."
+ },
+ "Barre Stretch": {
+  "how": [
+   "Hold onto a chair or wall for support.",
+   "Extend one leg out and hinge gently forward, feeling a stretch through your hamstring.",
+   "Hold, breathing steadily, then switch legs."
+  ],
+  "cue": "Keep a slight bend in your standing knee to protect it while you stretch."
+ },
+ "Summit Stretch": {
+  "how": [
+   "Stand tall, interlace your fingers and reach both arms overhead, palms up.",
+   "Gently lean to one side, feeling a stretch along your side body.",
+   "Hold, then repeat on the other side."
+  ],
+  "cue": "A full-body reaching stretch — great as a finisher to release tension after a strength or dance session."
+ },
+ "Alternate Nostril Breathing": {
+  "how": [
+   "Sit comfortably, use your thumb to gently close one nostril.",
+   "Inhale slowly through the open nostril, then close it and release the other to exhale.",
+   "Continue alternating sides at a slow, steady pace."
+  ],
+  "cue": "A calming yoga breathing technique — go slowly and never force the breath."
+ },
+ "Body Scan": {
+  "how": [
+   "Lie down comfortably, close your eyes.",
+   "Slowly bring your attention to each part of your body, from your toes up to your head.",
+   "Notice any tension and consciously relax it as you go."
+  ],
+  "cue": "There's no 'doing' here — just noticing. Let each area soften as you pass through it."
+ },
+ "Body Scan Breathing": {
+  "how": [
+   "Lie down, eyes closed, breathing naturally.",
+   "Combine a body scan with your breath — inhale awareness into a tense area, exhale the tension out.",
+   "Move slowly from feet to head."
+  ],
+  "cue": "Pair the breath with the scan — inhale into tightness, exhale to release it."
+ },
+ "Bound Angle Pose": {
+  "how": [
+   "Sit tall, bring the soles of your feet together, knees falling out to the sides.",
+   "Hold your feet or ankles, sitting up as tall as you can.",
+   "Breathe deeply, gently pressing your knees toward the floor if comfortable."
+  ],
+  "cue": "Never force your knees down — let gravity and time open your hips gradually."
+ },
+ "Breath of Fire": {
+  "how": [
+   "Sit tall, take a few normal breaths to settle.",
+   "Begin rapid, rhythmic breaths through your nose, pumping your belly in on the exhale.",
+   "Keep it short and light — stop if you feel dizzy."
+  ],
+  "cue": "An energizing breathing technique — go slowly if you're new to it, and stop immediately if lightheaded."
+ },
+ "Breathing Practice": {
+  "how": [
+   "Sit or lie comfortably.",
+   "Inhale slowly through your nose, filling your belly and chest.",
+   "Exhale slowly and fully through your mouth."
+  ],
+  "cue": "A simple reset — even one minute of focused breathing can lower your heart rate and calm your mind."
+ },
+ "Butterfly Stretch": {
+  "how": [
+   "Sit tall, soles of your feet together, knees out to the sides.",
+   "Hold your feet and gently hinge forward from your hips.",
+   "Hold, breathing deeply, feeling the stretch in your inner thighs."
+  ],
+  "cue": "Keep your back long rather than rounding it — the fold should come from your hips."
+ },
+ "Cat-Cow": {
+  "how": [
+   "Start on hands and knees, wrists under shoulders, knees under hips.",
+   "Inhale, drop your belly, lift your chest and tailbone (Cow).",
+   "Exhale, round your spine toward the ceiling, tucking your chin (Cat)."
+  ],
+  "cue": "Move with your breath — one of the best resets for a stiff spine."
+ },
+ "Cat-Cow for Pregnancy": {
+  "how": [
+   "Start on hands and knees, wrists under shoulders, knees under hips (widen knees for comfort if needed).",
+   "Inhale, gently arch (Cow); exhale, gently round (Cat), moving within a comfortable range.",
+   "Keep movements small and gentle, never forcing."
+  ],
+  "cue": "Great for pregnancy back relief — keep it gentle and stop if anything feels uncomfortable, and check with your doctor if you're unsure."
+ },
+ "Caterpillar": {
+  "how": [
+   "Sit tall, legs extended straight in front of you.",
+   "Hinge forward from your hips, reaching toward your feet, keeping your back as long as possible.",
+   "Hold, breathing deeply, without forcing the stretch."
+  ],
+  "cue": "Bend your knees slightly if your hamstrings are tight — a longer spine matters more than touching your toes."
+ },
+ "Chest Opener": {
+  "how": [
+   "Stand or sit tall, clasp your hands behind your back.",
+   "Gently straighten your arms and lift your chest, squeezing your shoulder blades together.",
+   "Hold, breathing deeply into your chest."
+  ],
+  "cue": "Great after a day of hunching over a phone or desk — lift your chest, don't just pull your arms back."
+ },
+ "Chest Stretch": {
+  "how": [
+   "Stand in a doorway or beside a wall, place your forearm against it at shoulder height.",
+   "Gently rotate your body away from that arm until you feel a stretch across your chest.",
+   "Hold, then switch sides."
+  ],
+  "cue": "Keep the stretch gentle — you should feel a pull, not pain."
+ },
+ "Childs Pose": {
+  "how": [
+   "Kneel on the floor, big toes touching, knees wide.",
+   "Sit your hips back toward your heels and fold forward, arms extended or resting at your sides.",
+   "Breathe deeply and let your forehead rest on the floor."
+  ],
+  "cue": "A classic resting pose — return here anytime during a flow if you need a break."
+ },
+ "Cool Down": {
+  "how": [
+   "Slow your movement gradually rather than stopping abruptly.",
+   "Move into a few gentle stretches for the muscles you worked.",
+   "Breathe deeply to help your heart rate settle."
+  ],
+  "cue": "Never skip the cool-down — it helps your body transition safely out of exercise mode."
+ },
+ "Cool Down & Stretch": {
+  "how": [
+   "Walk or move gently for a minute to bring your heart rate down.",
+   "Move into stretches for your major muscle groups, holding each for a few breaths.",
+   "Finish with a few deep breaths, standing or seated."
+  ],
+  "cue": "Hold stretches without bouncing — a slow, steady hold is what actually improves flexibility."
+ },
+ "Cool Down Dance": {
+  "how": [
+   "Keep moving, but slow the tempo and lower the intensity of your dance steps.",
+   "Let your breathing settle as your movements soften.",
+   "Finish with a few slow, expressive movements."
+  ],
+  "cue": "A nice way to bring a dance cardio session down gently instead of stopping cold."
+ },
+ "Cool Down Float": {
+  "how": [
+   "Move slowly and smoothly, like you're floating through water.",
+   "Let your arms sweep gently as you sway.",
+   "Focus on long, slow breaths as you move."
+  ],
+  "cue": "The goal is to feel weightless and calm — let this be your transition out of higher intensity."
+ },
+ "Cool Down Jog": {
+  "how": [
+   "Slow your run to an easy, light jog.",
+   "Keep your breathing steady and controlled.",
+   "Gradually slow to a walk as your heart rate comes down."
+  ],
+  "cue": "Never stop suddenly after running hard — an easy jog-to-walk transition helps blood flow return to normal safely."
+ },
+ "Corkscrew": {
+  "how": [
+   "Lie on your back, legs extended toward the ceiling together.",
+   "Slowly circle your legs in one direction, keeping your low back pressed down.",
+   "Reverse direction after a few circles."
+  ],
+  "cue": "A Pilates classic — keep the circles small if your low back wants to lift off the floor."
+ },
+ "Corpse Pose": {
+  "how": [
+   "Lie flat on your back, legs relaxed and slightly apart, arms at your sides, palms up.",
+   "Close your eyes and let your whole body go heavy.",
+   "Breathe naturally and simply rest for a few minutes."
+  ],
+  "cue": "This is the final relaxation pose in yoga — full permission to do absolutely nothing for a few minutes."
+ },
+ "Diaphragmatic Breathing": {
+  "how": [
+   "Lie down or sit comfortably, one hand on your belly.",
+   "Inhale through your nose, letting your belly (not your chest) rise.",
+   "Exhale slowly, feeling your belly fall."
+  ],
+  "cue": "Same technique as belly breathing — it's the foundation for calming your nervous system and re-engaging your deep core."
+ },
+ "Downward Dog": {
+  "how": [
+   "Start on hands and knees, tuck your toes, and lift your hips up and back.",
+   "Straighten your legs as much as comfortable, forming an inverted 'V' shape.",
+   "Press your chest toward your thighs, heels reaching toward the floor."
+  ],
+  "cue": "Bend your knees generously if your hamstrings are tight — a long spine matters more than straight legs."
+ },
+ "Dragon Pose": {
+  "how": [
+   "Step one foot forward into a deep lunge, back knee lowered to the floor.",
+   "Sink your hips forward and down, hands framing your front foot.",
+   "Hold, breathing into the stretch through your hip, then switch sides."
+  ],
+  "cue": "A deep hip-opening yoga pose — go only as deep as feels good, easing in gradually."
+ },
+ "Forward Fold": {
+  "how": [
+   "Stand tall, feet hip-width apart.",
+   "Hinge at your hips and fold forward, letting your head and arms hang.",
+   "Bend your knees generously and breathe deeply."
+  ],
+  "cue": "Keep soft knees — this is about releasing your spine, not touching your toes with straight legs."
+ },
+ "Gentle Bridge": {
+  "how": [
+   "Lie on your back, knees bent, feet flat.",
+   "Gently lift your hips a small amount, not necessarily all the way up.",
+   "Lower slowly and with control."
+  ],
+  "cue": "A softer version of a glute bridge — great for beginners or postpartum recovery, moving within a comfortable range."
+ },
+ "Glute Squeeze Hold": {
+  "how": [
+   "Lie on your back or stand tall.",
+   "Squeeze both glutes together firmly and hold.",
+   "Release slowly, then repeat."
+  ],
+  "cue": "A simple, no-impact way to activate your glutes — great as a warm-up before bigger lower-body moves."
+ },
+ "Hamstring Stretch": {
+  "how": [
+   "Sit or lie down, extend one leg straight, bend the other.",
+   "Reach toward your extended foot (or use a strap/towel around it), keeping your back long.",
+   "Hold, breathing deeply, then switch legs."
+  ],
+  "cue": "Keep a slight bend in the extended knee if your hamstring is tight — never force a straight-leg stretch."
+ },
+ "Happy Baby": {
+  "how": [
+   "Lie on your back, bring your knees toward your chest.",
+   "Grab the outsides of your feet, knees wide, and gently rock side to side.",
+   "Breathe deeply, letting your lower back release into the floor."
+  ],
+  "cue": "A great hip-opener to end a session — keep the rocking gentle and playful."
+ },
+ "Hip Flexor Stretch": {
+  "how": [
+   "Kneel in a lunge position, back knee on the floor.",
+   "Gently shift your hips forward, keeping your torso upright.",
+   "Hold, feeling the stretch in the front of your back hip, then switch sides."
+  ],
+  "cue": "Same idea as a hip flexor lunge — especially useful if you sit for long stretches during the day."
+ },
+ "Hip Thrust": {
+  "how": [
+   "Sit with your upper back against a bench or sofa, knees bent, feet flat.",
+   "Drive through your heels to lift your hips until your torso is parallel to the floor.",
+   "Squeeze your glutes hard at the top, then lower with control."
+  ],
+  "cue": "One of the best glute-builders — full hip extension and a hard squeeze at the top is what makes it work."
+ },
+ "Loving Kindness Meditation": {
+  "how": [
+   "Sit comfortably, close your eyes, and breathe naturally.",
+   "Silently repeat a kind wish for yourself, like 'may I be happy, may I be at peace.'",
+   "Extend the same wish outward to loved ones, then to others generally."
+  ],
+  "cue": "A gentle mental practice — there's no wrong way to do this, just let the intention be genuine."
+ },
+ "Meditation Breathing": {
+  "how": [
+   "Sit comfortably with your eyes closed or softly focused.",
+   "Breathe naturally and simply notice each inhale and exhale.",
+   "When your mind wanders, gently bring your attention back to your breath."
+  ],
+  "cue": "Wandering thoughts are normal — noticing and returning to the breath IS the practice, not a failure of it."
+ },
+ "Neck & Shoulder Release": {
+  "how": [
+   "Sit or stand tall, gently drop one ear toward your shoulder.",
+   "Hold, breathing deeply, then add a slight forward or back tilt to change the stretch angle.",
+   "Switch sides."
+  ],
+  "cue": "No pulling needed — let gravity and relaxed breathing do the work."
+ },
+ "Pelvic Floor Holds": {
+  "how": [
+   "Sit, stand, or lie comfortably.",
+   "Gently contract your pelvic floor muscles (as if stopping the flow of urine), hold briefly.",
+   "Release fully and repeat."
+  ],
+  "cue": "Fully releasing between reps matters as much as the squeeze — don't hold constant tension."
+ },
+ "Pigeon Pose": {
+  "how": [
+   "From hands and knees, bring one knee forward behind your wrist, shin angled across the mat.",
+   "Extend your other leg straight back.",
+   "Fold forward over your front leg, breathing into the hip stretch."
+  ],
+  "cue": "A deep hip-opener — place a cushion under your front hip for support if the stretch feels too intense."
+ },
+ "Pistol Squat Assist": {
+  "how": [
+   "Stand facing a chair or sturdy support, holding on for balance.",
+   "Extend one leg forward and lower into a single-leg squat as far as you comfortably can.",
+   "Push back up to standing, using the support as needed, then switch legs."
+  ],
+  "cue": "Use as much support as you need — building toward a full pistol squat takes time and this assisted version is how you get there."
+ },
+ "Plank Hold": {
+  "how": [
+   "Start face down, forearms or hands on the floor, body in a straight line from head to heels.",
+   "Engage your core and glutes to keep your hips level.",
+   "Hold, breathing steadily, without sagging or piking."
+  ],
+  "cue": "Squeeze your glutes and think 'push the floor away' to hold a strong, flat line."
+ },
+ "Plank Shoulder Taps": {
+  "how": [
+   "Start in a plank position, feet a little wider for stability.",
+   "Lift one hand to tap the opposite shoulder, then place it back down.",
+   "Repeat on the other side, keeping your hips as still as possible."
+  ],
+  "cue": "Resisting the urge to rock your hips is what makes this a real core challenge."
+ },
+ "Plank to Downdog": {
+  "how": [
+   "Start in a plank position.",
+   "Push your hips up and back into a downward dog, straightening your legs.",
+   "Shift forward back into a plank, then repeat."
+  ],
+  "cue": "Move with control between the two positions — this builds both strength and mobility."
+ },
+ "Plank to Pushup": {
+  "how": [
+   "Start in a forearm plank.",
+   "Push up onto your hands one at a time, into a high plank/push-up position.",
+   "Lower back down one arm at a time to your forearms, then repeat leading with the other arm."
+  ],
+  "cue": "Keep your hips as stable as possible throughout — minimize the side-to-side rocking."
+ },
+ "Prenatal Warrior": {
+  "how": [
+   "Step one foot forward into a wide lunge stance, back foot angled out slightly for stability.",
+   "Bend your front knee, keeping your torso tall, arms reaching out or overhead if comfortable.",
+   "Hold, breathing steadily, then switch sides."
+  ],
+  "cue": "A pregnancy-safe modification of Warrior pose — widen your stance for balance and always check with your doctor about what's appropriate for your stage of pregnancy."
+ },
+ "Quad Stretch": {
+  "how": [
+   "Stand tall (hold a wall or chair for balance if needed).",
+   "Bend one knee, bringing your heel toward your glutes, and hold your ankle or foot.",
+   "Keep your knees close together, hold, then switch legs."
+  ],
+  "cue": "Keep your standing knee soft and your hips tucked slightly to feel the stretch fully in the front of your thigh."
+ },
+ "Rest": {
+  "how": [
+   "Stop moving and let your breathing settle.",
+   "Shake out your arms and legs if it feels good.",
+   "Take a sip of water if you have it nearby."
+  ],
+  "cue": "Rest is part of the workout, not a break from it — your muscles need this to perform the next set well."
+ },
+ "Saddle Pose": {
+  "how": [
+   "Kneel with your knees together, then sit back between your heels (or on a cushion if that's too intense).",
+   "Lean back on your hands or elbows if comfortable, opening the front of your hips and thighs.",
+   "Breathe deeply, only going as far as feels good."
+  ],
+  "cue": "An intense hip and quad stretch — ease in gradually and stop if you feel knee discomfort."
+ },
+ "Savasana": {
+  "how": [
+   "Lie flat on your back, legs relaxed and slightly apart, arms at your sides, palms up.",
+   "Close your eyes and consciously relax every muscle.",
+   "Breathe naturally and rest for several minutes."
+  ],
+  "cue": "The traditional final relaxation pose in yoga — resist the urge to skip it, it's when your body absorbs the benefits of the practice."
+ },
+ "Side-lying Clam": {
+  "how": [
+   "Lie on your side, knees bent about 45°, feet stacked together.",
+   "Keeping feet touching, open your top knee like a clamshell.",
+   "Lower with control, then repeat, or switch sides."
+  ],
+  "cue": "Same move as Clam Shells — keep your hips stacked and don't let the top hip roll back."
+ },
+ "Side-lying Stretch": {
+  "how": [
+   "Lie on your side, propped on your bottom elbow or lying flat.",
+   "Reach your top arm overhead, feeling a stretch along your side body.",
+   "Hold, breathing deeply, then switch sides."
+  ],
+  "cue": "A gentle, supported stretch — great for the side body and obliques after a core-focused session."
+ },
+ "Silent Savasana": {
+  "how": [
+   "Lie flat on your back, arms and legs relaxed.",
+   "Close your eyes and simply rest in silence.",
+   "Let your breath return to its natural rhythm without trying to control it."
+  ],
+  "cue": "No cues, no counting — just permission to lie still and let your body integrate the work you just did."
+ },
+ "Sleeping Swan": {
+  "how": [
+   "From Pigeon Pose position, fold your upper body forward over your front leg.",
+   "Rest your forehead on your hands or the floor.",
+   "Breathe deeply into your hip, staying as long as feels good."
+  ],
+  "cue": "A resting variation of Pigeon Pose — let your whole body relax into the support of the floor."
+ },
+ "Spinal Twist": {
+  "how": [
+   "Sit or lie on your back with knees bent.",
+   "Gently rotate your knees to one side while keeping your shoulders on the floor (if lying) or twisting from your seat (if sitting).",
+   "Hold, breathing deeply, then switch sides."
+  ],
+  "cue": "A gentle spinal reset — move into the twist slowly and never force the range."
+ },
+ "Stair Climbs": {
+  "how": [
+   "Using real stairs or miming the motion, step up one leg at a time with control.",
+   "Drive through your heel on each step.",
+   "Keep a steady rhythm, using a handrail for balance if needed."
+  ],
+  "cue": "Great functional cardio that doubles as glute and quad work — drive through your heel, not your toes."
+ },
+ "Stretch & Cool Down": {
+  "how": [
+   "Slow your movement and let your breathing settle.",
+   "Move through a few full-body stretches, holding each for a few breaths.",
+   "Finish with a couple of deep, calming breaths."
+  ],
+  "cue": "Never skip this — it helps your body transition safely out of exercise mode."
+ },
+ "Superman": {
+  "how": [
+   "Lie face down, arms extended overhead, legs straight.",
+   "Simultaneously lift your arms, chest, and legs a few inches off the floor.",
+   "Hold briefly, then lower with control."
+  ],
+  "cue": "Lift to a comfortable height, not as high as possible — this protects your lower back."
+ },
+ "Swimming": {
+  "how": [
+   "Lie face down, arms extended forward, legs straight.",
+   "Lift opposite arm and leg slightly off the floor, then switch in a fluttering, swimming-like motion.",
+   "Keep the movement small and controlled."
+  ],
+  "cue": "Small, quick alternating lifts — this is about endurance in your lower back and glutes, not big range."
+ },
+ "Teaser": {
+  "how": [
+   "Lie on your back, legs extended, arms overhead.",
+   "Simultaneously lift your torso and legs to balance in a 'V' shape on your sit bones.",
+   "Lower with control back to the floor."
+  ],
+  "cue": "An advanced Pilates move — bend your knees as a modification if a straight-leg version is too hard on your low back."
+ },
+ "Tricep Stretch": {
+  "how": [
+   "Reach one arm overhead, then bend the elbow to drop your hand behind your neck.",
+   "Use your other hand to gently press the elbow further back.",
+   "Hold, breathing deeply, then switch arms."
+  ],
+  "cue": "Ease into the press gently — you should feel a stretch, not pain in the shoulder joint."
+ },
+ "Warm-up Cardio": {
+  "how": [
+   "Start with light movement — marching, easy jogging in place, or gentle jumping jacks.",
+   "Gradually build intensity over 2-3 minutes.",
+   "Let your heart rate rise steadily rather than jumping straight to max effort."
+  ],
+  "cue": "Never skip your warm-up — it prepares your joints and muscles for the harder work ahead."
+ },
+ "Warrior I": {
+  "how": [
+   "Step one foot back into a lunge stance, back foot angled slightly out.",
+   "Bend your front knee, lifting both arms overhead, torso facing forward.",
+   "Hold, breathing steadily, then switch sides."
+  ],
+  "cue": "Keep your front knee tracking over your ankle, not pushed forward past your toes."
+ },
+ "Water Walk Steps": {
+  "how": [
+   "Mimic wading through water — take slow, deliberate steps with exaggerated resistance.",
+   "Pump your arms as if pushing through water.",
+   "Keep your core braced throughout."
+  ],
+  "cue": "A fun, low-impact way to add resistance-style cardio without any equipment."
+ }
+};
+
 let activeWorkout = null;
 let timerInterval = null;
 let timerRunning = false;
@@ -4341,6 +6152,14 @@ function toggleWorkoutCard(id) {
     card.classList.add('open');
     if (arrow) arrow.textContent = '▲';
   }
+}
+
+function askCoachAboutExercise(name) {
+  navTo('coach');
+  setTimeout(() => {
+    const input = document.getElementById('coach-input');
+    if (input) { input.value = 'How do I do ' + name + '?'; coachSend(); }
+  }, 150);
 }
 
 function startWorkout(id) {
@@ -5254,11 +7073,98 @@ const COACH_MATCH_RULES = [
   [['hello', 'hi coach', 'hey coach', 'how are you', 'good morning', 'good afternoon'], 'greeting'],
 ];
 
+// Sorted longest-name-first so a search for "Wall Push-ups" doesn't get
+// short-circuited by the shorter "Push-ups" entry matching first.
+const _EXERCISE_NAMES_SORTED = Object.keys(EXERCISE_GLOSSARY).sort((a, b) => b.length - a.length);
+const _WORKOUTS_SORTED = WORKOUTS.slice().sort((a, b) => b.name.length - a.name.length);
+
+function findExerciseInText(text) {
+  const lower = text.toLowerCase();
+  for (const name of _EXERCISE_NAMES_SORTED) {
+    if (lower.includes(name.toLowerCase())) return name;
+  }
+  return null;
+}
+
+function findWorkoutInText(text) {
+  const lower = text.toLowerCase();
+  for (const w of _WORKOUTS_SORTED) {
+    if (lower.includes(w.name.toLowerCase())) return w;
+  }
+  return null;
+}
+
+function formatExerciseAnswer(name) {
+  const g = EXERCISE_GLOSSARY[name];
+  if (!g) return null;
+  let out = '🎬 ' + name + ' — how to do it:\n\n';
+  g.how.forEach((step, i) => { out += (i + 1) + '. ' + step + '\n'; });
+  out += '\n💡 ' + g.cue;
+  return out;
+}
+
+function formatWorkoutAnswer(w) {
+  const meta = getWorkoutRealMeta(w);
+  let out = '🎬 ' + w.name + ' (' + meta + ' · ' + w.level + ')\n\n';
+  out += 'This one moves through ' + w.exercises.length + ' exercises:\n\n';
+  w.exercises.forEach((e, i) => {
+    const g = EXERCISE_GLOSSARY[e.name];
+    out += (i + 1) + '. ' + e.name + ' (' + e.reps + ')';
+    if (g) out += ' — ' + g.cue;
+    out += '\n';
+  });
+  out += '\nAsk me about any one of these by name (e.g. "how do I do ' + w.exercises[0].name + '?") and I\'ll break down the exact steps! 💪';
+  return out;
+}
+
+const COACH_EXPLAIN_SIGNALS = ['how does', 'how do', 'how to', 'what is', 'what are', 'explain', 'teach me', 'show me', 'steps for', 'break down', "never heard", 'how it work'];
+
+function isCoachExplainRequest(lower) {
+  return COACH_EXPLAIN_SIGNALS.some(s => lower.includes(s));
+}
+
+function exactNameLookup(question) {
+  const q = question.trim().toLowerCase().replace(/[?.!]+$/, '');
+  const w = WORKOUTS.find(w => w.name.toLowerCase() === q);
+  if (w) return formatWorkoutAnswer(w);
+  const exName = Object.keys(EXERCISE_GLOSSARY).find(n => n.toLowerCase() === q);
+  if (exName) return formatExerciseAnswer(exName);
+  return null;
+}
+
 function pickCoachAnswer(question) {
   const lower = question.toLowerCase();
+
+  // If the whole message IS just a workout or exercise name (e.g. she typed
+  // "Mummy Tummy Fix" with nothing else), answer that directly — an exact
+  // match is unambiguous, so this runs before any keyword-bucket check,
+  // even ones that would otherwise catch a word like "tummy" inside it.
+  const exact = exactNameLookup(question);
+  if (exact) return exact;
+
+  // Exercise/workout technique explanations take priority over the generic
+  // topic buckets when the user is clearly asking "how does X work" — this
+  // is what lets Coach Nova explain a named move (e.g. "how does Mummy
+  // Tummy Fix work?") instead of giving generic belly-fat advice just
+  // because the workout name happens to contain a word like "tummy".
+  // Pain/injury language always wins, even if phrased as a "how" question.
+  const painSignal = ['injur', 'hurt', 'pain', 'sprain'].some(k => lower.includes(k));
+  if (!painSignal && isCoachExplainRequest(lower)) {
+    const wMatch = findWorkoutInText(question);
+    if (wMatch) return formatWorkoutAnswer(wMatch);
+    const eMatch = findExerciseInText(question);
+    if (eMatch) return formatExerciseAnswer(eMatch);
+  }
+
   let category = 'default';
   for (const [keywords, cat] of COACH_MATCH_RULES) {
     if (keywords.some(k => lower.includes(k))) { category = cat; break; }
+  }
+  if (category === 'default') {
+    const wMatch = findWorkoutInText(question);
+    if (wMatch) return formatWorkoutAnswer(wMatch);
+    const eMatch = findExerciseInText(question);
+    if (eMatch) return formatExerciseAnswer(eMatch);
   }
   const variants = COACH_ANSWERS[category] || COACH_ANSWERS.default;
   return variants[Math.floor(Math.random() * variants.length)];
