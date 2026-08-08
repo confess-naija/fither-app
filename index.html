@@ -150,7 +150,7 @@ select option{background:var(--black3);}
 
 /* ── WATER TRACKER ── */
 .water-tracker-card{background:var(--black2);border:1px solid var(--black4);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
-.water-tracker-title{font-family:var(--font-head);font-size:14px;font-weight:800;color:var(--pink-light);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.water-tracker-title{font-family:var(--font-head);font-size:14px;font-weight:800;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .water-cups{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
 .water-cup{width:38px;height:38px;border-radius:10px;border:1.5px solid rgba(100,180,255,.22);background:rgba(100,180,255,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;user-select:none;}
 .water-cup.filled{border-color:rgba(100,180,255,.7);background:rgba(100,180,255,.18);box-shadow:0 0 10px rgba(100,180,255,.15);}
@@ -3421,7 +3421,7 @@ function renderInsights(){
   var quote = MOTIVATION_QUOTES[dayOfYear % MOTIVATION_QUOTES.length];
   wrap.innerHTML = '<div class="insights-card"><div class="insights-card-title">Insights</div>' +
     rows.map(function(r){ return '<div class="insight-row"><span class="insight-icon">'+r.icon+'</span><span class="insight-text">'+r.text+'</span></div>'; }).join('') +
-    '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;font-style:italic;color:var(--pink-light);">"' + quote.q + '"</div>' +
+    '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;font-style:italic;color:var(--gold);">"' + quote.q + '"</div>' +
     '</div>';
 }
 const SCORE_VERDICTS = [
