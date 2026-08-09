@@ -914,6 +914,49 @@ select option{background:var(--black3);}
 .fcat:hover{background:rgba(255,255,255,.07);}
 .fcat.active{background:linear-gradient(135deg,var(--pink),var(--violet));border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(255,45,107,.3);}
 
+
+/* ── FUN GUIDED WORKOUT STAGE (mobile-first) ── */
+.workout-fun-stage{display:grid;grid-template-columns:1fr;gap:10px;margin:0 auto 14px;max-width:760px;}
+.workout-demo-card{position:relative;min-height:118px;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,#24101d,#120b11);border:1px solid rgba(255,255,255,.10);box-shadow:0 12px 30px rgba(0,0,0,.28);text-align:left;}
+.workout-demo-bg{position:absolute;inset:0;background-size:cover;background-position:center 24%;filter:saturate(.9) contrast(1.03);transform:scale(1.02);}
+.workout-demo-card::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,5,9,.92) 0%,rgba(10,5,9,.52) 54%,rgba(10,5,9,.12) 100%);}
+.workout-demo-copy{position:relative;z-index:2;padding:14px;max-width:72%;}
+.demo-kicker{font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);font-weight:900;margin-bottom:4px;}
+.demo-title{font-family:var(--font-head);font-size:15px;font-weight:900;line-height:1.15;color:#fff;}
+.demo-tip{font-size:10.5px;color:rgba(255,255,255,.70);line-height:1.4;margin-top:5px;}
+.demo-live{display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(255,45,107,.16);border:1px solid rgba(255,45,107,.35);border-radius:999px;padding:4px 8px;font-size:9px;font-weight:800;color:#fff;}
+.demo-live-dot{width:6px;height:6px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 4px rgba(255,45,107,.16);animation:demoPulse 1.3s ease infinite;}
+@keyframes demoPulse{50%{transform:scale(.72);opacity:.65}}
+.timer-companion-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px;}
+.timer-companion-card{min-width:0;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.09);border-radius:15px;padding:10px 11px;text-align:left;box-shadow:0 8px 22px rgba(0,0,0,.18);}
+.tc-head{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:900;color:var(--pink-light);margin-bottom:5px;}
+.tc-main{font-family:var(--font-head);font-size:12px;font-weight:800;line-height:1.25;color:#fff;white-space:normal;overflow-wrap:anywhere;}
+.tc-sub{font-size:9.5px;color:var(--grey);margin-top:3px;line-height:1.35;}
+.tc-next{color:var(--gold);}
+.timer-mini-tools{display:flex;align-items:center;justify-content:center;gap:7px;margin:-2px 0 11px;flex-wrap:wrap;}
+.timer-tool-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:rgba(255,255,255,.78);border-radius:999px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer;}
+.timer-tool-btn.on{background:rgba(255,45,107,.16);border-color:rgba(255,45,107,.42);color:#fff;box-shadow:0 0 16px rgba(255,45,107,.12);}
+.timer-page.rest-mode .demo-live{background:rgba(6,214,160,.14);border-color:rgba(6,214,160,.35);}
+.timer-page.rest-mode .demo-live-dot{background:var(--green);box-shadow:0 0 0 4px rgba(6,214,160,.14);}
+@media(min-width:760px){
+  .workout-fun-stage{grid-template-columns:minmax(210px,1fr) 220px minmax(210px,1fr);align-items:center;gap:14px;}
+  .workout-demo-card{min-height:210px;}
+  .workout-demo-copy{max-width:90%;padding:18px;align-self:end;position:absolute;left:0;right:0;bottom:0;}
+  .workout-demo-card::after{background:linear-gradient(0deg,rgba(8,4,7,.95),rgba(8,4,7,.12) 75%);}
+  .timer-companion-row{grid-template-columns:1fr;align-content:center;margin:0;}
+  .timer-ring-wrap{margin:0 auto 8px;}
+}
+@media(max-width:430px){
+  .page#page-workout{padding-left:14px;padding-right:14px;}
+  .workout-demo-card{min-height:104px;border-radius:16px;}
+  .workout-demo-copy{padding:11px 12px;max-width:76%;}
+  .demo-title{font-size:13px;}.demo-tip{font-size:9.5px;margin-top:3px;}.demo-live{margin-top:6px;}
+  .timer-companion-card{padding:9px 10px;}.tc-main{font-size:11px;}.tc-sub{font-size:9px;}
+  .timer-ring-wrap{width:190px;height:190px;margin-bottom:14px;}.timer-ring-wrap svg{width:190px;height:190px;}
+  .timer-digits{font-size:41px;}
+  .timer-stats{margin-bottom:10px;}
+}
+
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -1461,7 +1504,17 @@ select option{background:var(--black3);}
         <div class="ex-voice-caption" id="ex-voice-caption">Free voice cues: off</div>
         <div class="timer-exercise-progress" id="timer-exercise-progress">Exercise 1 of 1</div>
         <div class="ex-dots" id="ex-dots"></div>
-        <div class="timer-ring-wrap">
+        <div class="workout-fun-stage">
+          <div class="workout-demo-card" id="workout-demo-card">
+            <div class="workout-demo-bg" id="workout-demo-bg"></div>
+            <div class="workout-demo-copy">
+              <div class="demo-kicker">FitHerNova Trainer</div>
+              <div class="demo-title" id="workout-demo-title">Follow the movement</div>
+              <div class="demo-tip" id="workout-demo-tip">Move at your own pace and keep your breathing steady.</div>
+              <div class="demo-live"><span class="demo-live-dot"></span><span id="demo-live-text">Ready to begin</span></div>
+            </div>
+          </div>
+          <div class="timer-ring-wrap">
           <svg width="200" height="200" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="88" fill="none" stroke="#362030" stroke-width="12"/>
             <circle id="timer-ring-arc" cx="100" cy="100" r="88" fill="none" stroke="url(#timerGrad)" stroke-width="12"
@@ -1482,6 +1535,24 @@ select option{background:var(--black3);}
             <div class="timer-digits" id="timer-digits">00:00</div>
             <div class="timer-state" id="timer-state">READY</div>
           </div>
+          </div>
+          <div class="timer-companion-row">
+            <div class="timer-companion-card">
+              <div class="tc-head">✨ Coach Nova</div>
+              <div class="tc-main" id="coach-nova-live">You showed up. That is the first win.</div>
+              <div class="tc-sub" id="coach-nova-sub">Tap Start when you are ready.</div>
+            </div>
+            <div class="timer-companion-card">
+              <div class="tc-head tc-next">⏭ Up Next</div>
+              <div class="tc-main" id="timer-up-next">Workout preview</div>
+              <div class="tc-sub" id="timer-up-next-sub">Your next movement will appear here.</div>
+            </div>
+          </div>
+        </div>
+        <div class="timer-mini-tools">
+          <button class="timer-tool-btn" id="timer-music-chip" onclick="toggleTimerMusicChip()">🎵 Music</button>
+          <button class="timer-tool-btn" id="timer-vibe-chip" onclick="toggleTimerVibeChip()">📳 Haptics</button>
+          <button class="timer-tool-btn" onclick="navTo('coach')">💬 Ask Coach</button>
         </div>
         <div class="timer-stats">
           <div class="ts"><div class="tv" id="ts-kcal">0</div><div class="tl">Kcal</div></div>
@@ -5897,6 +5968,67 @@ function getWorkoutRealMeta(workout) {
   return mins + ' min' + (kcalPart ? ' \u00b7' + kcalPart : ' \u00b7 ' + workout.calories + ' kcal');
 }
 
+
+// ── Fun guided workout companion ──
+var _timerMusicOn = false;
+var _timerVibeOn = true;
+var COACH_NOVA_LINES = [
+  ['Beautiful pace — stay with it.','Relax your shoulders and breathe.'],
+  ['You are stronger than the last rep.','Keep your movement controlled.'],
+  ['Halfway energy — do not disappear now.','Small steady effort still counts.'],
+  ['Yes! That is the FitHerNova spirit.','Finish this movement with confidence.'],
+  ['Last push — make these seconds yours.','Strong core. Soft breath. Keep going.']
+];
+function getExerciseTip(name){
+  var n=(name||'').toLowerCase();
+  if(n.includes('march')) return 'Lift one knee at a time, stand tall and swing your arms naturally.';
+  if(n.includes('squat')) return 'Sit your hips back, keep your chest lifted and press through your heels.';
+  if(n.includes('plank')) return 'Brace your core and keep one long line from head to heels.';
+  if(n.includes('breath')) return 'Breathe slowly into your belly, then exhale fully without forcing it.';
+  if(n.includes('lunge')) return 'Keep the front knee tracking over the toes and lower with control.';
+  if(n.includes('twist')) return 'Rotate from your ribs while keeping the spine tall and controlled.';
+  if(n.includes('bridge')) return 'Press through your heels and squeeze your glutes gently at the top.';
+  if(n.includes('jump')||n.includes('high knee')) return 'Land softly, stay light on your feet and keep a steady rhythm.';
+  return 'Follow the movement, protect your form and work at your own pace.';
+}
+function updateFunWorkoutUI(mode){
+  if(!activeWorkout || !activeWorkout.exercises || !activeWorkout.exercises.length) return;
+  var ex=activeWorkout.exercises[Math.min(exerciseIndex,activeWorkout.exercises.length-1)];
+  var photo=(activeWorkout.photo||'').trim();
+  var bg=document.getElementById('workout-demo-bg');
+  if(bg){
+    bg.style.backgroundImage=photo?"url('"+photo.replace(/'/g,"\\'")+"')":'linear-gradient(135deg,#351323,#140b12)';
+    bg.style.opacity=photo?'1':'.65';
+  }
+  var title=document.getElementById('workout-demo-title'); if(title) title.textContent=mode==='rest'?'Breathe & reset':ex.name;
+  var tip=document.getElementById('workout-demo-tip'); if(tip) tip.textContent=mode==='rest'?'Shake out the tension. Your next movement is coming up.':getExerciseTip(ex.name);
+  var live=document.getElementById('demo-live-text'); if(live) live.textContent=mode==='rest'?'Recovery moment':(timerRunning?'Move with the trainer':'Ready to begin');
+  var nextIndex=exerciseIndex+1;
+  var next=activeWorkout.exercises[nextIndex];
+  var up=document.getElementById('timer-up-next');
+  var upSub=document.getElementById('timer-up-next-sub');
+  if(up) up.textContent=next?next.name:(currentRound+1<activeRounds?'Next round':'Finish strong');
+  if(upSub) upSub.textContent=next?(next.reps||'Coming next'):(currentRound+1<activeRounds?'Round '+(currentRound+2)+' begins after recovery.':'Final movement — you are almost there.');
+}
+function updateCoachNovaLive(forceIndex){
+  var realDur=activeRealDuration||1;
+  var progress=Math.min(1,timerElapsed/realDur);
+  var idx=typeof forceIndex==='number'?forceIndex:Math.min(COACH_NOVA_LINES.length-1,Math.floor(progress*COACH_NOVA_LINES.length));
+  var line=COACH_NOVA_LINES[idx];
+  var main=document.getElementById('coach-nova-live'), sub=document.getElementById('coach-nova-sub');
+  if(main) main.textContent=line[0]; if(sub) sub.textContent=line[1];
+}
+function toggleTimerMusicChip(){
+  _timerMusicOn=!_timerMusicOn;
+  var b=document.getElementById('timer-music-chip'); if(b){b.classList.toggle('on',_timerMusicOn);b.textContent=_timerMusicOn?'🎵 Music On':'🎵 Music';}
+  if(_timerMusicOn){ try{ navTo('music'); }catch(e){} }
+}
+function toggleTimerVibeChip(){
+  _timerVibeOn=!_timerVibeOn;
+  var b=document.getElementById('timer-vibe-chip'); if(b){b.classList.toggle('on',_timerVibeOn);b.textContent=_timerVibeOn?'📳 Haptics On':'📳 Haptics';}
+  if(_timerVibeOn && navigator.vibrate) navigator.vibrate(35);
+}
+
 const HYPE_LINES = ["You've got this!", "Stay strong!", "Keep that form tight!", "Almost through this one!", "Breathe — you're doing great!", "Push a little more!", "One rep at a time!"];
 
 function renderExDots() {
@@ -5982,6 +6114,7 @@ function updateExerciseDisplay(pulse) {
   if (progEl) progEl.textContent = 'Exercise ' + (exerciseIndex + 1) + ' of ' + activeWorkout.exercises.length + roundTxt + ' \u00b7 ' + ex.reps;
   updateExDots();
   setTimerMood('work');
+  updateFunWorkoutUI('work');
 }
 
 function showRestDisplay(nextEx) {
@@ -5995,6 +6128,8 @@ function showRestDisplay(nextEx) {
   }
   if (progEl) progEl.textContent = nextEx ? 'Up next: ' + nextEx.name : 'Almost done!';
   setTimerMood('rest');
+  updateFunWorkoutUI('rest');
+  updateCoachNovaLive(2);
 }
 
 function showRoundRestDisplay(finishedRound) {
@@ -6008,6 +6143,8 @@ function showRoundRestDisplay(finishedRound) {
   }
   if (progEl) progEl.textContent = 'Round ' + (finishedRound + 2) + ' of ' + activeRounds + ' starting soon \u2014 catch your breath';
   setTimerMood('rest');
+  updateFunWorkoutUI('rest');
+  updateCoachNovaLive(2);
 }
 
 // Enter a phase (work, rest, or roundrest) at the given index in
@@ -6027,16 +6164,18 @@ function enterPhase(idx) {
     updateExerciseDisplay(true);
     announceExercise(activeWorkout.exercises[exerciseIndex]);
     playChime(true);
+    if (_timerVibeOn && navigator.vibrate) navigator.vibrate(45);
   } else if (phase.type === 'roundrest') {
     var stateEl3 = document.getElementById('timer-state'); if (stateEl3) stateEl3.textContent = 'REST';
     showRoundRestDisplay(phase.round);
     playChime(false);
+    if (_timerVibeOn && navigator.vibrate) navigator.vibrate([35,45,35]);
   } else {
     var stateEl2 = document.getElementById('timer-state'); if (stateEl2) stateEl2.textContent = 'REST';
     showRestDisplay(activeWorkout.exercises[phase.nextExIndex]);
     playChime(false);
+    if (_timerVibeOn && navigator.vibrate) navigator.vibrate(60);
   }
-  if (navigator.vibrate) navigator.vibrate(phase.type === 'work' ? 120 : 60);
 }
 
 function syncExerciseVoiceUI() {
@@ -6203,6 +6342,9 @@ function startWorkout(id) {
   renderExDots();
   updateExerciseDisplay(false);
   setTimerMood('work');
+  updateFunWorkoutUI('work');
+  updateCoachNovaLive(0);
+  var vibeChip=document.getElementById('timer-vibe-chip'); if(vibeChip) vibeChip.classList.toggle('on',_timerVibeOn);
   // Hide the floating mini player AND the quick-add FAB so neither can sit on top of the Stop/Pause buttons
   var mpHide = document.getElementById('mini-player'); if (mpHide) mpHide.classList.remove('show');
   var fabHide = document.getElementById('fab-wrap'); if (fabHide) fabHide.style.display = 'none';
@@ -6244,6 +6386,7 @@ function startTimer() {
       const hypeEl = document.getElementById('timer-hype');
       if (hypeEl) hypeEl.textContent = HYPE_LINES[Math.floor(Math.random() * HYPE_LINES.length)];
     }
+    if (timerElapsed === 1 || timerElapsed % 12 === 0) updateCoachNovaLive();
     // Voice trainer cues (Pro only) — still keyed off overall elapsed time
     if (appState.isProUser && _voiceMode !== 'off' && activeWorkout) {
       const cue = getVoiceCueForTime(timerElapsed, realDur);
