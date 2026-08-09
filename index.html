@@ -1727,7 +1727,7 @@ select option{background:var(--black3);}
             </div>
           </div>
         </div>
-        <div class="music-status" id="music-status">🔥 10 gospel tracks loaded — tap ▶ to start your workout session!</div>
+        <div class="music-status" id="music-status">🔥 12 gospel tracks loaded — tap ▶ to start your workout session!</div>
         <!-- Volume control -->
         <div style="display:flex;align-items:center;gap:10px;margin-top:12px;position:relative;z-index:1;">
           <span style="font-size:14px;">🔈</span>
@@ -6953,7 +6953,8 @@ function seekTrack(e) {
 }
 
 // Prime the music page's time display so it shows the real track
-// length immediately instead of a stuck "0:00 / 0:00" before first play.
+// length immediately instead of a stuck "0:00 / 0:00" before first play,
+// and keep the loaded-tracks count accurate if the playlist ever changes.
 (function(){
   function primeMusicUI(){
     try{
@@ -12055,5 +12056,93 @@ load();if(document.readyState==='loading')document.addEventListener('DOMContentL
 })();
 </script>
 
+
+<style id="fhn-v81-polish-style">
+/* FitHerNova V8.1 — visual polish only. Core workout/timer systems untouched. */
+#page-home .home-greeting-row{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:6px 2px 11px!important;margin:0!important}
+#page-home .home-greeting-row>div:nth-child(2){min-width:0}
+#page-home .greeting-eyebrow{font-size:9px!important;text-transform:uppercase;letter-spacing:1.25px;color:rgba(255,255,255,.48)!important;font-weight:850}
+#page-home .greeting-name{font-family:var(--font-head);font-size:24px!important;line-height:1.05;letter-spacing:-.35px}
+#page-home .sub-greeting{font-family:var(--font-body,Arial,sans-serif)!important;font-size:10.5px!important;color:rgba(255,255,255,.48)!important;margin:5px 0 0!important}
+#page-home .home-streak-badge{display:none!important}
+.fhn-v81-profile-stats{margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.fhn-v81-stat{font-family:var(--font-body,Arial,sans-serif);font-size:9.5px;font-weight:800;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);border-radius:999px;padding:7px 10px;white-space:nowrap}
+.fhn-v81-stat strong{color:#fff}.fhn-v81-stat.gold{border-color:rgba(255,209,102,.18);color:#ffd166}
+
+.fhn-v7-hero{padding:16px 18px!important;border-radius:22px!important;min-height:0!important;box-shadow:0 14px 36px rgba(92,13,57,.26),inset 0 1px 0 rgba(255,255,255,.14)!important}
+.fhn-v7-kicker{margin-bottom:6px!important;font-family:var(--font-body,Arial,sans-serif);font-size:9px!important;letter-spacing:1.45px!important}
+.fhn-v7-workout{font-size:22px!important;margin-bottom:5px!important}
+.fhn-v7-meta{font-family:var(--font-body,Arial,sans-serif)!important;font-size:10.5px!important;max-width:68%!important}
+.fhn-v7-hero-actions{margin-top:13px!important}
+.fhn-v7-start,.fhn-v7-plan-link{height:40px!important;border-radius:12px!important;font-family:var(--font-body,Arial,sans-serif);font-size:10.5px!important}
+.fhn-v7-week{margin-top:11px!important}
+.fhn-v7-week-row{font-family:var(--font-body,Arial,sans-serif);font-size:9.5px!important;margin-bottom:5px!important}
+.fhn-v7-week-track{height:4px!important}
+.fhn-v81-hero-side{position:absolute;right:18px;top:15px;display:flex;gap:7px;z-index:2}
+.fhn-v81-hero-pill{font-family:var(--font-body,Arial,sans-serif);font-size:9px;font-weight:850;color:rgba(255,255,255,.82);background:rgba(24,8,19,.22);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:999px;padding:6px 9px}
+
+#page-home .hub-label,#page-home .hub-sub,#page-home .today-plan-sub,#page-home .today-score-verdict,#page-home .today-plan-pill span,.fhn-v8-sub,.fhn-v8-label,.fhn-v8-chip,.fhn-v8-rec-meta,.fhn-v8-reason,.fhn-v8-primary,.fhn-v8-secondary,.fhn-v8-program-day,.fhn-v8-progress-row,.fhn-v8-note{font-family:var(--font-body,Arial,sans-serif)!important}
+#page-home .today-plan-card{padding:15px!important}
+#page-home .today-checklist:not(.v7-expanded) .checklist-item:nth-child(n+4){display:none!important}
+#page-home .today-checklist-head:after{content:'  ·  View all daily goals';font-size:9px;text-transform:none;letter-spacing:0;color:rgba(255,255,255,.4);font-weight:650}
+#page-home .today-checklist.v7-expanded .today-checklist-head:after{content:'  ·  Show less'}
+
+/* The four explicit quick actions make the floating + redundant on Home only. */
+#page-home.active~* #fab-wrap{display:none}
+body.fhn-home-active #fab-wrap{display:none!important}
+
+/* Keep personal trainer lower in the hierarchy, after Wellness. */
+#fhn-v8-companion{margin-top:0!important}
+
+@media(min-width:760px){
+ #page-home .home-greeting-row{grid-template-columns:auto minmax(0,1fr) auto;padding-right:4px!important}
+ .fhn-v7-hero{padding:17px 20px!important}
+ .fhn-v7-workout{font-size:23px!important}
+}
+@media(max-width:620px){
+ #page-home .home-greeting-row{grid-template-columns:auto minmax(0,1fr)}
+ .fhn-v81-profile-stats{grid-column:1/-1;margin:0 0 1px 58px;justify-content:flex-start;gap:5px}
+ .fhn-v81-stat{padding:5px 8px;font-size:8.5px}
+ .fhn-v7-hero{padding:15px!important;border-radius:20px!important}
+ .fhn-v7-meta{max-width:100%!important}
+ .fhn-v81-hero-side{display:none}
+ .fhn-v7-hero-actions{display:grid!important;grid-template-columns:1.2fr .8fr!important;gap:7px!important}
+ .fhn-v7-start,.fhn-v7-plan-link{padding:0 10px!important;font-size:9.5px!important}
+}
+</style>
+<script id="fhn-v81-polish-script">
+(function(){
+'use strict';
+function q(s,r){return (r||document).querySelector(s)}
+function workoutList(){try{return window.WORKOUTS||WORKOUTS||[]}catch(e){return[]}}
+function completed(){try{return typeof fhnCompletedDates==='function'?fhnCompletedDates():{}}catch(e){return{}}}
+function todayKey(){try{return typeof fhnDateKey==='function'?fhnDateKey(new Date()):new Date().toISOString().slice(0,10)}catch(e){return new Date().toISOString().slice(0,10)}}
+function todayPlan(){try{if(typeof loadWeeklyPlan==='function')loadWeeklyPlan();return typeof fhnPlanDay==='function'?fhnPlanDay(todayKey()):null}catch(e){return null}}
+function streak(){var el=document.getElementById('home-streak-num');var n=parseInt((el&&el.textContent||'1').match(/\d+/)?.[0]||'1',10);return n||1}
+function weekly(){var label=document.getElementById('fhn-v7-week-label');var m=(label&&label.textContent||'0 of 4').match(/(\d+)\s+of\s+(\d+)/i);return m?{done:+m[1],total:+m[2]}:{done:0,total:4}}
+function recoveryWorkout(){var list=workoutList();return list.find(function(w){return /recovery|stretch|wind down|mobility|yoga flow|breathing/i.test((w.name||'')+' '+(w.level||''))})||list.find(function(w){return /gentle|easy/i.test(w.level||'')})||null}
+function updateGreeting(){
+ var row=q('#page-home .home-greeting-row');if(!row)return;
+ var name=q('#user-first-name');var first=(name&&name.textContent||'').trim();
+ var eye=q('.greeting-eyebrow',row);if(eye&&first&&!/there/i.test(first))eye.innerHTML='GOOD <span id="time-greeting">'+((document.getElementById('time-greeting')||{}).textContent||'MORNING').toUpperCase()+'</span>, '+first.toUpperCase()+' 👋';
+ if(name)name.style.display='none';
+ var stats=q('.fhn-v81-profile-stats',row);if(!stats){stats=document.createElement('div');stats.className='fhn-v81-profile-stats';row.appendChild(stats)}
+ var w=weekly();stats.innerHTML='<span class="fhn-v81-stat gold">🔥 <strong>'+streak()+'</strong> day streak</span><span class="fhn-v81-stat">✨ <strong>'+w.done+'/'+w.total+'</strong> this week</span>';
+}
+function updateHero(){
+ var hero=document.getElementById('fhn-v7-hero');if(!hero)return;
+ var day=todayPlan(), isRest=!day||!day.workoutId, btn=q('.fhn-v7-start',hero), title=document.getElementById('fhn-v7-workout'), meta=document.getElementById('fhn-v7-meta');
+ if(isRest){if(title)title.textContent='Rest & Recover';if(meta)meta.textContent='Gentle movement, hydration and recovery';if(btn){btn.textContent='Start Recovery Session';btn.onclick=function(){var w=recoveryWorkout();if(w&&typeof startWorkout==='function')startWorkout(w.id);else if(typeof navTo==='function')navTo('workout')}}}
+ else if(btn){btn.textContent='Start Today\'s Workout';btn.onclick=function(){if(typeof fhnV7StartToday==='function')fhnV7StartToday()}}
+ var side=q('.fhn-v81-hero-side',hero);if(!side){side=document.createElement('div');side.className='fhn-v81-hero-side';hero.appendChild(side)}var w=weekly();side.innerHTML='<span class="fhn-v81-hero-pill">🔥 Day '+streak()+'</span><span class="fhn-v81-hero-pill">'+w.done+'/'+w.total+' this week</span>';
+}
+function reorderV8(){var home=document.getElementById('page-home'),well=q('.today-plan-card',home),v8=document.getElementById('fhn-v8-companion');if(home&&well&&v8&&well.nextSibling!==v8)well.parentNode.insertBefore(v8,well.nextSibling)}
+function bodyState(){var home=document.getElementById('page-home');document.body.classList.toggle('fhn-home-active',!!(home&&home.classList.contains('active')))}
+function apply(){updateGreeting();updateHero();reorderV8();bodyState()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(apply,1600)});else setTimeout(apply,1600);
+setInterval(apply,2200);
+try{if(typeof navTo==='function'){var _v81Nav=navTo;navTo=function(page){_v81Nav(page);setTimeout(apply,30)}}}catch(e){}
+})();
+</script>
 </body>
 </html>
