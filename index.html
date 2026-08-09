@@ -957,6 +957,43 @@ select option{background:var(--black3);}
   .timer-stats{margin-bottom:10px;}
 }
 
+
+/* ── PREMIUM TIMER V2 ── */
+.timer-time-meta{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:-5px 0 10px;font-size:10px;color:var(--grey)}
+.timer-time-pill{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:999px;padding:5px 9px}
+.timer-time-pill strong{color:#fff;font-family:var(--font-head)}
+.timer-action-row{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:0 0 10px}
+.timer-action-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;border-radius:12px;padding:7px 10px;font-size:10px;font-weight:800;cursor:pointer}
+.timer-action-btn:active{transform:scale(.96)}
+.timer-action-btn.easier{border-color:rgba(6,214,160,.35);color:var(--green)}
+.prepare-overlay{position:fixed;inset:0;z-index:12000;background:radial-gradient(circle at 50% 42%,rgba(255,45,107,.35),rgba(10,5,9,.96) 58%);display:none;align-items:center;justify-content:center;text-align:center;backdrop-filter:blur(12px)}
+.prepare-overlay.show{display:flex;animation:fadeIn .2s ease}
+.prepare-card{width:min(360px,88vw);padding:28px 20px;border-radius:28px;background:rgba(25,10,18,.8);border:1px solid rgba(255,255,255,.15);box-shadow:0 25px 80px rgba(0,0,0,.55)}
+.prepare-kicker{font-size:11px;letter-spacing:2px;color:var(--pink-light);font-weight:900;text-transform:uppercase}
+.prepare-ex{font-family:var(--font-head);font-size:23px;font-weight:900;margin:9px 0 14px}
+.prepare-num{font-family:var(--font-head);font-size:96px;line-height:.95;font-weight:900;background:linear-gradient(120deg,var(--pink),var(--violet),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.prepare-tip{font-size:12px;color:rgba(255,255,255,.66);line-height:1.5;margin-top:12px}
+.timer-music-sheet,.timer-end-modal{position:fixed;inset:0;z-index:11500;background:rgba(0,0,0,.72);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)}
+.timer-music-sheet.show,.timer-end-modal.show{display:flex}
+.timer-sheet-card{width:min(520px,100%);background:linear-gradient(160deg,#25101d,#120b11);border:1px solid rgba(255,255,255,.14);border-radius:24px 24px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.5)}
+.timer-sheet-title{font-family:var(--font-head);font-size:18px;font-weight:900;margin-bottom:4px}.timer-sheet-sub{font-size:11px;color:var(--grey);margin-bottom:16px}
+.timer-sheet-controls{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:15px}.timer-sheet-btn{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;font-size:18px}.timer-sheet-btn.main{width:58px;height:58px;background:linear-gradient(135deg,var(--pink),var(--pink-light));border:none}
+.timer-volume{width:100%;accent-color:var(--pink)}
+.timer-end-modal{align-items:center;padding:18px}.timer-end-modal .timer-sheet-card{border-radius:24px;max-width:390px;padding:22px}
+.timer-end-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.timer-end-actions button{height:46px;border-radius:14px;font-weight:800;border:none}.timer-end-cancel{background:rgba(255,255,255,.08);color:#fff}.timer-end-confirm{background:#40111e;color:#ff8aaa;border:1px solid #6b1c31!important}
+.timer-ring-wrap.final-ten{filter:drop-shadow(0 0 18px rgba(255,209,102,.45));animation:finalPulse .7s ease-in-out infinite alternate}
+@keyframes finalPulse{to{transform:scale(1.025)}}
+.timer-page.rest-mode .timer-digits{color:var(--green)}
+.demo-collapse-btn{position:absolute;right:8px;top:8px;z-index:4;width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.38);color:#fff;cursor:pointer}
+.workout-demo-card.compact{min-height:54px}.workout-demo-card.compact .workout-demo-bg{opacity:.35!important}.workout-demo-card.compact .demo-tip,.workout-demo-card.compact .demo-live{display:none}.workout-demo-card.compact .workout-demo-copy{padding:10px 42px 10px 12px;max-width:100%}
+@media(max-width:430px){
+ .workout-fun-stage{gap:7px;margin-bottom:8px}.workout-demo-card{min-height:88px}.workout-demo-copy{max-width:82%;padding:10px 11px}.demo-kicker{font-size:8px}.demo-title{font-size:12px}.demo-tip{font-size:9px;line-height:1.25}.demo-live{font-size:8px;padding:3px 6px}
+ .timer-companion-row{gap:6px;margin-bottom:7px}.timer-companion-card{padding:7px 8px;border-radius:12px}.tc-head{font-size:8px;margin-bottom:3px}.tc-main{font-size:10px}.tc-sub{display:none}
+ .timer-mini-tools{margin:0 0 7px}.timer-tool-btn{padding:5px 8px;font-size:9px}.timer-time-meta{margin:-8px 0 7px;font-size:9px}.timer-action-row{margin-bottom:7px}.timer-action-btn{padding:6px 8px;font-size:9px}
+ .timer-stats .ts{padding:7px 5px}.timer-stats .ts .tv{font-size:16px}.timer-stats .ts .tl{font-size:9px}.voice-trainer-bar{padding:8px 10px;margin-bottom:8px}.timer-page{padding-bottom:112px}
+}
+@media(max-height:760px) and (max-width:430px){.workout-demo-card{min-height:62px}.workout-demo-card .demo-tip,.workout-demo-card .demo-live{display:none}.timer-ring-wrap{width:166px!important;height:166px!important;margin-bottom:8px!important}.timer-ring-wrap svg{width:166px!important;height:166px!important}.timer-digits{font-size:36px!important}.timer-exercise-progress{margin-bottom:9px}.ex-dots{margin-bottom:9px}.voice-trainer-bar{display:none}.timer-workout-name{margin-bottom:10px}}
+
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -1506,6 +1543,7 @@ select option{background:var(--black3);}
         <div class="ex-dots" id="ex-dots"></div>
         <div class="workout-fun-stage">
           <div class="workout-demo-card" id="workout-demo-card">
+            <button class="demo-collapse-btn" onclick="toggleDemoCompact()" aria-label="Collapse trainer preview">⌃</button>
             <div class="workout-demo-bg" id="workout-demo-bg"></div>
             <div class="workout-demo-copy">
               <div class="demo-kicker">FitHerNova Trainer</div>
@@ -1549,8 +1587,18 @@ select option{background:var(--black3);}
             </div>
           </div>
         </div>
+        <div class="timer-time-meta">
+          <span class="timer-time-pill">Current: <strong id="phase-time-left">00:00</strong></span>
+          <span class="timer-time-pill">Workout: <strong id="overall-time-meta">00:00 / 00:00</strong></span>
+        </div>
+        <div class="timer-action-row">
+          <button class="timer-action-btn" onclick="previousExercise()">↶ Previous</button>
+          <button class="timer-action-btn" onclick="addTenSeconds()">＋10 sec</button>
+          <button class="timer-action-btn" onclick="skipExercise()">Skip ↷</button>
+          <button class="timer-action-btn easier" onclick="showEasierVersion()">♡ Easier version</button>
+        </div>
         <div class="timer-mini-tools">
-          <button class="timer-tool-btn" id="timer-music-chip" onclick="toggleTimerMusicChip()">🎵 Music</button>
+          <button class="timer-tool-btn" id="timer-music-chip" onclick="openTimerMusicSheet()">🎵 Music</button>
           <button class="timer-tool-btn" id="timer-vibe-chip" onclick="toggleTimerVibeChip()">📳 Haptics</button>
           <button class="timer-tool-btn" onclick="navTo('coach')">💬 Ask Coach</button>
         </div>
@@ -1575,7 +1623,7 @@ select option{background:var(--black3);}
         <div class="timer-btns">
           <button class="tbtn tbtn-go" id="btn-start-timer" onclick="startTimer()">▶ Start</button>
           <button class="tbtn tbtn-pause" id="btn-pause-timer" onclick="pauseTimer()" style="display:none;">⏸ Pause</button>
-          <button class="tbtn tbtn-stop" onclick="stopTimer()">■ Stop</button>
+          <button class="tbtn tbtn-stop" id="btn-stop-timer" onclick="requestEndWorkout()" style="display:none;">■ End</button>
         </div>
         <button class="btn btn-ghost" style="margin:0 auto;display:flex;width:auto;padding:0 20px;" onclick="backToWorkoutList()">← Back to Workouts</button>
       </div>
@@ -6327,13 +6375,15 @@ function startWorkout(id) {
   activeRealDuration = tl.total;
   activeRounds = tl.rounds || 1;
   document.getElementById('timer-wname').textContent = activeWorkout.name;
-  document.getElementById('timer-digits').textContent = '00:00';
+  document.getElementById('timer-digits').textContent = fmtShort(activePhases && activePhases[0] ? activePhases[0].dur : 0);
   var ringDot = document.getElementById('timer-ring-dot'); if (ringDot) { ringDot.style.opacity = '0'; ringDot.setAttribute('cx','188'); ringDot.setAttribute('cy','100'); }
   document.getElementById('timer-state').textContent = 'READY';
   document.getElementById('ts-kcal').textContent = '0';
   document.getElementById('ts-sets').textContent = '0';
   document.getElementById('ts-rest').textContent = activeWorkout.exercises ? activeWorkout.exercises.length : 0;
   document.getElementById('btn-start-timer').style.display = 'flex';
+  document.getElementById('btn-start-timer').textContent = '▶ Start Workout';
+  var endBtn=document.getElementById('btn-stop-timer'); if(endBtn) endBtn.style.display='none';
   document.getElementById('btn-pause-timer').style.display = 'none';
   document.getElementById('timer-section').style.display = 'block';
   document.getElementById('workout-list-wrap').style.display = 'none';
@@ -6344,6 +6394,7 @@ function startWorkout(id) {
   setTimerMood('work');
   updateFunWorkoutUI('work');
   updateCoachNovaLive(0);
+  updatePremiumTimeUI();
   var vibeChip=document.getElementById('timer-vibe-chip'); if(vibeChip) vibeChip.classList.toggle('on',_timerVibeOn);
   // Hide the floating mini player AND the quick-add FAB so neither can sit on top of the Stop/Pause buttons
   var mpHide = document.getElementById('mini-player'); if (mpHide) mpHide.classList.remove('show');
@@ -6426,6 +6477,7 @@ async function stopTimer() {
   // mobile even though Pause (which touches none of that) worked fine.
   clearInterval(timerInterval);
   timerRunning = false;
+  releaseWakeLock();
   const realDur = activeRealDuration || (activeWorkout ? activeWorkout.duration : 1200);
   const finishedNaturally = activeWorkout && activeWorkout.exercises && timerElapsed >= realDur - 1;
   if (finishedNaturally) {
@@ -11396,6 +11448,85 @@ async function logBarcodeFood() {
   _pendingBarcodeFood = null;
 }
 
+
+
+/* ── PREMIUM TIMER V2 LOGIC ── */
+var _prepareRunning=false, _wakeLock=null, _timerStartedAt=0, _timerBaseElapsed=0, _lastVoiceCueTick=-1;
+function fmtShort(sec){sec=Math.max(0,Math.ceil(sec||0));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
+function toggleDemoCompact(){var c=document.getElementById('workout-demo-card');if(!c)return;c.classList.toggle('compact');var b=c.querySelector('.demo-collapse-btn');if(b)b.textContent=c.classList.contains('compact')?'⌄':'⌃'}
+function getCurrentPhase(){return activePhases&&activePhases[phaseIdx]?activePhases[phaseIdx]:null}
+function updatePremiumTimeUI(){
+ var p=getCurrentPhase(), phaseLeft=p?Math.max(0,p.end-timerElapsed):0, real=activeRealDuration||0;
+ var phaseEl=document.getElementById('phase-time-left'), overall=document.getElementById('overall-time-meta');
+ if(phaseEl)phaseEl.textContent=fmtShort(phaseLeft); if(overall)overall.textContent=fmtShort(timerElapsed)+' / '+fmtShort(real);
+ var digits=document.getElementById('timer-digits'); if(digits)digits.textContent=fmtShort(phaseLeft);
+ var wrap=document.querySelector('.timer-ring-wrap'); if(wrap)wrap.classList.toggle('final-ten',!!(p&&p.type==='work'&&phaseLeft<=10&&phaseLeft>0));
+ var arc=document.getElementById('timer-ring-arc'),dot=document.getElementById('timer-ring-dot');
+ var progress=p&&p.dur?Math.min(1,Math.max(0,(timerElapsed-p.start)/p.dur)):0;
+ if(arc)arc.style.strokeDashoffset=553*(1-progress);
+ if(dot){var a=progress*2*Math.PI;dot.setAttribute('cx',(100+88*Math.cos(a)).toFixed(2));dot.setAttribute('cy',(100+88*Math.sin(a)).toFixed(2));dot.style.opacity=progress>.005?'1':'0'}
+ if(p&&p.type==='work'&&[10,5,3,2,1].includes(Math.ceil(phaseLeft))&&_timerVibeOn&&navigator.vibrate)navigator.vibrate(Math.ceil(phaseLeft)<=3?45:25);
+}
+async function requestWakeLock(){try{if('wakeLock'in navigator)_wakeLock=await navigator.wakeLock.request('screen')}catch(e){}}
+function releaseWakeLock(){try{if(_wakeLock)_wakeLock.release()}catch(e){}_wakeLock=null}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&timerRunning)requestWakeLock()});
+function runPrepareCountdown(){
+ if(_prepareRunning||timerRunning)return; _prepareRunning=true;
+ var ov=document.getElementById('prepare-overlay'),num=document.getElementById('prepare-num'),ex=document.getElementById('prepare-ex'),tip=document.getElementById('prepare-tip');
+ var first=activeWorkout&&activeWorkout.exercises?activeWorkout.exercises[0]:null;if(ex)ex.textContent=first?first.name:'Workout';if(tip)tip.textContent=first?getExerciseTip(first.name):'Start at your own pace.';if(ov)ov.classList.add('show');
+ var count=3;if(num)num.textContent=count;playChime(true);if(_timerVibeOn&&navigator.vibrate)navigator.vibrate(30);
+ var cd=setInterval(function(){count--;if(count>0){if(num)num.textContent=count;playChime(true);if(_timerVibeOn&&navigator.vibrate)navigator.vibrate(30)}else if(count===0){if(num)num.textContent='GO!';playChime(true);if(_timerVibeOn&&navigator.vibrate)navigator.vibrate([40,30,70])}else{clearInterval(cd);if(ov)ov.classList.remove('show');_prepareRunning=false;startTimerCore()}},850)
+}
+function startTimer(){
+ if(timerRunning)return;
+ if(document.getElementById('btn-start-timer')&&document.getElementById('btn-start-timer').textContent.includes('Resume')){startTimerCore();return}
+ runPrepareCountdown();
+}
+function startTimerCore(){
+ timerRunning=true;_lastClip='';_timerBaseElapsed=timerElapsed;_timerStartedAt=Date.now();requestWakeLock();
+ var bs=document.getElementById('btn-start-timer'),bp=document.getElementById('btn-pause-timer'),be=document.getElementById('btn-stop-timer');if(bs)bs.style.display='none';if(bp)bp.style.display='flex';if(be)be.style.display='flex';
+ if(appState.isProUser&&_voiceMode!=='off')setTimeout(function(){playVoiceClip('warmup')},300);
+ if(timerElapsed===0)enterPhase(0);
+ clearInterval(timerInterval);timerInterval=setInterval(premiumTimerTick,250);premiumTimerTick();
+}
+function premiumTimerTick(){
+ if(!timerRunning)return;timerElapsed=Math.min(activeRealDuration||999999,_timerBaseElapsed+Math.floor((Date.now()-_timerStartedAt)/1000));
+ var realDur=activeRealDuration||(activeWorkout?activeWorkout.duration:1200),kcalRate=activeWorkout?activeWorkout.calories/realDur:.15;
+ var kcal=Math.round(timerElapsed*kcalRate),k=document.getElementById('ts-kcal');if(k)k.textContent=kcal;
+ while(phaseIdx<activePhases.length-1&&timerElapsed>=activePhases[phaseIdx].end){phaseIdx++;enterPhase(phaseIdx)}
+ var p=getCurrentPhase();if(p&&p.type==='work'&&timerElapsed%5===0){var h=document.getElementById('timer-hype');if(h&&!h.dataset.lastTick){h.textContent=HYPE_LINES[Math.floor(Math.random()*HYPE_LINES.length)];h.dataset.lastTick=timerElapsed;setTimeout(function(){if(h)delete h.dataset.lastTick},800)}}
+ if(appState.isProUser&&_voiceMode!=='off'&&activeWorkout&&timerElapsed!==_lastVoiceCueTick){_lastVoiceCueTick=timerElapsed;var cue=getVoiceCueForTime(timerElapsed,realDur);if(cue)playVoiceClip(cue)}
+ updatePremiumTimeUI();if(timerElapsed>=realDur)stopTimer();
+}
+function pauseTimer(){
+ if(!timerRunning)return;timerElapsed=_timerBaseElapsed+Math.floor((Date.now()-_timerStartedAt)/1000);timerRunning=false;clearInterval(timerInterval);releaseWakeLock();try{stopVoiceTrainer()}catch(e){};try{speechSynthesis.cancel()}catch(e){};
+ var st=document.getElementById('timer-state'),bs=document.getElementById('btn-start-timer'),bp=document.getElementById('btn-pause-timer');if(st)st.textContent='PAUSED';if(bs){bs.style.display='flex';bs.textContent='▶ Resume'}if(bp)bp.style.display='none';updateCoachNovaLive(1);
+}
+function requestEndWorkout(){if(!timerRunning&&timerElapsed===0)return;document.getElementById('timer-end-modal')?.classList.add('show')}
+function closeEndWorkout(){document.getElementById('timer-end-modal')?.classList.remove('show')}
+function confirmEndWorkout(){closeEndWorkout();releaseWakeLock();stopTimer()}
+function skipExercise(){var p=getCurrentPhase();if(!p||!timerRunning)return;_timerBaseElapsed=p.end;_timerStartedAt=Date.now();timerElapsed=p.end;premiumTimerTick();showToast('Skipped','Moving to the next section')}
+function previousExercise(){if(!activePhases||!activePhases.length)return;var target=Math.max(0,phaseIdx-1);while(target>0&&activePhases[target].type!=='work')target--;phaseIdx=target;timerElapsed=activePhases[target].start;_timerBaseElapsed=timerElapsed;_timerStartedAt=Date.now();enterPhase(target);updatePremiumTimeUI()}
+function addTenSeconds(){var p=getCurrentPhase();if(!p)return;p.end+=10;p.dur+=10;for(var i=phaseIdx+1;i<activePhases.length;i++){activePhases[i].start+=10;activePhases[i].end+=10}activeRealDuration+=10;showToast('+10 seconds','Extra time added to this movement');updatePremiumTimeUI()}
+function showEasierVersion(){var ex=activeWorkout&&activeWorkout.exercises?activeWorkout.exercises[exerciseIndex]:null;var n=ex?ex.name:'this movement';var txt='Reduce the range, slow the pace, and keep one foot grounded. Stop if you feel sharp pain.';var l=n.toLowerCase();if(l.includes('jump'))txt='Step side to side instead of jumping. Keep both feet close to the floor.';else if(l.includes('plank'))txt='Place your knees on the mat and keep a straight line from shoulders to knees.';else if(l.includes('squat'))txt='Use a chair behind you and squat only as low as feels comfortable.';else if(l.includes('lunge'))txt='Hold a wall or chair and shorten your step.';showToast('Easier '+n,txt)}
+function openTimerMusicSheet(){document.getElementById('timer-music-sheet')?.classList.add('show')}
+function closeTimerMusicSheet(){document.getElementById('timer-music-sheet')?.classList.remove('show')}
+function musicToggle(){try{toggleMusic()}catch(e){try{togglePlay()}catch(x){}}}
+function musicPrev(){try{prevTrack()}catch(e){}}
+function musicNext(){try{nextTrack()}catch(e){}}
+function setTimerMusicVolume(v){try{audioEl.volume=Number(v)/100}catch(e){}}
+
 </script>
+
+<div class="prepare-overlay" id="prepare-overlay" aria-live="assertive">
+  <div class="prepare-card"><div class="prepare-kicker">Get ready</div><div class="prepare-ex" id="prepare-ex">Workout</div><div class="prepare-num" id="prepare-num">3</div><div class="prepare-tip" id="prepare-tip">Stand tall, breathe, and begin at your own pace.</div></div>
+</div>
+<div class="timer-music-sheet" id="timer-music-sheet" onclick="if(event.target===this)closeTimerMusicSheet()">
+ <div class="timer-sheet-card"><div class="timer-sheet-title">🎵 Workout Music</div><div class="timer-sheet-sub">Control the music without leaving your workout.</div><div class="timer-sheet-controls"><button class="timer-sheet-btn" onclick="musicPrev()">⏮</button><button class="timer-sheet-btn main" onclick="musicToggle()">▶</button><button class="timer-sheet-btn" onclick="musicNext()">⏭</button></div><input class="timer-volume" type="range" min="0" max="100" value="70" oninput="setTimerMusicVolume(this.value)"><button class="btn btn-ghost" style="width:100%;margin-top:14px" onclick="closeTimerMusicSheet()">Done</button></div>
+</div>
+<div class="timer-end-modal" id="timer-end-modal" onclick="if(event.target===this)closeEndWorkout()">
+ <div class="timer-sheet-card"><div class="timer-sheet-title">End this workout?</div><div class="timer-sheet-sub">Your completed time and calories will still be saved.</div><div class="timer-end-actions"><button class="timer-end-cancel" onclick="closeEndWorkout()">Keep Going</button><button class="timer-end-confirm" onclick="confirmEndWorkout()">End Workout</button></div></div>
+</div>
+
 </body>
 </html>
