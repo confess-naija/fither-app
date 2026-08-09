@@ -11989,13 +11989,14 @@ function moveV6Cards(){
   var s=makeStructure();if(!s)return;
   var host=document.getElementById('fhn-v6-home-host');if(!host)return;
   var cards=qa(':scope > .fhn-home-card',host);
-  if(!cards.length)return;
-  // Each call to renderV6Home() rebuilds fresh card nodes from scratch.
-  // Without clearing the destination slots first, every render cycle
-  // (triggered repeatedly while a workout timer is left running in the
-  // background) appended another copy instead of replacing the old one,
-  // stacking up duplicate "Continue where you stopped" / favourites /
-  // recently-completed cards on Home.
+  // Each call to renderV6Home() rebuilds fresh card nodes from scratch —
+  // including rebuilding to NOTHING once a resume snapshot is dismissed
+  // and there are no favourites/recent cards to show instead. This slot
+  // sync always has to run and always has to fully match the current
+  // state, or a stale card (e.g. a dismissed resume card) is left behind
+  // with nothing left in `host` to replace it. Previously this bailed out
+  // early whenever `cards` was empty, which is exactly the case where the
+  // slots most needed clearing.
   var slot=document.getElementById('fhn-v7-resume-slot');
   if(slot){while(slot.firstChild)slot.removeChild(slot.firstChild)}
   while(s.lower.firstChild)s.lower.removeChild(s.lower.firstChild);
