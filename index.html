@@ -4167,6 +4167,18 @@ const WORKOUTS = [
   { id:48, emoji:'🌙', name:'Yin Yoga Deep Stretch', photo:WORKOUT_PHOTO_YINFOLD, meta:'30 min · 60 kcal', badge:'badge-gentle', level:'Gentle',
     exercises:[{name:'Dragon Pose',reps:'3 min each'},{name:'Saddle Pose',reps:'3 min'},{name:'Caterpillar',reps:'3 min'},{name:'Sleeping Swan',reps:'3 min each'},{name:'Corpse Pose',reps:'5 min'}],
     duration:1800, calories:60 },
+  { id:51, emoji:'🌷', name:'Pilates Foundations', photo:WORKOUT_PHOTO_PILATESTEASER, meta:'18 min · 90 kcal', badge:'badge-easy', level:'Easy',
+    exercises:[{name:'Pilates Breathing',reps:'2 min'},{name:'Pelvic Curl',reps:'3x10'},{name:'Toe Taps',reps:'3x10 each'},{name:'Single Leg Circles',reps:'2x8 each'},{name:'Spine Stretch Forward',reps:'3x8'}],
+    duration:1080, calories:90 },
+  { id:52, emoji:'🍑', name:'Pilates Glutes & Legs', photo:WORKOUT_PHOTO_TONESCULPT, meta:'25 min · 145 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Side-Lying Leg Lifts',reps:'3x15 each'},{name:'Clam Shell Pulses',reps:'3x20 each'},{name:'Pilates Bridge',reps:'3x15'},{name:'Inner Thigh Lifts',reps:'3x15 each'},{name:'Swimming Kicks',reps:'3x30s'}],
+    duration:1500, calories:145 },
+  { id:53, emoji:'✨', name:'Full Body Pilates Flow', photo:WORKOUT_PHOTO_TEASER, meta:'30 min · 175 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Roll Down',reps:'3x8'},{name:'The Hundred',reps:'100 pumps'},{name:'Single Leg Stretch',reps:'3x10 each'},{name:'Pilates Push-up',reps:'3x8'},{name:'Mermaid Stretch',reps:'2 min each'}],
+    duration:1800, calories:175 },
+  { id:54, emoji:'🌙', name:'Gentle Pilates Mobility', photo:WORKOUT_PHOTO_EVENING, meta:'20 min · 75 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Ribcage Breathing',reps:'2 min'},{name:'Cat-Cow Pilates',reps:'2 min'},{name:'Knee Sways',reps:'3x10'},{name:'Seated Spine Twist',reps:'3x8 each'},{name:'Resting Mermaid Stretch',reps:'3 min'}],
+    duration:1200, calories:75 },
   { id:49, emoji:'⚓', name:'Navy SEAL Challenge', photo:WORKOUT_PHOTO_JUMP, meta:'30 min · 380 kcal', badge:'badge-hard', level:'Intense',
     exercises:[{name:'Burpee Pull-ups',reps:'3x10'},{name:'Bear Crawl Pushups',reps:'3x10'},{name:'Jumping Lunges',reps:'3x20'},{name:'Plank to Pushup',reps:'3x15'},{name:'Sprint Finish',reps:'5x30s'}],
     duration:1800, calories:380 }
@@ -11749,6 +11761,7 @@ function categoryMatch(w,f){
   if(f==='Core')return /core|belly|ab|oblique|pilates|tummy|plank/.test(t);
   if(f==='Legs')return /leg|glute|booty|squat|lunge|barre/.test(t);
   if(f==='Dance')return /dance|zumba|afrobeat|nigerian/.test(t);
+  if(f==='Pilates')return /pilates|hundred|teaser|roll up|single leg stretch|spine stretch|mermaid|pelvic curl/.test(t);
   if(f==='Postpartum')return /postpartum|mummy tummy|recovery/.test(t);
   if(f==='Mature')return /mature|aqua|low impact|posture|gentle/.test(t);
   if(f==='No Equipment')return !/dumbbell|kettlebell|resistance band|bench|chair|barre/.test(t);
@@ -11761,7 +11774,7 @@ function getFiltered(){const q=v6Query.trim().toLowerCase();return WORKOUTS.filt
 function ensureTools(){
   const wrap=document.getElementById('workout-list-wrap');if(!wrap||document.getElementById('fhn-v6-tools'))return;
   const tools=document.createElement('div');tools.id='fhn-v6-tools';tools.className='fhn-v6-tools';
-  const filters=['All','Favourites','Beginner','Moderate','Intense','Low Impact','No Equipment','Under 10 Min','Core','Legs','Dance','Postpartum','Mature'];
+  const filters=['All','Favourites','Pilates','Beginner','Moderate','Intense','Low Impact','No Equipment','Under 10 Min','Core','Legs','Dance','Postpartum','Mature'];
   tools.innerHTML='<div class="fhn-v6-search"><span>⌕</span><input id="fhn-v6-search-input" type="search" placeholder="Search workouts, body area or exercise…" autocomplete="off"></div><div class="fhn-v6-filters">'+filters.map(f=>'<button class="fhn-v6-chip'+(f==='All'?' active':'')+'" data-f="'+f+'" onclick="setV6Filter(\''+f+'\')">'+f+'</button>').join('')+'</div><div class="fhn-v6-count" id="fhn-v6-count"></div>';
   wrap.parentNode.insertBefore(tools,wrap);
   tools.querySelector('input').addEventListener('input',function(){v6Query=this.value;renderWorkoutList()});
@@ -12052,7 +12065,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 var KEY='fhn_v8_preferences';
 var state={mood:'good',focus:'full',recommendation:null};
 var moods=[['tired','😴','Tired'],['good','🙂','Good'],['energized','🔥','Energized'],['sore','😣','Sore']];
-var focuses=[['full','✨','Full Body'],['core','🎯','Core'],['glutes','🍑','Glutes'],['legs','🦵','Legs'],['upper','💪','Upper Body'],['mobility','🧘','Mobility']];
+var focuses=[['full','✨','Full Body'],['core','🎯','Core'],['glutes','🍑','Glutes'],['legs','🦵','Legs'],['upper','💪','Upper Body'],['pilates','🌷','Pilates'],['mobility','🧘','Mobility']];
 var programs=[4,5,6,7,9,16,17,3,11,8,34,12,19,33,10,30,15,40,2,31,18];
 function pk(k){try{return typeof uKey==='function'?uKey(k):k}catch(e){return k}}
 function load(){try{var x=JSON.parse(localStorage.getItem(pk(KEY))||'{}');if(x.mood)state.mood=x.mood;if(x.focus)state.focus=x.focus}catch(e){}}
@@ -12060,11 +12073,11 @@ function save(){try{localStorage.setItem(pk(KEY),JSON.stringify({mood:state.mood
 function workoutById(id){return (window.WORKOUTS||WORKOUTS||[]).find(function(w){return Number(w.id)===Number(id)})}
 function minutes(w){return Math.max(1,Math.round((w.duration||0)/60))}
 function textOf(w){return ((w.name||'')+' '+(w.level||'')+' '+(w.exercises||[]).map(function(e){return e.name}).join(' ')).toLowerCase()}
-function focusScore(w,focus){var t=textOf(w),s=0;if(focus==='full'&&/full body|circuit|hiit|cardio|walk|dance|tabata|fat furnace/.test(t))s+=8;if(focus==='core'&&/core|belly|ab|plank|crunch|pilates|tummy|v-up|six-pack/.test(t))s+=9;if(focus==='glutes'&&/glute|booty|hip|bridge|donkey|clam|squat/.test(t))s+=9;if(focus==='legs'&&/leg|lunge|squat|calf|walk|step|skater/.test(t))s+=9;if(focus==='upper'&&/upper|push-up|shoulder|arm|back|posture|tricep|superman/.test(t))s+=9;if(focus==='mobility'&&/yoga|stretch|flow|recovery|wind down|stress|mobility|breathing/.test(t))s+=9;return s}
+function focusScore(w,focus){var t=textOf(w),s=0;if(focus==='full'&&/full body|circuit|hiit|cardio|walk|dance|tabata|fat furnace/.test(t))s+=8;if(focus==='core'&&/core|belly|ab|plank|crunch|pilates|tummy|v-up|six-pack/.test(t))s+=9;if(focus==='glutes'&&/glute|booty|hip|bridge|donkey|clam|squat/.test(t))s+=9;if(focus==='legs'&&/leg|lunge|squat|calf|walk|step|skater/.test(t))s+=9;if(focus==='upper'&&/upper|push-up|shoulder|arm|back|posture|tricep|superman/.test(t))s+=9;if(focus==='pilates'&&/pilates|hundred|teaser|roll up|single leg stretch|spine stretch|mermaid|pelvic curl/.test(t))s+=11;if(focus==='mobility'&&/yoga|stretch|flow|recovery|wind down|stress|mobility|breathing/.test(t))s+=9;return s}
 function moodScore(w,mood){var level=(w.level||'').toLowerCase(),m=minutes(w),s=0;if(mood==='tired'){if(/gentle|easy/.test(level))s+=8;if(m<=20)s+=3;if(/hiit|intense/.test(textOf(w)))s-=8}if(mood==='good'){if(/moderate|easy/.test(level))s+=5;if(m>=15&&m<=30)s+=2}if(mood==='energized'){if(/intense|moderate/.test(level))s+=7;if(m>=15)s+=2}if(mood==='sore'){if(/gentle|easy/.test(level))s+=9;if(/stretch|yoga|recovery|wind down|breathing/.test(textOf(w)))s+=7;if(/hiit|jump|intense/.test(textOf(w)))s-=10}return s}
 function recentNames(){try{return (appState.workoutLog||[]).slice(-3).map(function(x){return String(x.name||x.workout_name||'').toLowerCase()})}catch(e){return[]}}
 function choose(){var list=(window.WORKOUTS||WORKOUTS||[]).slice(),recent=recentNames();list.sort(function(a,b){var sa=focusScore(a,state.focus)+moodScore(a,state.mood),sb=focusScore(b,state.focus)+moodScore(b,state.mood);if(recent.indexOf(String(a.name).toLowerCase())>-1)sa-=3;if(recent.indexOf(String(b.name).toLowerCase())>-1)sb-=3;return sb-sa});state.recommendation=list[0]||null;return state.recommendation}
-function reason(w){var mood={tired:'you chose a lower-energy day',good:'you feel ready for balanced movement',energized:'you are ready for a stronger session',sore:'your body needs a gentler option'}[state.mood];var focus={full:'full-body movement',core:'core strength',glutes:'glute activation',legs:'lower-body strength',upper:'upper-body tone',mobility:'mobility and recovery'}[state.focus];return 'Recommended because '+mood+' and selected '+focus+'.';}
+function reason(w){var mood={tired:'you chose a lower-energy day',good:'you feel ready for balanced movement',energized:'you are ready for a stronger session',sore:'your body needs a gentler option'}[state.mood];var focus={full:'full-body movement',core:'core strength',glutes:'glute activation',legs:'lower-body strength',upper:'upper-body tone',pilates:'controlled Pilates strength and posture',mobility:'mobility and recovery'}[state.focus];return 'Recommended because '+mood+' and selected '+focus+'.';}
 function chipHtml(arr,type){return arr.map(function(x){return '<button class="fhn-v8-chip'+(state[type]===x[0]?' active':'')+'" data-v8-type="'+type+'" data-v8-value="'+x[0]+'">'+x[1]+' '+x[2]+'</button>'}).join('')}
 function dayIndex(){var raw=localStorage.getItem(pk('fhn_v8_program_start'));if(!raw){raw=new Date().toISOString().slice(0,10);localStorage.setItem(pk('fhn_v8_program_start'),raw)}var a=new Date(raw+'T00:00:00'),b=new Date();a.setHours(0,0,0,0);b.setHours(0,0,0,0);return Math.max(0,Math.min(20,Math.floor((b-a)/86400000)))}
 function programWorkout(){return workoutById(programs[dayIndex()]||programs[0])}
@@ -12170,5 +12183,60 @@ setInterval(apply,2200);
 try{if(typeof navTo==='function'){var _v81Nav=navTo;navTo=function(page){_v81Nav(page);setTimeout(apply,30)}}}catch(e){}
 })();
 </script>
+
+<style id="fhn-v9-pilates-style">
+.fhn-pilates-studio{margin:0 0 14px;border-radius:24px;overflow:hidden;position:relative;
+background:
+radial-gradient(circle at 82% 18%,rgba(255,209,102,.18),transparent 28%),
+radial-gradient(circle at 18% 88%,rgba(168,85,247,.2),transparent 36%),
+linear-gradient(145deg,#3b1029,#1b0d19 58%,#0f0d11);
+border:1px solid rgba(255,107,157,.28);box-shadow:0 16px 42px rgba(0,0,0,.3)}
+.fhn-pilates-inner{padding:18px;position:relative;z-index:2}
+.fhn-pilates-kicker{font-size:9px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase;color:#ffd0df}
+.fhn-pilates-title{font-family:var(--font-head);font-size:24px;font-weight:900;line-height:1.05;margin:6px 0 5px}
+.fhn-pilates-sub{font-size:11px;line-height:1.5;color:rgba(255,255,255,.67);max-width:600px}
+.fhn-pilates-benefits{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.fhn-pilates-benefit{font-size:9.5px;font-weight:800;color:rgba(255,255,255,.78);
+padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09)}
+.fhn-pilates-actions{display:flex;gap:8px;flex-wrap:wrap}
+.fhn-pilates-primary,.fhn-pilates-secondary{height:41px;border-radius:13px;padding:0 15px;font-size:10.5px;font-weight:900;cursor:pointer}
+.fhn-pilates-primary{border:0;color:#fff;background:linear-gradient(135deg,var(--pink),var(--violet));box-shadow:0 8px 24px rgba(255,45,107,.24)}
+.fhn-pilates-secondary{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.055);color:#fff}
+.fhn-pilates-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
+.fhn-pilates-mini-card{border-radius:14px;padding:10px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08)}
+.fhn-pilates-mini-card strong{display:block;font-size:10.5px;color:#fff}
+.fhn-pilates-mini-card span{font-size:9px;color:rgba(255,255,255,.5);display:block;margin-top:3px}
+@media(max-width:520px){
+ .fhn-pilates-inner{padding:15px}.fhn-pilates-title{font-size:20px}
+ .fhn-pilates-mini{grid-template-columns:1fr}.fhn-pilates-actions{display:grid;grid-template-columns:1fr}
+ .fhn-pilates-primary,.fhn-pilates-secondary{width:100%}
+}
+</style>
+<script id="fhn-v9-pilates-script">
+(function(){
+'use strict';
+var PILATES_IDS=[51,8,52,53,25,54];
+function getW(id){return (window.WORKOUTS||WORKOUTS||[]).find(function(w){return Number(w.id)===Number(id)})}
+function mountPilates(){
+ var page=document.getElementById('page-workout');
+ if(!page||document.getElementById('fhn-pilates-studio'))return;
+ var anchor=document.getElementById('fhn-v6-tools')||document.getElementById('workout-list-wrap');
+ if(!anchor)return;
+ var box=document.createElement('section');
+ box.id='fhn-pilates-studio';box.className='fhn-pilates-studio';
+ box.innerHTML='<div class="fhn-pilates-inner"><div class="fhn-pilates-kicker">FitHerNova Pilates Studio</div><div class="fhn-pilates-title">Strong core. Better posture. Graceful movement.</div><div class="fhn-pilates-sub">A complete Pilates collection for beginners through advanced users, with controlled low-impact sessions for core strength, glutes, mobility and full-body toning.</div><div class="fhn-pilates-benefits"><span class="fhn-pilates-benefit">Low impact</span><span class="fhn-pilates-benefit">Core control</span><span class="fhn-pilates-benefit">Posture & balance</span><span class="fhn-pilates-benefit">No equipment</span></div><div class="fhn-pilates-actions"><button class="fhn-pilates-primary" onclick="fhnStartPilates(51)">Start Beginner Pilates</button><button class="fhn-pilates-secondary" onclick="fhnShowPilates()">View All Pilates Workouts</button></div><div class="fhn-pilates-mini"><div class="fhn-pilates-mini-card"><strong>🌷 Foundations</strong><span>18 min · Beginner</span></div><div class="fhn-pilates-mini-card"><strong>✨ Full Body Flow</strong><span>30 min · Moderate</span></div><div class="fhn-pilates-mini-card"><strong>🤸 Advanced Pilates</strong><span>35 min · Intense</span></div></div></div>';
+ anchor.parentNode.insertBefore(box,anchor);
+}
+window.fhnStartPilates=function(id){var w=getW(id);if(w&&typeof startWorkout==='function')startWorkout(w.id)};
+window.fhnShowPilates=function(){
+ if(typeof setV6Filter==='function')setV6Filter('Pilates');
+ var input=document.getElementById('fhn-v6-search-input');if(input)input.value='';
+ setTimeout(function(){var tools=document.getElementById('fhn-v6-tools');if(tools)tools.scrollIntoView({behavior:'smooth',block:'start'})},100);
+};
+function init(){setTimeout(mountPilates,900);setInterval(mountPilates,3000)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
 </body>
 </html>
