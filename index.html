@@ -1007,6 +1007,20 @@ select option{background:var(--black3);}
 .completion-premium{margin-top:13px;padding-top:13px;border-top:1px solid rgba(255,255,255,.09)}.completion-streak{display:flex;justify-content:center;align-items:center;gap:8px;font-family:var(--font-head);font-size:14px;font-weight:800;color:var(--gold);margin-bottom:12px}.completion-question{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:8px}.completion-feel{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}.feel-btn{height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font-size:11px;font-weight:700}.feel-btn.selected{border-color:var(--pink);background:rgba(255,45,107,.16);box-shadow:0 0 18px rgba(255,45,107,.14)}.completion-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.completion-action{height:44px;border-radius:13px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font-weight:800;font-size:12px}.completion-action.primary{background:linear-gradient(135deg,var(--pink),var(--pink-light));border:none}.completion-share{grid-column:1/-1;background:rgba(255,209,102,.09);border-color:rgba(255,209,102,.24);color:var(--gold)}
 @media(max-width:430px){.workout-preview-overlay{padding:0;align-items:flex-end}.workout-preview-panel{border-radius:24px 24px 0 0;max-height:92dvh;padding-left:14px;padding-right:14px}.preview-hero{height:168px;margin-left:-14px;margin-right:-14px}.preview-title{font-size:22px}.preview-stats{gap:5px}.preview-stat{padding:8px 3px}.preview-info-row{grid-template-columns:1fr}.preview-ex{padding:8px}.completion-actions{grid-template-columns:1fr 1fr}}
 
+
+
+/* ── WEEKLY PLAN + CALENDAR V5 (free, local-first) ── */
+.plan-home-card{background:linear-gradient(135deg,#25101d,#160b13);border:1px solid rgba(255,45,107,.28);border-radius:22px;padding:15px;margin-bottom:12px;position:relative;overflow:hidden}
+.plan-home-card:before{content:'';position:absolute;inset:-40% auto auto -20%;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.22),transparent 68%);pointer-events:none}
+.plan-home-top{display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative}.plan-home-title{font-family:var(--font-head);font-weight:900;font-size:16px}.plan-home-sub{font-size:11px;color:rgba(255,255,255,.62);margin-top:3px}.plan-open-btn{border:0;border-radius:12px;background:linear-gradient(135deg,var(--pink),var(--violet));color:#fff;font-size:11px;font-weight:900;padding:9px 13px;white-space:nowrap;cursor:pointer}
+.plan-home-today{margin-top:12px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:11px 12px;display:flex;align-items:center;gap:10px;position:relative}.plan-home-icon{font-size:24px}.plan-home-workout{font-size:13px;font-weight:800}.plan-home-meta{font-size:10px;color:var(--grey);margin-top:2px}.plan-home-status{margin-left:auto;color:var(--gold);font-size:10px;font-weight:900}
+.plan-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.plan-page-title{font-family:var(--font-head);font-size:24px;font-weight:900}.plan-page-sub{font-size:12px;color:var(--grey);margin-top:3px}.plan-back{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font-size:18px;cursor:pointer}
+.plan-settings{background:var(--black2);border:1px solid var(--black4);border-radius:20px;padding:14px;margin-bottom:12px}.plan-settings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.plan-setting label{display:block;font-size:9px;color:var(--grey);text-transform:uppercase;letter-spacing:.8px;margin:0 0 5px}.plan-setting select{height:39px;font-size:11px;padding:0 8px}.plan-check{display:flex;align-items:center;gap:8px;margin-top:11px;font-size:11px;color:rgba(255,255,255,.72)}.plan-check input{accent-color:var(--pink);width:16px;height:16px}.plan-regenerate{width:100%;height:43px;margin-top:12px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--pink-dark),var(--pink),var(--violet));color:#fff;font-size:12px;font-weight:900;cursor:pointer}
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:12px}.week-day{min-width:0;background:var(--black2);border:1px solid var(--black4);border-radius:14px;padding:9px 4px;text-align:center;cursor:pointer;transition:.2s}.week-day.today{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,209,102,.12)}.week-day.completed{background:linear-gradient(145deg,rgba(6,214,160,.15),rgba(255,255,255,.03));border-color:rgba(6,214,160,.35)}.week-day.selected{border-color:var(--pink);background:rgba(255,45,107,.12)}.week-day-name{font-size:9px;color:var(--grey);text-transform:uppercase}.week-day-num{font-family:var(--font-head);font-size:17px;font-weight:900;margin:3px 0}.week-day-dot{width:7px;height:7px;border-radius:50%;background:var(--grey2);margin:0 auto}.week-day.workout .week-day-dot{background:var(--pink)}.week-day.rest .week-day-dot{background:#6bb5ff}.week-day.completed .week-day-dot{background:var(--green)}
+.plan-focus-card{border-radius:22px;overflow:hidden;background:var(--black2);border:1px solid var(--black4);margin-bottom:14px}.plan-focus-hero{height:150px;position:relative;background:linear-gradient(135deg,#3d142a,#130a10);background-size:cover;background-position:center 25%}.plan-focus-hero:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(5,3,6,.9))}.plan-focus-copy{position:absolute;z-index:1;left:14px;right:14px;bottom:12px}.plan-focus-kicker{font-size:9px;text-transform:uppercase;color:var(--gold);font-weight:900;letter-spacing:1.1px}.plan-focus-title{font-family:var(--font-head);font-size:20px;font-weight:900;margin-top:3px}.plan-focus-meta{font-size:11px;color:rgba(255,255,255,.7);margin-top:3px}.plan-focus-body{padding:13px 14px}.plan-focus-tip{font-size:11px;color:rgba(255,255,255,.68);line-height:1.5;margin-bottom:11px}.plan-start-btn{width:100%;height:44px;border:0;border-radius:13px;background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff;font-weight:900;cursor:pointer}.plan-start-btn.rest{background:rgba(107,181,255,.12);border:1px solid rgba(107,181,255,.28);color:#9bcdff}
+.calendar-card{background:var(--black2);border:1px solid var(--black4);border-radius:22px;padding:14px;margin-bottom:14px}.calendar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.calendar-title{font-family:var(--font-head);font-size:16px;font-weight:900}.calendar-nav{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;cursor:pointer}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.cal-dow{text-align:center;font-size:9px;color:var(--grey);padding:4px 0;text-transform:uppercase}.cal-day{aspect-ratio:1;border-radius:11px;border:1px solid transparent;background:rgba(255,255,255,.025);display:flex;align-items:center;justify-content:center;position:relative;font-size:11px;color:rgba(255,255,255,.78);cursor:pointer}.cal-day.other{opacity:.24}.cal-day.today{border-color:var(--gold);color:#fff;font-weight:900}.cal-day.planned:after,.cal-day.completed:after{content:'';position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--pink)}.cal-day.completed{background:rgba(6,214,160,.12);color:#fff}.cal-day.completed:after{background:var(--green)}.cal-day.selected{outline:2px solid var(--pink);outline-offset:1px}.calendar-legend{display:flex;justify-content:center;gap:14px;margin-top:11px;font-size:9px;color:var(--grey)}.calendar-legend span{display:flex;align-items:center;gap:5px}.legend-dot{width:7px;height:7px;border-radius:50%;display:inline-block}.legend-plan{background:var(--pink)}.legend-done{background:var(--green)}
+@media(max-width:430px){.plan-settings-grid{grid-template-columns:1fr 1fr}.plan-setting:last-child{grid-column:1/-1}.week-strip{gap:4px}.week-day{padding:8px 2px;border-radius:12px}.week-day-num{font-size:15px}.plan-focus-hero{height:135px}.calendar-grid{gap:3px}.cal-day{border-radius:9px}.plan-page-title{font-size:21px}}
+@media(max-width:360px){.plan-home-card{padding:12px}.plan-home-title{font-size:14px}.plan-open-btn{padding:8px 10px}.week-day-name{font-size:8px}.week-day-num{font-size:14px}.calendar-card{padding:11px}}
 </style>
 
 <!-- Supabase UMD (no module, works synchronously in window scope) -->
@@ -1025,6 +1039,28 @@ select option{background:var(--black3);}
   }
 })();
 </script>
+<style>
+/* ══ FitHerNova V6 — discovery, favourites & resume ══ */
+.fhn-v6-tools{background:linear-gradient(145deg,rgba(42,13,28,.96),rgba(19,12,18,.96));border:1px solid rgba(255,45,107,.26);border-radius:22px;padding:14px;margin-bottom:14px;box-shadow:0 12px 35px rgba(0,0,0,.25)}
+.fhn-v6-search{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:0 12px;height:46px}
+.fhn-v6-search input{height:42px!important;border:0!important;background:transparent!important;padding:0!important;box-shadow:none!important}
+.fhn-v6-filters{display:flex;gap:7px;overflow-x:auto;padding:11px 0 3px;scrollbar-width:none}.fhn-v6-filters::-webkit-scrollbar{display:none}
+.fhn-v6-chip{flex:0 0 auto;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);color:rgba(255,255,255,.72);border-radius:999px;padding:7px 12px;font-size:11px;font-weight:800;cursor:pointer}
+.fhn-v6-chip.active{background:linear-gradient(135deg,var(--pink),var(--violet));border-color:transparent;color:#fff;box-shadow:0 5px 18px rgba(255,45,107,.25)}
+.fhn-v6-count{font-size:11px;color:var(--grey);margin-top:9px;text-align:left}
+.fhn-v6-empty{padding:30px 15px;text-align:center;color:var(--grey);background:var(--black2);border:1px dashed rgba(255,255,255,.12);border-radius:18px}
+.fhn-fav-btn{position:absolute;right:48px;top:12px;z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.fhn-fav-btn.on{color:#ff6b9d;background:rgba(255,45,107,.22);border-color:rgba(255,107,157,.65)}
+.fhn-start-row{display:flex;gap:8px;padding:11px 14px 14px}.fhn-start-row .btn{flex:1}
+.fhn-home-card{background:linear-gradient(140deg,#23101c,#120c12);border:1px solid rgba(255,45,107,.25);border-radius:20px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.fhn-home-card:before{content:'';position:absolute;inset:-40% 55% auto -20%;height:150px;background:radial-gradient(circle,rgba(255,45,107,.2),transparent 70%);pointer-events:none}
+.fhn-home-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}.fhn-home-title{font-family:var(--font-head);font-weight:900;font-size:15px}.fhn-home-sub{font-size:11px;color:var(--grey);margin-top:3px;line-height:1.4}
+.fhn-resume-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}.fhn-resume-stat{background:rgba(255,255,255,.055);border-radius:12px;padding:9px;text-align:center}.fhn-resume-stat strong{display:block;font-family:var(--font-head);font-size:14px}.fhn-resume-stat span{font-size:9px;color:var(--grey)}
+.fhn-card-actions{display:flex;gap:8px}.fhn-card-actions button{flex:1;height:40px;border-radius:12px;border:0;font-weight:800;font-size:12px}.fhn-resume-btn{background:linear-gradient(135deg,var(--pink),var(--pink-light));color:#fff}.fhn-dismiss-btn{background:rgba(255,255,255,.07);color:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.1)!important}
+.fhn-mini-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.fhn-mini-list::-webkit-scrollbar{display:none}.fhn-mini-workout{flex:0 0 160px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:15px;padding:10px;cursor:pointer}.fhn-mini-workout .n{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fhn-mini-workout .m{font-size:10px;color:var(--grey);margin-top:4px}
+@media(max-width:430px){.fhn-v6-tools{padding:12px;border-radius:18px}.fhn-fav-btn{right:44px;width:31px;height:31px}.fhn-resume-meta{gap:5px}.fhn-mini-workout{flex-basis:145px}}
+
+</style>
 </head>
 <body>
 
@@ -1212,6 +1248,20 @@ select option{background:var(--black3);}
 <div class="home-streak-badge" id="home-streak-badge">🔥 <span id="home-streak-num">Day 1</span></div>
 </div>
 </div><div style="margin-bottom:16px;"></div>
+
+
+      <!-- Free Weekly Plan entry -->
+      <div class="plan-home-card" id="plan-home-card">
+        <div class="plan-home-top">
+          <div><div class="plan-home-title">✨ Your Free Weekly Plan</div><div class="plan-home-sub">A balanced plan built from workouts already inside FitHerNova.</div></div>
+          <button class="plan-open-btn" onclick="openWeeklyPlan()">Open Plan</button>
+        </div>
+        <div class="plan-home-today" id="plan-home-today" onclick="openWeeklyPlan()">
+          <div class="plan-home-icon" id="plan-home-icon">📅</div>
+          <div><div class="plan-home-workout" id="plan-home-workout">Preparing your week…</div><div class="plan-home-meta" id="plan-home-meta">No paid AI or subscription required</div></div>
+          <div class="plan-home-status" id="plan-home-status">TODAY</div>
+        </div>
+      </div>
 
       <!-- Verify Email Banner (soft — never blocks app use) -->
       <div class="verify-banner" id="verify-banner" style="display:none;">
@@ -1709,6 +1759,39 @@ select option{background:var(--black3);}
     </div>
 
     <!-- ══ PROGRESS PAGE ══ -->
+
+    <!-- WEEKLY PLAN + CALENDAR (free local-first) -->
+    <div class="page" id="page-plan">
+      <div class="plan-page-head">
+        <div><div class="plan-page-title">My Weekly Plan</div><div class="plan-page-sub">Personalized locally from your preferences and completed workouts.</div></div>
+        <button class="plan-back" onclick="navTo('home')" aria-label="Back home">×</button>
+      </div>
+
+      <div class="plan-settings">
+        <div class="sec-label">Plan preferences</div>
+        <div class="plan-settings-grid">
+          <div class="plan-setting"><label>Days per week</label><select id="plan-days"><option value="3">3 days</option><option value="4" selected>4 days</option><option value="5">5 days</option><option value="6">6 days</option></select></div>
+          <div class="plan-setting"><label>Intensity</label><select id="plan-level"><option value="gentle">Gentle</option><option value="balanced" selected>Balanced</option><option value="challenge">Challenge me</option></select></div>
+          <div class="plan-setting"><label>Session length</label><select id="plan-length"><option value="short">Under 15 min</option><option value="standard" selected>15–30 min</option><option value="long">30+ min</option></select></div>
+        </div>
+        <label class="plan-check"><input type="checkbox" id="plan-low-impact"> Prefer low-impact workouts</label>
+        <button class="plan-regenerate" onclick="regenerateWeeklyPlan()">✨ Build My New Week</button>
+      </div>
+
+      <div class="week-strip" id="plan-week-strip"></div>
+
+      <div class="plan-focus-card" id="plan-focus-card">
+        <div class="plan-focus-hero" id="plan-focus-hero"><div class="plan-focus-copy"><div class="plan-focus-kicker" id="plan-focus-kicker">TODAY'S PLAN</div><div class="plan-focus-title" id="plan-focus-title">Rest & Recover</div><div class="plan-focus-meta" id="plan-focus-meta">Gentle recovery day</div></div></div>
+        <div class="plan-focus-body"><div class="plan-focus-tip" id="plan-focus-tip">Rest is part of the plan. Hydrate and come back stronger.</div><button class="plan-start-btn rest" id="plan-focus-start" onclick="startSelectedPlanWorkout()">Recovery Day</button></div>
+      </div>
+
+      <div class="calendar-card">
+        <div class="calendar-head"><button class="calendar-nav" onclick="changePlanMonth(-1)" aria-label="Previous month">‹</button><div class="calendar-title" id="plan-calendar-title">Month</div><button class="calendar-nav" onclick="changePlanMonth(1)" aria-label="Next month">›</button></div>
+        <div class="calendar-grid" id="plan-calendar"></div>
+        <div class="calendar-legend"><span><i class="legend-dot legend-plan"></i> Planned</span><span><i class="legend-dot legend-done"></i> Completed</span></div>
+      </div>
+    </div>
+
     <div class="page" id="page-progress">
       <div class="sec-label" style="margin-bottom:14px;">📈 Your Progress</div>
       <div class="prog-header">
@@ -11552,6 +11635,39 @@ function fhnInstallCompletionWrapper(){if(typeof window.stopTimer!=='function'||
 function fhnInstallPremiumFlow(){fhnInstallPreviewWrapper();fhnInstallCompletionWrapper();ensureCompletionPremium()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fhnInstallPremiumFlow);else setTimeout(fhnInstallPremiumFlow,0);
 
+
+
+/* ── FREE WEEKLY PLAN + CALENDAR V5 ── */
+var _fhnPlan=null,_fhnPlanSelectedDate='',_fhnPlanMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+function fhnDateKey(d){var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day}
+function fhnParseDateKey(s){var p=String(s||'').split('-').map(Number);return new Date(p[0]||2000,(p[1]||1)-1,p[2]||1)}
+function fhnMonday(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()),n=x.getDay();x.setDate(x.getDate()-(n===0?6:n-1));return x}
+function fhnPlanPrefs(){return{days:Number(document.getElementById('plan-days')?.value||4),level:document.getElementById('plan-level')?.value||'balanced',length:document.getElementById('plan-length')?.value||'standard',lowImpact:!!document.getElementById('plan-low-impact')?.checked}}
+function fhnLoadPlanPrefs(){var p={days:4,level:'balanced',length:'standard',lowImpact:false};try{var s=uGet('weekly_plan_prefs');if(s)p=Object.assign(p,JSON.parse(s))}catch(e){}var a=document.getElementById('plan-days'),b=document.getElementById('plan-level'),c=document.getElementById('plan-length'),l=document.getElementById('plan-low-impact');if(a)a.value=String(p.days);if(b)b.value=p.level;if(c)c.value=p.length;if(l)l.checked=!!p.lowImpact;return p}
+function fhnWorkoutMinutes(w){return Math.max(1,Math.round(Number(w&&w.duration||0)/60))}
+function fhnWorkoutCategory(w){var n=String(w&&w.name||'').toLowerCase();if(/yoga|stretch|wind|meditation|recovery|flow/.test(n))return'recovery';if(/leg|glute|booty|squat|lunge/.test(n))return'lower';if(/arm|upper|shoulder|back|posture/.test(n))return'upper';if(/core|belly|6-pack|pilates/.test(n))return'core';if(/dance|zumba|afro|cardio|hiit|tabata|burn|kickbox|rope/.test(n))return'cardio';return'full'}
+function fhnSpecializedWorkout(w){return /prenatal|postpartum|mummy tummy/i.test(String(w&&w.name||''))}
+function fhnPlanCandidates(p){var lastFeel='';try{lastFeel=localStorage.getItem('fhn_last_workout_feel')||''}catch(e){};return (window.WORKOUTS||WORKOUTS||[]).filter(function(w){if(fhnSpecializedWorkout(w))return false;var min=fhnWorkoutMinutes(w);if(p.length==='short'&&min>18)return false;if(p.length==='standard'&&(min<10||min>32))return false;if(p.length==='long'&&min<25)return false;var lev=String(w.level||w.meta||'').toLowerCase(),name=String(w.name||'').toLowerCase();if(p.lowImpact&&!/gentle|easy|low impact|walk|stretch|yoga|pilates|beginner|flow/.test(lev+' '+name))return false;if((p.level==='gentle'||lastFeel==='Hard')&&!/gentle|easy|moderate|low impact|walk|stretch|yoga|pilates|beginner|flow/.test(lev+' '+name))return false;if(p.level==='challenge'&&/gentle/.test(lev)&&!p.lowImpact)return false;return true})}
+function fhnPickWorkout(pool,used,cats,index){if(!pool.length)return null;var desired=['full','lower','core','cardio','upper','recovery'][index%6];var candidates=pool.filter(function(w){return !used.includes(w.id)&&fhnWorkoutCategory(w)===desired});if(!candidates.length)candidates=pool.filter(function(w){return !used.includes(w.id)});if(!candidates.length){used.length=0;candidates=pool.slice()}var w=candidates[index%candidates.length];used.push(w.id);cats.push(fhnWorkoutCategory(w));return w}
+function fhnWorkoutOffsets(days){var map={3:[0,2,4],4:[0,1,3,5],5:[0,1,2,4,5],6:[0,1,2,3,4,5]};return map[days]||map[4]}
+function generateWeeklyPlan(p){p=p||fhnPlanPrefs();var start=fhnMonday(new Date()),offsets=fhnWorkoutOffsets(p.days),pool=fhnPlanCandidates(p);if(pool.length<2)pool=(window.WORKOUTS||WORKOUTS||[]).filter(function(w){return !fhnSpecializedWorkout(w)});var used=[],cats=[],workIndex=0,days=[];for(var i=0;i<7;i++){var d=new Date(start);d.setDate(start.getDate()+i);if(offsets.includes(i)){var w=fhnPickWorkout(pool,used,cats,workIndex++);days.push({date:fhnDateKey(d),type:'workout',workoutId:w?w.id:null})}else days.push({date:fhnDateKey(d),type:'rest',workoutId:null})}_fhnPlan={version:1,weekStart:fhnDateKey(start),createdAt:new Date().toISOString(),prefs:p,days:days};try{uSet('weekly_plan',JSON.stringify(_fhnPlan));uSet('weekly_plan_prefs',JSON.stringify(p))}catch(e){}return _fhnPlan}
+function loadWeeklyPlan(){var p=fhnLoadPlanPrefs(),start=fhnDateKey(fhnMonday(new Date()));try{var s=uGet('weekly_plan');if(s)_fhnPlan=JSON.parse(s)}catch(e){}if(!_fhnPlan||_fhnPlan.weekStart!==start||!Array.isArray(_fhnPlan.days))generateWeeklyPlan(p);return _fhnPlan}
+function fhnCompletedDates(){var set={};try{var prefix='u_'+(currentUser?currentUser.id:'anon')+'_fnova_workouts_';Object.keys(localStorage).forEach(function(k){if(k.indexOf(prefix)===0){var date=k.slice(prefix.length),items=[];try{items=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){}if(items&&items.length)set[date]=items.length}})}catch(e){}try{(appState.workoutLog||[]).forEach(function(x){if(x.date)set[x.date]=(set[x.date]||0)+1})}catch(e){}return set}
+function fhnPlanDay(date){return _fhnPlan&&_fhnPlan.days?_fhnPlan.days.find(function(x){return x.date===date}):null}
+function fhnWorkoutById(id){return (window.WORKOUTS||WORKOUTS||[]).find(function(w){return Number(w.id)===Number(id)})}
+function openWeeklyPlan(){loadWeeklyPlan();_fhnPlanSelectedDate=fhnDateKey(new Date());_fhnPlanMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);navTo('plan');renderWeeklyPlanPage()}
+function regenerateWeeklyPlan(){_fhnPlan=generateWeeklyPlan(fhnPlanPrefs());_fhnPlanSelectedDate=fhnDateKey(new Date());renderWeeklyPlanPage();try{showToast('New week created','Your plan has been balanced around your preferences.')}catch(e){}}
+function renderWeeklyPlanPage(){loadWeeklyPlan();renderPlanWeekStrip();renderPlanFocus();renderPlanCalendar();updatePlanHomeCard()}
+function renderPlanWeekStrip(){var wrap=document.getElementById('plan-week-strip');if(!wrap||!_fhnPlan)return;var done=fhnCompletedDates(),today=fhnDateKey(new Date());wrap.innerHTML=_fhnPlan.days.map(function(day){var d=fhnParseDateKey(day.date),cls='week-day '+day.type+(day.date===today?' today':'')+(done[day.date]?' completed':'')+(day.date===_fhnPlanSelectedDate?' selected':'');return'<button class="'+cls+'" onclick="selectPlanDate(\''+day.date+'\')"><div class="week-day-name">'+d.toLocaleDateString(undefined,{weekday:'short'})+'</div><div class="week-day-num">'+d.getDate()+'</div><div class="week-day-dot"></div></button>'}).join('')}
+function selectPlanDate(date){_fhnPlanSelectedDate=date;renderPlanWeekStrip();renderPlanFocus();renderPlanCalendar()}
+function renderPlanFocus(){var date=_fhnPlanSelectedDate||fhnDateKey(new Date()),day=fhnPlanDay(date),w=day&&day.workoutId?fhnWorkoutById(day.workoutId):null,done=!!fhnCompletedDates()[date];var hero=document.getElementById('plan-focus-hero'),title=document.getElementById('plan-focus-title'),meta=document.getElementById('plan-focus-meta'),tip=document.getElementById('plan-focus-tip'),kick=document.getElementById('plan-focus-kicker'),btn=document.getElementById('plan-focus-start'),d=fhnParseDateKey(date),today=date===fhnDateKey(new Date());if(kick)kick.textContent=(today?"TODAY'S PLAN":d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'}))+(done?' · COMPLETED':'');if(w){if(hero)hero.style.backgroundImage=w.photo?"url('"+String(w.photo).replace(/'/g,"\\'")+"')":'linear-gradient(135deg,#3d142a,#130a10)';if(title)title.textContent=(w.emoji||'💪')+' '+w.name;if(meta)meta.textContent=fhnWorkoutMinutes(w)+' min · '+(w.calories||0)+' kcal · '+(w.level||'Guided');if(tip)tip.textContent=done?'Beautiful work — this session is already complete. Repeat it or choose another day.':'Coach Nova picked this to keep your week balanced without overtraining.';if(btn){btn.className='plan-start-btn';btn.textContent=done?'Repeat Workout':'Start This Workout';btn.disabled=false}}else{if(hero)hero.style.backgroundImage='linear-gradient(135deg,#173049,#141019)';if(title)title.textContent='🌿 Rest & Recover';if(meta)meta.textContent='Recovery supports strength and consistency';if(tip)tip.textContent='Take a gentle walk, stretch for five minutes, hydrate, and let your body recover.';if(btn){btn.className='plan-start-btn rest';btn.textContent='Recovery Day';btn.disabled=true}}}
+function startSelectedPlanWorkout(){var day=fhnPlanDay(_fhnPlanSelectedDate||fhnDateKey(new Date()));if(!day||!day.workoutId)return;var w=fhnWorkoutById(day.workoutId);if(w&&typeof startWorkout==='function')startWorkout(w.id)}
+function changePlanMonth(delta){_fhnPlanMonth=new Date(_fhnPlanMonth.getFullYear(),_fhnPlanMonth.getMonth()+delta,1);renderPlanCalendar()}
+function renderPlanCalendar(){var wrap=document.getElementById('plan-calendar'),title=document.getElementById('plan-calendar-title');if(!wrap)return;var y=_fhnPlanMonth.getFullYear(),m=_fhnPlanMonth.getMonth(),first=new Date(y,m,1),start=new Date(y,m,1-first.getDay()),done=fhnCompletedDates(),today=fhnDateKey(new Date()),html=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(x){return'<div class="cal-dow">'+x+'</div>'}).join('');for(var i=0;i<42;i++){var d=new Date(start);d.setDate(start.getDate()+i);var key=fhnDateKey(d),p=fhnPlanDay(key),cls='cal-day'+(d.getMonth()!==m?' other':'')+(key===today?' today':'')+(p&&p.type==='workout'?' planned':'')+(done[key]?' completed':'')+(key===_fhnPlanSelectedDate?' selected':'');html+='<button class="'+cls+'" onclick="selectCalendarDate(\''+key+'\')">'+d.getDate()+'</button>'}wrap.innerHTML=html;if(title)title.textContent=first.toLocaleDateString(undefined,{month:'long',year:'numeric'})}
+function selectCalendarDate(key){_fhnPlanSelectedDate=key;var d=fhnParseDateKey(key);_fhnPlanMonth=new Date(d.getFullYear(),d.getMonth(),1);renderPlanCalendar();renderPlanWeekStrip();renderPlanFocus()}
+function updatePlanHomeCard(){loadWeeklyPlan();var today=fhnDateKey(new Date()),day=fhnPlanDay(today),w=day&&day.workoutId?fhnWorkoutById(day.workoutId):null,done=!!fhnCompletedDates()[today],a=document.getElementById('plan-home-icon'),b=document.getElementById('plan-home-workout'),c=document.getElementById('plan-home-meta'),s=document.getElementById('plan-home-status');if(w){if(a)a.textContent=w.emoji||'💪';if(b)b.textContent=w.name;if(c)c.textContent=fhnWorkoutMinutes(w)+' min · '+(w.level||'Guided')+' · '+(w.calories||0)+' kcal';if(s)s.textContent=done?'DONE ✓':'TODAY'}else{if(a)a.textContent='🌿';if(b)b.textContent='Rest & Recover';if(c)c.textContent='Gentle movement, water and recovery';if(s)s.textContent='REST'}}
+function fhnInstallPlanHooks(){try{loadWeeklyPlan();updatePlanHomeCard()}catch(e){}var oldNav=window.navTo;if(typeof oldNav==='function'&&!oldNav._fhnPlanWrapped){function wrapped(page){var r=oldNav.apply(this,arguments);if(page==='plan')setTimeout(renderWeeklyPlanPage,0);if(page==='home')setTimeout(updatePlanHomeCard,0);return r}wrapped._fhnPlanWrapped=true;window.navTo=wrapped}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(fhnInstallPlanHooks,120)});else setTimeout(fhnInstallPlanHooks,120);
 </script>
 
 
@@ -11577,5 +11693,306 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  <div class="timer-sheet-card"><div class="timer-sheet-title">End this workout?</div><div class="timer-sheet-sub">Your completed time and calories will still be saved.</div><div class="timer-end-actions"><button class="timer-end-cancel" onclick="closeEndWorkout()">Keep Going</button><button class="timer-end-confirm" onclick="confirmEndWorkout()">End Workout</button></div></div>
 </div>
 
+<script>
+(function(){
+'use strict';
+const V6_KEY='fhn_v6_';
+let v6Query='';
+let v6Filter='All';
+let v6SaveTimer=null;
+function userKey(s){
+  let id='guest';
+  try{id=(currentUser&&currentUser.email)||currentUser?.id||'guest'}catch(e){}
+  return V6_KEY+String(id).replace(/[^a-z0-9]/gi,'_')+'_'+s;
+}
+function readJSON(k,fallback){try{const v=localStorage.getItem(userKey(k));return v?JSON.parse(v):fallback}catch(e){return fallback}}
+function writeJSON(k,v){try{localStorage.setItem(userKey(k),JSON.stringify(v))}catch(e){}}
+function favIds(){return readJSON('favourites',[])}
+function isFav(id){return favIds().includes(Number(id))}
+function toggleFavourite(id,ev){
+  if(ev){ev.preventDefault();ev.stopPropagation()}
+  let a=favIds(),n=Number(id);a=a.includes(n)?a.filter(x=>x!==n):[n,...a];writeJSON('favourites',a);
+  renderWorkoutList();renderV6Home();
+  try{showToast(a.includes(n)?'Added to favourites':'Removed from favourites',a.includes(n)?'Saved for quick access':'You can add it again anytime')}catch(e){}
+}
+window.toggleFavourite=toggleFavourite;
+function workoutText(w){return [w.name,w.level,w.meta,...(w.exercises||[]).map(x=>x.name+' '+x.reps)].join(' ').toLowerCase()}
+function categoryMatch(w,f){
+  const t=workoutText(w);
+  if(f==='All')return true;if(f==='Favourites')return isFav(w.id);
+  if(f==='Beginner')return /easy|gentle|beginner|low impact/.test(t);
+  if(f==='Moderate')return /moderate|medium/.test(t);
+  if(f==='Intense')return /intense|hard|hiit|tabata|shred|furnace|challenge/.test(t);
+  if(f==='Low Impact')return /low impact|gentle|walk|prenatal|postpartum|mummy|recovery|stretch|wind down|aqua/.test(t);
+  if(f==='Core')return /core|belly|ab|oblique|pilates|tummy|plank/.test(t);
+  if(f==='Legs')return /leg|glute|booty|squat|lunge|barre/.test(t);
+  if(f==='Dance')return /dance|zumba|afrobeat|nigerian/.test(t);
+  if(f==='Postpartum')return /postpartum|mummy tummy|recovery/.test(t);
+  if(f==='Mature')return /mature|aqua|low impact|posture|gentle/.test(t);
+  if(f==='No Equipment')return !/dumbbell|kettlebell|resistance band|bench|chair|barre/.test(t);
+  if(f==='Under 10 Min')return Number(w.duration||9999)<=600||/5-minute|under 10|quick/.test(t);
+  return true;
+}
+function setV6Filter(f){v6Filter=f;document.querySelectorAll('.fhn-v6-chip').forEach(b=>b.classList.toggle('active',b.dataset.f===f));renderWorkoutList()}
+window.setV6Filter=setV6Filter;
+function getFiltered(){const q=v6Query.trim().toLowerCase();return WORKOUTS.filter(w=>categoryMatch(w,v6Filter)&&(!q||workoutText(w).includes(q)))}
+function ensureTools(){
+  const wrap=document.getElementById('workout-list-wrap');if(!wrap||document.getElementById('fhn-v6-tools'))return;
+  const tools=document.createElement('div');tools.id='fhn-v6-tools';tools.className='fhn-v6-tools';
+  const filters=['All','Favourites','Beginner','Moderate','Intense','Low Impact','No Equipment','Under 10 Min','Core','Legs','Dance','Postpartum','Mature'];
+  tools.innerHTML='<div class="fhn-v6-search"><span>⌕</span><input id="fhn-v6-search-input" type="search" placeholder="Search workouts, body area or exercise…" autocomplete="off"></div><div class="fhn-v6-filters">'+filters.map(f=>'<button class="fhn-v6-chip'+(f==='All'?' active':'')+'" data-f="'+f+'" onclick="setV6Filter(\''+f+'\')">'+f+'</button>').join('')+'</div><div class="fhn-v6-count" id="fhn-v6-count"></div>';
+  wrap.parentNode.insertBefore(tools,wrap);
+  tools.querySelector('input').addEventListener('input',function(){v6Query=this.value;renderWorkoutList()});
+}
+function enhancedRenderWorkoutList(){
+  ensureTools();const wrap=document.getElementById('workout-list-wrap');if(!wrap)return;const list=getFiltered();
+  const count=document.getElementById('fhn-v6-count');if(count)count.textContent=list.length+' workout'+(list.length===1?'':'s')+' found';
+  if(!list.length){wrap.innerHTML='<div class="fhn-v6-empty"><div style="font-size:30px;margin-bottom:8px">🔎</div><strong>No matching workouts</strong><div style="font-size:12px;margin-top:5px">Try another search or clear the filter.</div></div>';return}
+  wrap.innerHTML=list.map(w=>`<div class="workout-card${w.photo?' has-photo':''}" id="wcard-${w.id}" onclick="toggleWorkoutCard(${w.id})">
+  ${w.photo?`<div class="wc-photo-wrap"><img src="${w.photo}" alt="${w.name}" loading="lazy" decoding="async"><div class="wc-photo-fade"></div><div class="wc-photo-badge">${w.emoji} ${w.level}</div><button class="fhn-fav-btn ${isFav(w.id)?'on':''}" aria-label="Favourite ${w.name}" onclick="toggleFavourite(${w.id},event)">${isFav(w.id)?'♥':'♡'}</button><span class="wc-photo-arrow" id="wcard-arrow-${w.id}">▼</span><div class="wc-photo-info"><div class="wc-photo-title">${w.name}</div><div class="wc-photo-meta">${getWorkoutRealMeta(w)}</div></div></div>`:
+  `<div class="wc-top" style="position:relative"><div style="display:flex;align-items:center;gap:10px;flex:1"><div class="wc-icon">${w.emoji}</div><div><div class="wc-title">${w.name}</div><div class="wc-meta">${getWorkoutRealMeta(w)}</div></div></div><button class="fhn-fav-btn ${isFav(w.id)?'on':''}" style="position:static" onclick="toggleFavourite(${w.id},event)">${isFav(w.id)?'♥':'♡'}</button></div>`}
+  <div class="ex-list" id="exlist-${w.id}">${(w.exercises||[]).map((e,i)=>`<div class="ex-item"><div class="ex-num">${i+1}</div><div class="ex-name">${e.name}</div><div class="ex-reps">${e.reps}</div><button class="ex-ask-btn" onclick="event.stopPropagation();askCoachAboutExercise('${String(e.name).replace(/'/g,"\\'")}')">?</button></div>`).join('')}<div class="fhn-start-row"><button class="btn btn-pink" onclick="event.stopPropagation();startWorkout(${w.id})">▶ Preview & Start</button></div></div></div>`).join('');
+}
+renderWorkoutList=enhancedRenderWorkoutList;
+window.renderWorkoutList=enhancedRenderWorkoutList;
+function fmtV6(s){s=Math.max(0,Math.floor(Number(s)||0));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function saveResumeSnapshot(){
+  try{
+    if(!activeWorkout||timerElapsed<=0)return;
+    const real=activeRealDuration||activeWorkout.duration||0;
+    if(timerElapsed>=real-1){localStorage.removeItem(userKey('resume'));return}
+    writeJSON('resume',{workoutId:activeWorkout.id,elapsed:timerElapsed,total:real,savedAt:Date.now(),exerciseIndex:exerciseIndex||0,phaseIdx:phaseIdx||0,kcal:Math.round(timerElapsed*((activeWorkout.calories||0)/(real||1)))});
+    renderV6Home();
+  }catch(e){}
+}
+function clearResume(){try{localStorage.removeItem(userKey('resume'));renderV6Home()}catch(e){}}
+window.clearV6Resume=clearResume;
+function resumeV6Workout(){
+  const s=readJSON('resume',null);if(!s)return;const w=WORKOUTS.find(x=>x.id===Number(s.workoutId));if(!w){clearResume();return}
+  startWorkout(w.id);
+  setTimeout(function(){
+    try{document.getElementById('workout-preview-overlay')?.classList.remove('show');_fhnPendingPreviewWorkoutId=null}catch(e){}
+    const t=document.getElementById('timer-section'),l=document.getElementById('workout-list-wrap');if(t)t.style.display='block';if(l)l.style.display='none';
+    timerElapsed=Math.min(Number(s.elapsed)||0,Math.max(0,(activeRealDuration||s.total||1)-1));
+    phaseIdx=Math.max(0,activePhases.findIndex(p=>timerElapsed>=p.start&&timerElapsed<p.end));if(phaseIdx<0)phaseIdx=0;
+    const p=activePhases[phaseIdx];if(p&&p.type==='work'){exerciseIndex=p.exIndex||0;currentRound=p.round||0}
+    try{enterPhase(phaseIdx)}catch(e){}
+    try{updatePremiumTimeUI()}catch(e){}
+    const st=document.getElementById('timer-state');if(st)st.textContent='PAUSED';const bs=document.getElementById('btn-start-timer');if(bs){bs.style.display='flex';bs.textContent='▶ Resume'}
+    document.getElementById('btn-pause-timer')?.style.setProperty('display','none');document.getElementById('btn-stop-timer')?.style.setProperty('display','flex');
+    t?.scrollIntoView({behavior:'smooth',block:'start'});
+  },120);
+}
+window.resumeV6Workout=resumeV6Workout;
+function addRecent(w){if(!w)return;let a=readJSON('recent',[]).filter(x=>x.id!==w.id);a.unshift({id:w.id,at:Date.now()});writeJSON('recent',a.slice(0,8));}
+function renderV6Home(){
+  const home=document.getElementById('page-home');if(!home)return;
+  let host=document.getElementById('fhn-v6-home-host');if(!host){host=document.createElement('div');host.id='fhn-v6-home-host';const plan=document.getElementById('plan-home-card');if(plan)plan.parentNode.insertBefore(host,plan);else home.insertBefore(host,home.firstChild)}
+  const s=readJSON('resume',null);const f=favIds().map(id=>WORKOUTS.find(w=>w.id===id)).filter(Boolean).slice(0,6);const r=readJSON('recent',[]).map(x=>WORKOUTS.find(w=>w.id===x.id)).filter(Boolean).slice(0,6);
+  let html='';
+  if(s){const w=WORKOUTS.find(x=>x.id===Number(s.workoutId));if(w)html+=`<div class="fhn-home-card"><div class="fhn-home-head"><div><div class="fhn-home-title">▶ Continue where you stopped</div><div class="fhn-home-sub">${w.emoji} ${w.name}</div></div><span style="font-size:11px;color:var(--gold)">${Math.round((s.elapsed/(s.total||1))*100)}%</span></div><div class="fhn-resume-meta"><div class="fhn-resume-stat"><strong>${fmtV6(s.elapsed)}</strong><span>Completed</span></div><div class="fhn-resume-stat"><strong>${fmtV6((s.total||0)-s.elapsed)}</strong><span>Remaining</span></div><div class="fhn-resume-stat"><strong>${s.kcal||0}</strong><span>Kcal</span></div></div><div class="fhn-card-actions"><button class="fhn-resume-btn" onclick="resumeV6Workout()">Resume Workout</button><button class="fhn-dismiss-btn" onclick="clearV6Resume()">Dismiss</button></div></div>`}
+  const mini=(title,sub,arr)=>arr.length?`<div class="fhn-home-card"><div class="fhn-home-head"><div><div class="fhn-home-title">${title}</div><div class="fhn-home-sub">${sub}</div></div><button class="coach-refresh-btn" onclick="navTo('workout')">See all</button></div><div class="fhn-mini-list">${arr.map(w=>`<div class="fhn-mini-workout" onclick="navTo('workout');setTimeout(()=>startWorkout(${w.id}),120)"><div class="n">${w.emoji} ${w.name}</div><div class="m">${w.level} · ${getWorkoutRealMeta(w)}</div></div>`).join('')}</div></div>`:'';
+  html+=mini('♥ Your Favourites','Quick access to workouts you love.',f)+mini('↻ Recently Completed','Jump back into your recent sessions.',r);host.innerHTML=html;
+}
+const previousStop=stopTimer;
+stopTimer=async function(){const w=activeWorkout,elapsed=timerElapsed,total=activeRealDuration||(w?w.duration:0);if(w&&elapsed>20)addRecent(w);const out=await previousStop.apply(this,arguments);if(total&&elapsed>=total-2)clearResume();renderV6Home();return out};
+window.stopTimer=stopTimer;
+const previousPause=pauseTimer;
+pauseTimer=function(){const out=previousPause.apply(this,arguments);saveResumeSnapshot();return out};window.pauseTimer=pauseTimer;
+function initV6(){ensureTools();renderWorkoutList();renderV6Home();clearInterval(v6SaveTimer);v6SaveTimer=setInterval(function(){if(typeof timerRunning!=='undefined'&&timerRunning)saveResumeSnapshot()},2500)}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')saveResumeSnapshot()});window.addEventListener('beforeunload',saveResumeSnapshot);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(initV6,450));else setTimeout(initV6,450);
+})();
+
+</script>
+
+<style id="fhn-v7-home-style">
+/* ═══════════════════════════════════════════════
+   FitHerNova V7 — Clean Luxury Home Dashboard
+   Home-only visual upgrade. Timer/audio/voice logic untouched.
+   ═══════════════════════════════════════════════ */
+#page-home{padding-top:12px;background:radial-gradient(circle at 80% 0%,rgba(168,85,247,.08),transparent 32%),radial-gradient(circle at 0% 20%,rgba(255,45,107,.06),transparent 28%)}
+#page-home .home-greeting-row{padding:4px 2px 14px;align-items:center;margin-bottom:0}
+#page-home .home-avatar{width:50px;height:50px;border-color:rgba(255,45,107,.55);box-shadow:0 8px 24px rgba(255,45,107,.16)}
+#page-home .greeting-eyebrow{font-size:12px;color:rgba(255,255,255,.58);margin-bottom:1px}
+#page-home .greeting-name{font-size:25px;line-height:1.08;margin-bottom:4px}
+#page-home .sub-greeting{font-size:11.5px;color:rgba(255,255,255,.46)!important;margin-bottom:7px!important}
+#page-home .home-streak-badge{font-size:10.5px;padding:4px 10px;box-shadow:none;background:rgba(255,122,61,.13);border:1px solid rgba(255,122,61,.25);color:#ffd6c3}
+
+/* hide the duplicated old weekly-plan card after its data is mirrored */
+#page-home #plan-home-card{display:none!important}
+
+#fhn-v7-top{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+#fhn-v7-resume-slot:empty{display:none}
+#fhn-v7-lower-slot:empty{display:none}
+
+.fhn-v7-hero{position:relative;overflow:hidden;border-radius:24px;padding:20px;background:radial-gradient(circle at 95% 5%,rgba(255,209,102,.18),transparent 28%),linear-gradient(135deg,#7d123e 0%,#c41f62 48%,#7c3aed 100%);border:1px solid rgba(255,255,255,.16);box-shadow:0 18px 45px rgba(92,13,57,.32),inset 0 1px 0 rgba(255,255,255,.16)}
+.fhn-v7-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.08) 44%,transparent 67%);transform:translateX(-100%);animation:fhnV7Shine 8s ease-in-out infinite;pointer-events:none}
+@keyframes fhnV7Shine{0%,68%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.fhn-v7-kicker{font-size:10px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:9px;position:relative}
+.fhn-v7-workout{font-family:var(--font-head);font-size:24px;font-weight:900;letter-spacing:-.45px;line-height:1.08;color:#fff;position:relative;margin-bottom:7px}
+.fhn-v7-meta{font-size:12px;color:rgba(255,255,255,.75);line-height:1.45;position:relative;max-width:72%}
+.fhn-v7-hero-actions{display:flex;align-items:center;gap:9px;margin-top:17px;position:relative}
+.fhn-v7-start{height:44px;border:none;border-radius:14px;padding:0 18px;background:#fff;color:#8e1748;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.fhn-v7-plan-link{height:44px;border-radius:14px;padding:0 14px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.09);color:#fff;font-weight:800;cursor:pointer;backdrop-filter:blur(8px)}
+.fhn-v7-week{margin-top:15px;position:relative}
+.fhn-v7-week-row{display:flex;justify-content:space-between;gap:12px;font-size:10.5px;color:rgba(255,255,255,.7);margin-bottom:6px}
+.fhn-v7-week-track{height:5px;background:rgba(255,255,255,.16);border-radius:99px;overflow:hidden}
+.fhn-v7-week-fill{height:100%;width:0;background:linear-gradient(90deg,#fff,#ffd166);border-radius:99px;transition:width .5s ease}
+
+/* Resume card — priority placement, cleaner hierarchy */
+#fhn-v7-resume-slot .fhn-home-card{margin:0!important;background:linear-gradient(145deg,#21131d,#151116)!important;border:1px solid rgba(255,209,102,.22)!important;border-radius:20px!important;box-shadow:0 10px 28px rgba(0,0,0,.23)!important}
+#fhn-v7-resume-slot .fhn-home-title{color:#fff!important;font-size:14px!important}
+#fhn-v7-resume-slot .fhn-home-sub{color:rgba(255,255,255,.58)!important}
+#fhn-v7-resume-slot .fhn-dismiss-btn{background:transparent!important;border:none!important;color:rgba(255,255,255,.42)!important;text-decoration:underline;padding-left:8px!important;padding-right:8px!important}
+#fhn-v7-resume-slot .fhn-resume-btn{background:linear-gradient(135deg,var(--pink),var(--violet))!important;border:none!important;box-shadow:0 7px 20px rgba(255,45,107,.22)!important}
+
+/* Quick hub becomes the second major action area */
+#page-home .quick-hub{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 12px}
+#page-home .hub-btn{min-width:0;background:#171519;border:1px solid rgba(255,255,255,.075);border-radius:16px;padding:12px 6px;box-shadow:none;transition:transform .18s,border-color .18s,background .18s}
+#page-home .hub-btn:hover{transform:translateY(-1px);border-color:rgba(255,45,107,.3);background:#1d171c}
+#page-home .hub-btn:nth-child(2){background:linear-gradient(145deg,rgba(255,45,107,.24),rgba(168,85,247,.16));border-color:rgba(255,45,107,.34);box-shadow:0 8px 20px rgba(255,45,107,.12)}
+#page-home .hub-emoji{font-size:21px;margin-bottom:5px}
+#page-home .hub-label{font-size:10.5px;font-weight:850;white-space:nowrap}
+#page-home .hub-sub{font-size:8.5px;color:rgba(255,255,255,.42);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Today's Wellness — quieter card, clearer meaning */
+#page-home .today-plan-card{background:#171519;border:1px solid rgba(255,255,255,.075);border-radius:22px;padding:17px;margin-bottom:12px;box-shadow:0 10px 28px rgba(0,0,0,.2)}
+#page-home .today-plan-title{font-size:15px!important;color:#fff!important}
+#page-home .today-plan-sub{font-size:11px!important;color:rgba(255,255,255,.48)!important}
+#page-home .today-score-verdict{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055);border-radius:12px;padding:9px 10px;margin:8px 0 10px;font-size:11px!important;color:rgba(255,255,255,.65)!important;line-height:1.4}
+#page-home .today-plan-pill{background:#121114!important;border:1px solid rgba(255,255,255,.055)!important;border-radius:13px!important;padding:9px 5px!important}
+#page-home .today-plan-pill b{font-size:16px!important}
+#page-home .today-plan-pill span{font-size:8.5px!important;color:rgba(255,255,255,.42)!important}
+#page-home .wellness-ring{transform:scale(.88);transform-origin:right center}
+#page-home .wellness-ring-center span{font-size:8px!important}
+#page-home .today-checklist{margin-top:10px}
+#page-home .today-checklist-head{cursor:pointer;padding:8px 0 4px}
+#page-home .checklist-items{max-height:132px;overflow:hidden;transition:max-height .3s ease}
+#page-home .today-checklist.v7-expanded .checklist-items{max-height:520px}
+#page-home .today-checklist:after{content:'View all daily goals';display:block;text-align:center;font-size:10px;color:var(--pink-light);padding-top:7px;cursor:pointer}
+#page-home .today-checklist.v7-expanded:after{content:'Show fewer goals'}
+
+/* Reduce gradient competition across normal home cards */
+#page-home .water-tracker-card,#page-home .daily-quote-card,#page-home>.card,#page-home #weekly-summary-wrap>*{background:#171519!important;border:1px solid rgba(255,255,255,.075)!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important;border-radius:20px!important}
+#page-home .water-tracker-title{color:#8fd3ff!important}
+#page-home .daily-quote-card:before{opacity:.35}
+#page-home .sec-label{color:rgba(255,255,255,.48);letter-spacing:1.25px}
+
+/* Favourites/recent become lower-priority compact sections */
+#fhn-v7-lower-slot{margin-top:2px}
+#fhn-v7-lower-slot .fhn-home-card{background:#171519!important;border:1px solid rgba(255,255,255,.075)!important;border-radius:20px!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important;margin-bottom:10px!important}
+#fhn-v7-lower-slot .fhn-home-title{font-size:13px!important}
+#fhn-v7-lower-slot .fhn-mini-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+#fhn-v7-lower-slot .fhn-mini-workout{background:#111013!important;border-radius:12px!important;border:1px solid rgba(255,255,255,.05)!important}
+
+#page-home .verify-banner,#page-home .pro-moment-banner{border-radius:18px}
+#page-home .install-banner{border-radius:18px;background:#171519;border:1px solid rgba(255,255,255,.075)}
+
+@media(max-width:430px){
+  #page-home{padding-left:14px;padding-right:14px}
+  .fhn-v7-hero{padding:18px;border-radius:22px}
+  .fhn-v7-workout{font-size:21px}
+  .fhn-v7-meta{max-width:88%;font-size:11px}
+  .fhn-v7-start,.fhn-v7-plan-link{height:42px;font-size:11px;padding:0 13px}
+  #page-home .quick-hub{gap:6px}
+  #page-home .hub-btn{padding:10px 3px}
+  #page-home .hub-label{font-size:9px}
+  #page-home .hub-sub{font-size:7.5px}
+  #fhn-v7-lower-slot .fhn-mini-list{grid-template-columns:1fr}
+}
+@media(max-width:360px){
+  #page-home .quick-hub{grid-template-columns:repeat(2,1fr)}
+  #page-home .hub-label{font-size:10px}
+  #page-home .hub-sub{font-size:8.5px}
+  .fhn-v7-hero-actions{display:grid;grid-template-columns:1fr 1fr}
+}
+</style>
+<script id="fhn-v7-home-script">
+(function(){
+'use strict';
+function q(s,r){return (r||document).querySelector(s)}
+function qa(s,r){return Array.from((r||document).querySelectorAll(s))}
+function text(id,fallback){var el=document.getElementById(id);return el&&el.textContent.trim()?el.textContent.trim():fallback}
+function setTxt(el,v){if(el&&el.textContent!==String(v))el.textContent=String(v)}
+function parseWeeklyProgress(){
+  try{
+    var labels=qa('#plan-week-strip .plan-day, #weekly-plan-strip .plan-day, .plan-week-day');
+    if(labels.length){var done=labels.filter(function(x){return x.classList.contains('done')||/complete|done/i.test(x.textContent)}).length;return {done:done,total:labels.length}}
+    var raw=(document.getElementById('plan-home-meta')||{}).textContent||'';var m=raw.match(/(\d+)\s*(?:of|\/)\s*(\d+)/i);if(m)return{done:+m[1],total:+m[2]};
+  }catch(e){}
+  return {done:0,total:4};
+}
+function startToday(){
+  try{
+    if(typeof loadWeeklyPlan==='function'&&typeof fhnDateKey==='function'&&typeof fhnPlanDay==='function'&&typeof startWorkout==='function'){
+      loadWeeklyPlan();
+      var day=fhnPlanDay(fhnDateKey(new Date()));
+      if(day&&day.type==='workout'&&day.workoutId){startWorkout(day.workoutId);return}
+    }
+    if(typeof openWeeklyPlan==='function'){openWeeklyPlan();return}
+    if(typeof navTo==='function')navTo('workout');
+  }catch(e){}
+}
+window.fhnV7StartToday=startToday;
+function makeStructure(){
+  var home=document.getElementById('page-home');if(!home)return null;
+  var greeting=q('.home-greeting-row',home);if(!greeting)return null;
+  var top=document.getElementById('fhn-v7-top');
+  if(!top){
+    top=document.createElement('div');top.id='fhn-v7-top';
+    top.innerHTML='<div id="fhn-v7-resume-slot"></div><div class="fhn-v7-hero" id="fhn-v7-hero"><div class="fhn-v7-kicker">Today\'s Fit Plan</div><div class="fhn-v7-workout" id="fhn-v7-workout">Preparing your workout…</div><div class="fhn-v7-meta" id="fhn-v7-meta">Personalized for your goals and fitness level.</div><div class="fhn-v7-hero-actions"><button class="fhn-v7-start" onclick="fhnV7StartToday()">Start Today\'s Workout</button><button class="fhn-v7-plan-link" onclick="openWeeklyPlan()">View Weekly Plan</button></div><div class="fhn-v7-week"><div class="fhn-v7-week-row"><span>Weekly goal</span><span id="fhn-v7-week-label">0 of 4 completed</span></div><div class="fhn-v7-week-track"><div class="fhn-v7-week-fill" id="fhn-v7-week-fill"></div></div></div></div>';
+    greeting.parentNode.insertBefore(top,greeting.nextSibling);
+  }
+  var lower=document.getElementById('fhn-v7-lower-slot');
+  if(!lower){lower=document.createElement('div');lower.id='fhn-v7-lower-slot';var weekly=document.getElementById('weekly-summary-wrap');if(weekly)weekly.parentNode.insertBefore(lower,weekly);else home.appendChild(lower)}
+  return {home:home,top:top,lower:lower};
+}
+function moveV6Cards(){
+  var s=makeStructure();if(!s)return;
+  var host=document.getElementById('fhn-v6-home-host');if(!host)return;
+  var cards=qa(':scope > .fhn-home-card',host);
+  cards.forEach(function(card){
+    var title=(q('.fhn-home-title',card)||{}).textContent||'';
+    if(/Continue where you stopped/i.test(title))document.getElementById('fhn-v7-resume-slot').appendChild(card);
+    else s.lower.appendChild(card);
+  });
+}
+function syncHero(){
+  makeStructure();
+  var workout=text('plan-home-workout','Your personalized workout');
+  var meta=text('plan-home-meta','Personalized for your goals and fitness level.');
+  if(/No paid AI|subscription/i.test(meta))meta='Personalized for your goals and fitness level.';
+  setTxt(q('#fhn-v7-workout'),workout);
+  setTxt(q('#fhn-v7-meta'),meta);
+  var p=parseWeeklyProgress(),pct=p.total?Math.min(100,Math.round(p.done/p.total*100)):0;
+  setTxt(q('#fhn-v7-week-label'),p.done+' of '+p.total+' completed');
+  q('#fhn-v7-week-fill').style.width=pct+'%';
+}
+function renameCopy(){
+  var t=q('.today-plan-title');setTxt(t,"Today's Wellness");
+  var s=q('.today-plan-sub');setTxt(s,'Your movement, nutrition and hydration at a glance.');
+  var verdict=document.getElementById('today-score-verdict');if(verdict&&/Log something/i.test(verdict.textContent))setTxt(verdict,'Complete one healthy action to begin today\'s progress.');
+  var center=q('.wellness-ring-center span');setTxt(center,'Wellness');
+  qa('.quick-hub .hub-btn').forEach(function(btn,i){
+    var label=q('.hub-label',btn),sub=q('.hub-sub',btn);
+    var vals=[['Log Meal','Track nutrition'],['Start Workout','Train now'],['Music','Workout radio'],['Progress','See your journey']][i];
+    if(vals){setTxt(label,vals[0]);setTxt(sub,vals[1])}
+  });
+}
+function reorder(){
+  var home=document.getElementById('page-home'),hero=document.getElementById('fhn-v7-top'),hub=q('.quick-hub',home),well=q('.today-plan-card',home);if(!home||!hero)return;
+  if(hub&&hero.nextSibling!==hub)hero.parentNode.insertBefore(hub,hero.nextSibling);
+  if(well&&hub&&hub.nextSibling!==well)hub.parentNode.insertBefore(well,hub.nextSibling);
+}
+function checklistToggle(){
+  var c=q('.today-checklist');if(!c||c.dataset.v7Bound)return;c.dataset.v7Bound='1';c.addEventListener('click',function(e){if(e.target.closest('.checklist-items'))return;c.classList.toggle('v7-expanded')});
+}
+var busy=false;
+function apply(){if(busy)return;busy=true;requestAnimationFrame(function(){try{makeStructure();moveV6Cards();syncHero();renameCopy();reorder();checklistToggle()}catch(e){}busy=false})}
+function init(){apply();var home=document.getElementById('page-home');if(home){new MutationObserver(apply).observe(home,{childList:true,subtree:true,characterData:true})}setInterval(syncHero,2500)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,700)});else setTimeout(init,700);
+})();
+</script>
 </body>
 </html>
