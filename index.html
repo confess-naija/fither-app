@@ -1794,21 +1794,6 @@ select option{background:var(--black3);}
 
     <div class="page" id="page-progress">
       <div class="sec-label" style="margin-bottom:14px;">📈 Your Progress</div>
-      <div class="prog-header">
-        <div class="prog-stat-big">
-          <div class="psb-val pink" id="prog-streak">0</div>
-          <div style="font-size:11px;color:var(--grey);margin-top:4px;">Day Streak 🔥</div>
-        </div>
-        <div class="prog-stat-big">
-          <div class="psb-val green" id="prog-workouts">0</div>
-          <div style="font-size:11px;color:var(--grey);margin-top:4px;">Total Workouts</div>
-        </div>
-        <div class="prog-stat-big">
-          <div class="psb-val gold" id="prog-calories">0</div>
-          <div style="font-size:11px;color:var(--grey);margin-top:4px;">kcal Burned</div>
-        </div>
-      </div>
-
       <!-- Weight Tracker -->
       <div class="card">
         <div class="sec-label">⚖️ Weight Tracker</div>
@@ -1825,12 +1810,6 @@ select option{background:var(--black3);}
           <svg class="weight-chart-svg" id="weight-chart-svg" viewBox="0 0 400 160" preserveAspectRatio="none"></svg>
         </div>
         <div class="weight-entry-list" id="weight-entry-list"></div>
-      </div>
-
-      <!-- Weekly Activity Chart -->
-      <div class="chart-wrap">
-        <div class="sec-label">Weekly Activity</div>
-        <div class="chart-area" id="weekly-chart"></div>
       </div>
 
       <!-- Progress Photos -->
@@ -1881,12 +1860,6 @@ select option{background:var(--black3);}
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- Milestones -->
-      <div class="card">
-        <div class="sec-label">Milestones</div>
-        <div id="milestones-list"></div>
       </div>
 
     </div>
@@ -4023,6 +3996,7 @@ const WORKOUT_PHOTO_AQUA = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/
 const WORKOUT_PHOTO_NIGERIANDANCE = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/workout-photos/nigeriandance.jpg';
 const WORKOUT_PHOTO_CLIMBCONQUER = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/workout-photos/climbconquer.jpg';
 const WORKOUT_PHOTO_QUEENCHALLENGE = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/workout-photos/queenchallenge.jpg';
+const WORKOUT_PHOTO_AFROBEATS = 'https://norgzcztduoxkshtthkm.supabase.co/storage/v1/object/public/workout-photos/dancefreeze.jpg';
 const WORKOUTS = [
   { id:30, emoji:'👶', name:'Mummy Tummy Fix', photo:WORKOUT_PHOTO_MUMMYTUMMY, meta:'20 min · 100 kcal', badge:'badge-gentle', level:'Gentle',
     exercises:[{name:'Belly Breathing',reps:'3 min'},{name:'Heel Slides',reps:'3x10'},{name:'Clam Shells',reps:'3x12 each'},{name:'Glute Bridges',reps:'3x15'},{name:'Bird Dog',reps:'3x8 each'}],
@@ -4183,6 +4157,24 @@ const WORKOUTS = [
   { id:54, emoji:'🌙', name:'Gentle Pilates Mobility', photo:WORKOUT_PHOTO_PILATESGENTLEMOBILITY, meta:'20 min · 75 kcal', badge:'badge-gentle', level:'Gentle',
     exercises:[{name:'Ribcage Breathing',reps:'2 min'},{name:'Cat-Cow Pilates',reps:'2 min'},{name:'Knee Sways',reps:'3x10'},{name:'Seated Spine Twist',reps:'3x8 each'},{name:'Resting Mermaid Stretch',reps:'3 min'}],
     duration:1200, calories:75 },
+  { id:55, emoji:'🚶🏾‍♀️', name:'10-Minute Indoor Walk', photo:WORKOUT_PHOTO_MARCH, meta:'10 min · 75 kcal', badge:'badge-easy', level:'Easy',
+    exercises:[{name:'Easy March',reps:'2 min'},{name:'Step Touch',reps:'2 min'},{name:'Knee Lifts',reps:'2 min'},{name:'Heel Digs',reps:'2 min'},{name:'Easy Walk & Breathe',reps:'2 min'}],
+    duration:600, calories:75 },
+  { id:56, emoji:'🔥', name:'20-Minute Fat Burn Walk', photo:WORKOUT_PHOTO_LOWIMPACT, meta:'20 min · 155 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Power March',reps:'4 min'},{name:'Wide Step Walk',reps:'4 min'},{name:'Knee Drive Walk',reps:'4 min'},{name:'Fast Feet Walk',reps:'4 min'},{name:'Cool Down Walk',reps:'4 min'}],
+    duration:1200, calories:155 },
+  { id:57, emoji:'💃🏾', name:'Afrobeats Walking Workout', photo:WORKOUT_PHOTO_AFROBEATS, meta:'25 min · 190 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Afro March',reps:'5 min'},{name:'Side Groove Steps',reps:'5 min'},{name:'Knee Lift Groove',reps:'5 min'},{name:'Forward & Back Walk',reps:'5 min'},{name:'Celebration Cool Down',reps:'5 min'}],
+    duration:1500, calories:190 },
+  { id:58, emoji:'⚡', name:'30-Minute Power Walk', photo:WORKOUT_PHOTO_MORNINGWAKE, meta:'30 min · 235 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Warm-Up Walk',reps:'5 min'},{name:'Power Walk',reps:'7 min'},{name:'Hill Arms & March',reps:'6 min'},{name:'Speed Walk Intervals',reps:'7 min'},{name:'Cool Down Walk',reps:'5 min'}],
+    duration:1800, calories:235 },
+  { id:59, emoji:'💗', name:'Knee-Friendly Walking Cardio', photo:WORKOUT_PHOTO_LOWIMPACT, meta:'20 min · 125 kcal', badge:'badge-gentle', level:'Gentle',
+    exercises:[{name:'Gentle March',reps:'4 min'},{name:'Side Step Touch',reps:'4 min'},{name:'Heel Digs',reps:'4 min'},{name:'Low Knee Lifts',reps:'4 min'},{name:'Mobility Cool Down',reps:'4 min'}],
+    duration:1200, calories:125 },
+  { id:60, emoji:'👑', name:'5,000-Step FitHerNova Challenge', photo:WORKOUT_PHOTO_QUEENCHALLENGE, meta:'45 min · 330 kcal', badge:'badge-med', level:'Moderate',
+    exercises:[{name:'Easy Start Walk',reps:'5 min'},{name:'Steady Step Block',reps:'10 min'},{name:'Power Step Block',reps:'10 min'},{name:'Rhythm Walk',reps:'10 min'},{name:'Final Steps & Cool Down',reps:'10 min'}],
+    duration:2700, calories:330 },
   { id:49, emoji:'⚓', name:'Navy SEAL Challenge', photo:WORKOUT_PHOTO_JUMP, meta:'30 min · 380 kcal', badge:'badge-hard', level:'Intense',
     exercises:[{name:'Burpee Pull-ups',reps:'3x10'},{name:'Bear Crawl Pushups',reps:'3x10'},{name:'Jumping Lunges',reps:'3x20'},{name:'Plank to Pushup',reps:'3x15'},{name:'Sprint Finish',reps:'5x30s'}],
     duration:1800, calories:380 }
@@ -6616,13 +6608,18 @@ async function stopTimer() {
   // From here down: nice-to-haves only, each isolated so none of them can
   // ever leave the workout screen stuck open again.
   try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch(e) {}
+  try { stopVoiceTrainer(); } catch(e) {}
   try {
     if (appState.isProUser && _voiceMode !== 'off') {
       const isComplete = finalElapsed >= realDur - 5;
-      setTimeout(() => { try { playVoiceClip(isComplete ? 'complete' : 'rest'); } catch(e) {} }, 300);
+      setTimeout(() => {
+        try {
+          if (isComplete) smartCoachComplete(workoutForSave);
+          else smartCoachSpeak('You did well. Save this point, recover, and come back when you are ready.', 'session-end');
+        } catch(e) {}
+      }, 420);
     }
   } catch(e) {}
-  try { stopVoiceTrainer(); } catch(e) {}
   if (finishedNaturally) { try { confettiBurst(); } catch(e) {} }
 
   if (workoutForSave) {
@@ -11619,7 +11616,6 @@ function startTimer(){
 function startTimerCore(){
  timerRunning=true;_lastClip='';_timerBaseElapsed=timerElapsed;_timerStartedAt=Date.now();requestWakeLock();
  var bs=document.getElementById('btn-start-timer'),bp=document.getElementById('btn-pause-timer'),be=document.getElementById('btn-stop-timer');if(bs)bs.style.display='none';if(bp)bp.style.display='flex';if(be)be.style.display='flex';
- if(appState.isProUser&&_voiceMode!=='off')setTimeout(function(){playVoiceClip('warmup')},300);
  if(timerElapsed===0)enterPhase(0);
  clearInterval(timerInterval);timerInterval=setInterval(premiumTimerTick,250);premiumTimerTick();
 }
@@ -11629,7 +11625,7 @@ function premiumTimerTick(){
  var kcal=Math.round(timerElapsed*kcalRate),k=document.getElementById('ts-kcal');if(k)k.textContent=kcal;
  while(phaseIdx<activePhases.length-1&&timerElapsed>=activePhases[phaseIdx].end){phaseIdx++;enterPhase(phaseIdx)}
  var p=getCurrentPhase();if(p&&p.type==='work'&&timerElapsed%5===0){var h=document.getElementById('timer-hype');if(h&&!h.dataset.lastTick){h.textContent=HYPE_LINES[Math.floor(Math.random()*HYPE_LINES.length)];h.dataset.lastTick=timerElapsed;setTimeout(function(){if(h)delete h.dataset.lastTick},800)}}
- if(appState.isProUser&&_voiceMode!=='off'&&activeWorkout&&timerElapsed!==_lastVoiceCueTick){_lastVoiceCueTick=timerElapsed;var cue=getVoiceCueForTime(timerElapsed,realDur);if(cue)playVoiceClip(cue)}
+ if(appState.isProUser&&_voiceMode!=='off'&&activeWorkout&&timerElapsed!==_lastVoiceCueTick){_lastVoiceCueTick=timerElapsed;try{smartCoachTick(p)}catch(e){}}
  updatePremiumTimeUI();if(timerElapsed>=realDur)stopTimer();
 }
 function pauseTimer(){
@@ -11766,6 +11762,7 @@ function categoryMatch(w,f){
   if(f==='Legs')return /leg|glute|booty|squat|lunge|barre/.test(t);
   if(f==='Dance')return /dance|zumba|afrobeat|nigerian/.test(t);
   if(f==='Pilates')return /pilates|hundred|teaser|roll up|single leg stretch|spine stretch|mermaid|pelvic curl/.test(t);
+  if(f==='Walking')return (window.WALKING_IDS||[]).includes(Number(w.id));
   if(f==='Postpartum')return /postpartum|mummy tummy|recovery/.test(t);
   if(f==='Mature')return /mature|aqua|low impact|posture|gentle/.test(t);
   if(f==='No Equipment')return !/dumbbell|kettlebell|resistance band|bench|chair|barre/.test(t);
@@ -11778,7 +11775,7 @@ function getFiltered(){const q=v6Query.trim().toLowerCase();return WORKOUTS.filt
 function ensureTools(){
   const wrap=document.getElementById('workout-list-wrap');if(!wrap||document.getElementById('fhn-v6-tools'))return;
   const tools=document.createElement('div');tools.id='fhn-v6-tools';tools.className='fhn-v6-tools';
-  const filters=['All','Favourites','Pilates','Beginner','Moderate','Intense','Low Impact','No Equipment','Under 10 Min','Core','Legs','Dance','Postpartum','Mature'];
+  const filters=['All','Favourites','Walking','Pilates','Beginner','Moderate','Intense','Low Impact','No Equipment','Under 10 Min','Core','Legs','Dance','Postpartum','Mature'];
   tools.innerHTML='<div class="fhn-v6-search"><span>⌕</span><input id="fhn-v6-search-input" type="search" placeholder="Search workouts, body area or exercise…" autocomplete="off"></div><div class="fhn-v6-filters">'+filters.map(f=>'<button class="fhn-v6-chip'+(f==='All'?' active':'')+'" data-f="'+f+'" onclick="setV6Filter(\''+f+'\')">'+f+'</button>').join('')+'</div><div class="fhn-v6-count" id="fhn-v6-count"></div>';
   wrap.parentNode.insertBefore(tools,wrap);
   tools.querySelector('input').addEventListener('input',function(){v6Query=this.value;renderWorkoutList()});
@@ -12069,7 +12066,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 var KEY='fhn_v8_preferences';
 var state={mood:'good',focus:'full',recommendation:null};
 var moods=[['tired','😴','Tired'],['good','🙂','Good'],['energized','🔥','Energized'],['sore','😣','Sore']];
-var focuses=[['full','✨','Full Body'],['core','🎯','Core'],['glutes','🍑','Glutes'],['legs','🦵','Legs'],['upper','💪','Upper Body'],['pilates','🌷','Pilates'],['mobility','🧘','Mobility']];
+var focuses=[['full','✨','Full Body'],['core','🎯','Core'],['glutes','🍑','Glutes'],['legs','🦵','Legs'],['upper','💪','Upper Body'],['pilates','🌷','Pilates'],['walking','🚶🏾‍♀️','Walking'],['mobility','🧘','Mobility']];
 var programs=[4,5,6,7,9,16,17,3,11,8,34,12,19,33,10,30,15,40,2,31,18];
 function pk(k){try{return typeof uKey==='function'?uKey(k):k}catch(e){return k}}
 function load(){try{var x=JSON.parse(localStorage.getItem(pk(KEY))||'{}');if(x.mood)state.mood=x.mood;if(x.focus)state.focus=x.focus}catch(e){}}
@@ -12077,11 +12074,11 @@ function save(){try{localStorage.setItem(pk(KEY),JSON.stringify({mood:state.mood
 function workoutById(id){return (window.WORKOUTS||WORKOUTS||[]).find(function(w){return Number(w.id)===Number(id)})}
 function minutes(w){return Math.max(1,Math.round((w.duration||0)/60))}
 function textOf(w){return ((w.name||'')+' '+(w.level||'')+' '+(w.exercises||[]).map(function(e){return e.name}).join(' ')).toLowerCase()}
-function focusScore(w,focus){var t=textOf(w),s=0;if(focus==='full'&&/full body|circuit|hiit|cardio|walk|dance|tabata|fat furnace/.test(t))s+=8;if(focus==='core'&&/core|belly|ab|plank|crunch|pilates|tummy|v-up|six-pack/.test(t))s+=9;if(focus==='glutes'&&/glute|booty|hip|bridge|donkey|clam|squat/.test(t))s+=9;if(focus==='legs'&&/leg|lunge|squat|calf|walk|step|skater/.test(t))s+=9;if(focus==='upper'&&/upper|push-up|shoulder|arm|back|posture|tricep|superman/.test(t))s+=9;if(focus==='pilates'&&/pilates|hundred|teaser|roll up|single leg stretch|spine stretch|mermaid|pelvic curl/.test(t))s+=11;if(focus==='mobility'&&/yoga|stretch|flow|recovery|wind down|stress|mobility|breathing/.test(t))s+=9;return s}
+function focusScore(w,focus){var t=textOf(w),s=0;if(focus==='full'&&/full body|circuit|hiit|cardio|walk|dance|tabata|fat furnace/.test(t))s+=8;if(focus==='core'&&/core|belly|ab|plank|crunch|pilates|tummy|v-up|six-pack/.test(t))s+=9;if(focus==='glutes'&&/glute|booty|hip|bridge|donkey|clam|squat/.test(t))s+=9;if(focus==='legs'&&/leg|lunge|squat|calf|walk|step|skater/.test(t))s+=9;if(focus==='upper'&&/upper|push-up|shoulder|arm|back|posture|tricep|superman/.test(t))s+=9;if(focus==='pilates'&&/pilates|hundred|teaser|roll up|single leg stretch|spine stretch|mermaid|pelvic curl/.test(t))s+=11;if(focus==='walking'&&(window.WALKING_IDS||[]).includes(Number(w.id)))s+=11;if(focus==='mobility'&&/yoga|stretch|flow|recovery|wind down|stress|mobility|breathing/.test(t))s+=9;return s}
 function moodScore(w,mood){var level=(w.level||'').toLowerCase(),m=minutes(w),s=0;if(mood==='tired'){if(/gentle|easy/.test(level))s+=8;if(m<=20)s+=3;if(/hiit|intense/.test(textOf(w)))s-=8}if(mood==='good'){if(/moderate|easy/.test(level))s+=5;if(m>=15&&m<=30)s+=2}if(mood==='energized'){if(/intense|moderate/.test(level))s+=7;if(m>=15)s+=2}if(mood==='sore'){if(/gentle|easy/.test(level))s+=9;if(/stretch|yoga|recovery|wind down|breathing/.test(textOf(w)))s+=7;if(/hiit|jump|intense/.test(textOf(w)))s-=10}return s}
 function recentNames(){try{return (appState.workoutLog||[]).slice(-3).map(function(x){return String(x.name||x.workout_name||'').toLowerCase()})}catch(e){return[]}}
 function choose(){var list=(window.WORKOUTS||WORKOUTS||[]).slice(),recent=recentNames();list.sort(function(a,b){var sa=focusScore(a,state.focus)+moodScore(a,state.mood),sb=focusScore(b,state.focus)+moodScore(b,state.mood);if(recent.indexOf(String(a.name).toLowerCase())>-1)sa-=3;if(recent.indexOf(String(b.name).toLowerCase())>-1)sb-=3;return sb-sa});state.recommendation=list[0]||null;return state.recommendation}
-function reason(w){var mood={tired:'you chose a lower-energy day',good:'you feel ready for balanced movement',energized:'you are ready for a stronger session',sore:'your body needs a gentler option'}[state.mood];var focus={full:'full-body movement',core:'core strength',glutes:'glute activation',legs:'lower-body strength',upper:'upper-body tone',pilates:'controlled Pilates strength and posture',mobility:'mobility and recovery'}[state.focus];return 'Recommended because '+mood+' and selected '+focus+'.';}
+function reason(w){var mood={tired:'you chose a lower-energy day',good:'you feel ready for balanced movement',energized:'you are ready for a stronger session',sore:'your body needs a gentler option'}[state.mood];var focus={full:'full-body movement',core:'core strength',glutes:'glute activation',legs:'lower-body strength',upper:'upper-body tone',pilates:'controlled Pilates strength and posture',walking:'low-impact walking cardio and daily movement',mobility:'mobility and recovery'}[state.focus];return 'Recommended because '+mood+' and selected '+focus+'.';}
 function chipHtml(arr,type){return arr.map(function(x){return '<button class="fhn-v8-chip'+(state[type]===x[0]?' active':'')+'" data-v8-type="'+type+'" data-v8-value="'+x[0]+'">'+x[1]+' '+x[2]+'</button>'}).join('')}
 function dayIndex(){var raw=localStorage.getItem(pk('fhn_v8_program_start'));if(!raw){raw=new Date().toISOString().slice(0,10);localStorage.setItem(pk('fhn_v8_program_start'),raw)}var a=new Date(raw+'T00:00:00'),b=new Date();a.setHours(0,0,0,0);b.setHours(0,0,0,0);return Math.max(0,Math.min(20,Math.floor((b-a)/86400000)))}
 function programWorkout(){return workoutById(programs[dayIndex()]||programs[0])}
@@ -12228,7 +12225,7 @@ function mountPilates(){
  if(!anchor)return;
  var box=document.createElement('section');
  box.id='fhn-pilates-studio';box.className='fhn-pilates-studio';
- box.innerHTML='<div class="fhn-pilates-inner"><div class="fhn-pilates-kicker">FitHerNova Pilates Studio</div><div class="fhn-pilates-title">Strong core. Better posture. Graceful movement.</div><div class="fhn-pilates-sub">A complete Pilates collection for beginners through advanced users, with controlled low-impact sessions for core strength, glutes, mobility and full-body toning.</div><div class="fhn-pilates-benefits"><span class="fhn-pilates-benefit">Low impact</span><span class="fhn-pilates-benefit">Core control</span><span class="fhn-pilates-benefit">Posture & balance</span><span class="fhn-pilates-benefit">No equipment</span></div><div class="fhn-pilates-actions"><button class="fhn-pilates-primary" onclick="fhnStartPilates(51)">Start Beginner Pilates</button><button class="fhn-pilates-secondary" onclick="fhnShowPilates()">View All Pilates Workouts</button></div><div class="fhn-pilates-mini"><div class="fhn-pilates-mini-card"><strong>🌷 Foundations</strong><span>18 min · Beginner</span></div><div class="fhn-pilates-mini-card"><strong>✨ Full Body Flow</strong><span>30 min · Moderate</span></div><div class="fhn-pilates-mini-card"><strong>🤸 Advanced Pilates</strong><span>35 min · Intense</span></div></div></div>';
+ box.innerHTML='<div class="fhn-pilates-inner"><div class="fhn-pilates-kicker">FitHerNova Pilates</div><div class="fhn-pilates-title">Strong core. Better posture. Graceful movement.</div><div class="fhn-pilates-sub">A complete Pilates collection for beginners through advanced users, with controlled low-impact sessions for core strength, glutes, mobility and full-body toning.</div><div class="fhn-pilates-benefits"><span class="fhn-pilates-benefit">Low impact</span><span class="fhn-pilates-benefit">Core control</span><span class="fhn-pilates-benefit">Posture & balance</span><span class="fhn-pilates-benefit">No equipment</span></div><div class="fhn-pilates-actions"><button class="fhn-pilates-primary" onclick="fhnStartPilates(51)">Start Beginner Pilates</button><button class="fhn-pilates-secondary" onclick="fhnShowPilates()">View All Pilates Workouts</button></div><div class="fhn-pilates-mini"><div class="fhn-pilates-mini-card"><strong>🌷 Foundations</strong><span>18 min · Beginner</span></div><div class="fhn-pilates-mini-card"><strong>✨ Full Body Flow</strong><span>30 min · Moderate</span></div><div class="fhn-pilates-mini-card"><strong>🤸 Advanced Pilates</strong><span>35 min · Intense</span></div></div></div>';
  anchor.parentNode.insertBefore(box,anchor);
 }
 window.fhnStartPilates=function(id){var w=getW(id);if(w&&typeof startWorkout==='function')startWorkout(w.id)};
@@ -12239,6 +12236,927 @@ window.fhnShowPilates=function(){
 };
 function init(){setTimeout(mountPilates,900);setInterval(mountPilates,3000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+
+<style id="fhn-v10-walking-style">
+.fhn-walking-hub{margin:0 0 14px;border-radius:24px;overflow:hidden;position:relative;background:
+radial-gradient(circle at 82% 18%,rgba(255,209,102,.18),transparent 28%),
+radial-gradient(circle at 14% 90%,rgba(255,45,107,.22),transparent 36%),
+linear-gradient(145deg,#35101f,#1a0b15 60%,#0d0d10);
+border:1px solid rgba(255,122,61,.28);box-shadow:0 16px 42px rgba(0,0,0,.3)}
+.fhn-walking-inner{padding:18px;position:relative;z-index:2}
+.fhn-walking-kicker{font-size:9px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase;color:#ffd7b8}
+.fhn-walking-title{font-family:var(--font-head);font-size:24px;font-weight:900;line-height:1.05;margin:6px 0 5px}
+.fhn-walking-sub{font-size:11px;line-height:1.5;color:rgba(255,255,255,.68);max-width:620px}
+.fhn-walking-tags{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.fhn-walking-tag{font-size:9.5px;font-weight:800;color:rgba(255,255,255,.8);padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09)}
+.fhn-walking-actions{display:flex;gap:8px;flex-wrap:wrap}
+.fhn-walking-primary,.fhn-walking-secondary{height:41px;border-radius:13px;padding:0 15px;font-size:10.5px;font-weight:900;cursor:pointer}
+.fhn-walking-primary{border:0;color:#fff;background:linear-gradient(135deg,#ff7a3d,var(--pink));box-shadow:0 8px 24px rgba(255,45,107,.22)}
+.fhn-walking-secondary{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.055);color:#fff}
+.fhn-walking-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
+.fhn-walking-mini-card{border-radius:14px;padding:10px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08)}
+.fhn-walking-mini-card strong{display:block;font-size:10.5px;color:#fff}.fhn-walking-mini-card span{font-size:9px;color:rgba(255,255,255,.5);display:block;margin-top:3px}
+@media(max-width:520px){.fhn-walking-inner{padding:15px}.fhn-walking-title{font-size:20px}.fhn-walking-mini{grid-template-columns:1fr}.fhn-walking-actions{display:grid;grid-template-columns:1fr}.fhn-walking-primary,.fhn-walking-secondary{width:100%}}
+</style>
+<script id="fhn-v10-walking-script">
+(function(){
+'use strict';
+window.WALKING_IDS=[2,55,56,57,58,59,60];
+function getWalk(id){return (window.WORKOUTS||WORKOUTS||[]).find(function(w){return Number(w.id)===Number(id)})}
+function mountWalking(){
+ var page=document.getElementById('page-workout');
+ if(!page||document.getElementById('fhn-walking-hub'))return;
+ var pilates=document.getElementById('fhn-pilates-studio');
+ var anchor=pilates||document.getElementById('fhn-v6-tools')||document.getElementById('workout-list-wrap');
+ if(!anchor)return;
+ var box=document.createElement('section');box.id='fhn-walking-hub';box.className='fhn-walking-hub';
+ box.innerHTML='<div class="fhn-walking-inner"><div class="fhn-walking-kicker">FitHerNova Walking</div><div class="fhn-walking-title">Walk. Sweat. Feel good.</div><div class="fhn-walking-sub">Fun, joint-friendly indoor walking workouts for beginners, busy days, curvy women, mature women and anyone who wants cardio without jumping.</div><div class="fhn-walking-tags"><span class="fhn-walking-tag">No equipment</span><span class="fhn-walking-tag">Beginner friendly</span><span class="fhn-walking-tag">Low impact</span><span class="fhn-walking-tag">Afrobeats option</span></div><div class="fhn-walking-actions"><button class="fhn-walking-primary" onclick="fhnStartWalking(55)">Start 10-Minute Walk</button><button class="fhn-walking-secondary" onclick="fhnShowWalking()">View Walking Workouts</button></div><div class="fhn-walking-mini"><div class="fhn-walking-mini-card"><strong>🚶🏾‍♀️ Indoor Walk</strong><span>10 min · Easy</span></div><div class="fhn-walking-mini-card"><strong>💃🏾 Afrobeats Walk</strong><span>25 min · Moderate</span></div><div class="fhn-walking-mini-card"><strong>👑 5,000-Step Challenge</strong><span>45 min · Challenge</span></div></div></div>';
+ anchor.parentNode.insertBefore(box,anchor);
+}
+window.fhnStartWalking=function(id){var w=getWalk(id);if(w&&typeof startWorkout==='function')startWorkout(w.id)};
+window.fhnShowWalking=function(){if(typeof setV6Filter==='function')setV6Filter('Walking');var i=document.getElementById('fhn-v6-search-input');if(i)i.value='';setTimeout(function(){var t=document.getElementById('fhn-v6-tools');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},100)};
+function init(){setTimeout(mountWalking,900);setInterval(mountWalking,3000)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     V11 SMART PERSONAL TRAINER
+     Context-aware, varied, browser-native coaching — no paid API.
+     ═══════════════════════════════════════════════════════════════ -->
+<script id="fhn-v11-smart-trainer">
+(function(){
+'use strict';
+
+var _smartCoachLastKey = '';
+var _smartCoachRecent = [];
+var _smartCoachPhaseId = '';
+var _smartCoachFlags = Object.create(null);
+var _smartCoachSpeech = null;
+var _smartCoachRestoreVol = null;
+
+function scNorm(s){ return String(s||'').toLowerCase(); }
+
+function smartCoachWorkoutType(workout, exercise){
+  var t=scNorm((workout&&workout.name)+' '+(exercise&&exercise.name));
+  if(/pilates|hundred|teaser|pelvic curl|mermaid|spine stretch|single leg stretch/.test(t)) return 'pilates';
+  if(/walk|march|step touch|heel dig|5000|5,000|power step/.test(t)) return 'walking';
+  if(/afrobeat|zumba|dance|groove/.test(t)) return 'dance';
+  if(/hiit|tabata|finisher|fat furnace|high knee|jump|burpee/.test(t)) return 'hiit';
+  if(/glute|booty|clam|bridge|donkey|fire hydrant/.test(t)) return 'glutes';
+  if(/core|abs|6-pack|belly|oblique|plank|crunch|v-up|mummy tummy/.test(t)) return 'core';
+  if(/squat|lunge|leg|lower body|deadlift/.test(t)) return 'legs';
+  if(/arm|shoulder|upper body|row|tricep|push-up|posture|back/.test(t)) return 'upper';
+  if(/stretch|mobility|wind down|yoga|recovery|breath/.test(t)) return 'recovery';
+  if(/low impact|gentle|prenatal|postpartum|50\+|mature/.test(t)) return 'lowimpact';
+  return 'general';
+}
+
+var SMART_COACH = {
+  intro: {
+    pilates:[
+      "Welcome in. Today is about control, posture, and a strong center. Move with intention.",
+      "Pilates today. Slow, precise movement wins here. Keep your core gently engaged.",
+      "Let's settle into your Pilates session. Breathe deeply and make every repetition controlled."
+    ],
+    walking:[
+      "Let's get your steps in. Stand tall, relax your shoulders, and find a pace you can sustain.",
+      "Walking session ready. Keep your steps light, your chest open, and let your arms move naturally.",
+      "We are walking today. Start easy, build your rhythm, and stay smooth through every step."
+    ],
+    dance:[
+      "Let's move. Find the beat, stay light on your feet, and let this workout feel good.",
+      "Dance session ready. Keep your core active, relax your shoulders, and enjoy the rhythm.",
+      "Time to move with the music. Stay loose, stay controlled, and make the movement yours."
+    ],
+    hiit:[
+      "HIIT session. Start controlled so you still have something left for the final push.",
+      "We are going intense today. Strong form first, speed second. Let's work.",
+      "Your HIIT session is ready. Breathe, brace, and attack each interval one at a time."
+    ],
+    lowimpact:[
+      "Gentle does not mean ineffective. Move comfortably, protect your joints, and stay consistent.",
+      "Low-impact session today. Keep the movement smooth and choose comfort over speed.",
+      "Let's keep this joint-friendly and effective. Stay tall, breathe, and move at your own pace."
+    ],
+    recovery:[
+      "This session is about recovery. Slow your breathing and never force the range of motion.",
+      "Recovery mode. Let your muscles release and keep every movement comfortable.",
+      "Take your time today. Smooth breathing and gentle movement are the goal."
+    ],
+    general:[
+      "Your workout is ready. Good form, steady breathing, and one movement at a time.",
+      "Let's train. Stay controlled, listen to your body, and keep your technique clean.",
+      "Ready when you are. Focus on quality movement and build from there."
+    ]
+  },
+
+  form: {
+    pilates:[
+      "Draw your core in gently and keep the movement slow and precise.",
+      "Think length through your spine. Control the return as much as the effort.",
+      "Keep your ribs connected and breathe through the movement instead of rushing it.",
+      "Stay smooth. Pilates is about control, not momentum."
+    ],
+    walking:[
+      "Keep your shoulders relaxed and let your arms swing naturally.",
+      "Land softly, stay tall, and keep a steady rhythm.",
+      "Keep the steps comfortable. Your posture should stay proud as the pace builds.",
+      "Nice rhythm. Keep your core lightly engaged while your feet stay quick and quiet."
+    ],
+    dance:[
+      "Stay light through the feet and let your hips and shoulders move naturally.",
+      "Keep the rhythm, but stay in control. You do not have to make every move huge.",
+      "Use your core to connect the upper and lower body while you move.",
+      "Enjoy the beat. Smooth movement is better than forcing the pace."
+    ],
+    hiit:[
+      "Stay strong through the core and keep your landing soft.",
+      "Powerful, but controlled. Do not sacrifice form for speed.",
+      "Keep breathing. Strong posture will help you finish this interval.",
+      "Use the whole body, but stay clean through every repetition."
+    ],
+    glutes:[
+      "Drive through the heel and squeeze the glutes at the strongest point.",
+      "Keep your hips controlled and avoid rushing the return.",
+      "Stay stable through the pelvis and make the glutes do the work.",
+      "Slow it down just enough to feel the muscle working."
+    ],
+    core:[
+      "Brace your core and keep your lower back supported.",
+      "Exhale through the effort and keep your neck relaxed.",
+      "Pull the belly gently inward and move from your center.",
+      "Stay controlled. Do not let momentum take over the repetition."
+    ],
+    legs:[
+      "Keep your chest lifted and track your knees in line with your toes.",
+      "Sit the hips back and press through your whole foot.",
+      "Stay tall through the torso and keep the movement controlled.",
+      "Drive through the legs without letting the knees collapse inward."
+    ],
+    upper:[
+      "Keep your shoulders down away from your ears and move with control.",
+      "Brace your core so the upper body can work from a stable base.",
+      "Squeeze the shoulder blades gently and avoid shrugging.",
+      "Control both directions of the movement. Do not throw the weight."
+    ],
+    recovery:[
+      "Breathe into the stretch and stop before anything feels sharp.",
+      "Relax your shoulders and let the range of motion come gradually.",
+      "Slow your breathing. There is no need to force this position.",
+      "Move gently and give your body time to release."
+    ],
+    lowimpact:[
+      "Keep your feet close to the floor and make every landing soft.",
+      "Stay comfortable through the joints and keep a steady pace.",
+      "No jumping needed. Smooth, consistent movement is enough.",
+      "Keep the range comfortable and stay tall through your posture."
+    ],
+    general:[
+      "Keep your core engaged and your breathing steady.",
+      "Good form first. Make every repetition deliberate.",
+      "Stay tall, stay controlled, and keep breathing.",
+      "You are doing well. Keep the movement clean and consistent."
+    ]
+  },
+
+  halfway:[
+    "Halfway through this movement. Keep the same clean form.",
+    "You are halfway there. Stay patient and keep your breathing steady.",
+    "Half complete. Do not rush now — keep the quality high.",
+    "Halfway. You have the rhythm, so stay with it."
+  ],
+
+  final:[
+    "Ten seconds. Keep the form clean and finish this movement strong.",
+    "Final seconds. Stay controlled all the way to the end.",
+    "Almost there. Give me ten more seconds of quality movement.",
+    "Last push on this one. Strong, steady, finish."
+  ],
+
+  rest:[
+    "Good work. Breathe, shake out the tension, and prepare for the next movement.",
+    "Recovery time. Take a full breath and let your heart rate settle.",
+    "Nice job. Use this rest, then we go again with control.",
+    "Rest here. Relax your shoulders and get ready for what is next."
+  ],
+
+  complete:{
+    pilates:[
+      "Pilates complete. Beautiful control today. Your core, posture, and mobility all got quality work.",
+      "That Pilates session is done. Strong, controlled, and consistent — exactly what we wanted.",
+      "Pilates complete. You stayed with the details, and that is where the results come from."
+    ],
+    walking:[
+      "Walk complete. You got your movement in, raised your heart rate, and showed up for yourself today.",
+      "Walking session complete. Great consistency and a strong finish.",
+      "Steps done. Nice work keeping the rhythm from start to finish."
+    ],
+    dance:[
+      "Dance workout complete. You moved, worked, and had fun doing it.",
+      "That dance session is finished. Great energy and a beautiful finish.",
+      "Workout complete. You kept the rhythm and turned it into real movement."
+    ],
+    hiit:[
+      "HIIT complete. That was a strong effort. Take a moment and let your breathing come down.",
+      "You finished the intensity. Excellent work staying with the intervals.",
+      "HIIT done. Strong finish. Recover now and be proud of the work you just put in."
+    ],
+    recovery:[
+      "Recovery session complete. Your body got the mobility and breathing work it needed.",
+      "All done. You gave your body time to reset, and that counts as training too.",
+      "Recovery complete. Move gently from here and keep hydrating."
+    ],
+    general:[
+      "Workout complete. Great job staying consistent and finishing what you started.",
+      "That session is done. Strong work today — now recover and hydrate.",
+      "You finished it. Another workout in the books, and another step forward."
+    ]
+  }
+};
+
+function scPick(list, key){
+  if(!list || !list.length) return '';
+  var usable=list.filter(function(x){return _smartCoachRecent.indexOf(x)<0});
+  if(!usable.length) usable=list.slice();
+  var seed=(Date.now()+String(key||'').length+(_smartCoachRecent.length*17))%usable.length;
+  var line=usable[seed];
+  _smartCoachRecent.push(line);
+  if(_smartCoachRecent.length>7)_smartCoachRecent.shift();
+  return line;
+}
+
+function scCoachVoice(){
+  try{
+    if(typeof pickBestVoice==='function'){
+      var v=pickBestVoice(); if(v) return v;
+    }
+    var vs=speechSynthesis.getVoices();
+    return (vs||[]).find(function(v){return /Samantha|Jenny|Aria|Natural|Neural|Enhanced|Google US English/i.test(v.name)}) || (vs||[])[0] || null;
+  }catch(e){return null}
+}
+
+window.smartCoachSpeak=function(text,key){
+  if(!text || !('speechSynthesis' in window)) return;
+  if(!appState || !appState.isProUser || _voiceMode==='off') return;
+  key=key||text;
+  if(_smartCoachLastKey===key) return;
+  _smartCoachLastKey=key;
+
+  try{
+    if(_voiceAudio){_voiceAudio.pause();_voiceAudio.src='';_voiceAudio=null}
+  }catch(e){}
+
+  try{ speechSynthesis.cancel(); }catch(e){}
+
+  // Preserve the user's chosen music volume while ducking.
+  try{
+    if(window._fhnAudio){
+      if(_smartCoachRestoreVol===null)_smartCoachRestoreVol=window._fhnAudio.volume;
+      window._fhnAudio.volume=Math.min(window._fhnAudio.volume,0.16);
+    }
+  }catch(e){}
+
+  try{ showVoiceCallout(text); }catch(e){}
+
+  try{
+    var u=new SpeechSynthesisUtterance(text);
+    var v=scCoachVoice(); if(v)u.voice=v;
+    u.rate=0.96; u.pitch=1.02; u.volume=1;
+    u.onend=u.onerror=function(){
+      try{
+        if(window._fhnAudio && _smartCoachRestoreVol!==null)window._fhnAudio.volume=_smartCoachRestoreVol;
+      }catch(e){}
+      _smartCoachRestoreVol=null;
+    };
+    _smartCoachSpeech=u;
+    speechSynthesis.speak(u);
+  }catch(e){
+    try{
+      if(window._fhnAudio && _smartCoachRestoreVol!==null)window._fhnAudio.volume=_smartCoachRestoreVol;
+    }catch(x){}
+    _smartCoachRestoreVol=null;
+  }
+};
+
+function smartCoachExerciseIntro(ex, phase){
+  if(!ex || !activeWorkout)return;
+  var type=smartCoachWorkoutType(activeWorkout,ex);
+  var phaseKey='p'+phaseIdx+'-'+(phase&&phase.round||0)+'-'+(phase&&phase.exIndex||0);
+  if(_smartCoachPhaseId===phaseKey)return;
+  _smartCoachPhaseId=phaseKey;
+  _smartCoachFlags=Object.create(null);
+
+  var first=(phaseIdx===0 && timerElapsed<=2);
+  var name=ex.name||'this movement';
+
+  if(first){
+    var introList=SMART_COACH.intro[type]||SMART_COACH.intro.general;
+    var intro=scPick(introList,'intro-'+type);
+    smartCoachSpeak(intro+' First up, '+name+'.','intro-'+activeWorkout.id+'-'+Date.now());
+  }else{
+    var transitions=[
+      'Next up, '+name+'. Set your position and move with control.',
+      name+' is next. Find your setup, then settle into the movement.',
+      'Moving on to '+name+'. Take a breath and make the first few reps smooth.',
+      'Now we have '+name+'. Get comfortable, then build your rhythm.'
+    ];
+    smartCoachSpeak(scPick(transitions,'next-'+name),'next-'+phaseKey);
+  }
+}
+
+window.smartCoachTick=function(phase){
+  if(!phase || phase.type!=='work' || !activeWorkout || !activeWorkout.exercises)return;
+  var ex=activeWorkout.exercises[phase.exIndex];
+  if(!ex)return;
+
+  var elapsedIn=Math.max(0,timerElapsed-phase.start);
+  var left=Math.max(0,phase.end-timerElapsed);
+  var dur=Math.max(1,phase.dur||phase.end-phase.start);
+  var type=smartCoachWorkoutType(activeWorkout,ex);
+
+  // Technique cue after the user has had a few seconds to settle in.
+  if(elapsedIn>=7 && !_smartCoachFlags.form){
+    _smartCoachFlags.form=true;
+    var forms=SMART_COACH.form[type]||SMART_COACH.form.general;
+    smartCoachSpeak(scPick(forms,'form-'+type+'-'+ex.name),'form-'+phaseIdx);
+    return;
+  }
+
+  // Halfway cue only on movements long enough that it is useful.
+  if(dur>=28 && elapsedIn>=Math.floor(dur/2) && !_smartCoachFlags.half){
+    _smartCoachFlags.half=true;
+    smartCoachSpeak(scPick(SMART_COACH.halfway,'half-'+ex.name),'half-'+phaseIdx);
+    return;
+  }
+
+  // Final cue. Avoid talking over the halfway cue on short intervals.
+  if(dur>=18 && left<=10 && left>7 && !_smartCoachFlags.final){
+    _smartCoachFlags.final=true;
+    smartCoachSpeak(scPick(SMART_COACH.final,'final-'+ex.name),'final-'+phaseIdx);
+  }
+};
+
+window.smartCoachRest=function(phase){
+  if(!phase || !activeWorkout)return;
+  var next=null;
+  if(phase.type==='rest' && activeWorkout.exercises)next=activeWorkout.exercises[phase.nextExIndex];
+  var line=scPick(SMART_COACH.rest,'rest');
+  if(next) line+=' Next is '+next.name+'.';
+  smartCoachSpeak(line,'rest-'+phaseIdx);
+};
+
+window.smartCoachComplete=function(workout){
+  if(!workout)return;
+  var type=smartCoachWorkoutType(workout,null);
+  var list=SMART_COACH.complete[type]||SMART_COACH.complete.general;
+  smartCoachSpeak(scPick(list,'complete-'+type),'complete-'+workout.id+'-'+Date.now());
+};
+
+// Wrap the existing enterPhase rather than replacing its UI, haptics,
+// progress, rest display, and chime logic.
+var _v11EnterPhase=window.enterPhase;
+window.enterPhase=function(idx){
+  var phase=activePhases&&activePhases[idx];
+
+  // When the Pro coach is on, let her handle the spoken exercise intro.
+  // Temporarily suppress the separate free exercise-name voice so two
+  // voices never talk over each other. Free users keep the existing cue.
+  var oldExVoice=(typeof _exerciseVoiceOn!=='undefined')?_exerciseVoiceOn:false;
+  try{
+    if(appState&&appState.isProUser&&_voiceMode!=='off')_exerciseVoiceOn=false;
+    _v11EnterPhase(idx);
+  }finally{
+    if(typeof _exerciseVoiceOn!=='undefined')_exerciseVoiceOn=oldExVoice;
+  }
+
+  if(!appState || !appState.isProUser || _voiceMode==='off' || !phase)return;
+  if(phase.type==='work'){
+    setTimeout(function(){
+      try{smartCoachExerciseIntro(activeWorkout.exercises[phase.exIndex],phase)}catch(e){}
+    },180);
+  }else{
+    setTimeout(function(){try{smartCoachRest(phase)}catch(e){}},180);
+  }
+};
+
+// Pause should stop browser speech and safely restore user music volume.
+var _v11PauseTimer=window.pauseTimer;
+window.pauseTimer=function(){
+  try{speechSynthesis.cancel()}catch(e){}
+  try{
+    if(window._fhnAudio&&_smartCoachRestoreVol!==null)window._fhnAudio.volume=_smartCoachRestoreVol;
+  }catch(e){}
+  _smartCoachRestoreVol=null;
+  return _v11PauseTimer.apply(this,arguments);
+};
+
+})();
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     V12 ADAPTIVE WORKOUT EXPERIENCE
+     Intensity + real modifications + next preview + adaptive feedback
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="fhn-v12-adaptive-style">
+.v12-intensity{margin:12px 0 2px;padding:12px;border-radius:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09)}
+.v12-intensity-label{font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
+.v12-intensity-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.v12-intensity-btn{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.72);border-radius:11px;padding:9px 6px;font-size:9.5px;font-weight:850;cursor:pointer}
+.v12-intensity-btn.active{border-color:rgba(255,45,107,.65);background:linear-gradient(135deg,rgba(255,45,107,.2),rgba(168,85,247,.16));color:#fff}
+.v12-adapt-note{font-size:9px;color:rgba(255,255,255,.48);margin-top:7px;line-height:1.35}
+.v12-next-banner{display:none;margin:7px auto 9px;max-width:520px;padding:9px 12px;border-radius:13px;background:linear-gradient(135deg,rgba(168,85,247,.14),rgba(255,45,107,.12));border:1px solid rgba(255,255,255,.09);font-size:10px;color:rgba(255,255,255,.72)}
+.v12-next-banner.show{display:block}.v12-next-banner strong{color:#fff}
+.v12-mod-sheet{position:fixed;inset:0;z-index:10020;background:rgba(4,3,5,.82);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;padding:14px}
+.v12-mod-sheet.show{display:flex}
+.v12-mod-card{width:min(520px,100%);border-radius:24px 24px 18px 18px;padding:18px;background:linear-gradient(160deg,#25101d,#100b10 72%);border:1px solid rgba(255,255,255,.12);box-shadow:0 -20px 60px rgba(0,0,0,.45)}
+.v12-mod-kicker{font-size:9px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:var(--pink-light)}
+.v12-mod-title{font-family:var(--font-head);font-size:20px;font-weight:900;margin:5px 0}
+.v12-mod-copy{font-size:11px;line-height:1.55;color:rgba(255,255,255,.65);margin-bottom:12px}
+.v12-mod-option{width:100%;text-align:left;padding:12px;border-radius:13px;margin-top:7px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);color:#fff;font-size:10.5px;font-weight:750}
+.v12-mod-option span{display:block;font-size:9px;color:rgba(255,255,255,.48);margin-top:3px;font-weight:600}
+.v12-feedback-note{margin-top:9px;font-size:9px;line-height:1.45;color:rgba(255,255,255,.48);text-align:center}
+@media(max-width:430px){.v12-intensity{padding:10px}.v12-intensity-btn{font-size:9px;padding:8px 3px}.v12-mod-card{padding:15px}}
+</style>
+
+<div class="v12-mod-sheet" id="v12-mod-sheet" onclick="if(event.target===this)v12CloseModify()">
+  <div class="v12-mod-card">
+    <div class="v12-mod-kicker">FitHerNova Modification</div>
+    <div class="v12-mod-title" id="v12-mod-title">Modify exercise</div>
+    <div class="v12-mod-copy" id="v12-mod-copy">Choose the version that feels right for your body today.</div>
+    <button class="v12-mod-option" id="v12-mod-easier" onclick="v12ApplyModification('easier')">♡ Easier version<span id="v12-mod-easier-copy">Reduce range and pace.</span></button>
+    <button class="v12-mod-option" onclick="v12ApplyModification('slower')">◌ Slower & controlled<span>Keep the same movement but reduce the pace and focus on form.</span></button>
+    <button class="v12-mod-option" onclick="v12ApplyModification('skip')">↷ Skip this movement<span>Move safely to the next section of the workout.</span></button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:12px" onclick="v12CloseModify()">Keep original exercise</button>
+  </div>
+</div>
+
+<script id="fhn-v12-adaptive-script">
+(function(){
+'use strict';
+
+var V12_INTENSITY = 'standard';
+var V12_LAST_NEXT_KEY = '';
+var V12_FEEDBACK = null;
+
+function v12Get(k,def){try{var x=localStorage.getItem(k);return x===null?def:x}catch(e){return def}}
+function v12Set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+function v12LoadAdaptiveState(){
+  V12_INTENSITY=v12Get('fhn_intensity','standard');
+  try{V12_FEEDBACK=JSON.parse(v12Get('fhn_adaptive_feedback','null'))}catch(e){V12_FEEDBACK=null}
+}
+v12LoadAdaptiveState();
+
+window.v12SetIntensity=function(mode){
+  V12_INTENSITY=mode||'standard';v12Set('fhn_intensity',V12_INTENSITY);
+  document.querySelectorAll('.v12-intensity-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode===V12_INTENSITY)});
+  var n=document.getElementById('v12-adapt-note');
+  if(n)n.textContent=V12_INTENSITY==='gentle'?'Longer recovery and a calmer pace.':V12_INTENSITY==='push'?'Shorter recovery and a stronger pace.':'Balanced work and recovery.';
+};
+
+function v12IntensityUI(){
+  return '<div class="v12-intensity" id="v12-intensity"><div class="v12-intensity-label">Choose today’s intensity</div><div class="v12-intensity-row">'+
+  '<button class="v12-intensity-btn '+(V12_INTENSITY==='gentle'?'active':'')+'" data-mode="gentle" onclick="v12SetIntensity(\'gentle\')">🌿 Gentle</button>'+
+  '<button class="v12-intensity-btn '+(V12_INTENSITY==='standard'?'active':'')+'" data-mode="standard" onclick="v12SetIntensity(\'standard\')">✨ Standard</button>'+
+  '<button class="v12-intensity-btn '+(V12_INTENSITY==='push'?'active':'')+'" data-mode="push" onclick="v12SetIntensity(\'push\')">🔥 Push Me</button>'+
+  '</div><div class="v12-adapt-note" id="v12-adapt-note">'+
+  (V12_INTENSITY==='gentle'?'Longer recovery and a calmer pace.':V12_INTENSITY==='push'?'Shorter recovery and a stronger pace.':'Balanced work and recovery.')+
+  '</div></div>';
+}
+
+function v12ApplyIntensityToTimeline(){
+  if(!activePhases||!activePhases.length)return;
+  var workFactor=V12_INTENSITY==='gentle'?0.86:(V12_INTENSITY==='push'?1.08:1);
+  var restFactor=V12_INTENSITY==='gentle'?1.35:(V12_INTENSITY==='push'?0.72:1);
+  var t=0;
+  activePhases.forEach(function(p){
+    var factor=p.type==='work'?workFactor:restFactor;
+    p.dur=Math.max(p.type==='work'?12:8,Math.round(p.dur*factor));
+    p.start=t;p.end=t+p.dur;t=p.end;
+  });
+  activeRealDuration=t;
+  if(activeWorkout){
+    activeWorkout._v12Intensity=V12_INTENSITY;
+  }
+}
+
+function v12FeedbackSuggestion(){
+  if(!V12_FEEDBACK)return '';
+  if(V12_FEEDBACK.feel==='Hard')return 'Your last workout felt hard, so Gentle may feel better today.';
+  if(V12_FEEDBACK.feel==='Easy')return 'Your last workout felt easy. Push Me is available if you want more challenge.';
+  return 'Your last workout felt just right. Standard is a good place to begin.';
+}
+
+function v12InstallPreviewIntensity(){
+  if(typeof window.renderWorkoutPreview!=='function'||window.renderWorkoutPreview._v12)return;
+  var old=window.renderWorkoutPreview;
+  window.renderWorkoutPreview=function(w){
+    var r=old.apply(this,arguments);
+    setTimeout(function(){
+      var card=document.querySelector('#workout-preview-overlay .workout-preview-card, #workout-preview-overlay .preview-card, #workout-preview-overlay > div');
+      var root=document.getElementById('workout-preview-overlay');
+      var target=card||root;if(!target||document.getElementById('v12-intensity'))return;
+      var holder=document.createElement('div');holder.innerHTML=v12IntensityUI();
+      var note=holder.querySelector('.v12-adapt-note'),s=v12FeedbackSuggestion();if(note&&s)note.textContent=s;
+      var primary=target.querySelector('button.btn-pink,button.preview-start,button[onclick*="confirmWorkoutPreview"]');
+      if(primary)target.insertBefore(holder.firstElementChild,primary);else target.appendChild(holder.firstElementChild);
+    },0);
+    return r;
+  };
+  window.renderWorkoutPreview._v12=true;
+}
+
+function v12InstallStartAdaptation(){
+  if(typeof window.confirmWorkoutPreview!=='function'||window.confirmWorkoutPreview._v12)return;
+  var old=window.confirmWorkoutPreview;
+  window.confirmWorkoutPreview=function(){
+    var r=old.apply(this,arguments);
+    setTimeout(function(){v12ApplyIntensityToTimeline();try{updatePremiumTimeUI()}catch(e){}},0);
+    return r;
+  };
+  window.confirmWorkoutPreview._v12=true;
+}
+
+function v12ModificationFor(name){
+  var n=String(name||'').toLowerCase();
+  if(/jump|high knee|burpee|skater/.test(n))return 'Keep one foot grounded and step the movement instead of jumping.';
+  if(/plank|mountain climber/.test(n))return 'Lower your knees to the mat or elevate your hands on a sturdy surface.';
+  if(/squat/.test(n))return 'Use a chair as your depth guide and keep the squat shallow and controlled.';
+  if(/lunge/.test(n))return 'Hold a wall or chair, shorten the stance, and reduce the depth.';
+  if(/push.?up/.test(n))return 'Use a wall, counter, or knees-down position and keep your body aligned.';
+  if(/crunch|sit.?up|v-up|leg raise/.test(n))return 'Reduce the range, keep your head supported, and stop if your lower back lifts.';
+  if(/bridge|glute/.test(n))return 'Use a smaller hip lift and pause gently at the top without arching your back.';
+  if(/walk|march|step/.test(n))return 'Slow the pace and make the steps smaller while keeping your posture tall.';
+  if(/pilates|hundred|teaser/.test(n))return 'Bend the knees, reduce the lever length, and prioritize core control over range.';
+  if(/stretch|yoga|mobility/.test(n))return 'Use a smaller comfortable range and never force the stretch.';
+  return 'Reduce the range, slow the pace, and keep the movement comfortable and controlled.';
+}
+
+window.v12OpenModify=function(){
+  var ex=activeWorkout&&activeWorkout.exercises?activeWorkout.exercises[exerciseIndex]:null,n=ex?ex.name:'this exercise';
+  var sh=document.getElementById('v12-mod-sheet'),t=document.getElementById('v12-mod-title'),c=document.getElementById('v12-mod-easier-copy');
+  if(t)t.textContent='Modify '+n;if(c)c.textContent=v12ModificationFor(n);if(sh)sh.classList.add('show');
+};
+window.v12CloseModify=function(){var sh=document.getElementById('v12-mod-sheet');if(sh)sh.classList.remove('show')};
+window.v12ApplyModification=function(kind){
+  var ex=activeWorkout&&activeWorkout.exercises?activeWorkout.exercises[exerciseIndex]:null,n=ex?ex.name:'this movement';
+  if(kind==='skip'){v12CloseModify();try{skipExercise()}catch(e){}return}
+  var msg=kind==='easier'?v12ModificationFor(n):'Slow the tempo, shorten the range if needed, and make every repetition controlled.';
+  v12CloseModify();try{showToast(kind==='easier'?'Easier '+n:'Controlled '+n,msg)}catch(e){}
+  try{if(appState&&appState.isProUser&&_voiceMode!=='off')smartCoachSpeak(msg,'modify-'+phaseIdx+'-'+kind)}catch(e){}
+};
+
+function v12InstallModifyButton(){
+  var old=document.querySelector('.timer-action-btn.easier');
+  if(old){old.textContent='♡ Modify exercise';old.setAttribute('onclick','v12OpenModify()')}
+}
+
+function v12EnsureNextBanner(){
+  var row=document.querySelector('.timer-time-meta');if(!row||document.getElementById('v12-next-banner'))return;
+  var b=document.createElement('div');b.id='v12-next-banner';b.className='v12-next-banner';row.parentNode.insertBefore(b,row);
+}
+function v12NextWorkPhase(){
+  for(var i=phaseIdx+1;i<activePhases.length;i++)if(activePhases[i].type==='work')return activePhases[i];
+  return null;
+}
+function v12UpdateNextPreview(){
+  v12EnsureNextBanner();
+  var b=document.getElementById('v12-next-banner'),p=getCurrentPhase();if(!b||!p||!activeWorkout)return;
+  var left=Math.max(0,p.end-timerElapsed),np=v12NextWorkPhase();
+  if(p.type==='work'&&left<=10&&left>0&&np&&activeWorkout.exercises[np.exIndex]){
+    var ex=activeWorkout.exercises[np.exIndex],key=phaseIdx+'-'+np.exIndex;
+    b.innerHTML='⏭ <strong>Next: '+fhnEscapeHtml(ex.name)+'</strong> · '+fhnEscapeHtml(ex.reps||'');
+    b.classList.add('show');
+    if(left<=8&&V12_LAST_NEXT_KEY!==key){
+      V12_LAST_NEXT_KEY=key;
+      try{if(appState&&appState.isProUser&&_voiceMode!=='off')smartCoachSpeak('Coming up next, '+ex.name+'.','preview-'+key)}catch(e){}
+    }
+  }else b.classList.remove('show');
+}
+
+function v12InstallTimerPreview(){
+  if(typeof window.premiumTimerTick!=='function'||window.premiumTimerTick._v12)return;
+  var old=window.premiumTimerTick;
+  window.premiumTimerTick=function(){var r=old.apply(this,arguments);try{v12UpdateNextPreview()}catch(e){}return r};
+  window.premiumTimerTick._v12=true;
+}
+
+function v12AdaptiveMessage(feel,w){
+  var type='';
+  try{type=smartCoachWorkoutType(w,null)}catch(e){}
+  if(feel==='Hard')return 'Next time FitHerNova will favor gentler pacing, longer recovery, and lower-impact matches.';
+  if(feel==='Easy')return 'Next time FitHerNova can favor a stronger pace and more challenging matches.';
+  return 'Great. FitHerNova will keep your next recommendation close to this intensity.';
+}
+
+function v12InstallFeedback(){
+  window.setCompletionFeel=function(btn,val){
+    _fhnCompletionFeel=val;
+    document.querySelectorAll('.feel-btn').forEach(function(b){b.classList.remove('selected')});if(btn)btn.classList.add('selected');
+    var w=_fhnLastCompletedWorkout||activeWorkout||null;
+    V12_FEEDBACK={feel:val,workoutId:w?w.id:null,workoutName:w?w.name:'',at:new Date().toISOString()};
+    v12Set('fhn_last_workout_feel',val);v12Set('fhn_adaptive_feedback',JSON.stringify(V12_FEEDBACK));
+    var msg=v12AdaptiveMessage(val,w);
+    var note=document.getElementById('v12-feedback-note');
+    if(!note){
+      note=document.createElement('div');note.id='v12-feedback-note';note.className='v12-feedback-note';
+      var premium=document.getElementById('completion-premium');if(premium)premium.appendChild(note);
+    }
+    if(note)note.textContent=msg;
+    try{showToast('Feedback saved',msg)}catch(e){}
+  };
+}
+
+function v12EnhanceCompletion(){
+  var q=document.querySelector('#completion-premium .completion-question');
+  if(q)q.textContent='How did that feel?';
+  var premium=document.getElementById('completion-premium');
+  if(premium&&!document.getElementById('v12-feedback-note')){
+    var n=document.createElement('div');n.id='v12-feedback-note';n.className='v12-feedback-note';n.textContent='Your answer helps FitHerNova adapt your next workout — no paid AI required.';premium.appendChild(n);
+  }
+}
+
+function v12InstallAdaptiveRecommendation(){
+  // Existing weekly-plan engine already reads fhn_last_workout_feel.
+  // Add a small persistent intensity preference response as well.
+  if(V12_FEEDBACK&&V12_FEEDBACK.feel==='Hard'&&v12Get('fhn_intensity_auto','1')==='1'){
+    if(v12Get('fhn_intensity','standard')==='push')V12_INTENSITY='standard';
+  }
+}
+
+function init(){
+  v12InstallPreviewIntensity();
+  v12InstallStartAdaptation();
+  v12InstallModifyButton();
+  v12EnsureNextBanner();
+  v12InstallTimerPreview();
+  v12InstallFeedback();
+  v12EnhanceCompletion();
+  v12InstallAdaptiveRecommendation();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,120)});
+else setTimeout(init,120);
+setInterval(function(){v12InstallPreviewIntensity();v12InstallStartAdaptation();v12InstallModifyButton();v12InstallTimerPreview();v12EnhanceCompletion()},2500);
+})();
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     V13 — MY JOURNEY
+     Progress intelligence, weekly recap, milestones, category mix.
+     No paid API required.
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="fhn-v13-journey-style">
+.v13-journey-shell{margin-bottom:14px}
+.v13-hero{position:relative;overflow:hidden;border-radius:24px;padding:18px;background:
+radial-gradient(circle at 85% 15%,rgba(255,209,102,.18),transparent 28%),
+radial-gradient(circle at 5% 90%,rgba(168,85,247,.18),transparent 38%),
+linear-gradient(145deg,#321023,#190b15 62%,#0d0d10);
+border:1px solid rgba(255,45,107,.24);box-shadow:0 16px 42px rgba(0,0,0,.28);margin-bottom:12px}
+.v13-kicker{font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--pink-light)}
+.v13-title{font-family:var(--font-head);font-size:24px;font-weight:900;line-height:1.05;margin:6px 0 4px}
+.v13-sub{font-size:11px;line-height:1.5;color:rgba(255,255,255,.62)}
+.v13-week-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:14px}
+.v13-week-stat{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 7px;text-align:center}
+.v13-week-stat strong{font-family:var(--font-head);display:block;font-size:17px;color:#fff}
+.v13-week-stat span{display:block;font-size:8.5px;color:rgba(255,255,255,.48);margin-top:2px}
+.v13-compare{margin-top:11px;font-size:10px;font-weight:750;color:#ffd9e5}
+.v13-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.v13-card{background:var(--black2);border:1px solid var(--black4);border-radius:20px;padding:14px}
+.v13-card-title{font-family:var(--font-head);font-size:13px;font-weight:850;margin-bottom:10px}
+.v13-best-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.v13-best{background:rgba(255,255,255,.045);border-radius:12px;padding:9px}
+.v13-best b{display:block;font-size:13px;color:#fff}.v13-best small{font-size:8.5px;color:var(--grey)}
+.v13-mix-row{margin-bottom:9px}.v13-mix-head{display:flex;justify-content:space-between;gap:10px;font-size:9.5px;color:rgba(255,255,255,.67);margin-bottom:4px}
+.v13-mix-bar{height:6px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+.v13-mix-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--pink),var(--violet),var(--gold))}
+.v13-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.v13-cal-nav{width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff}
+.v13-cal-title{font-family:var(--font-head);font-size:13px;font-weight:850}
+.v13-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.v13-cal-dayname{text-align:center;font-size:8px;color:rgba(255,255,255,.35);padding:3px 0}
+.v13-cal-day{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.55);background:rgba(255,255,255,.025);position:relative}
+.v13-cal-day.done{background:linear-gradient(145deg,rgba(255,45,107,.28),rgba(168,85,247,.18));color:#fff;border:1px solid rgba(255,45,107,.25)}
+.v13-cal-day.today{box-shadow:0 0 0 1px var(--gold) inset;color:var(--gold)}
+.v13-cal-day.done:after{content:'';width:3px;height:3px;border-radius:50%;background:var(--gold);position:absolute;bottom:3px}
+.v13-milestones{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.v13-badge{border-radius:14px;padding:10px 7px;text-align:center;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);opacity:.5}
+.v13-badge.earned{opacity:1;background:linear-gradient(145deg,rgba(255,45,107,.12),rgba(255,209,102,.07));border-color:rgba(255,209,102,.2)}
+.v13-badge-icon{font-size:22px}.v13-badge-name{font-size:8.5px;font-weight:850;margin-top:4px}.v13-badge-sub{font-size:7.5px;color:var(--grey);margin-top:2px}
+.v13-share{width:100%;height:43px;border:0;border-radius:13px;margin-top:11px;background:linear-gradient(135deg,var(--pink),var(--violet));color:#fff;font-size:10.5px;font-weight:900;cursor:pointer}
+.v13-empty{font-size:10px;color:var(--grey);line-height:1.5}
+@media(max-width:620px){.v13-grid2{grid-template-columns:1fr}.v13-week-stats{grid-template-columns:repeat(2,1fr)}.v13-milestones{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script id="fhn-v13-journey-script">
+(function(){
+'use strict';
+var v13MonthOffset=0;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function dayKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function startOfDay(d){var x=new Date(d);x.setHours(0,0,0,0);return x}
+function startOfWeek(d){var x=startOfDay(d),day=x.getDay();x.setDate(x.getDate()-day);return x}
+function num(v){v=Number(v);return isFinite(v)?v:0}
+
+function collectLocalHistory(){
+  var arr=[],uid=(typeof currentUser!=='undefined'&&currentUser&&currentUser.id)?currentUser.id:'anon';
+  try{
+    var prefix='u_'+uid+'_fnova_workouts_';
+    Object.keys(localStorage).forEach(function(k){
+      if(k.indexOf(prefix)!==0)return;
+      var date=k.slice(prefix.length),items=[];
+      try{items=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){}
+      (items||[]).forEach(function(w,i){
+        arr.push({
+          id:w.id||('local-'+date+'-'+i),
+          date:w.date||date,
+          created_at:w.created_at||date+'T12:00:00',
+          workout_name:w.workout_name||w.name||'Workout',
+          duration_sec:num(w.duration_sec||w.duration),
+          calories_burned:num(w.calories_burned||w.calories)
+        });
+      });
+    });
+  }catch(e){}
+  return arr;
+}
+
+function collectHistory(){
+  var a=[];
+  try{if(Array.isArray(_allHistory))a=a.concat(_allHistory)}catch(e){}
+  a=a.concat(collectLocalHistory());
+  try{
+    (appState.workoutLog||[]).forEach(function(w){a.push(w)});
+  }catch(e){}
+  var seen={},out=[];
+  a.forEach(function(w){
+    var date=w.date||(w.created_at?String(w.created_at).slice(0,10):'');
+    var key=String(w.id||'')+'|'+date+'|'+String(w.workout_name||w.name||'')+'|'+String(w.duration_sec||w.duration||'');
+    if(seen[key])return;seen[key]=1;
+    out.push({
+      id:w.id,key:key,date:date,
+      created_at:w.created_at||(date?date+'T12:00:00':''),
+      name:w.workout_name||w.name||'Workout',
+      sec:num(w.duration_sec||w.duration),
+      kcal:num(w.calories_burned||w.calories)
+    });
+  });
+  return out.sort(function(x,y){return new Date(y.created_at)-new Date(x.created_at)});
+}
+
+function category(name){
+  var n=String(name||'').toLowerCase();
+  if(/pilates/.test(n))return 'Pilates';
+  if(/walk|march|step/.test(n))return 'Walking';
+  if(/dance|afrobeat|zumba/.test(n))return 'Dance';
+  if(/hiit|tabata|burn|furnace|cardio/.test(n))return 'HIIT / Cardio';
+  if(/glute|booty|leg|squat|lower body/.test(n))return 'Lower Body';
+  if(/core|abs|belly|oblique|mummy tummy/.test(n))return 'Core';
+  if(/arm|shoulder|upper body|back|posture/.test(n))return 'Upper Body';
+  if(/stretch|yoga|mobility|recovery|wind down/.test(n))return 'Recovery';
+  return 'Other';
+}
+
+function between(items,a,b){return items.filter(function(w){var d=new Date(w.created_at||w.date);return d>=a&&d<b})}
+function total(items,key){return items.reduce(function(s,w){return s+num(w[key])},0)}
+function fmtMin(sec){var m=Math.round(sec/60);return m>=60?(m/60).toFixed(m%60?1:0)+'h':m+'m'}
+
+function consecutiveStreak(items){
+  var dates={};items.forEach(function(w){if(w.date)dates[w.date]=1});
+  var d=startOfDay(new Date()),streak=0;
+  if(!dates[dayKey(d)]){d.setDate(d.getDate()-1)}
+  while(dates[dayKey(d)]){streak++;d.setDate(d.getDate()-1)}
+  return streak;
+}
+
+function weeklyGoal(){
+  try{
+    var p=JSON.parse(localStorage.getItem('fhn_weekly_plan_prefs')||'null');
+    if(p&&p.days)return Number(p.days)||4;
+  }catch(e){}
+  return 4;
+}
+
+function buildCalendar(items){
+  var now=new Date(),base=new Date(now.getFullYear(),now.getMonth()+v13MonthOffset,1);
+  var y=base.getFullYear(),m=base.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  var done={};items.forEach(function(w){if(w.date)done[w.date]=(done[w.date]||0)+1});
+  var html='<div class="v13-cal-head"><button class="v13-cal-nav" onclick="v13ChangeMonth(-1)">‹</button><div class="v13-cal-title">'+base.toLocaleDateString(undefined,{month:'long',year:'numeric'})+'</div><button class="v13-cal-nav" onclick="v13ChangeMonth(1)">›</button></div><div class="v13-cal-grid">';
+  ['S','M','T','W','T','F','S'].forEach(function(x){html+='<div class="v13-cal-dayname">'+x+'</div>'});
+  for(var i=0;i<first;i++)html+='<div></div>';
+  for(var d=1;d<=days;d++){
+    var dt=new Date(y,m,d),k=dayKey(dt),cls='v13-cal-day'+(done[k]?' done':'')+(k===dayKey(now)?' today':'');
+    html+='<div class="'+cls+'" title="'+(done[k]?done[k]+' workout'+(done[k]>1?'s':''):'')+'">'+d+'</div>';
+  }
+  return html+'</div>';
+}
+
+function badges(items,minutes,streak){
+  var morning=items.some(function(w){var h=new Date(w.created_at).getHours();return h>=4&&h<10});
+  var defs=[
+    ['🌱','First Workout',items.length>=1,'Complete 1 workout'],
+    ['✨','Five Strong',items.length>=5,'Complete 5 workouts'],
+    ['👑','Ten Club',items.length>=10,'Complete 10 workouts'],
+    ['🔥','7-Day Streak',streak>=7,'Reach a 7-day streak'],
+    ['⏱️','500 Minutes',minutes>=500,'Train for 500 minutes'],
+    ['🌅','Morning Queen',morning,'Complete a morning workout']
+  ];
+  return defs.map(function(b){return '<div class="v13-badge '+(b[2]?'earned':'')+'"><div class="v13-badge-icon">'+b[0]+'</div><div class="v13-badge-name">'+b[1]+'</div><div class="v13-badge-sub">'+(b[2]?'Unlocked':b[3])+'</div></div>'}).join('');
+}
+
+function renderJourney(){
+  var root=document.getElementById('v13-journey');if(!root)return;
+  var all=collectHistory(),now=new Date(),w0=startOfWeek(now),w1=new Date(w0);w1.setDate(w1.getDate()+7);
+  var prev0=new Date(w0);prev0.setDate(prev0.getDate()-7);
+  var thisW=between(all,w0,w1),prevW=between(all,prev0,w0);
+  var thisSec=total(thisW,'sec'),prevSec=total(prevW,'sec'),thisK=total(thisW,'kcal');
+  var totalSec=total(all,'sec'),totalK=total(all,'kcal'),minutes=Math.round(totalSec/60),streak=consecutiveStreak(all),goal=weeklyGoal();
+
+  var deltaMin=Math.round((thisSec-prevSec)/60),compare='';
+  if(!all.length)compare='Complete your first workout and your journey will start appearing here.';
+  else if(deltaMin>0)compare='↑ You trained '+deltaMin+' minutes more than last week.';
+  else if(deltaMin<0)compare='You are '+Math.abs(deltaMin)+' minutes behind last week — there is still time to move.';
+  else compare='You are matching last week’s training time. Keep the momentum going.';
+
+  var longest=all.reduce(function(a,w){return w.sec>a.sec?w:a},{sec:0,name:'—'});
+  var mostCal=all.reduce(function(a,w){return w.kcal>a.kcal?w:a},{kcal:0,name:'—'});
+
+  var mix={};all.forEach(function(w){var c=category(w.name);mix[c]=(mix[c]||0)+1});
+  var mixEntries=Object.keys(mix).sort(function(a,b){return mix[b]-mix[a]}).slice(0,6),maxMix=Math.max.apply(null,mixEntries.map(function(k){return mix[k]}).concat([1]));
+  var mixHtml=mixEntries.length?mixEntries.map(function(k){
+    return '<div class="v13-mix-row"><div class="v13-mix-head"><span>'+esc(k)+'</span><span>'+mix[k]+' workout'+(mix[k]!==1?'s':'')+'</span></div><div class="v13-mix-bar"><div class="v13-mix-fill" style="width:'+Math.round(mix[k]/maxMix*100)+'%"></div></div></div>';
+  }).join(''):'<div class="v13-empty">Your workout mix will appear after you complete sessions.</div>';
+
+  root.innerHTML=
+  '<div class="v13-hero"><div class="v13-kicker">My Journey</div><div class="v13-title">Your week with FitHerNova</div><div class="v13-sub">A clear view of the work you have already put in — and the momentum you are building.</div>'+
+  '<div class="v13-week-stats"><div class="v13-week-stat"><strong>'+thisW.length+'</strong><span>WORKOUTS</span></div><div class="v13-week-stat"><strong>'+fmtMin(thisSec)+'</strong><span>TRAINED</span></div><div class="v13-week-stat"><strong>'+Math.round(thisK)+'</strong><span>KCAL</span></div><div class="v13-week-stat"><strong>'+streak+'</strong><span>DAY STREAK</span></div></div>'+
+  '<div class="v13-compare">'+esc(compare)+'</div><button class="v13-share" onclick="v13ShareWeek()">↗ Share My Week</button></div>'+
+  '<div class="v13-grid2"><div class="v13-card"><div class="v13-card-title">🏆 Personal Bests</div><div class="v13-best-list">'+
+  '<div class="v13-best"><b>'+all.length+'</b><small>Total workouts</small></div>'+
+  '<div class="v13-best"><b>'+fmtMin(totalSec)+'</b><small>Total training</small></div>'+
+  '<div class="v13-best"><b>'+Math.round(totalK)+'</b><small>Total kcal</small></div>'+
+  '<div class="v13-best"><b>'+streak+' days</b><small>Current streak</small></div>'+
+  '<div class="v13-best"><b>'+fmtMin(longest.sec)+'</b><small>Longest workout</small></div>'+
+  '<div class="v13-best"><b>'+Math.round(mostCal.kcal)+'</b><small>Highest kcal session</small></div>'+
+  '</div></div><div class="v13-card"><div class="v13-card-title">✨ Workout Mix</div>'+mixHtml+'</div></div>'+
+  '<div class="v13-card" style="margin-bottom:12px"><div class="v13-card-title">📅 Activity Calendar</div>'+buildCalendar(all)+'</div>'+
+  '<div class="v13-card"><div class="v13-card-title">🏅 Milestones</div><div class="v13-milestones">'+badges(all,minutes,streak)+'</div></div>';
+
+  root._v13={thisW:thisW,thisSec:thisSec,thisK:thisK,streak:streak,goal:goal,prevW:prevW};
+}
+
+window.v13ChangeMonth=function(n){v13MonthOffset+=n;renderJourney()};
+
+window.v13ShareWeek=async function(){
+  var root=document.getElementById('v13-journey'),d=root&&root._v13;if(!d)return;
+  var name='';
+  try{name=(currentUser&&((currentUser.user_metadata&&currentUser.user_metadata.first_name)||currentUser.email||''))||''}catch(e){}
+  name=String(name).split('@')[0].split(' ')[0]||'I';
+  var txt='My week with FitHerNova ✨\n'+d.thisW.length+' workouts · '+fmtMin(d.thisSec)+' trained · '+Math.round(d.thisK)+' kcal · '+d.streak+' day streak.\nStrong. Consistent. Moving forward.';
+  try{
+    if(navigator.share)await navigator.share({title:'My FitHerNova Week',text:txt});
+    else if(navigator.clipboard){await navigator.clipboard.writeText(txt);try{showToast('Copied','Your FitHerNova week is ready to share.')}catch(e){}}
+  }catch(e){}
+};
+
+function mount(){
+  var page=document.getElementById('page-progress');if(!page)return;
+  if(!document.getElementById('v13-journey')){
+    var root=document.createElement('div');root.id='v13-journey';root.className='v13-journey-shell';
+    var label=page.querySelector('.sec-label');if(label&&label.nextSibling)page.insertBefore(root,label.nextSibling);else page.insertBefore(root,page.firstChild);
+  }
+  renderJourney();
+}
+
+function hookNav(){
+  if(typeof window.navTo!=='function'||window.navTo._v13)return;
+  var old=window.navTo;
+  window.navTo=function(page){var r=old.apply(this,arguments);if(page==='progress')setTimeout(function(){try{renderJourney()}catch(e){}},120);return r};
+  window.navTo._v13=true;
+}
+function hookSave(){
+  if(typeof window.saveWorkoutEntry!=='function'||window.saveWorkoutEntry._v13)return;
+  var old=window.saveWorkoutEntry;
+  window.saveWorkoutEntry=async function(){var r=await old.apply(this,arguments);setTimeout(function(){try{renderJourney()}catch(e){}},150);return r};
+  window.saveWorkoutEntry._v13=true;
+}
+
+async function refreshFromCloud(){
+  try{if(typeof loadWorkoutHistory==='function')await loadWorkoutHistory()}catch(e){}
+  renderJourney();
+}
+
+function init(){mount();hookNav();hookSave();setTimeout(refreshFromCloud,900)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,150)});
+else setTimeout(init,150);
+setInterval(function(){hookNav();hookSave()},3000);
 })();
 </script>
 
