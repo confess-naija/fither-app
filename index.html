@@ -13187,5 +13187,247 @@ setInterval(function(){hookNav();hookSave()},3000);
 })();
 </script>
 
+
+<!-- ═══════════════════════════════════════════════════════════════
+     V14 — PROGRAMS & CHALLENGES
+     Structured multi-day journeys using existing FitHerNova workouts.
+     Preserves V11/V12/V13.1 systems.
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="fhn-v14-programs-style">
+.v14-programs-wrap{margin:0 0 14px}
+.v14-hero{border-radius:24px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;background:
+radial-gradient(circle at 85% 14%,rgba(255,209,102,.16),transparent 30%),
+radial-gradient(circle at 10% 90%,rgba(255,45,107,.18),transparent 38%),
+linear-gradient(145deg,#321022,#190b15 62%,#0d0d10);
+border:1px solid rgba(255,45,107,.24);box-shadow:0 15px 40px rgba(0,0,0,.28)}
+.v14-kicker{font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--pink-light)}
+.v14-title{font-family:var(--font-head);font-size:24px;font-weight:900;line-height:1.05;margin:6px 0 5px}
+.v14-sub{font-size:11px;line-height:1.5;color:rgba(255,255,255,.64);max-width:650px}
+.v14-active{margin-top:14px;padding:12px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}
+.v14-active-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.v14-active-name{font-family:var(--font-head);font-size:15px;font-weight:850}
+.v14-active-day{font-size:9px;font-weight:900;color:var(--gold);white-space:nowrap}
+.v14-progress{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:9px 0 6px}
+.v14-progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--violet),var(--gold));border-radius:999px}
+.v14-active-meta{font-size:9.5px;color:rgba(255,255,255,.56)}
+.v14-active-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.v14-btn{height:40px;border-radius:12px;font-size:10px;font-weight:900;cursor:pointer}
+.v14-btn.primary{border:0;color:#fff;background:linear-gradient(135deg,var(--pink),var(--violet))}
+.v14-btn.ghost{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;padding:0 13px}
+.v14-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.v14-card{background:var(--black2);border:1px solid var(--black4);border-radius:20px;padding:14px;position:relative;overflow:hidden}
+.v14-card:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 95% 5%,rgba(255,45,107,.08),transparent 35%);pointer-events:none}
+.v14-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;position:relative;z-index:1}
+.v14-icon{font-size:26px}.v14-duration{font-size:8.5px;font-weight:900;color:var(--gold);background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.18);padding:4px 7px;border-radius:999px}
+.v14-card-name{font-family:var(--font-head);font-size:15px;font-weight:850;line-height:1.12;margin:8px 0 4px;position:relative;z-index:1}
+.v14-card-sub{font-size:9.5px;color:rgba(255,255,255,.52);line-height:1.45;min-height:40px;position:relative;z-index:1}
+.v14-tags{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0;position:relative;z-index:1}
+.v14-tag{font-size:8px;font-weight:800;padding:4px 6px;border-radius:999px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.07)}
+.v14-start{width:100%;height:37px;border:0;border-radius:11px;background:rgba(255,45,107,.12);border:1px solid rgba(255,45,107,.24);color:#fff;font-size:9.5px;font-weight:900;cursor:pointer;position:relative;z-index:1}
+.v14-program-detail{position:fixed;inset:0;z-index:10040;display:none;align-items:flex-end;justify-content:center;background:rgba(3,3,5,.82);backdrop-filter:blur(10px);padding:14px}
+.v14-program-detail.show{display:flex}
+.v14-detail-card{width:min(600px,100%);max-height:82vh;overflow-y:auto;border-radius:24px 24px 18px 18px;padding:18px;background:linear-gradient(160deg,#28101f,#100b10 70%);border:1px solid rgba(255,255,255,.12);box-shadow:0 -20px 60px rgba(0,0,0,.5)}
+.v14-detail-title{font-family:var(--font-head);font-size:21px;font-weight:900;margin:4px 0}
+.v14-detail-sub{font-size:10.5px;line-height:1.5;color:rgba(255,255,255,.6)}
+.v14-day-list{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.v14-day{display:flex;align-items:center;gap:9px;padding:9px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+.v14-day.done{border-color:rgba(6,214,160,.22);background:rgba(6,214,160,.06)}
+.v14-day.current{border-color:rgba(255,45,107,.36);background:rgba(255,45,107,.08)}
+.v14-day-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);font-size:9px;font-weight:900;flex-shrink:0}
+.v14-day-info{flex:1;min-width:0}.v14-day-info strong{display:block;font-size:10px;color:#fff}.v14-day-info span{display:block;font-size:8.5px;color:rgba(255,255,255,.48);margin-top:2px}
+.v14-day-state{font-size:8.5px;font-weight:900;color:var(--gold);white-space:nowrap}
+.v14-recovery-note{margin-top:10px;padding:9px 10px;border-radius:12px;background:rgba(6,214,160,.06);border:1px solid rgba(6,214,160,.16);font-size:9px;line-height:1.45;color:rgba(255,255,255,.62)}
+.v14-complete-banner{margin-top:12px;padding:11px;border-radius:14px;text-align:center;background:linear-gradient(135deg,rgba(255,45,107,.13),rgba(255,209,102,.08));border:1px solid rgba(255,209,102,.22)}
+.v14-complete-banner strong{display:block;font-family:var(--font-head);font-size:14px;color:#fff}.v14-complete-banner span{font-size:9px;color:rgba(255,255,255,.55)}
+@media(max-width:640px){.v14-grid{grid-template-columns:1fr}.v14-title{font-size:21px}.v14-active-actions{grid-template-columns:1fr}.v14-btn.ghost{width:100%}}
+</style>
+
+<div class="v14-program-detail" id="v14-program-detail" onclick="if(event.target===this)v14CloseProgram()">
+  <div class="v14-detail-card" id="v14-detail-card"></div>
+</div>
+
+<script id="fhn-v14-programs-script">
+(function(){
+'use strict';
+
+var V14_PROGRAMS = [
+ {id:'beginner7',icon:'🌱',name:'7-Day Beginner Reset',days:7,level:'Beginner',focus:'Full Body',sub:'A gentle first week that builds confidence, movement consistency and basic strength.',pattern:[1,55,8,'rest',25,59,54]},
+ {id:'core14',icon:'🎯',name:'14-Day Core & Belly Challenge',days:14,level:'Beginner–Moderate',focus:'Core',sub:'Controlled core sessions mixed with walking and recovery so the plan stays realistic.',pattern:[8,16,55,25,'rest',10,53,8,56,'rest',16,25,54,8]},
+ {id:'full21',icon:'👑',name:'21-Day FitHerNova Full Body',days:21,level:'Moderate',focus:'Full Body',sub:'A balanced three-week journey combining strength, cardio, Pilates, walking and recovery.',pattern:[1,55,11,8,'rest',56,25,3,52,'rest',57,16,53,59,'rest',6,58,10,54,1,'rest']},
+ {id:'curvy30',icon:'✨',name:'30-Day Strong & Curvy',days:30,level:'Moderate',focus:'Tone & Strength',sub:'A longer body-toning plan with glutes, legs, core, upper body, walking and recovery.',pattern:[3,52,8,55,'rest',11,25,56,16,'rest',6,53,10,57,'rest',3,52,58,8,'rest',11,25,56,16,'rest',6,53,59,1,'rest']},
+ {id:'lowimpact14',icon:'💗',name:'Low-Impact 50+ Program',days:14,level:'Gentle',focus:'Mobility & Cardio',sub:'Joint-friendly movement, balance, gentle strength and walking for mature women.',pattern:[59,54,55,'rest',25,59,54,55,'rest',56,25,54,59,'rest']},
+ {id:'postpartum14',icon:'🤍',name:'Postpartum Gentle Return',days:14,level:'Gentle',focus:'Core & Mobility',sub:'A gradual return to movement using gentle core, mobility, low-impact cardio and recovery.',pattern:[31,54,55,'rest',31,25,59,54,'rest',31,55,25,54,'rest']},
+ {id:'pilates14',icon:'🌷',name:'Pilates Starter Program',days:14,level:'Easy–Moderate',focus:'Pilates',sub:'Build control, posture and core strength through a progressive Pilates sequence.',pattern:[51,54,8,'rest',52,51,53,54,'rest',8,52,53,25,54]},
+ {id:'walking14',icon:'🚶🏾‍♀️',name:'Walking for Weight Loss',days:14,level:'Easy–Moderate',focus:'Walking',sub:'Indoor walking sessions that gradually build time, pace and total daily movement.',pattern:[55,59,56,'rest',55,57,56,59,'rest',58,55,56,60,'rest']},
+ {id:'dance14',icon:'💃🏾',name:'Afrobeats & Dance Challenge',days:14,level:'Moderate',focus:'Dance Cardio',sub:'Fun rhythm-based cardio with recovery and low-impact days to keep you moving.',pattern:[57,17,55,'rest',57,19,56,54,'rest',57,17,19,59,'rest']}
+];
+
+var V14_ACTIVE = null;
+var V14_PENDING = null;
+
+function g(k,d){try{var x=localStorage.getItem(k);return x===null?d:x}catch(e){return d}}
+function s(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function json(k,d){try{return JSON.parse(g(k,''))||d}catch(e){return d}}
+function esc(sv){return String(sv==null?'':sv).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function todayKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function getProgram(id){return V14_PROGRAMS.find(function(p){return p.id===id})}
+function getWorkout(id){if(id==='rest')return null;try{return WORKOUTS.find(function(w){return Number(w.id)===Number(id)})||null}catch(e){return null}}
+function stateKey(){var uid='anon';try{uid=currentUser&&currentUser.id?currentUser.id:'anon'}catch(e){}return 'fhn_v14_program_'+uid}
+function loadState(){V14_ACTIVE=json(stateKey(),null);return V14_ACTIVE}
+function saveState(){if(V14_ACTIVE)s(stateKey(),JSON.stringify(V14_ACTIVE))}
+function startDateToDay(st){
+  if(!st||!st.startedAt)return 1;
+  var a=new Date(st.startedAt);a.setHours(0,0,0,0);
+  var b=new Date();b.setHours(0,0,0,0);
+  return Math.max(1,Math.floor((b-a)/86400000)+1);
+}
+function currentDay(st,p){
+  var elapsed=startDateToDay(st),done=(st.completedDays||[]).length+1;
+  // Never force users backward for missed days; resume at the first incomplete day.
+  return Math.min(p.days,Math.max(1,Math.min(elapsed,done)));
+}
+function isDayDone(st,d){return (st.completedDays||[]).indexOf(d)>=0}
+function nextIncomplete(st,p){
+  for(var d=1;d<=p.days;d++)if(!isDayDone(st,d))return d;
+  return p.days;
+}
+function progressPct(st,p){return Math.min(100,Math.round(((st.completedDays||[]).length/p.days)*100))}
+function dayItem(p,day){
+  var item=p.pattern[(day-1)%p.pattern.length];
+  if(item==='rest')return {rest:true,name:'Recovery Day',meta:'Rest · mobility · hydration'};
+  var w=getWorkout(item);
+  return w?{rest:false,id:w.id,name:w.name,meta:w.meta||((Math.round((w.duration||0)/60))+' min')}:{rest:true,name:'Recovery Day',meta:'Light movement and recovery'};
+}
+function activeMarkup(st,p){
+  var d=nextIncomplete(st,p),item=dayItem(p,d),pct=progressPct(st,p);
+  var complete=(st.completedDays||[]).length>=p.days;
+  if(complete)return '<div class="v14-active"><div class="v14-active-name">🏆 '+esc(p.name)+' completed</div><div class="v14-active-meta" style="margin-top:5px">You completed all '+p.days+' days. Your program badge is unlocked.</div><div class="v14-progress"><div class="v14-progress-fill" style="width:100%"></div></div><div class="v14-active-actions"><button class="v14-btn primary" onclick="v14OpenProgram(\''+p.id+'\')">View Completed Program</button><button class="v14-btn ghost" onclick="v14RestartProgram()">Restart</button></div></div>';
+  return '<div class="v14-active"><div class="v14-active-head"><div><div class="v14-active-name">'+esc(p.name)+'</div><div class="v14-active-meta" style="margin-top:3px">'+esc(item.name)+'</div></div><div class="v14-active-day">DAY '+d+' OF '+p.days+'</div></div><div class="v14-progress"><div class="v14-progress-fill" style="width:'+pct+'%"></div></div><div class="v14-active-meta">'+pct+'% complete · '+(p.days-(st.completedDays||[]).length)+' day'+((p.days-(st.completedDays||[]).length)!==1?'s':'')+' remaining</div><div class="v14-active-actions"><button class="v14-btn primary" onclick="v14StartToday()">'+(item.rest?'Complete Recovery Day':'Start Today’s Workout')+'</button><button class="v14-btn ghost" onclick="v14OpenProgram(\''+p.id+'\')">View Plan</button></div></div>';
+}
+function cardMarkup(p){
+  return '<div class="v14-card"><div class="v14-card-top"><div class="v14-icon">'+p.icon+'</div><div class="v14-duration">'+p.days+' DAYS</div></div><div class="v14-card-name">'+esc(p.name)+'</div><div class="v14-card-sub">'+esc(p.sub)+'</div><div class="v14-tags"><span class="v14-tag">'+esc(p.level)+'</span><span class="v14-tag">'+esc(p.focus)+'</span></div><button class="v14-start" onclick="v14OpenProgram(\''+p.id+'\')">View Program</button></div>';
+}
+function mount(){
+  var page=document.getElementById('page-workout');if(!page)return;
+  var old=document.getElementById('v14-programs');if(old){render();return}
+  var root=document.createElement('section');root.id='v14-programs';root.className='v14-programs-wrap';
+  var anchor=document.getElementById('fhn-walking-hub')||document.getElementById('fhn-pilates-studio')||document.getElementById('fhn-v6-tools')||document.getElementById('workout-list-wrap');
+  if(anchor)anchor.parentNode.insertBefore(root,anchor);else page.insertBefore(root,page.firstChild);
+  render();
+}
+function render(){
+  var root=document.getElementById('v14-programs');if(!root)return;
+  loadState();
+  var active='';
+  if(V14_ACTIVE){
+    var ap=getProgram(V14_ACTIVE.programId);if(ap)active=activeMarkup(V14_ACTIVE,ap);
+  }
+  root.innerHTML='<div class="v14-hero"><div class="v14-kicker">Programs & Challenges</div><div class="v14-title">Follow a plan. Build momentum.</div><div class="v14-sub">Choose a structured FitHerNova journey and simply complete the next day. Missed a day? Your progress stays safe — resume where you stopped.</div>'+active+'</div><div class="v14-grid">'+V14_PROGRAMS.map(cardMarkup).join('')+'</div>';
+}
+window.v14OpenProgram=function(id){
+  var p=getProgram(id);if(!p)return;
+  loadState();
+  var active=V14_ACTIVE&&V14_ACTIVE.programId===p.id?V14_ACTIVE:null;
+  var cur=active?nextIncomplete(active,p):1,days='';
+  for(var d=1;d<=p.days;d++){
+    var item=dayItem(p,d),done=active&&isDayDone(active,d),isCur=active&&d===cur&&!done;
+    days+='<div class="v14-day '+(done?'done ':'')+(isCur?'current':'')+'"><div class="v14-day-num">'+(done?'✓':d)+'</div><div class="v14-day-info"><strong>'+esc(item.name)+'</strong><span>'+esc(item.meta)+'</span></div><div class="v14-day-state">'+(done?'DONE':item.rest?'RECOVER':'DAY '+d)+'</div></div>';
+  }
+  var action=active?'<button class="v14-btn primary" style="width:100%;margin-top:12px" onclick="v14CloseProgram();v14StartToday()">Resume Program</button>':'<button class="v14-btn primary" style="width:100%;margin-top:12px" onclick="v14BeginProgram(\''+p.id+'\')">Start This Program</button>';
+  document.getElementById('v14-detail-card').innerHTML='<div class="v14-kicker">'+p.icon+' '+p.days+' Day Program</div><div class="v14-detail-title">'+esc(p.name)+'</div><div class="v14-detail-sub">'+esc(p.sub)+'</div><div class="v14-recovery-note">Missing a day does not reset your plan. FitHerNova keeps your completed days and resumes from the next unfinished session.</div><div class="v14-day-list">'+days+'</div>'+action+'<button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="v14CloseProgram()">Close</button>';
+  document.getElementById('v14-program-detail').classList.add('show');
+};
+window.v14CloseProgram=function(){var x=document.getElementById('v14-program-detail');if(x)x.classList.remove('show')};
+window.v14BeginProgram=function(id){
+  var p=getProgram(id);if(!p)return;
+  V14_ACTIVE={programId:id,startedAt:new Date().toISOString(),completedDays:[],lastCompletedAt:null};
+  saveState();v14CloseProgram();render();
+  try{showToast('Program started',p.name+' is now your active FitHerNova journey.')}catch(e){}
+};
+window.v14RestartProgram=function(){
+  if(!V14_ACTIVE)return;var id=V14_ACTIVE.programId,p=getProgram(id);
+  V14_ACTIVE={programId:id,startedAt:new Date().toISOString(),completedDays:[],lastCompletedAt:null};saveState();render();
+  try{showToast('Program restarted',p?p.name:'Your program'+' starts again at Day 1.')}catch(e){}
+};
+function completeDay(day){
+  loadState();if(!V14_ACTIVE)return;
+  if((V14_ACTIVE.completedDays||[]).indexOf(day)<0)V14_ACTIVE.completedDays.push(day);
+  V14_ACTIVE.lastCompletedAt=new Date().toISOString();saveState();render();
+  var p=getProgram(V14_ACTIVE.programId),complete=p&&(V14_ACTIVE.completedDays||[]).length>=p.days;
+  try{
+    if(complete){confettiBurst();showToast('🏆 Program complete!',p.name+' completed. Your badge is unlocked.')}
+    else showToast('Day '+day+' complete','Great work. Your next program day is ready when you are.');
+  }catch(e){}
+}
+window.v14StartToday=function(){
+  loadState();if(!V14_ACTIVE)return;
+  var p=getProgram(V14_ACTIVE.programId);if(!p)return;
+  var d=nextIncomplete(V14_ACTIVE,p),item=dayItem(p,d);
+  if(item.rest){
+    completeDay(d);
+    try{if(appState&&appState.isProUser&&_voiceMode!=='off')smartCoachSpeak('Today is a recovery day. Hydrate, move gently, and let your body rebuild.','v14-rest-'+d)}catch(e){}
+    return;
+  }
+  V14_PENDING={programId:p.id,day:d,workoutId:item.id};
+  s('fhn_v14_pending',JSON.stringify(V14_PENDING));
+  try{startWorkout(item.id)}catch(e){}
+};
+function completePendingWorkout(workout){
+  var pend=json('fhn_v14_pending',null);if(!pend||!workout)return;
+  if(Number(pend.workoutId)!==Number(workout.id))return;
+  loadState();if(!V14_ACTIVE||V14_ACTIVE.programId!==pend.programId)return;
+  completeDay(Number(pend.day));
+  try{localStorage.removeItem('fhn_v14_pending')}catch(e){}
+}
+function installCompletionHook(){
+  // NOTE: smartCoachComplete only fires for Pro users with Voice Trainer
+  // switched on, so hooking it here would leave program-day tracking
+  // broken for free users and for Pro users with voice off. saveWorkoutEntry
+  // runs for every completed session regardless of Pro/voice status, so we
+  // hook that instead and independently check real completion (not an
+  // early stop) using the same formula stopTimer() itself uses, since
+  // activeWorkout/timerElapsed/activeRealDuration still hold the
+  // just-finished session's values at the moment saveWorkoutEntry runs.
+  if(typeof window.saveWorkoutEntry!=='function'||window.saveWorkoutEntry._v14)return;
+  var oldSave=window.saveWorkoutEntry;
+  window.saveWorkoutEntry=async function(){
+    var w=(typeof activeWorkout!=='undefined')?activeWorkout:null;
+    var elapsed=(typeof timerElapsed!=='undefined')?timerElapsed:0;
+    var realDur=(typeof activeRealDuration!=='undefined'&&activeRealDuration)?activeRealDuration:(w?w.duration:0);
+    var finishedNaturally=!!(w&&w.exercises&&elapsed>=(realDur-1));
+    var r=await oldSave.apply(this,arguments);
+    try{if(finishedNaturally)completePendingWorkout(w)}catch(e){}
+    return r;
+  };
+  window.saveWorkoutEntry._v14=true;
+}
+function installNavHook(){
+  if(typeof window.navTo!=='function'||window.navTo._v14)return;
+  var old=window.navTo;
+  window.navTo=function(page){
+    var r=old.apply(this,arguments);
+    if(page==='workout')setTimeout(function(){mount();render()},100);
+    return r;
+  };
+  window.navTo._v14=true;
+}
+function programCoachNudge(){
+  loadState();if(!V14_ACTIVE)return;
+  var p=getProgram(V14_ACTIVE.programId);if(!p)return;
+  var rem=p.days-(V14_ACTIVE.completedDays||[]).length;
+  if(rem>0&&rem<=3){
+    try{
+      var key='fhn_v14_nudge_'+todayKey()+'_'+p.id;
+      if(g(key,'')!=='1'){s(key,'1');if(typeof showToast==='function')showToast('Almost there 👑',rem+' program day'+(rem!==1?'s':'')+' left in '+p.name+'.');}
+    }catch(e){}
+  }
+}
+function init(){mount();installCompletionHook();installNavHook();programCoachNudge()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,220)});
+else setTimeout(init,220);
+setInterval(function(){installCompletionHook();installNavHook()},3000);
+})();
+</script>
+
 </body>
 </html>
