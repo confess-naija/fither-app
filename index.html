@@ -12907,6 +12907,7 @@ setInterval(function(){v12InstallPreviewIntensity();v12InstallStartAdaptation();
 </script>
 
 
+<!-- V13.1 FIX: source-independent workout-history deduplication -->
 <!-- ═══════════════════════════════════════════════════════════════
      V13 — MY JOURNEY
      Progress intelligence, weekly recap, milestones, category mix.
@@ -12998,14 +12999,40 @@ function collectHistory(){
   var seen={},out=[];
   a.forEach(function(w){
     var date=w.date||(w.created_at?String(w.created_at).slice(0,10):'');
-    var key=String(w.id||'')+'|'+date+'|'+String(w.workout_name||w.name||'')+'|'+String(w.duration_sec||w.duration||'');
-    if(seen[key])return;seen[key]=1;
+    var created=w.created_at||(date?date+'T12:00:00':'');
+    var name=String(w.workout_name||w.name||'Workout').trim();
+    var sec=num(w.duration_sec||w.duration);
+    var kcal=num(w.calories_burned||w.calories);
+
+    // V13.1 dedupe fix:
+    // The same completed workout may exist simultaneously in appState,
+    // local fallback storage, and Supabase. Those copies can have different
+    // database IDs, so ID must NOT be part of the duplicate fingerprint.
+    // The completion timestamp + workout details identify the same event.
+    // Round timestamp to the second to tolerate formatting differences.
+    var createdKey='';
+    try{
+      var dt=new Date(created);
+      createdKey=isNaN(dt.getTime())?String(created):dt.toISOString().slice(0,19);
+    }catch(e){ createdKey=String(created); }
+
+    var key=[
+      date,
+      name.toLowerCase(),
+      Math.round(sec),
+      Math.round(kcal),
+      createdKey
+    ].join('|');
+
+    if(seen[key])return;
+    seen[key]=1;
+
     out.push({
       id:w.id,key:key,date:date,
-      created_at:w.created_at||(date?date+'T12:00:00':''),
-      name:w.workout_name||w.name||'Workout',
-      sec:num(w.duration_sec||w.duration),
-      kcal:num(w.calories_burned||w.calories)
+      created_at:created,
+      name:name,
+      sec:sec,
+      kcal:kcal
     });
   });
   return out.sort(function(x,y){return new Date(y.created_at)-new Date(x.created_at)});
