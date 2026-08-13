@@ -968,7 +968,7 @@ select option{background:var(--black3);}
 .timer-action-btn.easier{border-color:rgba(6,214,160,.35);color:var(--green)}
 .prepare-overlay{position:fixed;inset:0;z-index:12000;background:radial-gradient(circle at 50% 42%,rgba(255,45,107,.35),rgba(10,5,9,.96) 58%);display:none;align-items:center;justify-content:center;text-align:center;backdrop-filter:blur(12px)}
 .prepare-overlay.show{display:flex;animation:fadeIn .2s ease}
-.prepare-card{width:min(360px,88vw);padding:28px 20px;border-radius:28px;background:rgba(25,10,18,.8);border:1px solid rgba(255,255,255,.15);box-shadow:0 25px 80px rgba(0,0,0,.55)}
+.prepare-card{position:relative;width:min(360px,88vw);padding:28px 20px;border-radius:28px;background:rgba(25,10,18,.8);border:1px solid rgba(255,255,255,.15);box-shadow:0 25px 80px rgba(0,0,0,.55)}
 .prepare-kicker{font-size:11px;letter-spacing:2px;color:var(--pink-light);font-weight:900;text-transform:uppercase}
 .prepare-ex{font-family:var(--font-head);font-size:23px;font-weight:900;margin:9px 0 14px}
 .prepare-num{font-family:var(--font-head);font-size:96px;line-height:.95;font-weight:900;background:linear-gradient(120deg,var(--pink),var(--violet),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
@@ -998,7 +998,7 @@ select option{background:var(--black3);}
 
 /* ── PREMIUM WORKOUT PREVIEW + COMPLETION V4 (isolated add-on) ── */
 .workout-preview-overlay{position:fixed;inset:0;z-index:8800;display:none;align-items:flex-end;justify-content:center;background:rgba(3,2,4,.76);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:14px}.workout-preview-overlay.show{display:flex;animation:previewFade .22s ease}@keyframes previewFade{from{opacity:0}to{opacity:1}}
-.workout-preview-panel{width:min(620px,100%);max-height:min(88dvh,820px);overflow:auto;background:linear-gradient(165deg,#25101e,#100a10 58%,#090909);border:1px solid rgba(255,255,255,.14);border-radius:28px;padding:0 18px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 28px 90px rgba(0,0,0,.7);scrollbar-width:none}.workout-preview-panel::-webkit-scrollbar{display:none}
+.workout-preview-panel{width:min(620px,100%);max-height:min(88dvh,820px);overflow:auto;overflow-y:auto;background:linear-gradient(165deg,#25101e,#100a10 58%,#090909);border:1px solid rgba(255,255,255,.14);border-radius:28px;padding:0 18px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 28px 90px rgba(0,0,0,.7);-webkit-overflow-scrolling:touch}@media (pointer:fine){.workout-preview-panel{scrollbar-width:thin;scrollbar-color:rgba(255,45,107,.5) rgba(255,255,255,.06)}.workout-preview-panel::-webkit-scrollbar{display:block;width:9px}.workout-preview-panel::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:99px}.workout-preview-panel::-webkit-scrollbar-thumb{background:rgba(255,45,107,.45);border-radius:99px}.workout-preview-panel::-webkit-scrollbar-thumb:hover{background:rgba(255,45,107,.65)}}@media (pointer:coarse){.workout-preview-panel{scrollbar-width:none}.workout-preview-panel::-webkit-scrollbar{display:none}}
 .preview-hero{height:190px;margin:0 -18px 16px;border-radius:28px 28px 22px 22px;position:relative;overflow:hidden;background:linear-gradient(135deg,#3a1128,#120a10)}.preview-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 28%;filter:saturate(.95)}.preview-hero-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,3,4,.12),rgba(7,4,7,.9))}.preview-close{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.46);color:#fff;font-size:20px;z-index:2}.preview-hero-copy{position:absolute;left:18px;right:62px;bottom:16px}.preview-tag{display:inline-flex;padding:5px 10px;border-radius:99px;background:rgba(255,45,107,.82);font-size:10px;font-weight:900;letter-spacing:.8px;text-transform:uppercase}.preview-title{font-family:var(--font-head);font-size:25px;font-weight:900;margin-top:7px;line-height:1.05}.preview-sub{font-size:12px;color:rgba(255,255,255,.68);margin-top:5px}
 .preview-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}.preview-stat{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 5px;text-align:center}.preview-stat strong{font-family:var(--font-head);font-size:14px;display:block}.preview-stat span{font-size:9px;color:var(--grey);display:block;margin-top:2px}
 .preview-section-title{font-family:var(--font-head);font-size:12px;font-weight:900;letter-spacing:.9px;text-transform:uppercase;color:var(--pink-light);margin:14px 0 8px}.preview-ex-list{display:flex;flex-direction:column;gap:7px}.preview-ex{display:flex;align-items:center;gap:10px;padding:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:13px}.preview-ex-num{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:rgba(255,45,107,.16);color:var(--pink-light);font-size:11px;font-weight:900}.preview-ex-name{flex:1;font-size:12.5px;font-weight:700}.preview-ex-reps{font-size:10px;color:var(--gold)}
@@ -11699,7 +11699,7 @@ async function logBarcodeFood() {
 
 
 /* ── PREMIUM TIMER V2 LOGIC ── */
-var _prepareRunning=false, _wakeLock=null, _timerStartedAt=0, _timerBaseElapsed=0, _lastVoiceCueTick=-1;
+var _prepareRunning=false, _wakeLock=null, _timerStartedAt=0, _timerBaseElapsed=0, _lastVoiceCueTick=-1, _prepareIntervalId=null;
 function fmtShort(sec){sec=Math.max(0,Math.ceil(sec||0));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
 function toggleDemoCompact(){var c=document.getElementById('workout-demo-card');if(!c)return;c.classList.toggle('compact');var b=c.querySelector('.demo-collapse-btn');if(b)b.textContent=c.classList.contains('compact')?'⌄':'⌃'}
 function getCurrentPhase(){return activePhases&&activePhases[phaseIdx]?activePhases[phaseIdx]:null}
@@ -11723,7 +11723,13 @@ function runPrepareCountdown(){
  var ov=document.getElementById('prepare-overlay'),num=document.getElementById('prepare-num'),ex=document.getElementById('prepare-ex'),tip=document.getElementById('prepare-tip');
  var first=activeWorkout&&activeWorkout.exercises?activeWorkout.exercises[0]:null;if(ex)ex.textContent=first?first.name:'Workout';if(tip)tip.textContent=first?getExerciseTip(first.name):'Start at your own pace.';if(ov)ov.classList.add('show');
  var count=3;if(num)num.textContent=count;playChime(true);if(_timerVibeOn&&navigator.vibrate)navigator.vibrate(30);
- var cd=setInterval(function(){count--;if(count>0){if(num)num.textContent=count;playChime(true);if(_timerVibeOn&&navigator.vibrate)navigator.vibrate(30)}else if(count===0){if(num)num.textContent='GO!';playChime(true);if(_timerVibeOn&&navigator.vibrate)navigator.vibrate([40,30,70])}else{clearInterval(cd);if(ov)ov.classList.remove('show');_prepareRunning=false;startTimerCore()}},850)
+ var cd=setInterval(function(){count--;if(count>0){if(num)num.textContent=count;playChime(true);if(_timerVibeOn&&navigator.vibrate)navigator.vibrate(30)}else if(count===0){if(num)num.textContent='GO!';playChime(true);if(_timerVibeOn&&navigator.vibrate)navigator.vibrate([40,30,70])}else{clearInterval(cd);_prepareIntervalId=null;if(ov)ov.classList.remove('show');_prepareRunning=false;startTimerCore()}},850);
+ _prepareIntervalId=cd;
+}
+function cancelPrepareCountdown(){
+ if(_prepareIntervalId)clearInterval(_prepareIntervalId);
+ _prepareIntervalId=null;_prepareRunning=false;
+ var ov=document.getElementById('prepare-overlay');if(ov)ov.classList.remove('show');
 }
 function startTimer(){
  if(timerRunning)return;
@@ -11775,14 +11781,14 @@ function fhnPreviewTimeline(w){try{if(typeof buildWorkoutTimeline==='function'){
 function renderWorkoutPreview(w){if(!w)return;var tl=fhnPreviewTimeline(w),mins=Math.max(1,Math.round((tl.total||w.duration||60)/60));var set=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v};set('preview-title',w.name||'Workout');set('preview-tag',fhnDifficultyLabel(w)+' workout');set('preview-sub',w.meta||'Guided FitHerNova session');set('preview-duration',mins+' min');set('preview-calories',w.calories||Math.max(1,Math.round(mins*((w.calPM||5)))));set('preview-count',(w.exercises||[]).length);set('preview-rounds',tl.rounds||w.rounds||1);set('preview-equipment',fhnInferEquipment(w));set('preview-focus',fhnInferFocus(w));var bg=document.getElementById('preview-hero-bg');if(bg)bg.style.backgroundImage=w.photo?"url('"+String(w.photo).replace(/'/g,"\\'")+"')":'linear-gradient(135deg,#3b1329,#170b15)';var list=document.getElementById('preview-ex-list');if(list)list.innerHTML=(w.exercises||[]).map(function(e,i){return'<div class="preview-ex"><div class="preview-ex-num">'+(i+1)+'</div><div class="preview-ex-name">'+fhnEscapeHtml(e.name||'Exercise')+'</div><div class="preview-ex-reps">'+fhnEscapeHtml(e.reps||'')+'</div></div>'}).join('')}
 function closeWorkoutPreview(){var o=document.getElementById('workout-preview-overlay');if(o)o.classList.remove('show');_fhnPendingPreviewWorkoutId=null;var t=document.getElementById('timer-section'),l=document.getElementById('workout-list-wrap');if(t)t.style.display='none';if(l)l.style.display='block'}
 function beginWorkoutFromPreview(){var o=document.getElementById('workout-preview-overlay');if(o)o.classList.remove('show');_fhnPendingPreviewWorkoutId=null;var t=document.getElementById('timer-section'),l=document.getElementById('workout-list-wrap');if(t)t.style.display='block';if(l)l.style.display='none';setTimeout(function(){if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},80)}
-function fhnInstallPreviewWrapper(){if(typeof window.startWorkout!=='function'||window.startWorkout._fhnPreviewWrapped)return;var original=window.startWorkout;function wrapped(id){var r=original.apply(this,arguments);_fhnPendingPreviewWorkoutId=id;var t=document.getElementById('timer-section');if(t)t.style.display='none';renderWorkoutPreview(window.activeWorkout);var o=document.getElementById('workout-preview-overlay');if(o)o.classList.add('show');return r}wrapped._fhnPreviewWrapped=true;wrapped._fhnOriginal=original;window.startWorkout=wrapped}
+function fhnInstallPreviewWrapper(){if(typeof window.startWorkout!=='function'||window.startWorkout._fhnPreviewWrapped)return;var original=window.startWorkout;function wrapped(id){var r=original.apply(this,arguments);_fhnPendingPreviewWorkoutId=id;var t=document.getElementById('timer-section');if(t)t.style.display='none';renderWorkoutPreview(activeWorkout);var o=document.getElementById('workout-preview-overlay');if(o)o.classList.add('show');return r}wrapped._fhnPreviewWrapped=true;wrapped._fhnOriginal=original;window.startWorkout=wrapped}
 function ensureCompletionPremium(){var rb=document.getElementById('result-banner');if(!rb||document.getElementById('completion-premium'))return;var d=document.createElement('div');d.className='completion-premium';d.id='completion-premium';d.innerHTML='<div class="completion-streak" id="completion-streak">🔥 Keep your momentum going</div><div class="completion-question">How did this workout feel?</div><div class="completion-feel"><button class="feel-btn" onclick="setCompletionFeel(this,\'Easy\')">🙂 Easy</button><button class="feel-btn" onclick="setCompletionFeel(this,\'Just Right\')">✨ Just Right</button><button class="feel-btn" onclick="setCompletionFeel(this,\'Hard\')">🔥 Hard</button></div><div class="completion-actions"><button class="completion-action primary" onclick="repeatCompletedWorkout()">↻ Repeat Workout</button><button class="completion-action" onclick="finishCompletion()">Done</button><button class="completion-action completion-share" onclick="shareCompletion()">↗ Share My Win</button></div>';rb.appendChild(d)}
 function setCompletionFeel(btn,val){_fhnCompletionFeel=val;document.querySelectorAll('.feel-btn').forEach(function(b){b.classList.remove('selected')});if(btn)btn.classList.add('selected');try{localStorage.setItem('fhn_last_workout_feel',val)}catch(e){}try{showToast('Feedback saved',val+' — Coach Nova will use this next time.')}catch(e){}}
 function populateCompletionPremium(w){ensureCompletionPremium();_fhnLastCompletedWorkout=w||_fhnLastCompletedWorkout;var streak=document.getElementById('completion-streak');var days=(window.appState&&appState.streak)||1;if(streak)streak.textContent='🔥 '+days+' day streak — keep your momentum going';document.querySelectorAll('.feel-btn').forEach(function(b){b.classList.remove('selected')})}
 function repeatCompletedWorkout(){if(_fhnLastCompletedWorkout&&typeof startWorkout==='function')startWorkout(_fhnLastCompletedWorkout.id)}
 function finishCompletion(){var rb=document.getElementById('result-banner');if(rb)rb.style.display='none';var l=document.getElementById('workout-list-wrap');if(l)l.style.display='block';var t=document.getElementById('timer-section');if(t)t.style.display='none';try{document.querySelector('.content').scrollTo({top:0,behavior:'smooth'})}catch(e){window.scrollTo(0,0)}}
 async function shareCompletion(){var name=_fhnLastCompletedWorkout?_fhnLastCompletedWorkout.name:'FitHerNova workout';var txt='I just completed '+name+' with FitHerNova ✨ Strong. Confident. Limitless.';try{if(navigator.share)await navigator.share({title:'My FitHerNova Win',text:txt});else if(navigator.clipboard){await navigator.clipboard.writeText(txt);try{showToast('Copied','Your workout win is ready to share.')}catch(e){}}}catch(e){}}
-function fhnInstallCompletionWrapper(){if(typeof window.stopTimer!=='function'||window.stopTimer._fhnCompletionWrapped)return;var original=window.stopTimer;async function wrapped(){var w=window.activeWorkout?Object.assign({},window.activeWorkout):null;var result=await original.apply(this,arguments);populateCompletionPremium(w);return result}wrapped._fhnCompletionWrapped=true;wrapped._fhnOriginal=original;window.stopTimer=wrapped}
+function fhnInstallCompletionWrapper(){if(typeof window.stopTimer!=='function'||window.stopTimer._fhnCompletionWrapped)return;var original=window.stopTimer;async function wrapped(){var w=activeWorkout?Object.assign({},activeWorkout):null;var result=await original.apply(this,arguments);populateCompletionPremium(w);return result}wrapped._fhnCompletionWrapped=true;wrapped._fhnOriginal=original;window.stopTimer=wrapped}
 function fhnInstallPremiumFlow(){fhnInstallPreviewWrapper();fhnInstallCompletionWrapper();ensureCompletionPremium()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fhnInstallPremiumFlow);else setTimeout(fhnInstallPremiumFlow,0);
 
@@ -11830,12 +11836,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <div class="preview-info-row"><div class="preview-info"><b>Equipment</b><span id="preview-equipment">No equipment</span></div><div class="preview-info"><b>Focus</b><span id="preview-focus">Full body movement</span></div></div>
     <div class="preview-section-title">Your session</div><div class="preview-ex-list" id="preview-ex-list"></div>
     <div class="preview-safety">⚠️ Move within a comfortable range. Stop if you feel sharp pain, dizziness, chest pain, or unusual shortness of breath.</div>
-    <button class="preview-start" onclick="beginWorkoutFromPreview()">▶ Begin Workout</button>
+    <div style="display:flex;gap:10px;margin-top:8px"><button class="btn btn-ghost" style="flex:0 0 auto;min-width:52px" aria-label="Back" onclick="closeWorkoutPreview()">←</button><button class="preview-start" style="flex:1;margin-top:0" onclick="beginWorkoutFromPreview()">▶ Begin Workout</button></div>
   </div>
 </div>
 
 <div class="prepare-overlay" id="prepare-overlay" aria-live="assertive">
-  <div class="prepare-card"><div class="prepare-kicker">Get ready</div><div class="prepare-ex" id="prepare-ex">Workout</div><div class="prepare-num" id="prepare-num">3</div><div class="prepare-tip" id="prepare-tip">Stand tall, breathe, and begin at your own pace.</div></div>
+  <div class="prepare-card"><button aria-label="Cancel" onclick="cancelPrepareCountdown()" style="position:absolute;top:14px;left:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:99px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px">←</button><div class="prepare-kicker">Get ready</div><div class="prepare-ex" id="prepare-ex">Workout</div><div class="prepare-num" id="prepare-num">3</div><div class="prepare-tip" id="prepare-tip">Stand tall, breathe, and begin at your own pace.</div></div>
 </div>
 <div class="timer-music-sheet" id="timer-music-sheet" onclick="if(event.target===this)closeTimerMusicSheet()">
  <div class="timer-sheet-card"><div class="timer-sheet-title">🎵 Workout Music</div><div class="timer-sheet-sub">Control the music without leaving your workout.</div><div class="timer-sheet-controls"><button class="timer-sheet-btn" onclick="musicPrev()">⏮</button><button class="timer-sheet-btn main" onclick="musicToggle()">▶</button><button class="timer-sheet-btn" onclick="musicNext()">⏭</button></div><input class="timer-volume" type="range" min="0" max="100" value="70" oninput="setTimerMusicVolume(this.value)"><button class="btn btn-ghost" style="width:100%;margin-top:14px" onclick="closeTimerMusicSheet()">Done</button></div>
@@ -12890,14 +12896,13 @@ function v12InstallPreviewIntensity(){
 }
 
 function v12InstallStartAdaptation(){
-  if(typeof window.confirmWorkoutPreview!=='function'||window.confirmWorkoutPreview._v12)return;
-  var old=window.confirmWorkoutPreview;
-  window.confirmWorkoutPreview=function(){
-    var r=old.apply(this,arguments);
-    setTimeout(function(){v12ApplyIntensityToTimeline();try{updatePremiumTimeUI()}catch(e){}},0);
-    return r;
+  if(typeof window.beginWorkoutFromPreview!=='function'||window.beginWorkoutFromPreview._v12)return;
+  var old=window.beginWorkoutFromPreview;
+  window.beginWorkoutFromPreview=function(){
+    v12ApplyIntensityToTimeline();try{updatePremiumTimeUI()}catch(e){}
+    return old.apply(this,arguments);
   };
-  window.confirmWorkoutPreview._v12=true;
+  window.beginWorkoutFromPreview._v12=true;
 }
 
 function v12ModificationFor(name){
